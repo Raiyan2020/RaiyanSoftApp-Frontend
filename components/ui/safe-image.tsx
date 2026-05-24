@@ -36,9 +36,9 @@ export default function SafeImage({
   };
 
   const initialSrc = hasError ? fallbackSrc : src;
-  const finalSrc = isValidImageUrl(initialSrc)
+  const finalSrc = (isValidImageUrl(initialSrc)
     ? initialSrc
-    : (isValidImageUrl(fallbackSrc) ? fallbackSrc : FALLBACK_URL);
+    : (isValidImageUrl(fallbackSrc) ? fallbackSrc : FALLBACK_URL)) as string;
 
   return (
     <div className={`relative ${className || ''}`} style={{ overflow: 'hidden' }}>
