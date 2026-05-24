@@ -2,9 +2,11 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+
   typescript: {
     ignoreBuildErrors: true,
   },
+
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
@@ -12,6 +14,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'raiyansoft.com' },
     ],
   },
+
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
