@@ -4,15 +4,21 @@
 
 /* ── CSS Variables ─────────────────────────────────────── */
 :root {
-  --bg: #f8fafc;
-  --bg-2: #f1f5f9;
+  --bg: #f7fbfd;
+  --bg-2: #eaf7fb;
   --surface: #ffffff;
-  --surface-2: #f1f5f9;
-  --border: #e2e8f0;
-  --text: #0f172a;
-  --text-muted: #64748b;
-  --primary: #1db7f0;
-  --primary-dark: #0ea5d9;
+  --surface-2: #eef7fb;
+  --border: #d8e8ef;
+  --text: #092033;
+  --text-muted: #5c7180;
+  --primary: #12a9d9;
+  --primary-dark: #087aa3;
+  --mint: #21d3a2;
+  --amber: #f5a524;
+  --navy: #071827;
+  --radius-card: 2rem;
+  --shadow-soft: 0 24px 80px rgba(8, 38, 58, 0.12);
+  --shadow-glow: 0 24px 70px rgba(18, 169, 217, 0.22);
 }
 
 .dark {
@@ -37,6 +43,76 @@ body {
   -webkit-tap-highlight-color: transparent;
   transition: background-color 0.3s ease, color 0.3s ease;
   scroll-behavior: smooth;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  line-height: 1.8;
+}
+
+html {
+  scroll-padding-top: 96px;
+}
+
+::selection {
+  background: rgba(18, 169, 217, 0.22);
+  color: var(--text);
+}
+
+a,
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: 1.34 !important;
+}
+
+p,
+li {
+  line-height: 1.9 !important;
+}
+
+:focus-visible {
+  outline: 3px solid rgba(18, 169, 217, 0.45);
+  outline-offset: 4px;
+}
+
+.skip-link {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  z-index: 100;
+  transform: translateY(-140%);
+  border-radius: 999px;
+  background: var(--navy);
+  color: #fff;
+  padding: 12px 18px;
+  font-weight: 700;
+  box-shadow: var(--shadow-soft);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
+.scroll-progress {
+  position: fixed;
+  top: 0;
+  right: 0;
+  z-index: 70;
+  height: 3px;
+  width: var(--scroll-progress, 0%);
+  background: linear-gradient(90deg, var(--mint), var(--primary));
+  box-shadow: 0 0 24px rgba(18, 169, 217, 0.45);
+  transition: width 0.08s linear;
 }
 
 /* ── Scrollbar ─────────────────────────────────────────── */
@@ -75,7 +151,8 @@ body {
 .reveal {
   opacity: 0;
   transform: translateY(40px);
-  transition: opacity 0.7s ease, transform 0.7s ease;
+  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
+  will-change: opacity, transform;
 }
 .reveal.visible {
   opacity: 1;
@@ -84,10 +161,18 @@ body {
 
 /* ── Gradient text ─────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #1db7f0, #0ea5d9, #38bdf8);
+  background: linear-gradient(135deg, #087aa3, #12a9d9, #21d3a2);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+.premium-grid {
+  background-image:
+    linear-gradient(rgba(18, 169, 217, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(18, 169, 217, 0.08) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: linear-gradient(to bottom, black, transparent 72%);
 }
 
 /* ── Nav link underline effect ─────────────────────────── */
@@ -105,3 +190,67 @@ body {
   transition: width 0.3s ease;
 }
 .nav-link:hover::after { width: 100%; }
+
+.spotlight-card {
+  position: relative;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle at 50% 0%, rgba(18, 169, 217, 0.16), transparent 34%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+.premium-button {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+}
+
+.premium-button::before {
+  content: '';
+  position: absolute;
+  inset: -40% auto -40% -35%;
+  z-index: -1;
+  width: 34%;
+  transform: skewX(-18deg) translateX(-160%);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.38), transparent);
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.premium-button:hover::before {
+  transform: skewX(-18deg) translateX(460%);
+}
+
+.touch-lift {
+  transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease, background-color 0.25s ease;
+}
+
+.touch-lift:active {
+  transform: translateY(1px) scale(0.99);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .reveal {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -5,17 +5,53 @@ import Providers from './providers';
 import './globals.css';
 import MetaPixelTracker from '@/components/MetaPixelTracker';
 
-const alexandria = Alexandria({ subsets: ['arabic', 'latin'], weight: ['300','400','500','600','700'] });
+const alexandria = Alexandria({ subsets: ['arabic', 'latin'], weight: ['300', '400', '500', '600', '700'] });
+
+const title = 'رايان سوفت | تطوير تطبيقات ومواقع ومتاجر إلكترونية';
+const description = 'رايان سوفت وكالة تقنية سعودية لبناء تطبيقات الجوال، المواقع الإلكترونية، المتاجر الرقمية، والهويات البصرية باحترافية وسرعة وتجربة مستخدم عالية الجودة.';
 
 export const metadata: Metadata = {
-  title: 'رايان سوفت | تطوير تطبيقات ومواقع وهوية بصرية',
-  description: 'رايان سوفت — وكالة تقنية متخصصة في تطوير تطبيقات الجوال، المواقع الإلكترونية، المتاجر الرقمية، وتصميم الهوية البصرية.',
+  title,
+  description,
+  keywords: ['تطوير تطبيقات', 'تصميم مواقع', 'متاجر إلكترونية', 'شركة برمجة سعودية', 'تصميم هوية بصرية', 'Next.js', 'تطبيقات جوال'],
+  metadataBase: new URL('http://localhost:3000'),
+  alternates: {
+    canonical: '/',
+  },
+  openGraph: {
+    title,
+    description,
+    locale: 'ar_SA',
+    type: 'website',
+    siteName: 'رايان سوفت',
+    images: [{ url: '/logo.webp', width: 512, height: 512, alt: 'رايان سوفت' }],
+  },
+  twitter: {
+    card: 'summary',
+    title,
+    description,
+    images: ['/logo.webp'],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
-// Disable static prerendering — all pages depend on client-side providers (i18n, auth)
+// Disable static prerendering because app pages depend on client-side providers.
 export const dynamic = 'force-dynamic';
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ProfessionalService',
+    name: 'رايان سوفت',
+    description,
+    areaServed: 'SA',
+    serviceType: ['تطوير تطبيقات الجوال', 'تصميم المواقع', 'المتاجر الإلكترونية', 'الهوية البصرية'],
+    url: 'http://localhost:3000/',
+  };
+
   return (
     <html lang="ar" dir="rtl">
       <body className={alexandria.className}>
@@ -23,6 +59,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <MetaPixelTracker />
           {children}
         </Providers>
+        <Script id="landing-schema" type="application/ld+json" strategy="beforeInteractive">
+          {JSON.stringify(jsonLd)}
+        </Script>
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s)

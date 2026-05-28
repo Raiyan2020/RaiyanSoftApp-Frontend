@@ -4,64 +4,51 @@ import { useEffect, useRef } from 'react';
 const services = [
   {
     id: 'mobile',
-    icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-      </svg>
-    ),
     title: 'تطبيقات الجوال',
-    description: 'نطوّر تطبيقات iOS و Android عالية الأداء بتجربة مستخدم استثنائية تُقنع جمهورك من اللحظة الأولى.',
-    gradient: 'from-violet-500 to-purple-600',
-    bg: 'bg-violet-50 dark:bg-violet-950/30',
-    border: 'border-violet-100 dark:border-violet-800/30',
-    iconBg: 'bg-violet-500',
-    features: ['iOS & Android', 'Flutter & React Native', 'UI/UX محترف'],
+    eyebrow: 'iOS و Android',
+    description: 'نصمم ونطور تطبيقات مستقرة وسريعة بواجهات عربية أنيقة، رحلة استخدام واضحة، وتجربة إطلاق قابلة للتوسع.',
+    outcome: 'تطبيق جاهز للنشر مع لوحة تحكم وخطة تحسين بعد الإطلاق.',
+    gradient: 'from-sky-500 to-cyan-500',
+    points: ['تصميم UX/UI', 'تطوير Flutter أو React Native', 'اختبارات وتجهيز المتاجر'],
+    metric: '4-8 أسابيع',
   },
   {
     id: 'web',
-    icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-      </svg>
-    ),
-    title: 'برمجة المواقع',
-    description: 'مواقع ويب سريعة وآمنة ومتوافقة مع محركات البحث، مبنية بأحدث التقنيات لضمان حضور رقمي قوي.',
-    gradient: 'from-primary to-cyan-500',
-    bg: 'bg-cyan-50 dark:bg-cyan-950/30',
-    border: 'border-cyan-100 dark:border-cyan-800/30',
-    iconBg: 'bg-primary',
-    features: ['Next.js & React', 'تحسين SEO', 'سرعة فائقة'],
+    title: 'المواقع والمنصات',
+    eyebrow: 'Next.js و SEO',
+    description: 'نبني مواقع تعريفية ومنصات أعمال سريعة، واضحة، ومتوافقة مع محركات البحث حتى تتحول الزيارة إلى تواصل فعلي.',
+    outcome: 'موقع سريع، قابل للإدارة، ومهيأ للظهور والقياس.',
+    gradient: 'from-primary to-emerald-400',
+    points: ['أداء عال', 'هيكل SEO', 'تصميم متجاوب بالكامل'],
+    metric: '95+ أداء',
   },
   {
     id: 'ecommerce',
-    icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-    ),
     title: 'المتاجر الإلكترونية',
-    description: 'نبني متاجر إلكترونية احترافية متكاملة مع بوابات الدفع وإدارة المخزون لتحقيق أقصى مبيعاتك.',
-    gradient: 'from-emerald-500 to-teal-600',
-    bg: 'bg-emerald-50 dark:bg-emerald-950/30',
-    border: 'border-emerald-100 dark:border-emerald-800/30',
-    iconBg: 'bg-emerald-500',
-    features: ['بوابات دفع متعددة', 'لوحة تحكم متطورة', 'تصميم احترافي'],
+    eyebrow: 'مبيعات ومدفوعات',
+    description: 'نجهز تجربة شراء متكاملة من عرض المنتج حتى الدفع، مع صفحات مقنعة وسلة سلسة وربط مناسب لاحتياجك.',
+    outcome: 'متجر مصمم للبيع لا للعرض فقط، مع مسارات شراء مختصرة.',
+    gradient: 'from-emerald-500 to-teal-500',
+    points: ['كتالوج منتجات', 'بوابات دفع وشحن', 'تقارير ومخزون'],
+    metric: 'جاهز للبيع',
   },
   {
     id: 'identity',
-    icon: (
-      <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
-      </svg>
-    ),
-    title: 'تصميم الهوية البصرية',
-    description: 'نصمم هويات بصرية متكاملة تعكس قيم علامتك التجارية وتُميّزها في السوق بأسلوب احترافي وإبداعي.',
-    gradient: 'from-rose-500 to-pink-600',
-    bg: 'bg-rose-50 dark:bg-rose-950/30',
-    border: 'border-rose-100 dark:border-rose-800/30',
-    iconBg: 'bg-rose-500',
-    features: ['شعار احترافي', 'هوية متكاملة', 'مواد تسويقية'],
+    title: 'الهوية البصرية',
+    eyebrow: 'Brand System',
+    description: 'نصنع هوية متماسكة تعطي مشروعك حضوراً احترافياً من الشعار والألوان إلى واجهات المنتج والمواد التسويقية.',
+    outcome: 'نظام بصري قابل للتطبيق على الموقع، التطبيق، والحملات.',
+    gradient: 'from-amber-400 to-orange-500',
+    points: ['شعار وألوان', 'دليل استخدام', 'مواد إطلاق'],
+    metric: 'هوية موحدة',
   },
+];
+
+const process = [
+  ['01', 'اكتشاف', 'نفهم الهدف والجمهور ونحدد الأولويات.'],
+  ['02', 'تصميم', 'نرسم التجربة والواجهات قبل البرمجة.'],
+  ['03', 'تنفيذ', 'نبني المنتج على مراحل واضحة ومراجعات دورية.'],
+  ['04', 'إطلاق', 'نختبر، ننشر، ونقيس التحسينات التالية.'],
 ];
 
 export default function Services() {
@@ -70,74 +57,79 @@ export default function Services() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('visible')),
-      { threshold: 0.1 }
+      { threshold: 0.12 }
     );
     ref.current?.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
     return () => observer.disconnect();
   }, []);
 
   return (
-    <section id="services" className="py-24 bg-white dark:bg-navy-950 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-slate-50/50 to-white dark:from-navy-900/50 dark:to-navy-950 pointer-events-none" />
+    <section id="services" className="relative overflow-hidden bg-white py-16 dark:bg-navy-950 sm:py-20 lg:py-24">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(18,169,217,0.12),transparent_34%),linear-gradient(to_bottom,#ffffff,rgba(247,251,253,0.82))] dark:bg-[radial-gradient(circle_at_top_right,rgba(18,169,217,0.12),transparent_32%),linear-gradient(to_bottom,#020617,#071827)]" />
 
-      <div ref={ref} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative">
-        {/* Heading */}
-        <div className="reveal text-center mb-16 space-y-4">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-semibold">
-            خدماتنا
+      <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="reveal mb-10 grid gap-4 lg:mb-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+          <div className="space-y-4 text-center lg:text-right">
+            <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
+              خدماتنا
+            </div>
+            <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
+              حلول رقمية <span className="gradient-text">تُبنى للنمو</span> لا للعرض فقط
+            </h2>
           </div>
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-slate-900 dark:text-white">
-            ماذا نقدم <span className="gradient-text">لك؟</span>
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400 max-w-2xl mx-auto text-lg">
-            حلول تقنية متكاملة تُغطي كافة احتياجاتك الرقمية من الفكرة حتى الإطلاق
+          <p className="mx-auto max-w-3xl text-center text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg lg:mx-0 lg:text-right">
+            كل خدمة لدينا تبدأ من سؤال واحد: كيف نجعل المنتج أوضح، أسرع، وأكثر قدرة على تحويل الزوار إلى عملاء؟
           </p>
         </div>
 
-        {/* Services grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
           {services.map((service, i) => (
-            <div
+            <article
               key={service.id}
               id={`service-${service.id}`}
-              className={`reveal group relative ${service.bg} ${service.border} border rounded-3xl p-8 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden`}
-              style={{ transitionDelay: `${i * 0.1}s` }}
+              className="reveal group relative overflow-hidden rounded-[1.75rem] border border-cyan-950/10 bg-white p-5 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-primary/30 hover:shadow-[var(--shadow-glow)] dark:border-white/10 dark:bg-white/5 sm:p-7 lg:rounded-[2rem] lg:p-8"
+              style={{ transitionDelay: `${i * 0.08}s` }}
             >
-              {/* Gradient accent */}
-              <div className={`absolute top-0 right-0 w-32 h-32 bg-gradient-to-br ${service.gradient} opacity-5 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:opacity-10 transition-opacity duration-500`} />
-
-              <div className="relative z-10">
-                {/* Icon */}
-                <div className={`w-16 h-16 rounded-2xl ${service.iconBg} flex items-center justify-center text-white mb-6 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                  {service.icon}
+              <div className={`absolute -left-12 -top-12 h-40 w-40 rounded-full bg-gradient-to-br ${service.gradient} opacity-15 blur-2xl transition-opacity duration-500 group-hover:opacity-25`} />
+              <div className="relative z-10 flex h-full flex-col gap-4 sm:gap-6 lg:gap-7">
+                <div className="flex items-start justify-between gap-4">
+                  <div>
+                    <p className="mb-3 text-sm font-bold text-primary">{service.eyebrow}</p>
+                    <h3 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">{service.title}</h3>
+                  </div>
+                  <div className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${service.gradient} text-xs font-black text-white shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16 sm:text-sm`}>
+                    {service.metric}
+                  </div>
                 </div>
 
-                {/* Content */}
-                <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">{service.title}</h3>
-                <p className="text-slate-500 dark:text-slate-400 leading-relaxed mb-6">{service.description}</p>
+                <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">{service.description}</p>
 
-                {/* Features */}
-                <div className="flex flex-wrap gap-2">
-                  {service.features.map((f) => (
-                    <span
-                      key={f}
-                      className="px-3 py-1 rounded-full text-xs font-semibold bg-white/60 dark:bg-white/5 border border-current/10 text-slate-600 dark:text-slate-300"
-                    >
-                      {f}
+                <div className="hidden rounded-3xl border border-cyan-950/10 bg-slate-50/80 p-4 text-sm font-semibold leading-relaxed text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 sm:block">
+                  {service.outcome}
+                </div>
+
+                <div className="mt-auto flex flex-wrap gap-2">
+                  {service.points.map((point) => (
+                    <span key={point} className="rounded-full border border-cyan-950/10 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+                      {point}
                     </span>
                   ))}
                 </div>
-
-                {/* Arrow */}
-                <div className={`mt-6 inline-flex items-center gap-2 text-sm font-semibold bg-gradient-to-r ${service.gradient} bg-clip-text text-transparent group-hover:gap-4 transition-all duration-300`}>
-                  اعرف أكثر
-                  <svg className="w-4 h-4 rotate-180" style={{ stroke: 'currentColor' }} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                  </svg>
-                </div>
               </div>
-            </div>
+            </article>
           ))}
+        </div>
+
+        <div className="reveal mt-8 rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-4 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/10 lg:mt-10">
+          <div className="grid gap-3 md:grid-cols-4">
+            {process.map(([num, title, desc]) => (
+              <div key={num} className="rounded-3xl border border-white/10 bg-white/7 p-4 sm:p-5">
+                <p className="mb-2 text-sm font-black text-primary sm:mb-4">{num}</p>
+                <h3 className="mb-2 text-lg font-bold">{title}</h3>
+                <p className="hidden text-sm leading-relaxed text-slate-300 sm:block">{desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
