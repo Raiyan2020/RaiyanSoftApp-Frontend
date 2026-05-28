@@ -8,8 +8,8 @@ import MetaPixelTracker from '@/components/MetaPixelTracker';
 const alexandria = Alexandria({ subsets: ['arabic', 'latin'], weight: ['300','400','500','600','700'] });
 
 export const metadata: Metadata = {
-  title: 'Raiyansoft App',
-  description: 'Raiyansoft App',
+  title: 'رايان سوفت | تطوير تطبيقات ومواقع وهوية بصرية',
+  description: 'رايان سوفت — وكالة تقنية متخصصة في تطوير تطبيقات الجوال، المواقع الإلكترونية، المتاجر الرقمية، وتصميم الهوية البصرية.',
 };
 
 // Disable static prerendering — all pages depend on client-side providers (i18n, auth)
