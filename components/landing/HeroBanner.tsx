@@ -2,12 +2,6 @@
 import Image from 'next/image';
 import { motion, useReducedMotion } from 'framer-motion';
 
-const stats = [
-  ['50+', 'مشروع منجز'],
-  ['30+', 'شريك نمو'],
-  ['5+', 'سنوات خبرة'],
-];
-
 const capabilities = [
   { image: '/landing-icons/mobile-app.svg', label: 'تطبيقات' },
   { image: '/landing-icons/ecommerce.svg', label: 'متاجر' },
@@ -118,7 +112,7 @@ export default function HeroBanner() {
           </motion.div>
 
           <motion.div variants={item} className="order-1 lg:order-2">
-            <div className="relative mx-auto min-h-[390px] w-full max-w-[560px] sm:min-h-[460px]">
+            <div className="relative mx-auto min-h-[320px] w-full max-w-[360px] sm:min-h-[420px] sm:max-w-[480px] lg:max-w-[520px]">
               <motion.div
                 aria-hidden
                 className="absolute inset-8 rounded-full bg-gradient-to-br from-primary/35 via-emerald-300/15 to-transparent blur-3xl"
@@ -128,83 +122,50 @@ export default function HeroBanner() {
 
               <motion.div
                 aria-hidden
-                className="absolute inset-0 rounded-full border border-primary/25"
+                className="absolute inset-2 rounded-full border border-primary/25"
                 animate={shouldReduceMotion ? undefined : { rotate: 360 }}
                 transition={{ duration: 34, repeat: Infinity, ease: 'linear' }}
               />
               <motion.div
                 aria-hidden
-                className="absolute inset-10 rounded-full border border-dashed border-cyan-300/20"
+                className="absolute inset-14 rounded-full border border-dashed border-cyan-300/20 sm:inset-12"
                 animate={shouldReduceMotion ? undefined : { rotate: -360 }}
                 transition={{ duration: 48, repeat: Infinity, ease: 'linear' }}
               />
 
-              <motion.div
-                animate={float}
-                className="absolute left-1/2 top-1/2 grid h-36 w-36 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-[2.2rem] border border-white/15 bg-white/10 shadow-2xl shadow-primary/25 backdrop-blur-2xl sm:h-44 sm:w-44"
-              >
-                <div className="relative h-24 w-24 overflow-hidden rounded-3xl bg-primary shadow-2xl shadow-primary/45 sm:h-28 sm:w-28">
-                  <Image src="/logo.webp" alt="رايان سوفت" fill className="object-cover" priority />
-                </div>
-              </motion.div>
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+                <motion.div
+                  animate={float}
+                  className="grid h-36 w-36 place-items-center rounded-[2.2rem] border border-white/15 bg-white/10 shadow-2xl shadow-primary/25 backdrop-blur-2xl sm:h-44 sm:w-44"
+                >
+                  <div className="relative h-24 w-24 overflow-hidden rounded-3xl bg-primary shadow-2xl shadow-primary/45 sm:h-28 sm:w-28">
+                    <Image src="/logo.webp" alt="رايان سوفت" fill className="object-cover" priority />
+                  </div>
+                </motion.div>
+              </div>
 
               {capabilities.map((capability, index) => {
                 const positions = [
-                  'right-3 top-12 sm:right-8 sm:top-14',
-                  'left-3 top-28 sm:left-8 sm:top-36',
-                  'bottom-10 right-16 sm:bottom-14 sm:right-24',
+                  'right-0 top-10 sm:right-8 sm:top-12',
+                  'left-0 top-28 sm:left-8 sm:top-36',
+                  'bottom-8 right-14 sm:bottom-14 sm:right-20',
                 ];
 
                 return (
                   <motion.div
                     key={capability.label}
-                    className={`absolute ${positions[index]} flex items-center gap-3 rounded-3xl border border-white/10 bg-slate-950/65 px-4 py-3 shadow-2xl backdrop-blur-2xl`}
+                    className={`absolute ${positions[index]} flex items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/60 px-3 py-2 shadow-2xl backdrop-blur-2xl sm:gap-3 sm:rounded-3xl sm:px-4 sm:py-3`}
                     initial={shouldReduceMotion ? false : { opacity: 0, y: 16, scale: 0.96 }}
                     animate={shouldReduceMotion ? undefined : { opacity: 1, y: [0, index % 2 ? 10 : -10, 0], scale: 1 }}
                     transition={shouldReduceMotion ? undefined : { delay: 0.35 + index * 0.12, duration: index === 0 ? 4.6 : 5.2, repeat: Infinity, repeatType: 'mirror', ease: 'easeInOut' }}
                   >
-                    <div className="relative h-10 w-10">
+                    <div className="relative h-8 w-8 sm:h-10 sm:w-10">
                       <Image src={capability.image} alt="" fill className="object-contain" sizes="40px" />
                     </div>
-                    <p className="text-sm font-black text-white">{capability.label}</p>
+                    <p className="text-xs font-black text-white sm:text-sm">{capability.label}</p>
                   </motion.div>
                 );
               })}
-
-              <motion.div
-                className="absolute bottom-4 left-4 right-4 rounded-[2rem] border border-white/10 bg-white/[0.07] p-4 shadow-2xl backdrop-blur-2xl sm:left-8 sm:right-8"
-                initial={shouldReduceMotion ? false : { opacity: 0, y: 20 }}
-                animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
-                transition={{ delay: 0.75, duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="mb-3 flex items-center justify-between">
-                  <p className="text-sm font-black text-white">مسار الإطلاق</p>
-                  <p className="text-xs font-bold text-primary">4 مراحل</p>
-                </div>
-                <div className="grid grid-cols-4 gap-2">
-                  {['اكتشاف', 'تصميم', 'بناء', 'إطلاق'].map((step, index) => (
-                    <div key={step}>
-                      <motion.div
-                        className="h-2 rounded-full bg-gradient-to-l from-primary to-emerald-300"
-                        initial={shouldReduceMotion ? false : { scaleX: 0 }}
-                        animate={shouldReduceMotion ? undefined : { scaleX: 1 }}
-                        transition={{ delay: 0.9 + index * 0.12, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-                        style={{ transformOrigin: 'right' }}
-                      />
-                      <p className="mt-2 text-center text-[0.68rem] font-bold text-slate-400">{step}</p>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-
-              <motion.div
-                className="absolute left-4 top-4 hidden rounded-3xl border border-white/10 bg-white/10 p-4 shadow-2xl backdrop-blur-2xl sm:block"
-                animate={shouldReduceMotion ? undefined : { y: [0, -8, 0] }}
-                transition={{ duration: 4.4, repeat: Infinity, ease: 'easeInOut' }}
-              >
-                <p className="text-xs font-bold text-slate-300">نتائج موثقة</p>
-                <p className="mt-1 text-2xl font-black text-primary">+50</p>
-              </motion.div>
             </div>
           </motion.div>
         </div>
