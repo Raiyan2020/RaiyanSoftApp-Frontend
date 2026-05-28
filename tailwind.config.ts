@@ -17,7 +17,18 @@ const config: Config = {
         navy: { 900: '#0f172a', 950: '#020617' },
       },
       fontFamily: {
-        sans: ['Alexandria', 'sans-serif'],
+        sans: ['Cairo', 'sans-serif'],
+      },
+      fontWeight: {
+        thin: '100',
+        extralight: '200',
+        light: '300',
+        normal: '300',
+        medium: '400',
+        semibold: '500',
+        bold: '600',
+        extrabold: '700',
+        black: '800',
       },
       animation: {
         'fade-in-up': 'fadeInUp 0.7s ease forwards',

@@ -1,12 +1,13 @@
 'use client';
 import { useEffect, useRef } from 'react';
+import Image from 'next/image';
 
 const works = [
   {
     id: 1,
     title: 'تطبيق رايان الصحي',
     category: 'تطبيق جوال',
-    gradient: 'from-sky-500 to-indigo-500',
+    image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80',
     desc: 'تجربة حجز ومتابعة صحية بواجهة عربية بسيطة وتنبيهات ذكية.',
     stats: ['+42% حجوزات', '3 شاشات رئيسية'],
   },
@@ -14,7 +15,7 @@ const works = [
     id: 2,
     title: 'متجر الموضة',
     category: 'متجر إلكتروني',
-    gradient: 'from-rose-500 to-orange-400',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=600&q=80',
     desc: 'واجهة تسوق راقية مع تصنيفات واضحة، دفع سريع، وتجربة جوال محسنة.',
     stats: ['دفع مختصر', 'تصميم فاخر'],
   },
@@ -22,7 +23,7 @@ const works = [
     id: 3,
     title: 'منصة التعليم',
     category: 'منصة ويب',
-    gradient: 'from-primary to-emerald-400',
+    image: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=600&q=80',
     desc: 'لوحات تعلم تفاعلية تدعم الدروس المباشرة والملفات والمتابعة.',
     stats: ['لوحة طالب', 'محتوى مرن'],
   },
@@ -30,7 +31,7 @@ const works = [
     id: 4,
     title: 'هوية شركة النور',
     category: 'هوية بصرية',
-    gradient: 'from-amber-400 to-yellow-600',
+    image: 'https://images.unsplash.com/photo-1616469829581-73993eb86b02?auto=format&fit=crop&w=600&q=80',
     desc: 'نظام بصري متكامل يرفع الثقة ويوحد حضور الشركة رقمياً ومطبوعاً.',
     stats: ['دليل هوية', 'مواد إطلاق'],
   },
@@ -38,7 +39,7 @@ const works = [
     id: 5,
     title: 'تطبيق توصيل الطلبات',
     category: 'تطبيق جوال',
-    gradient: 'from-emerald-500 to-teal-500',
+    image: 'https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=600&q=80',
     desc: 'تتبع مباشر، إدارة طلبات، وتجربة طلب مختصرة للمستخدمين والسائقين.',
     stats: ['تتبع حي', 'إدارة فروع'],
   },
@@ -46,7 +47,7 @@ const works = [
     id: 6,
     title: 'منصة عقارية',
     category: 'موقع ويب',
-    gradient: 'from-blue-600 to-cyan-500',
+    image: 'https://images.unsplash.com/photo-1564013799919-ab600027ffc6?auto=format&fit=crop&w=600&q=80',
     desc: 'بحث عقاري سريع، صفحات وحدات مقنعة، وخرائط تساعد العميل يقرر أسرع.',
     stats: ['بحث ذكي', 'خرائط تفاعلية'],
   },
@@ -92,24 +93,18 @@ export default function Works() {
               className="reveal group overflow-hidden rounded-[1.75rem] border border-cyan-950/10 bg-white shadow-sm transition-all duration-500 hover:-translate-y-2 hover:shadow-[var(--shadow-glow)] dark:border-white/10 dark:bg-white/5 lg:rounded-[2rem]"
               style={{ transitionDelay: `${i * 0.07}s` }}
             >
-              <div className={`relative h-40 overflow-hidden bg-gradient-to-br ${work.gradient} p-4 sm:h-48 lg:h-56 lg:p-5`}>
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_24%_20%,rgba(255,255,255,0.42),transparent_30%)]" />
-                <div className="relative h-full rounded-3xl border border-white/30 bg-white/18 p-3 shadow-2xl backdrop-blur transition-transform duration-500 group-hover:scale-[1.03] sm:p-4">
-                  <div className="mb-4 flex items-center justify-between">
-                    <span className="rounded-full bg-white/22 px-3 py-1 text-xs font-bold text-white ring-1 ring-white/25">{work.category}</span>
-                    <span className="h-3 w-3 rounded-full bg-white/80" />
-                  </div>
-                  <div className="space-y-3">
-                    <div className="h-5 w-3/5 rounded-full bg-white/80" />
-                    <div className="h-3 w-4/5 rounded-full bg-white/40" />
-                    <div className="h-3 w-2/3 rounded-full bg-white/35" />
-                  </div>
-                  <div className="absolute bottom-3 left-3 right-3 grid grid-cols-3 gap-2 sm:bottom-4 sm:left-4 sm:right-4">
-                    <div className="h-10 rounded-2xl bg-white/75 sm:h-14 lg:h-16" />
-                    <div className="h-10 rounded-2xl bg-white/45 sm:h-14 lg:h-16" />
-                    <div className="h-10 rounded-2xl bg-white/60 sm:h-14 lg:h-16" />
-                  </div>
-                </div>
+              <div className="relative h-44 overflow-hidden sm:h-52 lg:h-60">
+                <Image
+                  src={work.image}
+                  alt={work.title}
+                  fill
+                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
+                <span className="absolute right-4 top-4 rounded-full bg-slate-950/75 px-3 py-1.5 text-xs font-bold text-white backdrop-blur ring-1 ring-white/10">
+                  {work.category}
+                </span>
               </div>
 
               <div className="p-5 sm:p-6">

@@ -19,12 +19,15 @@ export default function LandingPage() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const shouldReduceMotion = useReducedMotion();
 
-  // Persist dark mode preference
+  // Persist theme preference, defaulting to light mode
   useEffect(() => {
     const saved = localStorage.getItem('theme');
     if (saved === 'dark') {
       setDark(true);
       document.documentElement.classList.add('dark');
+    } else {
+      setDark(false);
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 

@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
-import { Alexandria } from 'next/font/google';
+import { Cairo } from 'next/font/google';
 import Script from 'next/script';
 import Providers from './providers';
 import './globals.css';
 import MetaPixelTracker from '@/components/MetaPixelTracker';
 
-const alexandria = Alexandria({ subsets: ['arabic', 'latin'], weight: ['300', '400', '500', '600', '700'] });
+const cairo = Cairo({ subsets: ['arabic', 'latin'], weight: ['300', '400', '500', '600', '700', '800', '900'] });
 
 const title = 'رايان سوفت | تطوير تطبيقات ومواقع ومتاجر إلكترونية';
 const description = 'رايان سوفت وكالة تقنية سعودية لبناء تطبيقات الجوال، المواقع الإلكترونية، المتاجر الرقمية، والهويات البصرية باحترافية وسرعة وتجربة مستخدم عالية الجودة.';
@@ -54,7 +54,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang="ar" dir="rtl">
-      <body className={alexandria.className}>
+      <body className={cairo.className}>
         <Providers>
           <MetaPixelTracker />
           {children}
