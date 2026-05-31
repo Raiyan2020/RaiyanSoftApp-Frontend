@@ -1,0 +1,316 @@
+"use client";
+
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Archive, Copy, ExternalLink, Plus, Search, Trash2 } from 'lucide-react';
+import Button from '@/components/ui/button';
+import ConfirmModal from '@/components/ui/confirm-modal';
+import { getWebsiteContentConfig } from '../config/website-content-config';
+import { useAdminWebsiteContent } from '../hooks/use-admin-website-content';
+import type { WebsiteContentField, WebsiteContentItem, WebsiteContentSection, WebsiteContentStatus } from '../types/website-content';
+
+const statusStyles: Record<WebsiteContentStatus, string> = {
+  draft: 'bg-slate-500/10 text-slate-300 border-slate-500/20',
+  published: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
+  archived: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
+};
+
+const listToTextarea = (value: any) => (Array.isArray(value) ? value.join('\n') : '');
+const textareaToList = (value: string) => value.split('\n').map((line) => line.trim()).filter(Boolean);
+
+function FieldControl({
+  field,
+  value,
+  onChange,
+}: {
+  field: WebsiteContentField;
+  value: any;
+  onChange: (value: any) => void;
+}) {
+  const baseClass = 'w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none transition focus:border-primary/60';
+
+  if (field.type === 'textarea' || field.type === 'list') {
+    return (
+      <textarea
+        className={`${baseClass} min-h-28 resize-y`}
+        value={field.type === 'list' ? listToTextarea(value) : value || ''}
+        onChange={(event) => onChange(field.type === 'list' ? textareaToList(event.target.value) : event.target.value)}
+        placeholder={field.placeholder || (field.type === 'list' ? 'One item per line' : '')}
+      />
+    );
+  }
+
+  if (field.type === 'toggle') {
+    return (
+      <label className="inline-flex cursor-pointer items-center gap-3 rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-slate-300">
+        <input type="checkbox" checked={Boolean(value)} onChange={(event) => onChange(event.target.checked)} className="h-4 w-4 accent-primary" />
+        Enabled
+      </label>
+    );
+  }
+
+  if (field.type === 'select') {
+    return (
+      <select className={baseClass} value={value || ''} onChange={(event) => onChange(event.target.value)}>
+        <option value="">Select</option>
+        {field.options?.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+    );
+  }
+
+  return (
+    <input
+      className={baseClass}
+      type={field.type === 'number' ? 'number' : field.type === 'url' ? 'url' : 'text'}
+      value={value || ''}
+      onChange={(event) => onChange(field.type === 'number' ? Number(event.target.value) : event.target.value)}
+      placeholder={field.placeholder}
+    />
+  );
+}
+
+function getPreviewHref(section: WebsiteContentSection, item: WebsiteContentItem | null) {
+  if (!item) return '/';
+  if (section === 'services' && item.slug) return `/services/${item.slug}`;
+  if (section === 'apps' && item.slug) return `/portfolio/${item.slug}`;
+  if (section === 'blog' && item.slug) return `/blog/${item.slug}`;
+  if (section === 'legal' && item.slug === 'privacy') return '/privacy';
+  if (section === 'legal' && item.slug === 'terms') return '/terms';
+
+  const indexPages: Partial<Record<WebsiteContentSection, string>> = {
+    homepage: '/',
+    services: '/services',
+    apps: '/portfolio',
+    blog: '/blog',
+    faqs: '/faq',
+    pricing: '/pricing',
+    testimonials: '/testimonials',
+    partners: '/partners',
+    team: '/team',
+    careers: '/careers',
+    settings: '/',
+    steps: '/',
+  };
+
+  return indexPages[section] || '/';
+}
+
+export default function AdminWebsiteSectionPage({ section }: { section: WebsiteContentSection }) {
+  const config = getWebsiteContentConfig(section);
+  const isSingleton = Boolean(config.singleton);
+  const [pendingDelete, setPendingDelete] = useState<WebsiteContentItem | null>(null);
+  const manager = useAdminWebsiteContent(config);
+
+  const counts = useMemo(
+    () => ({
+      all: manager.items.length,
+      published: manager.items.filter((item) => item.status === 'published').length,
+      draft: manager.items.filter((item) => item.status === 'draft').length,
+      archived: manager.items.filter((item) => item.status === 'archived').length,
+    }),
+    [manager.items]
+  );
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-col gap-4 rounded-3xl border border-white/10 bg-slate-900/80 p-6 lg:flex-row lg:items-start lg:justify-between">
+        <div>
+          <Link href="/admin/website" className="text-xs font-bold uppercase tracking-[0.28em] text-primary">
+            Website CMS
+          </Link>
+          <h1 className="mt-2 text-3xl font-black text-white">{config.label}</h1>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-400">{config.description}</p>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {!isSingleton ? (
+            <Button type="button" variant="outline" onClick={manager.createNew}>
+              <Plus className="me-2" size={16} /> New {config.singularLabel}
+            </Button>
+          ) : null}
+          <Link href={getPreviewHref(section, manager.selected)} target="_blank" className="inline-flex items-center rounded-xl border border-white/10 bg-slate-800/50 px-5 py-3 text-sm font-bold text-slate-200 transition hover:bg-slate-800">
+            <ExternalLink className="me-2" size={16} /> Preview
+          </Link>
+        </div>
+      </div>
+
+      {manager.error ? <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-200">{manager.error}</div> : null}
+
+      <div className="grid gap-6">
+        <section className="rounded-3xl border border-white/10 bg-slate-900/70 p-5">
+          <div className="mb-6 flex flex-col gap-3 border-b border-white/10 pb-5 md:flex-row md:items-center md:justify-between">
+            <div>
+              <h2 className="text-xl font-black text-white">{isSingleton ? config.singularLabel : manager.selected ? `Edit ${config.singularLabel}` : `New ${config.singularLabel}`}</h2>
+              <p className="mt-1 text-sm text-slate-400">{isSingleton ? 'Update the global content for this section and publish when ready.' : 'Save as draft first, then publish when content and SEO are ready.'}</p>
+            </div>
+            {manager.selected && !isSingleton ? (
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" variant="ghost" size="sm" onClick={() => manager.duplicateItem(manager.selected!)}>
+                  <Copy size={15} className="me-2" /> Duplicate
+                </Button>
+                <Button type="button" variant="ghost" size="sm" onClick={() => manager.save('archived')} isLoading={manager.isSaving}>
+                  <Archive size={15} className="me-2" /> Archive
+                </Button>
+                <Button type="button" variant="destructive" size="sm" onClick={() => setPendingDelete(manager.selected)}>
+                  <Trash2 size={15} className="me-2" /> Delete
+                </Button>
+              </div>
+            ) : null}
+          </div>
+
+          <div className="grid gap-5 md:grid-cols-2">
+            <label className="space-y-2">
+              <span className="text-sm font-bold text-slate-300">Title *</span>
+              <input className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none focus:border-primary/60" value={manager.form.title} onChange={(event) => manager.updateField('title', event.target.value)} />
+            </label>
+
+            <label className="space-y-2">
+              <span className="text-sm font-bold text-slate-300">Slug {config.requiresSlug ? '*' : ''}</span>
+              <input className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none focus:border-primary/60" value={manager.form.slug} onChange={(event) => manager.updateField('slug', event.target.value)} placeholder="url-friendly-slug" />
+            </label>
+
+            <label className="space-y-2">
+              <span className="text-sm font-bold text-slate-300">Order</span>
+              <input className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none focus:border-primary/60" type="number" value={manager.form.order} onChange={(event) => manager.updateField('order', event.target.value)} />
+            </label>
+
+            <label className="space-y-2">
+              <span className="text-sm font-bold text-slate-300">Locale</span>
+              <select className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none focus:border-primary/60" value={manager.form.locale} onChange={(event) => manager.updateField('locale', event.target.value)}>
+                <option value="ar">Arabic</option>
+                <option value="en">English</option>
+              </select>
+            </label>
+          </div>
+
+          <div className="mt-6 grid gap-5">
+            {config.fields.map((field) => (
+              <label key={field.key} className="space-y-2">
+                <span className="text-sm font-bold text-slate-300">
+                  {field.label} {field.required ? '*' : ''}
+                </span>
+                <FieldControl field={field} value={manager.form.data[field.key]} onChange={(value) => manager.updateDataField(field.key, value)} />
+                {field.description ? <span className="block text-xs text-slate-500">{field.description}</span> : null}
+              </label>
+            ))}
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-white/10 bg-slate-950/50 p-5">
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-300">SEO</h3>
+            <div className="mt-4 grid gap-5">
+              <input className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none focus:border-primary/60" value={manager.form.seoTitle} onChange={(event) => manager.updateField('seoTitle', event.target.value)} placeholder="SEO title" />
+              <textarea className="min-h-24 w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none focus:border-primary/60" value={manager.form.seoDescription} onChange={(event) => manager.updateField('seoDescription', event.target.value)} placeholder="SEO description" />
+              <input className="w-full rounded-xl border border-white/10 bg-slate-950/70 px-4 py-3 text-sm text-white outline-none focus:border-primary/60" value={manager.form.ogImage} onChange={(event) => manager.updateField('ogImage', event.target.value)} placeholder="Open Graph image URL" />
+            </div>
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center gap-4 rounded-2xl border border-white/10 bg-slate-950/50 p-5">
+            <label className="inline-flex items-center gap-2 text-sm font-bold text-slate-300">
+              <input type="checkbox" checked={manager.form.featured} onChange={(event) => manager.updateField('featured', event.target.checked)} className="h-4 w-4 accent-primary" />
+              Featured
+            </label>
+            {config.requiresApproval ? (
+              <>
+                <label className="inline-flex items-center gap-2 text-sm font-bold text-slate-300">
+                  <input type="checkbox" checked={manager.form.approvedForPublic} onChange={(event) => manager.updateField('approvedForPublic', event.target.checked)} className="h-4 w-4 accent-primary" />
+                  Approved for public
+                </label>
+                <label className="inline-flex items-center gap-2 text-sm font-bold text-slate-300">
+                  <input type="checkbox" checked={manager.form.clientApproved} onChange={(event) => manager.updateField('clientApproved', event.target.checked)} className="h-4 w-4 accent-primary" />
+                  Client approved
+                </label>
+              </>
+            ) : null}
+          </div>
+
+          <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-white/10 pt-5">
+            <Button type="button" variant="outline" onClick={() => manager.save('draft')} isLoading={manager.isSaving}>
+              Save Draft
+            </Button>
+            <Button type="button" onClick={() => manager.save('published')} isLoading={manager.isSaving}>
+              Publish
+            </Button>
+          </div>
+        </section>
+
+        {!isSingleton ? (
+          <section className="space-y-4 rounded-3xl border border-white/10 bg-slate-900/70 p-5">
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <h2 className="text-xl font-black text-white">Existing {config.label}</h2>
+                <p className="mt-1 text-sm text-slate-400">Search, filter, and select an existing item when you need to edit published or draft content.</p>
+              </div>
+              <div className="relative w-full lg:max-w-md">
+                <Search className="absolute start-4 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                <input
+                  value={manager.query}
+                  onChange={(event) => manager.setQuery(event.target.value)}
+                  placeholder={`Search ${config.label.toLowerCase()}...`}
+                  className="w-full rounded-xl border border-white/10 bg-slate-950/70 py-3 pe-4 ps-11 text-sm text-white outline-none focus:border-primary/60"
+                />
+              </div>
+            </div>
+
+            <div className="grid gap-2 text-center text-xs sm:grid-cols-4">
+              {(['all', 'published', 'draft', 'archived'] as const).map((status) => (
+                <button
+                  key={status}
+                  type="button"
+                  onClick={() => manager.setStatusFilter(status)}
+                  className={`rounded-xl border px-2 py-3 font-bold capitalize transition ${
+                    manager.statusFilter === status ? 'border-primary/50 bg-primary/10 text-primary' : 'border-white/10 bg-slate-950/40 text-slate-400 hover:text-white'
+                  }`}
+                >
+                  {status}
+                  <span className="mt-1 block text-white">{counts[status]}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="grid gap-3 lg:grid-cols-2">
+              {manager.isLoading ? <p className="rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-sm text-slate-400">Loading content...</p> : null}
+              {!manager.isLoading && manager.filteredItems.length === 0 ? (
+                <p className="rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-sm text-slate-400">No content found. Create the first item to start managing this section.</p>
+              ) : null}
+              {manager.filteredItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => manager.editItem(item)}
+                  className={`rounded-2xl border p-4 text-start transition ${
+                    manager.selected?.id === item.id ? 'border-primary/50 bg-primary/10' : 'border-white/10 bg-slate-950/50 hover:border-white/20 hover:bg-slate-950'
+                  }`}
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <h3 className="font-black text-white">{item.title}</h3>
+                      <p className="mt-1 text-xs text-slate-500">{item.slug || item.id}</p>
+                    </div>
+                    <span className={`rounded-full border px-2.5 py-1 text-[11px] font-bold capitalize ${statusStyles[item.status]}`}>{item.status}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </section>
+        ) : null}
+      </div>
+
+      <ConfirmModal
+        isOpen={Boolean(pendingDelete)}
+        title={`Delete ${config.singularLabel}`}
+        message={`This will permanently delete "${pendingDelete?.title || 'this item'}" from ${config.label}. This cannot be undone.`}
+        confirmText="Delete"
+        isDestructive
+        onCancel={() => setPendingDelete(null)}
+        onConfirm={async () => {
+          if (!pendingDelete) return;
+          const ok = await manager.remove(pendingDelete);
+          if (ok) setPendingDelete(null);
+        }}
+      />
+    </div>
+  );
+}

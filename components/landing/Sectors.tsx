@@ -1,5 +1,5 @@
 'use client';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 
 const sectors = [
   { title: 'التجارة الإلكترونية', body: 'صفحات منتجات، دفع، شحن، وتحويل أعلى.' },
@@ -12,16 +12,16 @@ const sectors = [
 
 export default function Sectors() {
   const shouldReduceMotion = useReducedMotion();
-  const container = shouldReduceMotion
-    ? {}
+  const container: Variants | undefined = shouldReduceMotion
+    ? undefined
     : {
         hidden: {},
         visible: {
           transition: { staggerChildren: 0.06 },
         },
       };
-  const item = shouldReduceMotion
-    ? {}
+  const item: Variants | undefined = shouldReduceMotion
+    ? undefined
     : {
         hidden: { opacity: 0, y: 14 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.38, ease: [0.22, 1, 0.36, 1] } },

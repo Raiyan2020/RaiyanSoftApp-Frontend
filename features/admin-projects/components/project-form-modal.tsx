@@ -167,7 +167,7 @@ export default function ProjectFormModal({
                   {isValidImageUrl(field.value) ? (
                     <div className="mt-2 w-16 h-16 bg-slate-800 rounded-xl border border-white/10 overflow-hidden relative group">
                       <div className="relative w-full h-full">
-                        <Image src={field.value} alt="Preview" fill className="object-cover" />
+                        <Image src={field.value || ''} alt="Preview" fill className="object-cover" />
                       </div>
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                         <span className="text-[10px] text-white">Preview</span>

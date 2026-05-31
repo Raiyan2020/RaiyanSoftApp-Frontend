@@ -18,6 +18,15 @@ import {
   Calendar,
   Inbox,
   ListChecks,
+  Globe2,
+  Home,
+  Newspaper,
+  HelpCircle,
+  Tags,
+  Star,
+  Handshake,
+  FileText,
+  Settings,
 } from 'lucide-react';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
 import { collection, doc, getDoc, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
@@ -139,6 +148,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { id: 'roles', label: 'Roles', icon: Shield, path: '/admin/roles', badge: 0, permission: 'roles.manage' },
   ].filter((item) => hasPermission(currentPermissions, item.permission));
 
+  const websiteNavItems = [
+    { id: 'website', label: 'Overview', icon: Globe2, path: '/admin/website', permission: 'website.view' },
+    { id: 'website-homepage', label: 'Homepage', icon: Home, path: '/admin/website/homepage', permission: 'website.homepage.manage' },
+    { id: 'website-services', label: 'Services', icon: Briefcase, path: '/admin/website/services', permission: 'website.services.manage' },
+    { id: 'website-apps', label: 'Apps & Cases', icon: FolderKanban, path: '/admin/website/apps', permission: 'website.apps.manage' },
+    { id: 'website-blog', label: 'Blog', icon: Newspaper, path: '/admin/website/blog', permission: 'website.blog.manage' },
+    { id: 'website-steps', label: 'Steps', icon: ListChecks, path: '/admin/website/steps', permission: 'website.steps.manage' },
+    { id: 'website-faqs', label: 'FAQs', icon: HelpCircle, path: '/admin/website/faqs', permission: 'website.faqs.manage' },
+    { id: 'website-pricing', label: 'Pricing', icon: Tags, path: '/admin/website/pricing', permission: 'website.pricing.manage' },
+    { id: 'website-testimonials', label: 'Testimonials', icon: Star, path: '/admin/website/testimonials', permission: 'website.testimonials.manage' },
+    { id: 'website-partners', label: 'Partners', icon: Handshake, path: '/admin/website/partners', permission: 'website.partners.manage' },
+    { id: 'website-team', label: 'Team', icon: Users, path: '/admin/website/team', permission: 'website.team.manage' },
+    { id: 'website-careers', label: 'Careers', icon: Briefcase, path: '/admin/website/careers', permission: 'website.careers.manage' },
+    { id: 'website-legal', label: 'Legal Pages', icon: FileText, path: '/admin/website/legal', permission: 'website.legal.manage' },
+    { id: 'website-settings', label: 'Site Settings', icon: Settings, path: '/admin/website/settings', permission: 'website.settings.manage' },
+  ].filter((item) => hasPermission(currentPermissions, item.permission));
+
   function SidebarContent() {
     return (
       <div className="flex flex-col h-full">
@@ -185,6 +211,37 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               </button>
             );
           })}
+
+          {websiteNavItems.length > 0 ? (
+            <div className="pt-5 mt-5 border-t border-white/5">
+              <p className="px-4 mb-2 text-[10px] uppercase tracking-[0.18em] text-slate-600 font-bold">
+                Website Content
+              </p>
+              <div className="space-y-1">
+                {websiteNavItems.map((item) => {
+                  const isActive = pathname === item.path || pathname.startsWith(`${item.path}/`);
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        router.push(item.path);
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 relative ${
+                        isActive
+                          ? 'bg-primary/10 text-primary border border-primary/20'
+                          : 'text-slate-400 hover:text-white hover:bg-white/5'
+                      }`}
+                    >
+                      <item.icon size={20} />
+                      <span className="font-medium text-sm">{item.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="p-4 border-t border-white/5 text-center">

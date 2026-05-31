@@ -223,39 +223,8 @@ export default function AdminProjectQuestionsPage() {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
-        <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5 h-fit">
-          <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-bold text-white">Question Order</h2>
-            <span className="text-xs text-slate-500 bg-slate-900/70 border border-white/5 rounded-full px-3 py-1">
-              {state.questions.length} total
-            </span>
-          </div>
-
-          {state.questions.length === 0 ? (
-            <div className="text-center py-16 text-slate-500">
-              <ListChecks size={30} className="mx-auto mb-3 text-slate-600" />
-              <p>No project questions yet.</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {state.questions.map((question, index) => (
-                <QuestionRow
-                  key={question.id}
-                  question={question}
-                  index={index}
-                  total={state.questions.length}
-                  isActive={state.selectedQuestion?.id === question.id}
-                  onEdit={state.startEdit}
-                  onMove={state.moveQuestion}
-                  onDelete={state.setDeleteId}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        <div className="space-y-6">
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
           <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
@@ -368,6 +337,37 @@ export default function AdminProjectQuestionsPage() {
             optionsText={state.form.optionsText}
             required={state.form.required}
           />
+        </div>
+
+        <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
+          <div className="flex items-center justify-between mb-5">
+            <h2 className="text-lg font-bold text-white">Question Order</h2>
+            <span className="text-xs text-slate-500 bg-slate-900/70 border border-white/5 rounded-full px-3 py-1">
+              {state.questions.length} total
+            </span>
+          </div>
+
+          {state.questions.length === 0 ? (
+            <div className="text-center py-16 text-slate-500">
+              <ListChecks size={30} className="mx-auto mb-3 text-slate-600" />
+              <p>No project questions yet.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {state.questions.map((question, index) => (
+                <QuestionRow
+                  key={question.id}
+                  question={question}
+                  index={index}
+                  total={state.questions.length}
+                  isActive={state.selectedQuestion?.id === question.id}
+                  onEdit={state.startEdit}
+                  onMove={state.moveQuestion}
+                  onDelete={state.setDeleteId}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

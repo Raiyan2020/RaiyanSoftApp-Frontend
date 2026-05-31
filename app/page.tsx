@@ -5,3 +5,4 @@ import LandingPage from '@/screens/Landing';
 export default function Page() {
   return <LandingPage />;
 }
+

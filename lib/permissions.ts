@@ -54,6 +54,26 @@ export const PERMISSION_GROUPS = [
       ['chat.manage', 'Manage chat'],
     ],
   },
+  {
+    label: 'Website Content',
+    permissions: [
+      ['website.view', 'View website content'],
+      ['website.homepage.manage', 'Manage homepage content'],
+      ['website.services.manage', 'Manage services'],
+      ['website.apps.manage', 'Manage apps and case studies'],
+      ['website.blog.manage', 'Manage blog posts'],
+      ['website.steps.manage', 'Manage process steps'],
+      ['website.faqs.manage', 'Manage FAQs'],
+      ['website.pricing.manage', 'Manage pricing'],
+      ['website.testimonials.manage', 'Manage testimonials'],
+      ['website.partners.manage', 'Manage partners'],
+      ['website.team.manage', 'Manage team'],
+      ['website.careers.manage', 'Manage careers'],
+      ['website.legal.manage', 'Manage legal pages'],
+      ['website.settings.manage', 'Manage website settings'],
+      ['website.publish', 'Publish website content'],
+    ],
+  },
 ] as const;
 
 export const PERMISSIONS_LIST = PERMISSION_GROUPS.flatMap((group) =>

@@ -128,30 +128,8 @@ export default function AdminProjectTypesPage() {
         </div>
       ) : null}
 
-      <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
-        <div className="space-y-3">
-          {state.types.length === 0 ? (
-            <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-16 text-center text-slate-500">
-              <Briefcase size={32} className="mx-auto mb-3 text-slate-600" />
-              <p>No project types yet.</p>
-            </div>
-          ) : (
-            state.types.map((type, index) => (
-              <TypeCard
-                key={type.id}
-                type={type}
-                index={index}
-                total={state.types.length}
-                isEditing={state.editingId === type.id}
-                onEdit={state.startEdit}
-                onMove={state.moveType}
-                onDelete={state.setDeleteId}
-              />
-            ))
-          )}
-        </div>
-
-        <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5 h-fit sticky top-4">
+      <div className="space-y-6">
+        <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
               <Briefcase size={18} />
@@ -268,6 +246,28 @@ export default function AdminProjectTypesPage() {
               Save Type
             </Button>
           </div>
+        </div>
+
+        <div className="space-y-3">
+          {state.types.length === 0 ? (
+            <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-16 text-center text-slate-500">
+              <Briefcase size={32} className="mx-auto mb-3 text-slate-600" />
+              <p>No project types yet.</p>
+            </div>
+          ) : (
+            state.types.map((type, index) => (
+              <TypeCard
+                key={type.id}
+                type={type}
+                index={index}
+                total={state.types.length}
+                isEditing={state.editingId === type.id}
+                onEdit={state.startEdit}
+                onMove={state.moveType}
+                onDelete={state.setDeleteId}
+              />
+            ))
+          )}
         </div>
       </div>
 

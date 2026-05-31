@@ -13,7 +13,8 @@ export type AuditEntityType =
   | 'attachment'
   | 'note'
   | 'role'
-  | 'user';
+  | 'user'
+  | 'website_content';
 
 export interface AuditLogPayload {
   entityType: AuditEntityType;

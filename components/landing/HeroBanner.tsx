@@ -1,6 +1,6 @@
 'use client';
 import Image from 'next/image';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, type TargetAndTransition, type Variants } from 'framer-motion';
 
 const capabilities = [
   { image: '/landing-icons/mobile-app.svg', label: 'تطبيقات' },
@@ -13,8 +13,8 @@ const proof = ['استشارة أولى مجانية', 'تصميم قبل الب
 export default function HeroBanner() {
   const shouldReduceMotion = useReducedMotion();
 
-  const parent = shouldReduceMotion
-    ? {}
+  const parent: Variants | undefined = shouldReduceMotion
+    ? undefined
     : {
         hidden: {},
         visible: {
@@ -22,8 +22,8 @@ export default function HeroBanner() {
         },
       };
 
-  const item = shouldReduceMotion
-    ? {}
+  const item: Variants | undefined = shouldReduceMotion
+    ? undefined
     : {
         hidden: { opacity: 0, y: 24, filter: 'blur(8px)' },
         visible: {
@@ -34,11 +34,11 @@ export default function HeroBanner() {
         },
       };
 
-  const float = shouldReduceMotion
-    ? {}
+  const float: TargetAndTransition | undefined = shouldReduceMotion
+    ? undefined
     : {
         y: [0, -12, 0],
-        transition: { duration: 5.5, repeat: Infinity, ease: 'easeInOut' },
+        transition: { duration: 5.5, repeat: Infinity, ease: 'easeInOut' as const },
       };
 
   return (

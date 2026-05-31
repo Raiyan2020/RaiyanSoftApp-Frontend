@@ -1,6 +1,6 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import Navbar from '@/components/landing/Navbar';
 import HeroBanner from '@/components/landing/HeroBanner';
 import Services from '@/components/landing/Services';
@@ -58,8 +58,8 @@ export default function LandingPage() {
     }
   };
 
-  const pageVariants = shouldReduceMotion
-    ? {}
+  const pageVariants: Variants | undefined = shouldReduceMotion
+    ? undefined
     : {
         hidden: {},
         visible: {
@@ -70,8 +70,8 @@ export default function LandingPage() {
         },
       };
 
-  const sectionVariants = shouldReduceMotion
-    ? {}
+  const sectionVariants: Variants | undefined = shouldReduceMotion
+    ? undefined
     : {
         hidden: { opacity: 0, y: 18 },
         visible: {
