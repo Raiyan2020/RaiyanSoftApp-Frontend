@@ -6,7 +6,7 @@ import { createPublicMetadata } from '@/lib/site';
 
 export const metadata: Metadata = createPublicMetadata({
   title: 'الأعمال',
-  description: 'نماذج من أعمال ودراسات حالة رايان سوفت.',
+  description: 'نماذج من أعمال ودراسات حالة ريان سوفت.',
   path: '/portfolio',
 });
 

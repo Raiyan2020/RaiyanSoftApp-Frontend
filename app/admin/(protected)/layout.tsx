@@ -2,35 +2,24 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
 import { useRouter } from 'next/navigation';
-import { auth, db } from '@/lib/firebase-client';
-import { onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { authService } from '@/lib/auth-service';
 
 export default function AdminProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
+    const unsubscribe = authService.subscribe(({ admin }) => {
+      if (!admin) {
         router.replace('/admin/login');
         return;
       }
-
-      try {
-        const adminDoc = await getDoc(doc(db, 'admins', user.uid));
-        if (adminDoc.exists() && adminDoc.data().status === 'Active') {
-          setIsChecking(false);
-        } else {
-          router.replace('/home');
-        }
-      } catch (e) {
-        router.replace('/home');
-      }
+      setIsChecking(false);
     });
 
     return () => unsubscribe();
   }, [router]);
+
 
   if (isChecking) {
     return (

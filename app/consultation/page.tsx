@@ -7,7 +7,7 @@ import { createPublicMetadata } from '@/lib/site';
 
 export const metadata: Metadata = createPublicMetadata({
   title: 'حجز استشارة',
-  description: 'ابدأ حجز استشارة أولية مع رايان سوفت عبر مسار الحجز المتاح.',
+  description: 'ابدأ حجز استشارة أولية مع ريان سوفت عبر مسار الحجز المتاح.',
   path: '/consultation',
 });
 

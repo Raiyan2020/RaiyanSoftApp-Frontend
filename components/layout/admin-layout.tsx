@@ -28,13 +28,14 @@ import {
   FileText,
   Settings,
 } from 'lucide-react';
-import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
-import { collection, doc, getDoc, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase-client';
+import { authService } from '@/lib/auth-service';
+import { collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
+import { db } from '@/lib/firebase-client';
 import { useAdminChatNotifications } from '@/lib/adminChatStore';
 import { hasPermission } from '@/lib/permissions';
 import SafeImage from '../ui/safe-image';
 import Avatar from '../ui/avatar';
+
 
 interface AdminLayoutProps {
   children: React.ReactNode;
@@ -43,7 +44,7 @@ interface AdminLayoutProps {
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<FirebaseUser | null>(auth.currentUser);
+  const [currentUser, setCurrentUser] = useState<{ displayName: string; email: string } | null>(null);
   const [currentPermissions, setCurrentPermissions] = useState<string[]>(['*']);
   const [upcomingApptsCount, setUpcomingApptsCount] = useState(0);
 
@@ -53,28 +54,15 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const unsubscribeAuth = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      if (user && db) {
-        Promise.all([
-          getDoc(doc(db, 'users', user.uid)).catch(() => null),
-          getDoc(doc(db, 'admins', user.uid)).catch(() => null),
-        ])
-          .then(([userSnap, adminSnap]) => {
-            const userData = userSnap?.data();
-            const adminData = adminSnap?.data();
-            if (userData?.role === 'admin' || adminData?.role === 'super_admin') {
-              setCurrentPermissions(['*']);
-              return;
-            }
-            const adminPermissions = adminData?.permissions
-              ? Object.keys(adminData.permissions).filter((key) => adminData.permissions[key])
-              : [];
-            const userPermissions = Array.isArray(userData?.permissions) ? userData.permissions : [];
-            setCurrentPermissions([...new Set([...adminPermissions, ...userPermissions])]);
-          })
-          .catch(() => setCurrentPermissions([]));
+    const unsubscribeAuth = authService.subscribe(({ admin }) => {
+      if (admin) {
+        setCurrentUser({
+          displayName: admin.name,
+          email: admin.email,
+        });
+        setCurrentPermissions(['*']);
       } else {
+        setCurrentUser(null);
         setCurrentPermissions([]);
       }
     });
@@ -114,12 +102,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const handleLogout = async () => {
     try {
-      await auth.signOut();
+      authService.clearAdminSession();
       router.push('/admin/login');
     } catch (error) {
       console.error('Logout failed', error);
     }
   };
+
 
   const navItems = [
     { id: 'leads', label: 'Leads', icon: Inbox, path: '/admin/leads', badge: 0, permission: 'leads.view' },

@@ -44,3 +44,5 @@ next-env.d.ts
 .rules/
 docs
 migrated_prompt_history
+
+rules/

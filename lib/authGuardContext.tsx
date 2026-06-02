@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { usePathname } from 'next/navigation';
 import AuthRequiredModal from '@/components/ui/auth-required-modal';
 import { guestStore } from './guestStore';
-import { auth } from './firebase-client';
+import { authService } from './auth-service';
 
 interface AuthGuardContextType {
   requireAuth: (callback: () => void) => void;
@@ -17,7 +17,7 @@ export const AuthGuardProvider: React.FC<{ children: ReactNode }> = ({ children 
   const pathname = usePathname();
 
   const requireAuth = (callback: () => void) => {
-    if (auth.currentUser) {
+    if (authService.getUser()) {
       callback();
       return;
     }
@@ -25,6 +25,7 @@ export const AuthGuardProvider: React.FC<{ children: ReactNode }> = ({ children 
     guestStore.setIntendedPath(pathname || '/');
     setIsModalOpen(true);
   };
+
 
   return (
     <AuthGuardContext.Provider value={{ requireAuth }}>

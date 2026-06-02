@@ -7,7 +7,7 @@ import { createPublicMetadata, siteConfig } from '@/lib/site';
 
 export const metadata: Metadata = createPublicMetadata({
   title: 'تواصل معنا',
-  description: 'تواصل مع رايان سوفت لمناقشة مشروعك الرقمي أو طلب استشارة أولى.',
+  description: 'تواصل مع ريان سوفت لمناقشة مشروعك الرقمي أو طلب استشارة أولى.',
   path: '/contact',
 });
 

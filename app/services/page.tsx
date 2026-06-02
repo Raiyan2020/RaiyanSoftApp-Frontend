@@ -10,7 +10,7 @@ import { createPublicMetadata } from '@/lib/site';
 
 export const metadata: Metadata = createPublicMetadata({
   title: 'الخدمات',
-  description: 'خدمات رايان سوفت في تطوير تطبيقات الجوال والمواقع والمتاجر الإلكترونية والهوية وتجربة المستخدم.',
+  description: 'خدمات ريان سوفت في تطوير تطبيقات الجوال والمواقع والمتاجر الإلكترونية والهوية وتجربة المستخدم.',
   path: '/services',
 });
 

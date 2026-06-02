@@ -80,10 +80,10 @@ export default function Navbar({ dark, onToggleDark }: { dark: boolean; onToggle
         <div className="flex h-16 items-center justify-between gap-3 md:h-20">
           <button onClick={() => scrollTo('#home')} className="group flex min-w-0 shrink-0 items-center gap-3">
             <div className="relative h-11 w-11 overflow-hidden rounded-2xl ring-2 ring-primary/20 transition-all duration-300 group-hover:ring-primary">
-              <Image src="/logo.webp" alt="رايان سوفت" fill className="object-cover" priority sizes="44px" />
+              <Image src="/logo.webp" alt="ريان سوفت" fill className="object-cover" priority sizes="44px" />
             </div>
             <span className="hidden truncate font-bold text-lg text-slate-900 transition-colors duration-300 group-hover:text-primary dark:text-white sm:block">
-              رايان سوفت
+              ريان سوفت
             </span>
           </button>
 

@@ -41,10 +41,10 @@ export default function Footer() {
           <div className="space-y-5 lg:col-span-1">
             <div className="flex items-center gap-3">
               <div className="relative h-12 w-12 overflow-hidden rounded-2xl ring-2 ring-primary/30">
-                <Image src="/logo.webp" alt="رايان سوفت" fill className="object-cover" />
+                <Image src="/logo.webp" alt="ريان سوفت" fill className="object-cover" />
               </div>
               <div>
-                <p className="text-lg font-bold text-white">رايان سوفت</p>
+                <p className="text-lg font-bold text-white">ريان سوفت</p>
                 <p className="text-xs text-slate-500">Raiyan Soft</p>
               </div>
             </div>
@@ -68,7 +68,7 @@ export default function Footer() {
 
       <div className="relative border-t border-white/10">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 text-center text-sm text-slate-500 sm:flex-row sm:px-6 lg:px-8">
-          <p>© {new Date().getFullYear()} رايان سوفت. جميع الحقوق محفوظة.</p>
+          <p>© {new Date().getFullYear()} ريان سوفت. جميع الحقوق محفوظة.</p>
           <p>صُمم ليكون سريعاً، واضحاً، وقابلاً للتطوير.</p>
         </div>
       </div>

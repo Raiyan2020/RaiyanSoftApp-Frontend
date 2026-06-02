@@ -4,14 +4,13 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import SafeImage from '@/components/ui/safe-image';
-import { auth } from '@/lib/firebase-client';
-import { onAuthStateChanged } from 'firebase/auth';
+import { authService } from '@/lib/auth-service';
 
 export default function Splash() {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = authService.subscribe(({ user }) => {
       if (user) {
         router.replace('/home');
       } else {
@@ -21,6 +20,7 @@ export default function Splash() {
 
     return () => unsubscribe();
   }, [router]);
+
 
   return (
     <motion.div

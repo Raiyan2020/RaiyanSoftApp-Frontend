@@ -196,6 +196,9 @@ export const translations = {
     
     // Settings
     "settings.language": "Language",
+    "settings.theme": "Appearance",
+    "settings.theme_light": "Light",
+    "settings.theme_dark": "Dark",
     "settings.coming_soon": "Coming soon",
     "settings.more_options": "More settings will be available in future updates.",
 
@@ -456,6 +459,9 @@ export const translations = {
 
     // Settings
     "settings.language": "اللغة",
+    "settings.theme": "المظهر",
+    "settings.theme_light": "فاتح",
+    "settings.theme_dark": "داكن",
     "settings.coming_soon": "قريباً",
     "settings.more_options": "ستتوفر المزيد من الإعدادات في التحديثات القادمة.",
 

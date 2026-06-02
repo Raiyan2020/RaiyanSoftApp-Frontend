@@ -104,7 +104,7 @@ export const blogPosts = [
 export const testimonials = [
   {
     quote: 'تضاف الشهادات الحقيقية بعد اعتمادها من العملاء.',
-    author: 'فريق رايان سوفت',
+    author: 'فريق ريان سوفت',
     role: 'محتوى مؤقت',
     isPlaceholder: true,
   },
@@ -120,7 +120,7 @@ export const partners = [
 
 export const teamMembers = [
   {
-    name: 'فريق رايان سوفت',
+    name: 'فريق ريان سوفت',
     role: 'فريق المنتج والتطوير',
     bio: 'يتم تحديث هذه الصفحة بأسماء الفريق المعتمدة لاحقا.',
     isPlaceholder: true,

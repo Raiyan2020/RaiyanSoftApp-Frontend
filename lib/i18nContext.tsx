@@ -4,6 +4,8 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { usePathname } from 'next/navigation';
 import { translations } from './translations';
 
+import { DirectionProvider } from '@radix-ui/react-direction';
+
 type Language = 'en' | 'ar';
 type TranslationKey = keyof typeof translations.en;
 
@@ -60,10 +62,13 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   return (
     <I18nContext.Provider value={{ language: effectiveLanguage, setLanguage, t, dir }}>
-      {children}
+      <DirectionProvider dir={dir}>
+        {children}
+      </DirectionProvider>
     </I18nContext.Provider>
   );
 };
+
 
 export const useTranslation = () => {
   const context = useContext(I18nContext);

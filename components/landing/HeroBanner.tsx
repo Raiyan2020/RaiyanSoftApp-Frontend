@@ -139,7 +139,7 @@ export default function HeroBanner() {
                   className="grid h-36 w-36 place-items-center rounded-[2.2rem] border border-white/15 bg-white/10 shadow-2xl shadow-primary/25 backdrop-blur-2xl sm:h-44 sm:w-44"
                 >
                   <div className="relative h-24 w-24 overflow-hidden rounded-3xl bg-primary shadow-2xl shadow-primary/45 sm:h-28 sm:w-28">
-                    <Image src="/logo.webp" alt="رايان سوفت" fill className="object-cover" priority />
+                    <Image src="/logo.webp" alt="ريان سوفت" fill className="object-cover" priority />
                   </div>
                 </motion.div>
               </div>

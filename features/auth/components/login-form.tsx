@@ -6,7 +6,7 @@ import ForgotPasswordLink from './forgot-password-link';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { loginSchema, LoginValues } from '../schemas/login.schema';
-import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { Field, FieldLabel, FieldError, PasswordInput } from '@/components/ui/field';
 
 interface LoginFormProps {
   loading: boolean;
@@ -68,23 +68,13 @@ export default function LoginForm({
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>{t('auth.password')}</FieldLabel>
-              <div className="relative">
-                <div className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none flex items-center justify-center">
-                  <Lock size={18} />
-                </div>
-                <input
-                  {...field}
-                  type="password"
-                  aria-invalid={fieldState.invalid}
-                  className={`w-full bg-slate-800 rounded-xl ps-10 pe-4 py-3 text-white border focus:outline-none transition-all ${
-                    fieldState.invalid
-                      ? 'border-red-500/50 focus:border-red-500'
-                      : 'border-white/10 focus:border-primary'
-                  }`}
-                  placeholder="••••••"
-                  dir={dir}
-                />
-              </div>
+              <PasswordInput
+                {...field}
+                aria-invalid={fieldState.invalid}
+                icon={<Lock size={18} />}
+                placeholder="••••••"
+                dir={dir}
+              />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
           )}
@@ -94,6 +84,7 @@ export default function LoginForm({
           isLoading={resetLoading}
         />
       </div>
+
 
       <Button
         type="submit"

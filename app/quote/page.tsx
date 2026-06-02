@@ -7,7 +7,7 @@ import { createPublicMetadata } from '@/lib/site';
 
 export const metadata: Metadata = createPublicMetadata({
   title: 'طلب عرض سعر',
-  description: 'اطلب عرض سعر لمشروع تطبيق أو موقع أو متجر إلكتروني مع رايان سوفت.',
+  description: 'اطلب عرض سعر لمشروع تطبيق أو موقع أو متجر إلكتروني مع ريان سوفت.',
   path: '/quote',
 });
 

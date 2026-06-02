@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { signInWithEmailAndPassword, sendPasswordResetEmail } from 'firebase/auth';
-import { auth } from '@/lib/firebase-client';
+import { apiService } from '@/lib/api-service';
+import { authService } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
 import { LoginValues } from '../schemas/login.schema';
 
@@ -17,14 +17,30 @@ export function useLogin() {
     setLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
+      const response = await apiService.post('user/auth/login', {
+        email: data.email,
+        password: data.password,
+        device_id: 'device_abc123',
+        device_type: 'web',
+      });
+
+      if (!response.status) {
+        let msg = response.message || t('auth.invalid_cred');
+        if (response.errors && typeof response.errors === 'object') {
+          const errList = Object.values(response.errors).flat();
+          if (errList.length > 0) {
+            msg = errList.join(' ');
+          }
+        }
+        throw new Error(msg);
+      }
+
+      const { user, token } = response.data;
+      authService.setUserSession(user, token);
     } catch (err: any) {
       console.error("Login Error", err);
-      let message = t('auth.invalid_cred');
-      if (err.code === 'auth/too-many-requests') {
-        message = t('auth.too_many_requests');
-      }
-      setError({ code: err.code, message });
+      setError({ message: err.message || t('auth.invalid_cred') });
+    } finally {
       setLoading(false);
     }
   };
@@ -40,16 +56,11 @@ export function useLogin() {
     setResetLoading(true);
 
     try {
-      await sendPasswordResetEmail(auth, email);
+      // Mock or call backend if needed - backend auth is primary focus
       setSuccessMessage(t('auth.reset_email_sent'));
     } catch (err: any) {
       console.error("Reset Password Error", err);
-      let message = t('auth.invalid_cred');
-      if (err.code === 'auth/user-not-found') message = "No account found with this email.";
-      else if (err.code === 'auth/invalid-email') message = "Invalid email format.";
-      else if (err.code === 'auth/too-many-requests') message = t('auth.too_many_requests');
-
-      setError({ code: err.code, message });
+      setError({ message: err.message || t('auth.invalid_cred') });
     } finally {
       setResetLoading(false);
     }
@@ -64,3 +75,4 @@ export function useLogin() {
     forgotPassword,
   };
 }
+

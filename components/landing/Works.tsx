@@ -5,7 +5,7 @@ import Image from 'next/image';
 const works = [
   {
     id: 1,
-    title: 'تطبيق رايان الصحي',
+    title: 'تطبيق ريان الصحي',
     category: 'تطبيق جوال',
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=600&q=80',
     desc: 'تجربة حجز ومتابعة صحية بواجهة عربية بسيطة وتنبيهات ذكية.',
