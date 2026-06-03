@@ -36,8 +36,8 @@ export default function AdminLeadsPage() {
     <div className="space-y-8 pb-20">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold text-white">Leads</h1>
-          <p className="text-slate-400 text-sm">Manage incoming project requests.</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">Leads</h1>
+          <p className="text-[var(--text-muted)] text-sm">Manage incoming project requests.</p>
         </div>
       </div>
 

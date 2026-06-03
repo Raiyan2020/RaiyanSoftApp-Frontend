@@ -31,7 +31,7 @@ export default function PasswordField({
       <button
         type="button"
         onClick={() => setShowPassword(!showPassword)}
-        className="absolute end-3 top-[34px] text-slate-500 hover:text-white transition-colors p-1"
+        className="absolute end-3 top-[34px] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors p-1"
         aria-label={showPassword ? 'Hide password' : 'Show password'}
       >
         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

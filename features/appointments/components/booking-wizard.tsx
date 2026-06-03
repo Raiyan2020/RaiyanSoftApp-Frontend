@@ -39,21 +39,22 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
   today.setHours(0, 0, 0, 0);
 
   return (
-    <div className="fixed inset-0 z-[60] bg-[#020617] flex flex-col">
-      <div className="flex items-center justify-between p-4 border-b border-white/5 bg-slate-900/50 backdrop-blur-md shrink-0">
-        <button type="button" onClick={onClose} className="p-2 -ms-2 text-slate-400 hover:text-white">
+    <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-0 sm:p-6">
+      <div className="w-full h-full sm:h-[min(90dvh,52rem)] sm:max-w-5xl bg-[var(--surface)] text-[var(--text)] flex flex-col sm:rounded-3xl border border-[var(--border)] shadow-2xl overflow-hidden">
+      <div className="flex items-center justify-between p-4 border-b border-[var(--border)] bg-[var(--surface)] backdrop-blur-md shrink-0">
+        <button type="button" onClick={onClose} className="p-2 -ms-2 text-[var(--text-muted)] hover:text-[var(--text)]">
           <X size={24} />
         </button>
-        <h2 className="text-white font-bold text-lg">{t('appt.book_btn')}</h2>
+        <h2 className="text-[var(--text)] font-bold text-lg">{t('appt.book_btn')}</h2>
         <div className="w-8" />
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 pb-32">
+      <div className="flex-1 overflow-y-auto p-4 sm:p-6">
         <div className="flex justify-center gap-2 mb-8 shrink-0">
           {[1, 2].map((i) => (
             <div
               key={i}
-              className={`h-1.5 w-8 rounded-full transition-colors ${step >= i ? 'bg-primary' : 'bg-slate-800'}`}
+              className={`h-1.5 w-8 rounded-full transition-colors ${step >= i ? 'bg-primary' : 'bg-[var(--surface-2)]'}`}
             />
           ))}
         </div>
@@ -76,15 +77,15 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                 <button
                   type="button"
                   onClick={handlePrevMonth}
-                  className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors border border-white/5"
+                  className="p-2 bg-[var(--surface-2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] transition-colors border border-[var(--border)]"
                 >
                   <ChevronLeft size={20} className={dir === 'rtl' ? 'rotate-180' : ''} />
                 </button>
-                <h3 className="text-lg font-bold text-white uppercase tracking-wide">{monthLabel}</h3>
+                <h3 className="text-lg font-bold text-[var(--text)] uppercase tracking-wide">{monthLabel}</h3>
                 <button
                   type="button"
                   onClick={handleNextMonth}
-                  className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-colors border border-white/5"
+                  className="p-2 bg-[var(--surface-2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] transition-colors border border-[var(--border)]"
                 >
                   <ChevronRight size={20} className={dir === 'rtl' ? 'rotate-180' : ''} />
                 </button>
@@ -92,7 +93,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
 
               <div className="grid grid-cols-5 gap-2 mb-2">
                 {weekDays.map((day) => (
-                  <div key={day} className="text-center text-xs font-bold text-slate-500 uppercase py-2">
+                  <div key={day} className="text-center text-xs font-bold text-[var(--text-muted)] uppercase py-2">
                     {day}
                   </div>
                 ))}
@@ -122,12 +123,12 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                           disabled={!isClickable}
                           className={`h-9 rounded-xl flex flex-col items-center justify-center border transition-all relative overflow-hidden ${
                             !isCurrentMonth
-                              ? 'border-transparent text-slate-700 opacity-30 cursor-default'
+                              ? 'border-transparent text-[var(--text-muted)] opacity-30 cursor-default'
                               : isSelected
                               ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
                               : isClickable
-                              ? 'bg-slate-800 text-slate-300 border-white/5 hover:bg-slate-700'
-                              : 'bg-slate-900/50 text-slate-600 border-transparent cursor-not-allowed'
+                              ? 'bg-[var(--surface-3)] text-[var(--text)] border-[var(--border)] hover:bg-[var(--surface-3)]'
+                              : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-transparent cursor-not-allowed'
                           }`}
                         >
                           <span className={`text-sm font-bold ${isToday && !isSelected ? 'text-primary' : ''}`}>
@@ -151,9 +152,9 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                   exit={{ opacity: 0, height: 0 }}
                   className="space-y-4"
                 >
-                  <div className="border-t border-white/5 pt-6">
-                    <h3 className="text-xl font-bold text-white mb-2">{t('appt.step_time')}</h3>
-                    <p className="text-slate-400 text-sm mb-4">
+                  <div className="border-t border-[var(--border)] pt-6">
+                    <h3 className="text-xl font-bold text-[var(--text)] mb-2">{t('appt.step_time')}</h3>
+                    <p className="text-[var(--text-muted)] text-sm mb-4">
                       {selectedDate.toLocaleDateString(dir === 'rtl' ? 'ar-KW' : 'en-US', {
                         weekday: 'long',
                         month: 'long',
@@ -166,7 +167,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                         <Loader2 className="animate-spin text-primary" size={24} />
                       </div>
                     ) : availableSlots.length === 0 ? (
-                      <div className="text-center py-8 text-slate-500 bg-slate-800/30 rounded-xl border border-white/5">
+                      <div className="text-center py-8 text-[var(--text-muted)] bg-[var(--surface-3)] rounded-xl border border-[var(--border)]">
                         <Clock size={24} className="mx-auto mb-2 opacity-50" />
                         <p className="text-sm">No slots available on this date.</p>
                       </div>
@@ -180,7 +181,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                             className={`py-3 rounded-xl border font-medium text-sm transition-all ${
                               selectedTime === time
                                 ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
-                                : 'bg-slate-800 text-slate-300 border-white/10 hover:bg-slate-700'
+                                : 'bg-[var(--surface-3)] text-[var(--text)] border-[var(--border)] hover:bg-[var(--surface-3)]'
                             }`}
                           >
                             {time}
@@ -197,7 +198,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
 
         {step === 2 ? (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
-            <h3 className="text-xl font-bold text-white mb-2">{t('appt.step_details')}</h3>
+            <h3 className="text-xl font-bold text-[var(--text)] mb-2">{t('appt.step_details')}</h3>
 
             <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center justify-between">
               <div>
@@ -208,38 +209,38 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                     month: 'short',
                   })}
                 </p>
-                <p className="text-white text-lg font-bold">{selectedTime}</p>
+                <p className="text-[var(--text)] text-lg font-bold">{selectedTime}</p>
               </div>
-              <button type="button" onClick={() => setStep(1)} className="text-xs text-slate-400 underline hover:text-white">
+              <button type="button" onClick={() => setStep(1)} className="text-xs text-[var(--text-muted)] underline hover:text-[var(--text)]">
                 Change
               </button>
             </div>
 
             {!currentUser ? (
-              <div className="space-y-4 p-4 bg-slate-800/30 rounded-xl border border-white/5">
+              <div className="space-y-4 p-4 bg-[var(--surface-3)] rounded-xl border border-[var(--border)]">
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-400">{t('appt.guest_name')}</label>
+                  <label className="text-xs text-[var(--text-muted)]">{t('appt.guest_name')}</label>
                   <input
                     type="text"
-                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-primary focus:outline-none"
+                    className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-[var(--text)] focus:border-primary focus:outline-none"
                     value={formData.guestName}
                     onChange={(e) => setFormData({ ...formData, guestName: e.target.value })}
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-400">{t('appt.guest_email')}</label>
+                  <label className="text-xs text-[var(--text-muted)]">{t('appt.guest_email')}</label>
                   <input
                     type="email"
-                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-primary focus:outline-none"
+                    className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-[var(--text)] focus:border-primary focus:outline-none"
                     value={formData.guestEmail}
                     onChange={(e) => setFormData({ ...formData, guestEmail: e.target.value })}
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-xs text-slate-400">{t('appt.guest_phone')}</label>
+                  <label className="text-xs text-[var(--text-muted)]">{t('appt.guest_phone')}</label>
                   <input
                     type="tel"
-                    className="w-full bg-slate-900 border border-white/10 rounded-lg px-3 py-2 text-white focus:border-primary focus:outline-none"
+                    className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-lg px-3 py-2 text-[var(--text)] focus:border-primary focus:outline-none"
                     value={formData.guestPhone}
                     onChange={(e) => setFormData({ ...formData, guestPhone: e.target.value })}
                   />
@@ -248,10 +249,10 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
             ) : null}
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-400">{t('appt.topic_label')}</label>
+              <label className="text-xs text-[var(--text-muted)]">{t('appt.topic_label')}</label>
               <input
                 type="text"
-                className="w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none"
+                className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none"
                 placeholder="e.g. Project Consultation"
                 value={formData.topic}
                 onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
@@ -259,13 +260,13 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
             </div>
 
             <div className="space-y-2">
-              <label className="text-xs text-slate-400">Meeting Type</label>
+              <label className="text-xs text-[var(--text-muted)]">Meeting Type</label>
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, meetingType: 'online' })}
                   className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
-                    formData.meetingType === 'online' ? 'bg-primary/20 border-primary text-white' : 'bg-slate-800 border-white/10 text-slate-400'
+                    formData.meetingType === 'online' ? 'bg-primary/20 border-primary text-primary' : 'bg-[var(--surface-3)] border-[var(--border)] text-[var(--text-muted)]'
                   }`}
                 >
                   <Video size={20} />
@@ -275,7 +276,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                   type="button"
                   onClick={() => setFormData({ ...formData, meetingType: 'in_person' })}
                   className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
-                    formData.meetingType === 'in_person' ? 'bg-primary/20 border-primary text-white' : 'bg-slate-800 border-white/10 text-slate-400'
+                    formData.meetingType === 'in_person' ? 'bg-primary/20 border-primary text-primary' : 'bg-[var(--surface-3)] border-[var(--border)] text-[var(--text-muted)]'
                   }`}
                 >
                   <MapPin size={20} />
@@ -285,9 +286,9 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
             </div>
 
             <div className="space-y-1">
-              <label className="text-xs text-slate-400">{t('appt.notes_label')}</label>
+              <label className="text-xs text-[var(--text-muted)]">{t('appt.notes_label')}</label>
               <textarea
-                className="w-full h-24 bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none resize-none"
+                className="w-full h-24 bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none resize-none"
                 value={formData.notes}
                 onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
               />
@@ -300,8 +301,8 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
             <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/30">
               <CheckCircle size={48} />
             </div>
-            <h2 className="text-2xl font-bold text-white">{t('appt.booking_success')}</h2>
-            <button type="button" onClick={onClose} className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-3 rounded-xl font-bold transition-colors">
+            <h2 className="text-2xl font-bold text-[var(--text)]">{t('appt.booking_success')}</h2>
+            <button type="button" onClick={onClose} className="bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] px-8 py-3 rounded-xl font-bold transition-colors">
               Done
             </button>
           </motion.div>
@@ -309,13 +310,13 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
       </div>
 
       {step < 3 ? (
-        <div className="p-6 border-t border-white/5 bg-[#0f172a] flex justify-between gap-4">
+        <div className="p-4 sm:p-6 border-t border-[var(--border)] bg-[var(--surface)] flex justify-between gap-4">
           <button
             type="button"
             onClick={() => setStep(step - 1)}
             disabled={step === 1}
-            className={`px-6 py-3 rounded-xl font-bold text-slate-400 transition-colors ${
-              step === 1 ? 'opacity-0 pointer-events-none' : 'hover:text-white'
+            className={`px-6 py-3 rounded-xl font-bold text-[var(--text-muted)] transition-colors ${
+              step === 1 ? 'opacity-0 pointer-events-none' : 'hover:text-[var(--text)]'
             }`}
           >
             {t('auth.back')}
@@ -335,6 +336,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
           </button>
         </div>
       ) : null}
+      </div>
     </div>
   );
 }

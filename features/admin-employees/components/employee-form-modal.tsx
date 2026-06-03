@@ -57,11 +57,11 @@ export default function EmployeeFormModal({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-[#0f172a] w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface)] w-full max-w-lg rounded-2xl border border-[var(--border)] shadow-2xl flex flex-col max-h-[90vh]"
       >
-        <div className="p-5 border-b border-white/10 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">{editingAdmin ? 'Edit Admin' : 'Add Admin'}</h2>
-          <button type="button" onClick={onClose} className="text-slate-400 hover:text-white">
+        <div className="p-5 border-b border-[var(--border)] flex justify-between items-center">
+          <h2 className="text-xl font-bold text-[var(--text)]">{editingAdmin ? 'Edit Admin' : 'Add Admin'}</h2>
+          <button type="button" onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text)]">
             <X size={20} />
           </button>
         </div>
@@ -71,20 +71,20 @@ export default function EmployeeFormModal({
             <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/20">
               <CheckCircle size={32} />
             </div>
-            <h3 className="text-xl font-bold text-white mb-2">Admin Created!</h3>
-            <p className="text-slate-400 text-sm mb-6">
+            <h3 className="text-xl font-bold text-[var(--text)] mb-2">Admin Created!</h3>
+            <p className="text-[var(--text-muted)] text-sm mb-6">
               The account is ready. Please copy the password below.
             </p>
 
-            <div className="w-full bg-slate-900 border border-white/10 rounded-xl p-4 flex items-center justify-between mb-6">
-              <span className="font-mono text-white text-lg">{createdPassword}</span>
+            <div className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between mb-6">
+              <span className="font-mono text-[var(--text)] text-lg">{createdPassword}</span>
               <button
                 type="button"
                 onClick={() => {
                   navigator.clipboard.writeText(createdPassword);
                   alert('Copied!');
                 }}
-                className="p-2 hover:bg-white/10 rounded-lg text-slate-400 hover:text-white transition-colors"
+                className="p-2 hover:bg-white/10 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
               >
                 <Copy size={20} />
               </button>
@@ -113,7 +113,7 @@ export default function EmployeeFormModal({
                           {...field}
                           type="text"
                           aria-invalid={fieldState.invalid}
-                          className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none ${
+                          className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
                             fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                           }`}
                         />
@@ -133,7 +133,7 @@ export default function EmployeeFormModal({
                           {...field}
                           type="text"
                           aria-invalid={fieldState.invalid}
-                          className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none ${
+                          className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
                             fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                           }`}
                         />
@@ -155,7 +155,7 @@ export default function EmployeeFormModal({
                         {...field}
                         type="email"
                         aria-invalid={fieldState.invalid}
-                        className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none ${
+                        className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
                           fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                         }`}
                       />
@@ -177,7 +177,7 @@ export default function EmployeeFormModal({
                         type="tel"
                         dir="ltr"
                         aria-invalid={fieldState.invalid}
-                        className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none ${
+                        className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
                           fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                         }`}
                       />
@@ -197,12 +197,12 @@ export default function EmployeeFormModal({
                         <FieldLabel>Password <span className="text-red-400">*</span></FieldLabel>
                         <div className="flex gap-2">
                           <div className="relative flex-1">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={16} />
                             <input
                               {...field}
                               type="text"
                               aria-invalid={fieldState.invalid}
-                              className={`w-full bg-slate-900 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:border-primary focus:outline-none font-mono ${
+                              className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none font-mono ${
                                 fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                               }`}
                               placeholder="Min 8 characters"
@@ -211,7 +211,7 @@ export default function EmployeeFormModal({
                           <button
                             type="button"
                             onClick={generatePassword}
-                            className="bg-slate-800 border border-white/10 hover:bg-slate-700 text-white px-3 rounded-xl flex items-center gap-2 transition-colors"
+                            className="bg-[var(--surface-3)] border border-[var(--border)] hover:bg-[var(--surface-3)] text-[var(--text)] px-3 rounded-xl flex items-center gap-2 transition-colors"
                           >
                             <RefreshCw size={16} />
                             <span className="text-xs hidden sm:inline">Generate</span>
@@ -235,7 +235,7 @@ export default function EmployeeFormModal({
                         <select
                           {...field}
                           aria-invalid={fieldState.invalid}
-                          className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none appearance-none ${
+                          className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none appearance-none ${
                             fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                           }`}
                         >
@@ -263,7 +263,7 @@ export default function EmployeeFormModal({
                         <select
                           {...field}
                           aria-invalid={fieldState.invalid}
-                          className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none appearance-none ${
+                          className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none appearance-none ${
                             fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                           }`}
                         >
@@ -280,11 +280,11 @@ export default function EmployeeFormModal({
               </form>
             </div>
 
-            <div className="p-5 border-t border-white/10 flex justify-end gap-3">
+            <div className="p-5 border-t border-[var(--border)] flex justify-end gap-3">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-5 py-2.5 rounded-xl text-slate-400 hover:text-white font-medium text-sm"
+                className="px-5 py-2.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text)] font-medium text-sm"
               >
                 Cancel
               </button>

@@ -29,15 +29,15 @@ export default function PublicBookingPage() {
   } = usePublicBooking();
 
   return (
-    <div className="flex flex-col h-full bg-[#020617] relative overflow-y-auto no-scrollbar pb-24 text-white">
-      <div className="sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md px-4 py-4 border-b border-white/5 flex items-center shadow-lg">
+    <div className="flex flex-col h-full bg-[var(--bg)] relative overflow-y-auto no-scrollbar pb-24 text-[var(--text)]">
+      <div className="sticky top-0 z-20 bg-[var(--surface)] backdrop-blur-md px-4 py-4 border-b border-[var(--border)] flex items-center shadow-lg">
         <h1 className="text-xl font-bold ms-2">Book an Appointment</h1>
       </div>
 
       <div className="p-6 max-w-lg mx-auto w-full">
         <div className="flex justify-center gap-2 mb-8">
           {[1, 2].map((i) => (
-            <div key={i} className={`h-1.5 w-8 rounded-full transition-colors ${step >= i ? 'bg-primary' : 'bg-slate-800'}`} />
+            <div key={i} className={`h-1.5 w-8 rounded-full transition-colors ${step >= i ? 'bg-primary' : 'bg-[var(--surface-3)]'}`} />
           ))}
         </div>
 
@@ -79,7 +79,7 @@ export default function PublicBookingPage() {
       </div>
 
       {step === 1 ? (
-        <div className="p-6 border-t border-white/5 bg-[#0f172a] fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto">
+        <div className="p-6 border-t border-[var(--border)] bg-[var(--surface)] fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto">
           <button
             type="button"
             onClick={() => setStep(2)}

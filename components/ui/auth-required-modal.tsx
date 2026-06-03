@@ -41,14 +41,14 @@ export default function AuthRequiredModal({ isOpen, onClose, redirectTo }: AuthR
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm bg-[#0f172a] border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden text-center"
+            className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 shadow-2xl relative overflow-hidden text-center"
           >
-            <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
+            <div className="w-16 h-16 bg-[var(--surface-2)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border)]">
               <Lock size={32} className="text-primary" />
             </div>
 
-            <h3 className="text-xl font-bold text-white mb-2">{t('auth.login_required_title')}</h3>
-            <p className="text-slate-400 text-sm mb-8 leading-relaxed max-w-[260px] mx-auto">
+            <h3 className="text-xl font-bold text-[var(--text)] mb-2">{t('auth.login_required_title')}</h3>
+            <p className="text-[var(--text-muted)] text-sm mb-8 leading-relaxed max-w-[260px] mx-auto">
               {t('auth.login_required_body')}
             </p>
 
@@ -65,7 +65,7 @@ export default function AuthRequiredModal({ isOpen, onClose, redirectTo }: AuthR
               <button
                 type="button"
                 onClick={() => handleAction('/signup')}
-                className="w-full py-3.5 rounded-xl bg-slate-800 text-white font-medium text-sm border border-white/5 hover:bg-slate-700 transition-colors flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl bg-[var(--surface-2)] text-[var(--text)] font-medium text-sm border border-[var(--border)] hover:opacity-90 transition-colors flex items-center justify-center gap-2"
               >
                 <UserPlus size={18} />
                 {t('auth.signup_action')}
@@ -75,7 +75,7 @@ export default function AuthRequiredModal({ isOpen, onClose, redirectTo }: AuthR
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 rtl:right-auto rtl:left-4 p-2 text-slate-500 hover:text-white transition-colors"
+              className="absolute top-4 right-4 rtl:right-auto rtl:left-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
             >
               <X size={20} />
             </button>

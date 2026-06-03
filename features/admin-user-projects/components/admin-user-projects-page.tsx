@@ -25,13 +25,13 @@ export default function AdminUserProjectsPage() {
   return (
     <div className="space-y-8 pb-20">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-bold text-white flex items-center gap-3">
+        <h1 className="text-2xl font-bold text-[var(--text)] flex items-center gap-3">
           User Projects
-          <span className="text-xs font-normal text-slate-400 bg-slate-800 px-2 py-1 rounded-full border border-white/5">
+          <span className="text-xs font-normal text-[var(--text-muted)] bg-[var(--surface-3)] px-2 py-1 rounded-full border border-[var(--border)]">
             {filteredProjects.length} Total
           </span>
         </h1>
-        <p className="text-slate-400 text-sm">Projects created by customers inside their accounts.</p>
+        <p className="text-[var(--text-muted)] text-sm">Projects created by customers inside their accounts.</p>
       </div>
 
       {error ? (

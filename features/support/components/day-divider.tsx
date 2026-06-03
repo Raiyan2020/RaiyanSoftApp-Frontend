@@ -22,11 +22,11 @@ export default function DayDivider({ date }: DayDividerProps) {
 
   return (
     <div className="flex items-center justify-center my-6 opacity-70">
-      <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent w-full max-w-[100px]" />
-      <span className="mx-3 text-[10px] font-medium text-slate-500 uppercase tracking-widest">
+      <div className="h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent w-full max-w-[100px]" />
+      <span className="mx-3 text-[10px] font-medium text-[var(--text-muted)] uppercase tracking-widest">
         {isToday ? t('chat.today') : dateStr}
       </span>
-      <div className="h-px bg-gradient-to-r from-transparent via-slate-700 to-transparent w-full max-w-[100px]" />
+      <div className="h-px bg-gradient-to-r from-transparent via-[var(--border)] to-transparent w-full max-w-[100px]" />
     </div>
   );
 }

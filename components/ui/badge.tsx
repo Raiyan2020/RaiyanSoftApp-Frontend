@@ -18,7 +18,7 @@ export default function Badge({
     warning: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
     error: 'bg-red-500/10 text-red-400 border-red-500/20',
     info: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-    neutral: 'bg-slate-800 text-slate-300 border-white/10',
+    neutral: 'bg-[var(--surface-2)] text-[var(--text)] border-[var(--border)]',
   };
 
   return (

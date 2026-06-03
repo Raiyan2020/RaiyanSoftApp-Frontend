@@ -21,21 +21,20 @@ const I18nContext = createContext<I18nContextProps | undefined>(undefined);
 export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const pathname = usePathname();
   
-  // Initialize state synchronously from LocalStorage to prevent flash.
-  // Default to 'ar' (Arabic) if no preference is stored.
-  const [language, setLanguageState] = useState<Language>(() => {
+  // Match the server-rendered default first, then apply the saved preference
+  // after mount to avoid hydration mismatches between Arabic and English text.
+  const [language, setLanguageState] = useState<Language>('ar');
+
+  useEffect(() => {
     try {
-      if (typeof window !== 'undefined') {
-        const storedLang = localStorage.getItem('rs_lang') as Language;
-        if (storedLang && (storedLang === 'en' || storedLang === 'ar')) {
-          return storedLang;
-        }
+      const storedLang = localStorage.getItem('rs_lang') as Language;
+      if (storedLang && (storedLang === 'en' || storedLang === 'ar')) {
+        setLanguageState(storedLang);
       }
     } catch (e) {
       // Ignore localStorage errors (e.g. private mode)
     }
-    return 'ar'; // Default to Arabic
-  });
+  }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);

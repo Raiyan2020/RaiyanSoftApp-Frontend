@@ -9,19 +9,19 @@ interface UserProjectCardProps {
 
 export default function UserProjectCard({ project, formatDate }: UserProjectCardProps) {
   return (
-    <div className="bg-slate-800/30 border border-white/5 rounded-2xl p-4 flex flex-col gap-3 group hover:border-white/10 transition-colors">
+    <div className="bg-[var(--surface-3)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-3 group hover:border-[var(--border)] transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           <div
             className={`w-10 h-10 ${
-              project.iconBg || 'bg-slate-700'
-            } rounded-lg flex items-center justify-center text-white border border-white/10`}
+              project.iconBg || 'bg-[var(--surface-3)]'
+            } rounded-lg flex items-center justify-center text-[var(--text)] border border-[var(--border)]`}
           >
             <LayoutGrid size={20} />
           </div>
           <div>
-            <h4 className="font-bold text-white text-sm">{project.name}</h4>
-            <p className="text-slate-400 text-xs">{project.industry || 'General App'}</p>
+            <h4 className="font-bold text-[var(--text)] text-sm">{project.name}</h4>
+            <p className="text-[var(--text-muted)] text-xs">{project.industry || 'General App'}</p>
           </div>
         </div>
         <span
@@ -36,28 +36,28 @@ export default function UserProjectCard({ project, formatDate }: UserProjectCard
       </div>
 
       <div className="grid grid-cols-2 gap-2 mt-1">
-        <div className="bg-slate-900/50 p-2 rounded-lg border border-white/5">
-          <span className="text-[10px] text-slate-500 block uppercase tracking-wide">Platform</span>
-          <span className="text-xs text-white truncate block">{project.platforms?.join(', ') || 'Web & Mobile'}</span>
+        <div className="bg-[var(--surface-2)] p-2 rounded-lg border border-[var(--border)]">
+          <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wide">Platform</span>
+          <span className="text-xs text-[var(--text)] truncate block">{project.platforms?.join(', ') || 'Web & Mobile'}</span>
         </div>
-        <div className="bg-slate-900/50 p-2 rounded-lg border border-white/5">
-          <span className="text-[10px] text-slate-500 block uppercase tracking-wide">Updated</span>
-          <span className="text-xs text-white truncate block">{formatDate(project.updatedAt)}</span>
+        <div className="bg-[var(--surface-2)] p-2 rounded-lg border border-[var(--border)]">
+          <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wide">Updated</span>
+          <span className="text-xs text-[var(--text)] truncate block">{formatDate(project.updatedAt)}</span>
         </div>
       </div>
 
-      <div className="pt-2 border-t border-white/5 flex justify-end">
+      <div className="pt-2 border-t border-[var(--border)] flex justify-end">
         {project.projectUrl ? (
           <a
             href={project.projectUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-medium text-primary hover:text-white flex items-center gap-1 transition-colors"
+            className="text-xs font-medium text-primary hover:text-[var(--text)] flex items-center gap-1 transition-colors"
           >
             Open Project <ExternalLink size={12} />
           </a>
         ) : (
-          <span className="text-xs text-slate-600 cursor-not-allowed">No URL</span>
+          <span className="text-xs text-[var(--text-muted)] cursor-not-allowed">No URL</span>
         )}
       </div>
     </div>

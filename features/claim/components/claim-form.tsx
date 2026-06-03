@@ -34,13 +34,13 @@ export default function ClaimForm({ status, onSubmit, t }: ClaimFormProps) {
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>{t('auth.firstname')}</FieldLabel>
               <div className="relative">
-                <User size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <User size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
                   {...field}
                   type="text"
                   aria-invalid={fieldState.invalid}
-                  className={`w-full bg-slate-800 rounded-xl ps-10 pe-4 py-3 text-white border focus:outline-none transition-all ${
-                    fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-primary'
+                  className={`w-full bg-[var(--surface-3)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] border focus:outline-none transition-all ${
+                    fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
                   }`}
                 />
               </div>
@@ -55,13 +55,13 @@ export default function ClaimForm({ status, onSubmit, t }: ClaimFormProps) {
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>{t('auth.lastname')}</FieldLabel>
               <div className="relative">
-                <User size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <User size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
                   {...field}
                   type="text"
                   aria-invalid={fieldState.invalid}
-                  className={`w-full bg-slate-800 rounded-xl ps-10 pe-4 py-3 text-white border focus:outline-none transition-all ${
-                    fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-primary'
+                  className={`w-full bg-[var(--surface-3)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] border focus:outline-none transition-all ${
+                    fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
                   }`}
                 />
               </div>
@@ -90,14 +90,14 @@ export default function ClaimForm({ status, onSubmit, t }: ClaimFormProps) {
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel>{t('auth.email')}</FieldLabel>
             <div className="relative">
-              <Mail size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <Mail size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 {...field}
                 type="email"
                 dir="ltr"
                 aria-invalid={fieldState.invalid}
-                className={`w-full bg-slate-800 rounded-xl ps-10 pe-4 py-3 text-white border focus:outline-none transition-all ${
-                  fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-primary'
+                className={`w-full bg-[var(--surface-3)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] border focus:outline-none transition-all ${
+                  fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
                 }`}
               />
             </div>
@@ -113,14 +113,14 @@ export default function ClaimForm({ status, onSubmit, t }: ClaimFormProps) {
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel>{t('auth.password')}</FieldLabel>
             <div className="relative">
-              <Lock size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <Lock size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
               <input
                 {...field}
                 type="password"
                 dir="ltr"
                 aria-invalid={fieldState.invalid}
-                className={`w-full bg-slate-800 rounded-xl ps-10 pe-4 py-3 text-white border focus:outline-none transition-all ${
-                  fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-white/10 focus:border-primary'
+                className={`w-full bg-[var(--surface-3)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] border focus:outline-none transition-all ${
+                  fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
                 }`}
               />
             </div>

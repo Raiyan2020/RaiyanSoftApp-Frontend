@@ -40,7 +40,7 @@ export default function AdminChatInput({ inputText, setInputText, onSend }: Admi
   const isInvalid = !form.watch('text')?.trim();
 
   return (
-    <div className="p-4 bg-slate-900 border-t border-white/5">
+    <div className="p-4 bg-[var(--surface-2)] border-t border-[var(--border)]">
       <form onSubmit={form.handleSubmit(handleSubmit)} className="flex gap-2">
         <Controller
           name="text"
@@ -50,7 +50,7 @@ export default function AdminChatInput({ inputText, setInputText, onSend }: Admi
               {...field}
               type="text"
               placeholder="Type a reply..."
-              className="flex-1 bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all"
+              className="flex-1 bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all"
             />
           )}
         />

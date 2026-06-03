@@ -20,19 +20,22 @@ export default function FileManagerPage() {
   } = useFileManager();
 
   return (
-    <div className="flex flex-col h-full bg-[#020617] relative overflow-y-auto no-scrollbar pb-24">
-      <div className="sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md px-4 py-4 border-b border-white/5 flex items-center shadow-lg">
-        <button
-          type="button"
-          onClick={() => router.push('/more')}
-          className="p-2 -ms-2 text-slate-400 hover:text-white transition-colors"
-        >
-          {dir === 'rtl' ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
-        </button>
-        <h1 className="text-lg font-bold text-white ms-2">{t('files.title')}</h1>
-      </div>
+    <div className="app-page app-page-wide">
+      <header className="app-header">
+        <div>
+          <button
+            type="button"
+            onClick={() => router.push('/more')}
+            className="text-[var(--text-muted)] hover:text-[var(--text)] mb-4 flex items-center gap-1"
+          >
+            {dir === 'rtl' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            <span className="text-sm">{t('auth.back')}</span>
+          </button>
+          <h1 className="app-title">{t('files.title')}</h1>
+        </div>
+      </header>
 
-      <div className="p-6">
+      <div className="grid gap-6 lg:grid-cols-[22rem_minmax(0,1fr)]">
         <FileUploadButton
           fileInputRef={fileInputRef}
           isUploading={isUploading}
@@ -41,15 +44,17 @@ export default function FileManagerPage() {
           t={t}
         />
 
-        <FileList
-          files={files}
-          isUploading={isUploading}
-          dir={dir}
-          t={t}
-          isImage={isImage}
-          formatSize={formatSize}
-          onDelete={handleDelete}
-        />
+        <div>
+          <FileList
+            files={files}
+            isUploading={isUploading}
+            dir={dir}
+            t={t}
+            isImage={isImage}
+            formatSize={formatSize}
+            onDelete={handleDelete}
+          />
+        </div>
       </div>
     </div>
   );

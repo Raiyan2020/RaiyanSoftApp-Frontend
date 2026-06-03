@@ -18,11 +18,11 @@ export default function LeadCapturePage() {
 
   if (isCompleted) {
     return (
-      <div className="flex flex-col items-center justify-center h-full min-h-screen bg-[#020617] text-white p-6" dir={dir}>
+      <div className="flex flex-col items-center justify-center h-full min-h-screen bg-[var(--bg)] text-[var(--text)] p-6" dir={dir}>
         <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
-          className="bg-slate-800/50 border border-white/5 rounded-3xl p-8 max-w-sm w-full text-center"
+          className="bg-[var(--surface-3)] border border-[var(--border)] rounded-3xl p-8 max-w-sm w-full text-center"
         >
           <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
             <CheckCircle size={40} className="text-emerald-500" />
@@ -30,7 +30,7 @@ export default function LeadCapturePage() {
           <h1 className="text-2xl font-bold mb-4">
             {language === 'ar' ? 'تم استلام طلبك' : 'Request Received'}
           </h1>
-          <p className="text-slate-400 text-sm leading-relaxed mb-6">
+          <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-6">
             {language === 'ar'
               ? 'شكراً لمشاركتك فكرتك. فريقنا يراجع تفاصيل مشروعك الآن وسيتواصل معك قريباً.'
               : 'Thank you for sharing your vision. Our team is reviewing your project details and will contact you shortly.'}

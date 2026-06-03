@@ -41,7 +41,7 @@ export default function AdminAppointmentsPage() {
   if (!settings) {
     return (
       <div className="flex items-center justify-center h-96">
-        <Loader2 className="animate-spin text-white" />
+        <Loader2 className="animate-spin text-[var(--text)]" />
       </div>
     );
   }
@@ -49,11 +49,11 @@ export default function AdminAppointmentsPage() {
   return (
     <div className="space-y-8 pb-20">
       <div>
-        <h1 className="text-2xl font-bold text-white">Appointments</h1>
-        <p className="text-slate-400 text-sm">Manage availability and view bookings.</p>
+        <h1 className="text-2xl font-bold text-[var(--text)]">Appointments</h1>
+        <p className="text-[var(--text-muted)] text-sm">Manage availability and view bookings.</p>
       </div>
 
-      <div className="flex bg-slate-800/50 p-1 rounded-xl w-fit border border-white/5">
+      <div className="flex bg-[var(--surface-3)] p-1 rounded-xl w-fit border border-[var(--border)]">
         {[
           { id: 'bookings', label: 'Bookings', icon: List },
           { id: 'schedule', label: 'Availability', icon: Calendar },
@@ -64,7 +64,7 @@ export default function AdminAppointmentsPage() {
             key={tab.id}
             onClick={() => setActiveTab(tab.id as any)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-              activeTab === tab.id ? 'bg-primary text-white shadow-lg' : 'text-slate-400 hover:text-white'
+              activeTab === tab.id ? 'bg-primary text-white shadow-lg' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
           >
             <tab.icon size={16} />
@@ -73,7 +73,7 @@ export default function AdminAppointmentsPage() {
         ))}
       </div>
 
-      <div className="bg-[#0f172a] border border-white/5 rounded-2xl shadow-xl min-h-[500px]">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl min-h-[500px]">
         {activeTab === 'bookings' ? (
           <div className="p-6">
             {error ? (

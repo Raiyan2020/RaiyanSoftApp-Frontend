@@ -12,10 +12,10 @@ interface ChatMessageListProps {
 export default function ChatMessageList({ groupedMessages, messagesEndRef, bottomSafeArea }: ChatMessageListProps) {
   return (
     <div
-      className="flex-1 overflow-y-auto w-full px-4 pt-4 no-scrollbar"
+      className="flex-1 overflow-y-auto w-full px-4 sm:px-6 pt-4 no-scrollbar"
       style={{
-        paddingBottom: `calc(var(--composer-h, 60px) + var(--tabbar-h, 80px) + ${bottomSafeArea}px)`,
-        scrollPaddingBottom: `calc(var(--composer-h, 60px) + var(--tabbar-h, 80px) + ${bottomSafeArea}px)`,
+        paddingBottom: `calc(1rem + ${bottomSafeArea}px)`,
+        scrollPaddingBottom: `calc(1rem + ${bottomSafeArea}px)`,
       }}
     >
       {groupedMessages.map((group) => (

@@ -22,7 +22,7 @@ export const FieldLabel = React.forwardRef<HTMLLabelElement, FieldLabelProps>(
   ({ children, className = '', ...props }, ref) => (
     <label
       ref={ref}
-      className={`text-xs text-slate-400 font-medium ms-1 block leading-5 ${className}`}
+      className={`text-xs text-[var(--text-muted)] font-medium ms-1 block leading-5 ${className}`}
       {...props}
     >
       {children}
@@ -64,7 +64,7 @@ export const FieldDescription = React.forwardRef<HTMLParagraphElement, FieldDesc
   ({ children, className = '', ...props }, ref) => (
     <p
       ref={ref}
-      className={`text-xs text-slate-500 ms-1 mt-0.5 ${className}`}
+      className={`text-xs text-[var(--text-muted)] ms-1 mt-0.5 ${className}`}
       {...props}
     >
       {children}
@@ -99,26 +99,26 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
     return (
       <div className="relative">
         {icon ? (
-          <div className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none flex items-center justify-center">
+          <div className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none flex items-center justify-center">
             {icon}
           </div>
         ) : null}
         <input
           ref={ref}
           type={showPassword ? 'text' : 'password'}
-          className={`w-full bg-slate-800 rounded-xl ${
+          className={`w-full app-input rounded-xl ${
             icon ? 'ps-10' : 'px-4'
-          } pe-12 py-3 text-white border focus:outline-none transition-all ${
+          } pe-12 py-3 focus:outline-none transition-all ${
             isInvalid
               ? 'border-red-500/50 focus:border-red-500'
-              : 'border-white/10 focus:border-primary'
+              : 'focus:border-primary'
           } ${className}`}
           {...props}
         />
         <button
           type="button"
           onClick={() => setShowPassword(!showPassword)}
-          className="absolute end-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors p-1"
+          className="absolute end-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors p-1"
           aria-label={showPassword ? 'Hide password' : 'Show password'}
         >
           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}

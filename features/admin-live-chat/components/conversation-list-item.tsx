@@ -19,7 +19,7 @@ export default function ConversationListItem({
     <button
       type="button"
       onClick={() => onSelectConversation(conv.id)}
-      className={`w-full p-4 flex items-start gap-3 border-b border-white/5 transition-colors text-left group relative ${
+      className={`w-full p-4 flex items-start gap-3 border-b border-[var(--border)] transition-colors text-left group relative ${
         selectedId === conv.id
           ? 'bg-primary/10 border-l-4 border-l-primary'
           : 'hover:bg-white/5 border-l-4 border-l-transparent'
@@ -36,19 +36,19 @@ export default function ConversationListItem({
         <div className="flex justify-between items-baseline mb-1">
           <h3
             className={`text-sm font-bold truncate ${
-              selectedId === conv.id ? 'text-white' : 'text-slate-300'
-            } ${conv.unreadForAdmin > 0 && selectedId !== conv.id ? 'text-white' : ''}`}
+              selectedId === conv.id ? 'text-[var(--text)]' : 'text-[var(--text)]'
+            } ${conv.unreadForAdmin > 0 && selectedId !== conv.id ? 'text-[var(--text)]' : ''}`}
           >
             {conv.customerName}
           </h3>
-          <span className="text-[10px] text-slate-500 shrink-0 ml-2">{formatTime(conv.lastMessageAt)}</span>
+          <span className="text-[10px] text-[var(--text-muted)] shrink-0 ml-2">{formatTime(conv.lastMessageAt)}</span>
         </div>
         <div className="flex justify-between items-center">
           <p
             className={`text-xs truncate max-w-[85%] ${
               conv.unreadForAdmin > 0 && selectedId !== conv.id
-                ? 'text-white font-medium'
-                : 'text-slate-400 opacity-80'
+                ? 'text-[var(--text)] font-medium'
+                : 'text-[var(--text-muted)] opacity-80'
             }`}
           >
             {conv.lastMessageText}

@@ -16,7 +16,7 @@ export default function WizardYesNo({ title, selected, t, onSelect }: WizardYesN
 
   return (
     <div className="flex flex-col h-full p-6 pt-10">
-      <h2 className="text-2xl font-bold text-white mb-6">{title}</h2>
+      <h2 className="text-2xl font-bold text-[var(--text)] mb-6">{title}</h2>
       <div className="space-y-3">
         {options.map((opt) => {
           const isSelected = selected === opt.value;
@@ -27,8 +27,8 @@ export default function WizardYesNo({ title, selected, t, onSelect }: WizardYesN
               onClick={() => onSelect(opt.value)}
               className={`w-full p-4 rounded-xl border flex items-center justify-between transition-all ${
                 isSelected
-                  ? 'bg-primary/10 border-primary text-white'
-                  : 'bg-slate-800/50 border-white/10 text-slate-400 hover:bg-slate-800'
+                  ? 'bg-primary/10 border-primary text-primary'
+                  : 'bg-[var(--surface-3)] border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]'
               }`}
             >
               <span className="font-medium text-lg">{opt.label}</span>

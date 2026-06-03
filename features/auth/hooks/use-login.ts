@@ -1,10 +1,12 @@
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { apiService } from '@/lib/api-service';
 import { authService } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
 import { LoginValues } from '../schemas/login.schema';
 
 export function useLogin() {
+  const router = useRouter();
   const { t } = useTranslation();
   const [error, setError] = useState<{ code?: string; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,6 +39,7 @@ export function useLogin() {
 
       const { user, token } = response.data;
       authService.setUserSession(user, token);
+      router.push('/home');
     } catch (err: any) {
       console.error("Login Error", err);
       setError({ message: err.message || t('auth.invalid_cred') });

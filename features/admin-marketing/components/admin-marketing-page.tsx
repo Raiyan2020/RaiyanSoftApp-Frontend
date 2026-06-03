@@ -28,8 +28,8 @@ export default function AdminMarketingPage() {
   return (
     <div className="space-y-8 pb-20">
       <div>
-        <h1 className="text-2xl font-bold text-white">Send Marketing Notifications</h1>
-        <p className="text-slate-400 text-sm">Create and send promotional messages to users.</p>
+        <h1 className="text-2xl font-bold text-[var(--text)]">Send Marketing Notifications</h1>
+        <p className="text-[var(--text-muted)] text-sm">Create and send promotional messages to users.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

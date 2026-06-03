@@ -29,8 +29,8 @@ export default function AdminProjectsPage() {
       <div>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-white">Client Projects</h1>
-            <p className="text-slate-400 text-sm">
+            <h1 className="text-2xl font-bold text-[var(--text)]">Client Projects</h1>
+            <p className="text-[var(--text-muted)] text-sm">
               Manage the projects displayed on the mobile app home screen.
             </p>
           </div>
@@ -45,13 +45,13 @@ export default function AdminProjectsPage() {
         </div>
 
         <div className="relative mb-6">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search projects..."
-            className="w-full md:max-w-md bg-[#0f172a] border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-primary transition-colors"
+            className="w-full md:max-w-md bg-[var(--surface)] border border-[var(--border)] rounded-xl py-2.5 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
           />
         </div>
 
@@ -69,8 +69,8 @@ export default function AdminProjectsPage() {
         </div>
 
         {filteredProjects.length === 0 ? (
-          <div className="text-center py-20 text-slate-500">
-            <div className="w-16 h-16 bg-[#0f172a] rounded-full flex items-center justify-center mx-auto mb-4 border border-white/5">
+          <div className="text-center py-20 text-[var(--text-muted)]">
+            <div className="w-16 h-16 bg-[var(--surface)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border)]">
               <Search size={24} />
             </div>
             <p>No projects found matching your search.</p>

@@ -40,13 +40,13 @@ export default function WizardShell({
   children,
 }: WizardShellProps) {
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-start md:items-center bg-[#020617] md:bg-black/60 md:backdrop-blur-sm" dir={dir}>
-      <div className="w-full max-w-[430px] h-full bg-[#020617] flex flex-col relative shadow-2xl overflow-hidden md:border md:border-white/5">
-        <div className="px-6 py-4 flex items-center justify-between border-b border-white/5 bg-[#0f172a]">
+    <div className="fixed inset-0 z-50 flex justify-center items-start md:items-center bg-black/60 backdrop-blur-sm p-0 md:p-6" dir={dir}>
+      <div className="w-full h-full md:h-[min(92dvh,54rem)] md:max-w-5xl bg-[var(--surface)] text-[var(--text)] flex flex-col relative shadow-2xl overflow-hidden md:rounded-3xl border border-[var(--border)]">
+        <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]">
           <button
             type="button"
             onClick={step === 0 ? onClose : onPrev}
-            className="p-2 -ms-2 text-slate-400 hover:text-white transition-colors"
+            className="p-2 -ms-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
           >
             {step === 0 ? <X size={24} /> : dir === 'rtl' ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
           </button>
@@ -55,7 +55,7 @@ export default function WizardShell({
               <div
                 key={i}
                 className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === step ? 'w-6 bg-primary' : i < step ? 'w-1.5 bg-primary/50' : 'w-1.5 bg-slate-800'
+                  i === step ? 'w-6 bg-primary' : i < step ? 'w-1.5 bg-primary/50' : 'w-1.5 bg-[var(--surface-2)]'
                 }`}
               />
             ))}
@@ -65,7 +65,7 @@ export default function WizardShell({
               <button
                 type="button"
                 onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-                className="text-xs font-bold text-primary hover:text-white transition-colors border border-primary/30 rounded-lg px-3 py-1.5 bg-primary/10"
+                className="text-xs font-bold text-primary hover:text-[var(--text)] transition-colors border border-primary/30 rounded-lg px-3 py-1.5 bg-primary/10"
               >
                 {language === 'en' ? 'عربي' : 'English'}
               </button>
@@ -79,7 +79,7 @@ export default function WizardShell({
 
         {step !== 0 ? (
           <div
-            className={`p-6 pb-28 border-t border-white/5 bg-[#0f172a] z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.2)] transition-all duration-300 ${
+            className={`p-6 border-t border-[var(--border)] bg-[var(--surface)] z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.08)] transition-all duration-300 ${
               nextButtonHidden ? 'opacity-0 pointer-events-none absolute bottom-0 w-full' : 'opacity-100'
             }`}
           >

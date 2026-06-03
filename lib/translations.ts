@@ -261,7 +261,35 @@ export const translations = {
     "appt.limit_error": "You already have an active appointment.",
     "appt.status_scheduled": "Scheduled",
     "appt.status_cancelled": "Cancelled",
-    "appt.status_completed": "Completed"
+    "appt.status_completed": "Completed",
+
+    // Landing Navbar
+    "landing.nav.home": "Home",
+    "landing.nav.services": "Our Services",
+    "landing.nav.sectors": "Sectors",
+    "landing.nav.works": "Our Works",
+    "landing.nav.packages": "Offers",
+    "landing.nav.faq": "FAQ",
+    "landing.nav.about": "About Us",
+    "landing.nav.portfolio": "Works",
+    "landing.nav.blog": "Blog",
+    "landing.nav.pricing": "Pricing",
+    "landing.nav.consultation": "Consultation",
+    "landing.nav.contact": "Contact Us",
+    "landing.nav.team": "Team",
+    "landing.nav.partners": "Partners",
+    "landing.nav.careers": "Careers",
+    "landing.nav.privacy": "Privacy Policy",
+    "landing.nav.terms": "Terms of Use",
+    "landing.nav.brand": "Raiyansoft",
+    "landing.nav.pages": "Pages",
+    "landing.nav.sections_title": "Page Sections",
+    "landing.nav.pages_title": "Site Pages",
+    "landing.nav.quote": "Get a Quote",
+    "landing.nav.book_consultation": "Book Consultation",
+    "landing.nav.dashboard": "Dashboard",
+    "landing.nav.toggle_dark": "Toggle Dark Mode",
+    "landing.nav.menu": "Menu"
   },
   ar: {
     // Auth
@@ -524,6 +552,34 @@ export const translations = {
     "appt.limit_error": "لديك موعد نشط بالفعل.",
     "appt.status_scheduled": "مجدول",
     "appt.status_cancelled": "ملغي",
-    "appt.status_completed": "مكتمل"
+    "appt.status_completed": "مكتمل",
+
+    // Landing Navbar
+    "landing.nav.home": "الرئيسية",
+    "landing.nav.services": "خدماتنا",
+    "landing.nav.sectors": "القطاعات",
+    "landing.nav.works": "أعمالنا",
+    "landing.nav.packages": "العروض",
+    "landing.nav.faq": "الأسئلة",
+    "landing.nav.about": "من نحن",
+    "landing.nav.portfolio": "الأعمال",
+    "landing.nav.blog": "المدونة",
+    "landing.nav.pricing": "الأسعار",
+    "landing.nav.consultation": "استشارة",
+    "landing.nav.contact": "تواصل معنا",
+    "landing.nav.team": "الفريق",
+    "landing.nav.partners": "الشركاء",
+    "landing.nav.careers": "الوظائف",
+    "landing.nav.privacy": "الخصوصية",
+    "landing.nav.terms": "الشروط",
+    "landing.nav.brand": "ريان سوفت",
+    "landing.nav.pages": "الصفحات",
+    "landing.nav.sections_title": "أقسام الصفحة",
+    "landing.nav.pages_title": "صفحات الموقع",
+    "landing.nav.quote": "اطلب عرض سعر",
+    "landing.nav.book_consultation": "احجز استشارة",
+    "landing.nav.dashboard": "لوحة التحكم",
+    "landing.nav.toggle_dark": "تبديل الوضع الليلي",
+    "landing.nav.menu": "القائمة"
   }
 };

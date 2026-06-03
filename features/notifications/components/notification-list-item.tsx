@@ -22,7 +22,7 @@ const getIcon = (type: NotificationType) => {
       return <CreditCard size={20} className="text-purple-400" />;
     case 'system':
     default:
-      return <Info size={20} className="text-slate-400" />;
+      return <Info size={20} className="text-[var(--text-muted)]" />;
   }
 };
 
@@ -51,14 +51,14 @@ export default function NotificationListItem({ notification, onClick, onDismiss 
       exit={{ opacity: 0, x: dir === 'rtl' ? 100 : -100 }}
       whileTap={{ scale: 0.98 }}
       onClick={() => onClick(notification)}
-      className={`group relative p-4 rounded-2xl mb-3 cursor-pointer border transition-all duration-300 ${
-        !read ? 'bg-slate-800/60 border-primary/30 shadow-[0_0_15px_rgba(29,183,240,0.1)]' : 'bg-slate-800/30 border-white/5 hover:bg-slate-800/50'
+      className={`group relative p-4 rounded-2xl cursor-pointer border transition-all duration-300 ${
+        !read ? 'bg-primary/10 border-primary/30 shadow-[0_0_15px_rgba(29,183,240,0.1)]' : 'bg-[var(--surface)] border-[var(--border)] hover:bg-[var(--surface-2)]'
       }`}
     >
       <div className="flex items-start gap-3">
         <div
-          className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center border border-white/5 ${
-            !read ? 'bg-slate-700/50' : 'bg-slate-800/50'
+          className={`shrink-0 w-10 h-10 rounded-full flex items-center justify-center border border-[var(--border)] ${
+            !read ? 'bg-primary/10' : 'bg-[var(--surface-2)]'
           }`}
         >
           {getIcon(type)}
@@ -66,12 +66,12 @@ export default function NotificationListItem({ notification, onClick, onDismiss 
 
         <div className="flex-1 min-w-0 pt-0.5">
           <div className="flex justify-between items-start mb-0.5">
-            <h4 className={`text-sm truncate pe-2 rtl:pe-0 rtl:ps-2 ${!read ? 'text-white font-bold' : 'text-slate-300 font-medium'}`}>
+            <h4 className={`text-sm truncate pe-2 rtl:pe-0 rtl:ps-2 ${!read ? 'text-[var(--text)] font-bold' : 'text-[var(--text)] font-medium'}`}>
               {title}
             </h4>
-            <span className="text-[10px] text-slate-500 shrink-0 whitespace-nowrap">{getTimeLabel(timestamp)}</span>
+            <span className="text-[10px] text-[var(--text-muted)] shrink-0 whitespace-nowrap">{getTimeLabel(timestamp)}</span>
           </div>
-          <p className="text-xs text-slate-400 truncate leading-relaxed">{message}</p>
+          <p className="text-xs text-[var(--text-muted)] truncate leading-relaxed">{message}</p>
         </div>
 
         <div className="flex flex-col items-end gap-2 shrink-0 pt-1">
@@ -82,7 +82,7 @@ export default function NotificationListItem({ notification, onClick, onDismiss 
       <button
         type="button"
         onClick={(e) => onDismiss(e, id)}
-        className="absolute top-2 end-2 p-2 text-slate-600 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+        className="absolute top-2 end-2 p-2 text-[var(--text-muted)] hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
       >
         <X size={14} />
       </button>

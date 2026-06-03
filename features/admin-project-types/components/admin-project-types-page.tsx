@@ -7,10 +7,10 @@ import ConfirmModal from '@/components/ui/confirm-modal';
 import { ProjectType, useAdminProjectTypes } from '../hooks/use-admin-project-types';
 
 const inputClasses =
-  'w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:border-primary focus:outline-none transition-colors';
+  'w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
-  <label className="text-xs text-slate-400 font-medium ms-1">{children}</label>
+  <label className="text-xs text-[var(--text-muted)] font-medium ms-1">{children}</label>
 );
 
 function TypeCard({
@@ -33,26 +33,26 @@ function TypeCard({
   return (
     <div
       className={`rounded-2xl border p-4 transition-colors ${
-        isEditing ? 'bg-primary/10 border-primary/30' : 'bg-slate-900/50 border-white/5'
+        isEditing ? 'bg-primary/10 border-primary/30' : 'bg-[var(--surface-2)] border-[var(--border)]'
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
         <button type="button" onClick={() => onEdit(type)} className="text-left min-w-0 flex items-start gap-3">
           <div
-            className="w-11 h-11 rounded-xl border border-white/10 flex items-center justify-center text-white shrink-0"
+            className="w-11 h-11 rounded-xl border border-[var(--border)] flex items-center justify-center text-[var(--text)] shrink-0"
             style={{ background: type.color || '#1DB7F0' }}
           >
             <Briefcase size={18} />
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-white font-bold break-words">{type.name}</h3>
-              <span className={type.active ? 'text-[10px] text-emerald-400' : 'text-[10px] text-slate-500'}>
+              <h3 className="text-[var(--text)] font-bold break-words">{type.name}</h3>
+              <span className={type.active ? 'text-[10px] text-emerald-400' : 'text-[10px] text-[var(--text-muted)]'}>
                 {type.active ? 'Active' : 'Inactive'}
               </span>
             </div>
-            <p className="text-sm text-slate-400 line-clamp-2 mt-1">{type.description || 'No description added.'}</p>
-            <p className="text-xs text-slate-500 mt-2">
+            <p className="text-sm text-[var(--text-muted)] line-clamp-2 mt-1">{type.description || 'No description added.'}</p>
+            <p className="text-xs text-[var(--text-muted)] mt-2">
               {type.priceMin || type.priceMax ? `${type.priceMin || 0}-${type.priceMax || 0} KWD` : 'No price range'} ·{' '}
               {type.durationMin || type.durationMax
                 ? `${type.durationMin || 0}-${type.durationMax || 0} days`
@@ -65,7 +65,7 @@ function TypeCard({
             type="button"
             onClick={() => onMove(type.id, -1)}
             disabled={index === 0}
-            className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-40"
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40"
             title="Move up"
           >
             <ArrowUp size={14} />
@@ -74,7 +74,7 @@ function TypeCard({
             type="button"
             onClick={() => onMove(type.id, 1)}
             disabled={index === total - 1}
-            className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-40"
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40"
             title="Move down"
           >
             <ArrowDown size={14} />
@@ -82,7 +82,7 @@ function TypeCard({
           <button
             type="button"
             onClick={() => onDelete(type.id)}
-            className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10"
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10"
             title="Delete type"
           >
             <Trash2 size={14} />
@@ -98,7 +98,7 @@ export default function AdminProjectTypesPage() {
 
   if (state.loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[500px] text-slate-500">
+      <div className="flex flex-col items-center justify-center min-h-[500px] text-[var(--text-muted)]">
         <Loader2 size={32} className="animate-spin mb-4 text-primary" />
         <p>Loading project types...</p>
       </div>
@@ -109,8 +109,8 @@ export default function AdminProjectTypesPage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Project Types</h1>
-          <p className="text-slate-400 text-sm">Manage service categories available to project requests.</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">Project Types</h1>
+          <p className="text-[var(--text-muted)] text-sm">Manage service categories available to project requests.</p>
         </div>
         <Button type="button" onClick={state.startCreate} className="gap-2">
           <Plus size={18} />
@@ -129,14 +129,14 @@ export default function AdminProjectTypesPage() {
       ) : null}
 
       <div className="space-y-6">
-        <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
           <div className="flex items-center gap-3 mb-5">
             <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
               <Briefcase size={18} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-white">{state.editingId ? 'Edit Type' : 'Add Type'}</h2>
-              <p className="text-xs text-slate-500">Optional estimates help admins price requests faster.</p>
+              <h2 className="text-lg font-bold text-[var(--text)]">{state.editingId ? 'Edit Type' : 'Add Type'}</h2>
+              <p className="text-xs text-[var(--text-muted)]">Optional estimates help admins price requests faster.</p>
             </div>
           </div>
 
@@ -218,7 +218,7 @@ export default function AdminProjectTypesPage() {
                   type="color"
                   value={state.form.color}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, color: e.target.value }))}
-                  className="w-full h-12 bg-slate-900 border border-white/10 rounded-xl p-1"
+                  className="w-full h-12 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-1"
                 />
               </div>
               <button
@@ -227,7 +227,7 @@ export default function AdminProjectTypesPage() {
                 className={`h-12 rounded-xl border px-4 text-sm font-bold flex items-center gap-2 ${
                   state.form.active
                     ? 'bg-primary/10 text-primary border-primary/20'
-                    : 'bg-slate-900 text-slate-500 border-white/5'
+                    : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)]'
                 }`}
               >
                 {state.form.active ? <Check size={15} /> : <X size={15} />}
@@ -250,8 +250,8 @@ export default function AdminProjectTypesPage() {
 
         <div className="space-y-3">
           {state.types.length === 0 ? (
-            <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-16 text-center text-slate-500">
-              <Briefcase size={32} className="mx-auto mb-3 text-slate-600" />
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-16 text-center text-[var(--text-muted)]">
+              <Briefcase size={32} className="mx-auto mb-3 text-[var(--text-muted)]" />
               <p>No project types yet.</p>
             </div>
           ) : (

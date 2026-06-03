@@ -22,11 +22,11 @@ export default function ChatInputBar({
   composerRef,
 }: ChatInputBarProps) {
   return (
-    <div ref={composerRef} className="absolute left-0 right-0 z-40 px-4" style={{ bottom: 'calc(var(--tabbar-h, 80px) + 5px)' }}>
+    <div ref={composerRef} className="shrink-0 z-40 px-4 sm:px-6 pb-4">
       <motion.div
         initial={{ y: 20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="bg-slate-900/90 backdrop-blur-xl p-2 rounded-2xl border border-white/10 shadow-[0_-5px_20px_rgba(0,0,0,0.4)] flex items-end gap-2 max-w-[430px] mx-auto"
+        className="bg-[var(--surface)] backdrop-blur-xl p-2 rounded-2xl border border-[var(--border)] shadow-lg flex items-end gap-2"
       >
         <textarea
           value={inputText}
@@ -35,7 +35,7 @@ export default function ChatInputBar({
           placeholder={placeholder}
           rows={1}
           dir={dir}
-          className="flex-1 bg-transparent text-white placeholder:text-slate-500 text-sm py-3 focus:outline-none resize-none max-h-24 no-scrollbar"
+          className="flex-1 bg-transparent text-[var(--text)] placeholder:text-[var(--text-muted)] text-sm py-3 focus:outline-none resize-none max-h-24 no-scrollbar"
           style={{ minHeight: '44px' }}
         />
 
@@ -45,7 +45,7 @@ export default function ChatInputBar({
           onClick={onSend}
           disabled={!inputText.trim()}
           className={`p-3 rounded-xl transition-all duration-300 shrink-0 ${
-            inputText.trim() ? 'bg-primary text-white shadow-[0_0_15px_rgba(29,183,240,0.4)]' : 'bg-slate-800 text-slate-500'
+            inputText.trim() ? 'bg-primary text-white shadow-[0_0_15px_rgba(29,183,240,0.4)]' : 'bg-[var(--surface-2)] text-[var(--text-muted)]'
           }`}
         >
           {dir === 'rtl' ? <Send size={20} className="scale-x-[-1]" /> : <Send size={20} />}

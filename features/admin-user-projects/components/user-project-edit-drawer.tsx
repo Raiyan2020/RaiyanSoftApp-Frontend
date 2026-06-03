@@ -46,11 +46,11 @@ export default function UserProjectEditDrawer({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-[#0f172a] w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface)] w-full max-w-lg rounded-2xl border border-[var(--border)] shadow-2xl flex flex-col max-h-[90vh]"
       >
-        <div className="p-5 border-b border-white/10 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">Edit User Project</h2>
-          <button type="button" onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+        <div className="p-5 border-b border-[var(--border)] flex justify-between items-center">
+          <h2 className="text-xl font-bold text-[var(--text)]">Edit User Project</h2>
+          <button type="button" onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -67,7 +67,7 @@ export default function UserProjectEditDrawer({
                     {...field}
                     type="text"
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                   />
@@ -83,11 +83,11 @@ export default function UserProjectEditDrawer({
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel>Industry</FieldLabel>
                   <div className="relative">
-                    <Briefcase size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <Briefcase size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                     <select
                       {...field}
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-slate-900 border border-white/10 rounded-xl py-3 pl-9 pr-4 text-white focus:border-primary focus:outline-none transition-colors appearance-none ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors appearance-none ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     >
@@ -113,7 +113,7 @@ export default function UserProjectEditDrawer({
                       {...field}
                       type="text"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                       placeholder="e.g. Automotive"
@@ -132,14 +132,14 @@ export default function UserProjectEditDrawer({
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel>Estimated Price (KWD)</FieldLabel>
                     <div className="relative">
-                      <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                       <input
                         {...field}
                         type="number"
                         value={field.value ?? ''}
                         onChange={(e) => field.onChange(e.target.value)}
                         aria-invalid={fieldState.invalid}
-                        className={`w-full bg-slate-900 border border-white/10 rounded-xl py-3 pl-9 pr-4 text-white focus:border-primary focus:outline-none transition-colors ${
+                        className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                           fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                         }`}
                         placeholder="e.g. 1500"
@@ -157,14 +157,14 @@ export default function UserProjectEditDrawer({
                   <Field data-invalid={fieldState.invalid}>
                     <FieldLabel>Est. Duration (Days)</FieldLabel>
                     <div className="relative">
-                      <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                      <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                       <input
                         {...field}
                         type="number"
                         value={field.value ?? ''}
                         onChange={(e) => field.onChange(e.target.value)}
                         aria-invalid={fieldState.invalid}
-                        className={`w-full bg-slate-900 border border-white/10 rounded-xl py-3 pl-9 pr-4 text-white focus:border-primary focus:outline-none transition-colors ${
+                        className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                           fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                         }`}
                         placeholder="e.g. 21"
@@ -183,11 +183,11 @@ export default function UserProjectEditDrawer({
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel>Project Status</FieldLabel>
                   <div className="relative">
-                    <Activity size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <Activity size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                     <select
                       {...field}
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-slate-900 border border-white/10 rounded-xl py-3 pl-9 pr-4 text-white focus:border-primary focus:outline-none transition-colors appearance-none capitalize ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors appearance-none capitalize ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     >
@@ -208,13 +208,13 @@ export default function UserProjectEditDrawer({
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel>Project URL</FieldLabel>
                   <div className="relative">
-                    <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                    <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                     <input
                       {...field}
                       type="url"
                       value={field.value ?? ''}
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-slate-900 border border-white/10 rounded-xl py-3 pl-9 pr-4 text-white focus:border-primary focus:outline-none transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                       placeholder="https://..."
@@ -235,7 +235,7 @@ export default function UserProjectEditDrawer({
                     {...field}
                     maxLength={250}
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors h-24 resize-none ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors h-24 resize-none ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                   />
@@ -246,11 +246,11 @@ export default function UserProjectEditDrawer({
           </form>
         </div>
 
-        <div className="p-5 border-t border-white/10 flex justify-end gap-3">
+        <div className="p-5 border-t border-[var(--border)] flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl text-slate-400 hover:text-white font-medium text-sm transition-colors"
+            className="px-5 py-2.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text)] font-medium text-sm transition-colors"
           >
             Cancel
           </button>

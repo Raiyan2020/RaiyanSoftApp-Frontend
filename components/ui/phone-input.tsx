@@ -82,13 +82,13 @@ export default function PhoneInput({
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="flex items-center gap-2 bg-slate-800/50 border border-slate-700/50 rounded-l-xl border-r-0 px-3 py-3 text-white hover:bg-slate-700/50 transition-colors shrink-0"
+          className="flex items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-l-xl border-r-0 px-3 py-3 text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors shrink-0"
         >
           <span className="text-lg leading-none">{selectedCountry.flag}</span>
-          <ChevronDown size={14} className="text-slate-400" />
+          <ChevronDown size={14} className="text-[var(--text-muted)]" />
         </button>
 
-        <div className="bg-slate-800/50 border-y border-slate-700/50 flex items-center justify-center px-2 text-slate-400 text-sm font-mono select-none">
+        <div className="bg-[var(--surface)] border-y border-[var(--border)] flex items-center justify-center px-2 text-[var(--text-muted)] text-sm font-mono select-none">
           {selectedCountry.dial_code}
         </div>
 
@@ -97,7 +97,7 @@ export default function PhoneInput({
           value={localNumber}
           onChange={handleNumberChange}
           placeholder="12345678"
-          className="flex-1 bg-slate-800/50 border border-slate-700/50 border-l-0 rounded-r-xl py-3 px-3 text-white placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all font-mono text-left"
+          className="flex-1 bg-[var(--surface)] border border-[var(--border)] border-l-0 rounded-r-xl py-3 px-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all font-mono text-left"
           required={required}
         />
       </div>
@@ -108,17 +108,17 @@ export default function PhoneInput({
             initial={{ opacity: 0, y: 5 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 5 }}
-            className="absolute top-full left-0 mt-2 w-68 bg-[#0f172a] border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col"
+            className="absolute top-full left-0 mt-2 w-68 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col"
           >
             {/* Country Search Bar */}
-            <div className="p-2 border-b border-white/5 flex items-center gap-2 bg-slate-900/50">
-              <Search size={14} className="text-slate-500 shrink-0 ms-1" />
+            <div className="p-2 border-b border-[var(--border)] flex items-center gap-2 bg-[var(--surface-2)]">
+              <Search size={14} className="text-[var(--text-muted)] shrink-0 ms-1" />
               <input
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search country..."
-                className="w-full bg-transparent text-xs text-white placeholder:text-slate-500 focus:outline-none py-1"
+                className="w-full bg-transparent text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none py-1"
                 autoFocus
               />
             </div>
@@ -131,20 +131,20 @@ export default function PhoneInput({
                     key={c.code}
                     type="button"
                     onClick={() => handleCountrySelect(c)}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-white/5 transition-colors text-left border-b border-white/5 last:border-0 ${
+                    className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-[var(--surface-2)] transition-colors text-left border-b border-[var(--border)] last:border-0 ${
                       selectedCountry.code === c.code ? 'bg-primary/10' : ''
                     }`}
                   >
                     <span className="text-xl shrink-0">{c.flag}</span>
                     <div className="flex-1 min-w-0">
-                      <div className="text-xs text-white font-medium truncate">{c.name}</div>
-                      <div className="text-[10px] text-slate-500 text-left">{c.dial_code}</div>
+                      <div className="text-xs text-[var(--text)] font-medium truncate">{c.name}</div>
+                      <div className="text-[10px] text-[var(--text-muted)] text-left">{c.dial_code}</div>
                     </div>
                     {selectedCountry.code === c.code ? <Check size={14} className="text-primary" /> : null}
                   </button>
                 ))
               ) : (
-                <div className="p-4 text-center text-xs text-slate-500">
+                <div className="p-4 text-center text-xs text-[var(--text-muted)]">
                   No countries found.
                 </div>
               )}

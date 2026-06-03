@@ -25,7 +25,7 @@ export default function Avatar({ name, size = 'md', className = '' }: AvatarProp
 
   return (
     <div
-      className={`flex items-center justify-center bg-primary text-white font-bold rounded-full select-none shadow-[0_0_15px_rgba(29,183,240,0.4)] border border-white/10 relative overflow-hidden ${sizeClasses[size]} ${className}`}
+      className={`flex items-center justify-center bg-primary text-white font-bold rounded-full select-none shadow-[0_0_15px_rgba(29,183,240,0.4)] border border-[var(--border)] relative overflow-hidden ${sizeClasses[size]} ${className}`}
       aria-label={name || 'User Avatar'}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/10 pointer-events-none" />

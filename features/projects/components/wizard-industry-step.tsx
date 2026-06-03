@@ -21,7 +21,7 @@ export default function WizardIndustryStep({
 }: WizardIndustryStepProps) {
   return (
     <div className="flex flex-col h-full p-6 pt-10 overflow-y-auto no-scrollbar pb-32">
-      <h2 className="text-2xl font-bold text-white mb-6">{t('wizard.step_industry')}</h2>
+      <h2 className="text-2xl font-bold text-[var(--text)] mb-6">{t('wizard.step_industry')}</h2>
       <div className="grid grid-cols-2 gap-3">
         {industries.map((ind) => {
           const isSelected = selectedIndustry === ind;
@@ -35,7 +35,7 @@ export default function WizardIndustryStep({
               className={`p-4 rounded-xl border font-medium transition-all duration-200 text-start flex flex-col justify-between h-24 ${
                 isSelected
                   ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
-                  : 'bg-slate-800 border-white/10 text-slate-400 hover:bg-slate-700'
+                  : 'bg-[var(--surface-3)] border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]'
               }`}
             >
               <span className="text-sm font-semibold leading-tight">{label}</span>
@@ -51,13 +51,13 @@ export default function WizardIndustryStep({
 
       {selectedIndustry === 'Other' ? (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
-          <label className="text-xs font-bold text-slate-400 uppercase mb-2 block">{t('wizard.specify')}</label>
+          <label className="text-xs font-bold text-[var(--text-muted)] uppercase mb-2 block">{t('wizard.specify')}</label>
           <input
             autoFocus
             type="text"
             value={industryOther || ''}
             onChange={(e) => onChangeOther(e.target.value)}
-            className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none"
+            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none"
             placeholder={t('wizard.specify_placeholder')}
           />
         </motion.div>

@@ -8,14 +8,14 @@ interface SentNotificationItemProps {
 
 export default function SentNotificationItem({ item, formatHistoryDate }: SentNotificationItemProps) {
   return (
-    <div className="bg-slate-800/50 p-4 rounded-xl border border-white/5 space-y-2">
+    <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)] space-y-2">
       <div className="flex justify-between items-start">
-        <h3 className="text-sm font-bold text-white">{item.title}</h3>
-        <span className="text-[10px] text-slate-500">{formatHistoryDate(item.createdAt)}</span>
+        <h3 className="text-sm font-bold text-[var(--text)]">{item.title}</h3>
+        <span className="text-[10px] text-[var(--text-muted)]">{formatHistoryDate(item.createdAt)}</span>
       </div>
-      <p className="text-xs text-slate-400 line-clamp-2">{item.body}</p>
-      <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/5">
-        <span className="text-[10px] bg-slate-700 text-slate-300 px-2 py-0.5 rounded-full capitalize">
+      <p className="text-xs text-[var(--text-muted)] line-clamp-2">{item.body}</p>
+      <div className="flex items-center justify-between mt-2 pt-2 border-t border-[var(--border)]">
+        <span className="text-[10px] bg-[var(--surface-3)] text-[var(--text)] px-2 py-0.5 rounded-full capitalize">
           {item.target.type}
         </span>
         <span

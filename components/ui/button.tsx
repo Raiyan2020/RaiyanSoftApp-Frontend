@@ -26,9 +26,9 @@ export default function Button({
 
   const variantClasses = {
     primary: 'bg-primary text-white shadow-[0_0_20px_rgba(29,183,240,0.3)] hover:shadow-[0_0_25px_rgba(29,183,240,0.5)]',
-    ghost: 'bg-transparent text-slate-400 hover:text-white hover:bg-slate-800/50',
+    ghost: 'bg-transparent text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]',
     destructive: 'bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20',
-    outline: 'bg-slate-800/50 text-slate-300 border border-white/10 hover:bg-slate-700 hover:text-white',
+    outline: 'bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--surface-2)]',
   };
 
   return (

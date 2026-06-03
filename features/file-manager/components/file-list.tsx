@@ -25,7 +25,7 @@ export default function FileList({
 }: FileListProps) {
   return (
     <div className="space-y-4">
-      <h2 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+      <h2 className="text-sm font-bold text-[var(--text)] uppercase tracking-wider mb-4 flex items-center gap-2">
         <Check size={14} className="text-emerald-500" />
         {t('files.uploaded')} ({files.length})
       </h2>
@@ -45,7 +45,7 @@ export default function FileList({
 
       {files.length === 0 && !isUploading ? (
         <div className="text-center py-10 opacity-50">
-          <p className="text-slate-500 text-sm">{t('files.empty')}</p>
+          <p className="text-[var(--text-muted)] text-sm">{t('files.empty')}</p>
         </div>
       ) : null}
     </div>

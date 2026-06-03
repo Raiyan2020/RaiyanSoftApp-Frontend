@@ -40,17 +40,17 @@ export default function LoginForm({
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel>{t('auth.email')}</FieldLabel>
             <div className="relative">
-              <div className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none flex items-center justify-center">
+              <div className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none flex items-center justify-center">
                 <Mail size={18} />
               </div>
               <input
                 {...field}
                 type="email"
                 aria-invalid={fieldState.invalid}
-                className={`w-full bg-slate-800 rounded-xl ps-10 pe-4 py-3 text-white border focus:outline-none transition-all ${
+                className={`w-full app-input rounded-xl ps-10 pe-4 py-3 focus:outline-none transition-all ${
                   fieldState.invalid
                     ? 'border-red-500/50 focus:border-red-500'
-                    : 'border-white/10 focus:border-primary'
+                    : 'focus:border-primary'
                 }`}
                 placeholder="name@example.com"
                 dir={dir}

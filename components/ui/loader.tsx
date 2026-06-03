@@ -10,7 +10,7 @@ interface LoaderProps {
 export default function Loader({ size = 24, fullScreen = false, className = '' }: LoaderProps) {
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#020617]/80 backdrop-blur-sm">
+      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--bg)]/80 backdrop-blur-sm">
         <Loader2 className={`animate-spin text-primary ${className}`} size={size} />
       </div>
     );

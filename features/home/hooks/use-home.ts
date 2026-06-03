@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { onAuthStateChanged } from 'firebase/auth';
-import { auth } from '@/lib/firebase-client';
+import { authService, User } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
 import { useAuthGuard } from '@/lib/authGuardContext';
 import { guestStore } from '@/lib/guestStore';
@@ -11,17 +10,18 @@ export function useHome() {
   const router = useRouter();
   const { t } = useTranslation();
   const { requireAuth } = useAuthGuard();
-  const [currentUser, setCurrentUser] = useState(auth.currentUser);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
 
   useEffect(() => {
-    return onAuthStateChanged(auth, (user) => {
+    const unsubscribe = authService.subscribe(({ user }) => {
       setCurrentUser(user);
     });
+    return () => unsubscribe();
   }, []);
 
   const isGuest = !currentUser && guestStore.isGuest;
-  const userName = currentUser?.displayName || (isGuest ? t('home.guest') : 'User');
+  const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim() : (isGuest ? t('home.guest') : 'User');
 
   const { projects } = useUserProjects();
   const userCreatedProjects = currentUser ? projects : [];

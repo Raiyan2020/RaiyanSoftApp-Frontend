@@ -24,7 +24,7 @@ import {
 } from '../hooks/use-admin-project-questions';
 
 const inputClasses =
-  'w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:border-primary focus:outline-none transition-colors';
+  'w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
 
 const questionTypes: { value: ProjectQuestionType; label: string }[] = [
   { value: 'text', label: 'Text' },
@@ -39,7 +39,7 @@ const questionTypes: { value: ProjectQuestionType; label: string }[] = [
 const optionTypes: ProjectQuestionType[] = ['single_select', 'multi_select'];
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
-  <label className="text-xs text-slate-400 font-medium ms-1">{children}</label>
+  <label className="text-xs text-[var(--text-muted)] font-medium ms-1">{children}</label>
 );
 
 function QuestionRow({
@@ -62,25 +62,25 @@ function QuestionRow({
   return (
     <div
       className={`rounded-2xl border p-4 transition-colors ${
-        isActive ? 'bg-primary/10 border-primary/30' : 'bg-slate-900/50 border-white/5'
+        isActive ? 'bg-primary/10 border-primary/30' : 'bg-[var(--surface-2)] border-[var(--border)]'
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-start gap-3">
-        <div className="mt-1 text-slate-500">
+        <div className="mt-1 text-[var(--text-muted)]">
           <GripVertical size={16} />
         </div>
         <button type="button" onClick={() => onEdit(question)} className="text-left min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-1">
-            <h3 className="text-sm font-bold text-white break-words">{question.label}</h3>
-            <span className="text-[10px] text-slate-300 bg-slate-800 border border-white/5 rounded-full px-2 py-0.5">
+            <h3 className="text-sm font-bold text-[var(--text)] break-words">{question.label}</h3>
+            <span className="text-[10px] text-[var(--text)] bg-[var(--surface-3)] border border-[var(--border)] rounded-full px-2 py-0.5">
               {question.type.replace('_', ' ')}
             </span>
           </div>
           <div className="flex flex-wrap gap-2 text-[10px]">
-            <span className={question.active ? 'text-emerald-400' : 'text-slate-500'}>
+            <span className={question.active ? 'text-emerald-400' : 'text-[var(--text-muted)]'}>
               {question.active ? 'Active' : 'Inactive'}
             </span>
-            <span className={question.required ? 'text-primary' : 'text-slate-500'}>
+            <span className={question.required ? 'text-primary' : 'text-[var(--text-muted)]'}>
               {question.required ? 'Required' : 'Optional'}
             </span>
             {question.locked ? <span className="text-amber-400">Locked</span> : null}
@@ -91,7 +91,7 @@ function QuestionRow({
             type="button"
             onClick={() => onMove(question.id, -1)}
             disabled={index === 0}
-            className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-40"
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40"
             title="Move up"
           >
             <ArrowUp size={14} />
@@ -100,7 +100,7 @@ function QuestionRow({
             type="button"
             onClick={() => onMove(question.id, 1)}
             disabled={index === total - 1}
-            className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-40"
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40"
             title="Move down"
           >
             <ArrowDown size={14} />
@@ -109,7 +109,7 @@ function QuestionRow({
             type="button"
             onClick={() => onDelete(question.id)}
             disabled={question.locked}
-            className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-red-400 hover:bg-red-500/10 disabled:opacity-40"
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 disabled:opacity-40"
             title="Delete question"
           >
             <Trash2 size={14} />
@@ -137,30 +137,30 @@ function QuestionPreview({
     .filter(Boolean);
 
   return (
-    <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-5">
+    <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-5">
       <div className="flex items-center gap-3 mb-5">
         <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
           <Eye size={18} />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-white">Client Preview</h2>
-          <p className="text-xs text-slate-500">A compact preview of the wizard question.</p>
+          <h2 className="text-lg font-bold text-[var(--text)]">Client Preview</h2>
+          <p className="text-xs text-[var(--text-muted)]">A compact preview of the wizard question.</p>
         </div>
       </div>
-      <div className="bg-[#020617] border border-white/5 rounded-2xl p-5">
-        <p className="text-lg font-bold text-white leading-snug">
+      <div className="bg-[var(--bg)] border border-[var(--border)] rounded-2xl p-5">
+        <p className="text-lg font-bold text-[var(--text)] leading-snug">
           {label || 'Question label'}
           {required ? <span className="text-primary"> *</span> : null}
         </p>
         <div className="mt-5">
-          {type === 'textarea' ? <div className="h-28 rounded-xl bg-slate-900 border border-white/10" /> : null}
+          {type === 'textarea' ? <div className="h-28 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]" /> : null}
           {type === 'text' || type === 'reference_app' ? (
-            <div className="h-12 rounded-xl bg-slate-900 border border-white/10" />
+            <div className="h-12 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]" />
           ) : null}
           {type === 'yes_no' ? (
             <div className="grid grid-cols-2 gap-3">
               {['Yes', 'No'].map((item) => (
-                <div key={item} className="rounded-xl bg-slate-900 border border-white/10 px-4 py-3 text-sm text-slate-300">
+                <div key={item} className="rounded-xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 text-sm text-[var(--text)]">
                   {item}
                 </div>
               ))}
@@ -169,14 +169,14 @@ function QuestionPreview({
           {type === 'color' ? (
             <div className="flex gap-3">
               {['#1DB7F0', '#22C55E', '#F59E0B', '#EF4444'].map((color) => (
-                <div key={color} className="w-10 h-10 rounded-full border border-white/10" style={{ background: color }} />
+                <div key={color} className="w-10 h-10 rounded-full border border-[var(--border)]" style={{ background: color }} />
               ))}
             </div>
           ) : null}
           {optionTypes.includes(type) ? (
             <div className="space-y-2">
               {(options.length ? options : ['Option one', 'Option two']).map((option) => (
-                <div key={option} className="rounded-xl bg-slate-900 border border-white/10 px-4 py-3 text-sm text-slate-300">
+                <div key={option} className="rounded-xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 text-sm text-[var(--text)]">
                   {option}
                 </div>
               ))}
@@ -193,7 +193,7 @@ export default function AdminProjectQuestionsPage() {
 
   if (state.loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[500px] text-slate-500">
+      <div className="flex flex-col items-center justify-center min-h-[500px] text-[var(--text-muted)]">
         <Loader2 size={32} className="animate-spin mb-4 text-primary" />
         <p>Loading project questions...</p>
       </div>
@@ -204,8 +204,8 @@ export default function AdminProjectQuestionsPage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white">Project Questions</h1>
-          <p className="text-slate-400 text-sm">Manage the client project request wizard questions and options.</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">Project Questions</h1>
+          <p className="text-[var(--text-muted)] text-sm">Manage the client project request wizard questions and options.</p>
         </div>
         <Button type="button" onClick={state.startCreate} className="gap-2">
           <Plus size={18} />
@@ -225,16 +225,16 @@ export default function AdminProjectQuestionsPage() {
 
       <div className="space-y-6">
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
-          <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                 <ListChecks size={18} />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white">
+                <h2 className="text-lg font-bold text-[var(--text)]">
                   {state.selectedQuestion ? 'Edit Question' : 'Add Question'}
                 </h2>
-                <p className="text-xs text-slate-500">Use one option per line. Add Arabic after a pipe character.</p>
+                <p className="text-xs text-[var(--text-muted)]">Use one option per line. Add Arabic after a pipe character.</p>
               </div>
             </div>
 
@@ -295,7 +295,7 @@ export default function AdminProjectQuestionsPage() {
                         className={`rounded-xl border px-3 py-2 text-xs font-bold flex items-center justify-center gap-1 ${
                           checked
                             ? 'bg-primary/10 text-primary border-primary/20'
-                            : 'bg-slate-900 text-slate-500 border-white/5'
+                            : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)]'
                         }`}
                       >
                         {checked ? <Check size={13} /> : <X size={13} />}
@@ -339,17 +339,17 @@ export default function AdminProjectQuestionsPage() {
           />
         </div>
 
-        <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-bold text-white">Question Order</h2>
-            <span className="text-xs text-slate-500 bg-slate-900/70 border border-white/5 rounded-full px-3 py-1">
+            <h2 className="text-lg font-bold text-[var(--text)]">Question Order</h2>
+            <span className="text-xs text-[var(--text-muted)] bg-[var(--surface-2)] border border-[var(--border)] rounded-full px-3 py-1">
               {state.questions.length} total
             </span>
           </div>
 
           {state.questions.length === 0 ? (
-            <div className="text-center py-16 text-slate-500">
-              <ListChecks size={30} className="mx-auto mb-3 text-slate-600" />
+            <div className="text-center py-16 text-[var(--text-muted)]">
+              <ListChecks size={30} className="mx-auto mb-3 text-[var(--text-muted)]" />
               <p>No project questions yet.</p>
             </div>
           ) : (

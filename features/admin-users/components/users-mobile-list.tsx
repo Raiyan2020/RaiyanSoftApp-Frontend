@@ -10,7 +10,7 @@ interface UsersMobileListProps {
 
 export default function UsersMobileList({ filteredUsers, onSelectUser }: UsersMobileListProps) {
   return (
-    <div className="md:hidden divide-y divide-white/5">
+    <div className="md:hidden divide-y divide-[var(--border)]">
       {filteredUsers.map((user) => (
         <div
           key={user.id}
@@ -18,13 +18,13 @@ export default function UsersMobileList({ filteredUsers, onSelectUser }: UsersMo
           onClick={() => onSelectUser(user)}
         >
           <div className="flex items-center gap-3">
-            <Avatar name={`${user.firstName} ${user.lastName}`} className="w-10 h-10 border border-white/10 text-sm" />
+            <Avatar name={`${user.firstName} ${user.lastName}`} className="w-10 h-10 border border-[var(--border)] text-sm" />
           </div>
           <div>
-            <h3 className="text-sm font-medium text-white">
+            <h3 className="text-sm font-medium text-[var(--text)]">
               {user.firstName} {user.lastName}
             </h3>
-            <p className="text-xs text-slate-500 mb-1">{user.email}</p>
+            <p className="text-xs text-[var(--text-muted)] mb-1">{user.email}</p>
             <div className="flex items-center gap-2">
               <span
                 className={`text-[10px] px-1.5 py-0.5 rounded border ${
@@ -35,11 +35,11 @@ export default function UsersMobileList({ filteredUsers, onSelectUser }: UsersMo
               >
                 {user.status}
               </span>
-              <span className="text-[10px] text-slate-600">•</span>
-              <span className="text-[10px] text-slate-500">{user.role}</span>
+              <span className="text-[10px] text-[var(--text-muted)]">•</span>
+              <span className="text-[10px] text-[var(--text-muted)]">{user.role}</span>
             </div>
           </div>
-          <MoreHorizontal size={20} className="text-slate-600" />
+          <MoreHorizontal size={20} className="text-[var(--text-muted)]" />
         </div>
       ))}
     </div>

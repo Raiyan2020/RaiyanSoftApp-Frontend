@@ -14,20 +14,23 @@ export default function AboutPage() {
       initial={{ opacity: 0, x: dir === 'rtl' ? -20 : 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: dir === 'rtl' ? 20 : -20 }}
-      className="flex flex-col h-full bg-[#020617] relative overflow-y-auto no-scrollbar pb-24"
+      className="app-page app-page-narrow"
     >
-      <div className="sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md px-4 py-4 border-b border-white/5 flex items-center shadow-lg">
-        <button
-          type="button"
-          onClick={() => router.push('/more')}
-          className="p-2 -ms-2 text-slate-400 hover:text-white transition-colors"
-        >
-          {dir === 'rtl' ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
-        </button>
-        <h1 className="text-lg font-bold text-white ms-2">{t('more.about')}</h1>
-      </div>
+      <header className="app-header">
+        <div>
+          <button
+            type="button"
+            onClick={() => router.push('/more')}
+            className="text-[var(--text-muted)] hover:text-[var(--text)] mb-4 flex items-center gap-1"
+          >
+            {dir === 'rtl' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            <span className="text-sm">{t('auth.back')}</span>
+          </button>
+          <h1 className="app-title">{t('more.about')}</h1>
+        </div>
+      </header>
 
-      <div className="p-6 space-y-8">
+      <div className="space-y-8">
         <div className="flex flex-col items-center justify-center pt-6">
           <div className="w-24 h-24 mb-6 relative">
             <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
@@ -37,45 +40,45 @@ export default function AboutPage() {
               alt="Raiyansoft Logo"
             />
           </div>
-          <h2 className="text-2xl font-bold text-white mb-2">Raiyansoft®</h2>
-          <p className="text-sm text-slate-400 font-medium">Innovating Digital Solutions</p>
+          <h2 className="text-2xl font-bold text-[var(--text)] mb-2">Raiyansoft</h2>
+          <p className="text-sm text-[var(--text-muted)] font-medium">Innovating Digital Solutions</p>
         </div>
 
-        <div className="bg-slate-800/30 border border-white/5 rounded-2xl p-5 backdrop-blur-sm">
-          <p className="text-sm text-slate-300 leading-relaxed mb-4">
+        <div className="app-card rounded-2xl p-5">
+          <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-4">
             Raiyansoft is a leading software development company based in Kuwait, specializing in mobile applications,
             web platforms, and enterprise solutions.
           </p>
-          <p className="text-sm text-slate-300 leading-relaxed">
+          <p className="text-sm text-[var(--text-muted)] leading-relaxed">
             We empower businesses with cutting-edge technology, from e-commerce platforms to custom CRM systems,
             ensuring scalability and performance.
           </p>
         </div>
 
         <div>
-          <h3 className="text-sm font-bold text-white mb-3 uppercase tracking-wider">Contact Us</h3>
+          <h3 className="text-sm font-bold text-[var(--text)] mb-3 uppercase tracking-wider">Contact Us</h3>
           <div className="space-y-3">
             <a
               href="mailto:support@raiyansoft.com"
-              className="flex items-center space-x-3 rtl:space-x-reverse p-3 bg-slate-800/40 rounded-xl border border-white/5 hover:bg-slate-800 transition-colors"
+              className="flex items-center gap-3 p-3 app-card rounded-xl hover:border-primary/40 transition-colors"
             >
               <Mail size={18} className="text-primary" />
-              <span className="text-sm text-slate-300">support@raiyansoft.com</span>
+              <span className="text-sm text-[var(--text)]">support@raiyansoft.com</span>
             </a>
             <a
               href="https://raiyansoft.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center space-x-3 rtl:space-x-reverse p-3 bg-slate-800/40 rounded-xl border border-white/5 hover:bg-slate-800 transition-colors"
+              className="flex items-center gap-3 p-3 app-card rounded-xl hover:border-primary/40 transition-colors"
             >
               <Globe size={18} className="text-primary" />
-              <span className="text-sm text-slate-300">www.raiyansoft.com</span>
+              <span className="text-sm text-[var(--text)]">www.raiyansoft.com</span>
             </a>
           </div>
         </div>
 
-        <div className="text-center pt-8 opacity-40">
-          <p className="text-[10px] text-slate-500 uppercase tracking-widest">Designed & Developed in Kuwait</p>
+        <div className="text-center pt-8 opacity-50">
+          <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest">Designed and developed in Kuwait</p>
         </div>
       </div>
     </motion.div>

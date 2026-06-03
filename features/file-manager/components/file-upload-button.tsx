@@ -17,7 +17,7 @@ export default function FileUploadButton({
   t,
 }: FileUploadButtonProps) {
   return (
-    <div className="mb-8">
+    <div>
       <input type="file" ref={fileInputRef} onChange={onFileSelect} className="hidden" />
       <button
         type="button"
@@ -25,22 +25,22 @@ export default function FileUploadButton({
         disabled={isUploading}
         className={`w-full py-8 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center transition-all ${
           isUploading
-            ? 'bg-slate-800/50 border-primary/50 cursor-wait'
-            : 'bg-slate-800/30 border-white/10 hover:bg-slate-800/50 hover:border-primary/50 cursor-pointer group'
+            ? 'bg-primary/10 border-primary/50 cursor-wait'
+            : 'bg-[var(--surface)] border-[var(--border)] hover:bg-[var(--surface-2)] hover:border-primary/50 cursor-pointer group'
         }`}
       >
         {isUploading ? (
           <div className="flex flex-col items-center animate-pulse">
             <Loader2 size={32} className="text-primary mb-2 animate-spin" />
-            <span className="text-slate-400 text-sm">{t('files.uploading')}</span>
+            <span className="text-[var(--text-muted)] text-sm">{t('files.uploading')}</span>
           </div>
         ) : (
           <>
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Upload size={24} className="text-primary" />
             </div>
-            <h3 className="text-white font-medium mb-1">{t('files.tap_upload')}</h3>
-            <p className="text-slate-500 text-xs">{t('files.upload_types')}</p>
+            <h3 className="text-[var(--text)] font-medium mb-1">{t('files.tap_upload')}</h3>
+            <p className="text-[var(--text-muted)] text-xs">{t('files.upload_types')}</p>
           </>
         )}
       </button>

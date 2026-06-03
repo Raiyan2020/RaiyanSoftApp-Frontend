@@ -26,7 +26,7 @@ export default function AdminScheduleTab({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-bold text-white">Weekly Availability</h3>
+        <h3 className="text-lg font-bold text-[var(--text)]">Weekly Availability</h3>
         <button
           type="button"
           onClick={onSaveSettings}
@@ -46,7 +46,7 @@ export default function AdminScheduleTab({
             <div
               key={dayName}
               className={`flex flex-col md:flex-row gap-4 p-4 rounded-xl border transition-all ${
-                isEnabled ? 'bg-slate-900/50 border-white/5' : 'bg-slate-900/20 border-white/5 opacity-70'
+                isEnabled ? 'bg-[var(--surface-2)] border-[var(--border)]' : 'bg-[var(--surface-2)] border-[var(--border)] opacity-70'
               }`}
             >
               <div className="w-32 flex items-center gap-3">
@@ -57,7 +57,7 @@ export default function AdminScheduleTab({
                     onUpdateAvailability(idx, !isEnabled);
                   }}
                   className={`w-12 h-6 rounded-full p-1 transition-colors relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 ${
-                    isEnabled ? 'bg-primary' : 'bg-slate-700'
+                    isEnabled ? 'bg-primary' : 'bg-[var(--surface-3)]'
                   }`}
                   aria-pressed={isEnabled}
                 >
@@ -69,7 +69,7 @@ export default function AdminScheduleTab({
                 </button>
 
                 <div className="flex flex-col">
-                  <span className={`font-bold ${isEnabled ? 'text-white' : 'text-slate-500'}`}>{dayName}</span>
+                  <span className={`font-bold ${isEnabled ? 'text-[var(--text)]' : 'text-[var(--text-muted)]'}`}>{dayName}</span>
                   {savingId === idx ? <span className="text-[10px] text-primary animate-pulse">Saving...</span> : null}
                 </div>
               </div>
@@ -84,14 +84,14 @@ export default function AdminScheduleTab({
                             type="time"
                             value={(range as any).start}
                             onChange={(e) => onChangeRange(idx, rIdx, 'start', e.target.value)}
-                            className="bg-slate-800 text-white px-3 py-2 rounded-lg border border-white/10 focus:border-primary outline-none text-sm"
+                            className="bg-[var(--surface-3)] text-[var(--text)] px-3 py-2 rounded-lg border border-[var(--border)] focus:border-primary outline-none text-sm"
                           />
-                          <span className="text-slate-500">-</span>
+                          <span className="text-[var(--text-muted)]">-</span>
                           <input
                             type="time"
                             value={(range as any).end}
                             onChange={(e) => onChangeRange(idx, rIdx, 'end', e.target.value)}
-                            className="bg-slate-800 text-white px-3 py-2 rounded-lg border border-white/10 focus:border-primary outline-none text-sm"
+                            className="bg-[var(--surface-3)] text-[var(--text)] px-3 py-2 rounded-lg border border-[var(--border)] focus:border-primary outline-none text-sm"
                           />
                           <button
                             type="button"
@@ -111,7 +111,7 @@ export default function AdminScheduleTab({
                     </button>
                   </>
                 ) : (
-                  <span className="text-slate-600 text-sm italic flex items-center h-full">Unavailable</span>
+                  <span className="text-[var(--text-muted)] text-sm italic flex items-center h-full">Unavailable</span>
                 )}
               </div>
             </div>

@@ -21,26 +21,27 @@ export default function SupportChatPage() {
   return (
     <div
       ref={pageRef}
-      className="flex flex-col w-full h-full relative overflow-hidden bg-[#020617]"
-      style={{ height: '100dvh' }}
+      className="app-page app-page-wide flex min-h-[calc(100dvh-5.5rem)] lg:min-h-[calc(100dvh-4.5rem)] flex-col"
     >
-      <ChatHeader />
+      <div className="app-card flex min-h-[calc(100dvh-7.5rem)] lg:min-h-[calc(100dvh-8.5rem)] flex-col overflow-hidden rounded-2xl">
+        <ChatHeader />
 
-      <ChatMessageList
-        groupedMessages={groupedMessages}
-        messagesEndRef={messagesEndRef}
-        bottomSafeArea={BOTTOM_SAFE_AREA}
-      />
+        <ChatMessageList
+          groupedMessages={groupedMessages}
+          messagesEndRef={messagesEndRef}
+          bottomSafeArea={BOTTOM_SAFE_AREA}
+        />
 
-      <ChatInputBar
-        inputText={inputText}
-        onChangeInput={setInputText}
-        onKeyDown={handleKeyDown}
-        onSend={handleSend}
-        placeholder={t('chat.type_message')}
-        dir={dir}
-        composerRef={composerRef}
-      />
+        <ChatInputBar
+          inputText={inputText}
+          onChangeInput={setInputText}
+          onKeyDown={handleKeyDown}
+          onSend={handleSend}
+          placeholder={t('chat.type_message')}
+          dir={dir}
+          composerRef={composerRef}
+        />
+      </div>
     </div>
   );
 }

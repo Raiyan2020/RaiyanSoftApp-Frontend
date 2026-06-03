@@ -21,7 +21,7 @@ export default function UsersTable({
     <div className="hidden md:block overflow-x-auto">
       <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="border-b border-white/5 text-xs text-slate-500 uppercase tracking-wider">
+          <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
             <th className="p-5 font-medium">User</th>
             <th className="p-5 font-medium">Contact</th>
             <th className="p-5 font-medium">Role</th>
@@ -30,7 +30,7 @@ export default function UsersTable({
             <th className="p-5 font-medium text-right">Actions</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-white/5 text-sm">
+        <tbody className="divide-y divide-[var(--border)] text-sm">
           {filteredUsers.map((user) => (
             <UsersTableRow
               key={user.id}

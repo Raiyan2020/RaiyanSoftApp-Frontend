@@ -40,22 +40,22 @@ export default function NotificationSheet({ notification, onClose }: Notificatio
           exit={{ scale: 0.9, opacity: 0, y: 20 }}
           transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           onClick={(e) => e.stopPropagation()}
-          className="w-full max-w-[380px] bg-[#0f172a] rounded-3xl border border-white/10 p-6 shadow-2xl relative overflow-hidden"
+          className="w-full max-w-xl bg-[var(--surface)] rounded-3xl border border-[var(--border)] p-6 shadow-2xl relative overflow-hidden"
         >
           <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent pointer-events-none" />
 
           <div className="flex items-start justify-between mb-6 relative z-10">
-            <h2 className="text-xl font-bold text-white leading-tight pe-4 rtl:pe-0 rtl:ps-4">{notification.title}</h2>
+            <h2 className="text-xl font-bold text-[var(--text)] leading-tight pe-4 rtl:pe-0 rtl:ps-4">{notification.title}</h2>
             <button
               type="button"
               onClick={onClose}
-              className="p-2 bg-slate-800 rounded-full text-slate-400 hover:text-white transition-colors border border-white/5"
+              className="p-2 bg-[var(--surface-2)] rounded-full text-[var(--text-muted)] hover:text-[var(--text)] transition-colors border border-[var(--border)]"
             >
               <X size={20} />
             </button>
           </div>
 
-          <div className="flex items-center space-x-4 rtl:space-x-reverse mb-6 text-xs text-slate-400 relative z-10">
+          <div className="flex flex-wrap items-center gap-4 mb-6 text-xs text-[var(--text-muted)] relative z-10">
             <div className="flex items-center space-x-1 rtl:space-x-reverse">
               <Calendar size={14} />
               <span>{dateStr}</span>
@@ -66,15 +66,15 @@ export default function NotificationSheet({ notification, onClose }: Notificatio
             </div>
           </div>
 
-          <div className="bg-slate-800/50 rounded-2xl p-4 border border-white/5 mb-8 relative z-10">
-            <p className="text-slate-300 leading-relaxed text-sm">{notification.message}</p>
+          <div className="bg-[var(--surface-2)] rounded-2xl p-4 border border-[var(--border)] mb-8 relative z-10">
+            <p className="text-[var(--text-muted)] leading-relaxed text-sm">{notification.message}</p>
           </div>
 
           <div className="flex space-x-3 rtl:space-x-reverse relative z-10">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3.5 rounded-xl bg-slate-800 text-white font-medium text-sm hover:bg-slate-700 transition-colors border border-white/5"
+              className="flex-1 py-3.5 rounded-xl bg-[var(--surface-2)] text-[var(--text)] font-medium text-sm hover:opacity-90 transition-colors border border-[var(--border)]"
             >
               {t('notif.dismiss')}
             </button>

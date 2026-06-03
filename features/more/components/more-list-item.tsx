@@ -24,21 +24,21 @@ export default function MoreListItem({
   return (
     <motion.button
       type="button"
-      whileTap={!disabled ? { scale: 0.98, backgroundColor: 'rgba(255,255,255,0.05)' } : {}}
+      whileTap={!disabled ? { scale: 0.98 } : {}}
       onClick={disabled ? undefined : onClick}
       disabled={disabled}
-      className={`w-full flex items-center justify-between p-4 bg-slate-800/40 border-b border-white/5 last:border-0 first:rounded-t-2xl last:rounded-b-2xl backdrop-blur-sm transition-colors ${
-        disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-slate-800/60 cursor-pointer'
+      className={`w-full flex items-center justify-between p-4 bg-[var(--surface)] border-b border-[var(--border)] last:border-0 first:rounded-t-2xl last:rounded-b-2xl transition-colors ${
+        disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-[var(--surface-2)] cursor-pointer'
       } ${className}`}
     >
       <div className="flex items-center space-x-4 rtl:space-x-reverse">
-        <div className="w-10 h-10 rounded-full bg-slate-700/50 flex items-center justify-center text-slate-300 border border-white/5">
+        <div className="w-10 h-10 rounded-full bg-[var(--surface-2)] flex items-center justify-center text-[var(--text-muted)] border border-[var(--border)]">
           <Icon size={20} />
         </div>
-        <span className="text-sm font-medium text-white">{label}</span>
+        <span className="text-sm font-medium text-[var(--text)]">{label}</span>
       </div>
 
-      <div className="flex items-center text-slate-500">
+      <div className="flex items-center text-[var(--text-muted)]">
         {rightElement}
         <ChevronRight size={18} className={`ms-2 opacity-70 ${dir === 'rtl' ? 'rotate-180' : ''}`} />
       </div>

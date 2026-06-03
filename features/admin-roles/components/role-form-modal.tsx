@@ -49,13 +49,13 @@ export default function RoleFormModal({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-[#0f172a] w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface)] w-full max-w-lg rounded-2xl border border-[var(--border)] shadow-2xl flex flex-col max-h-[90vh]"
       >
-        <div className="p-5 border-b border-white/10 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">
+        <div className="p-5 border-b border-[var(--border)] flex justify-between items-center">
+          <h2 className="text-xl font-bold text-[var(--text)]">
             {editingRole ? 'Edit Role' : 'Add New Role'}
           </h2>
-          <button type="button" onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+          <button type="button" onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -72,7 +72,7 @@ export default function RoleFormModal({
                     {...field}
                     type="text"
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                     placeholder="e.g. Sales Manager"
@@ -93,7 +93,7 @@ export default function RoleFormModal({
                   <textarea
                     {...field}
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors h-20 resize-none ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors h-20 resize-none ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                     placeholder="Role purpose..."
@@ -117,11 +117,11 @@ export default function RoleFormModal({
           </form>
         </div>
 
-        <div className="p-5 border-t border-white/10 flex justify-end gap-3">
+        <div className="p-5 border-t border-[var(--border)] flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl text-slate-400 hover:text-white font-medium text-sm transition-colors"
+            className="px-5 py-2.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text)] font-medium text-sm transition-colors"
           >
             Cancel
           </button>

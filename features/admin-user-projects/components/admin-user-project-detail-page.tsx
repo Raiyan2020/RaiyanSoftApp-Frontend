@@ -52,7 +52,7 @@ const tabs: { id: ProjectDetailTab; label: string; icon: React.ElementType }[] =
 ];
 
 const stageStatusClasses: Record<ProjectStageStatus, string> = {
-  planned: 'bg-slate-500/10 text-slate-300 border-slate-500/20',
+  planned: 'bg-slate-500/10 text-[var(--text)] border-slate-500/20',
   active: 'bg-primary/10 text-primary border-primary/20',
   completed: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
   blocked: 'bg-red-500/10 text-red-400 border-red-500/20',
@@ -75,11 +75,11 @@ const formatFileSize = (bytes: number) => {
 };
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
-  <label className="text-xs text-slate-400 font-medium ms-1">{children}</label>
+  <label className="text-xs text-[var(--text-muted)] font-medium ms-1">{children}</label>
 );
 
 const inputClasses =
-  'w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white placeholder:text-slate-600 focus:border-primary focus:outline-none transition-colors';
+  'w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
 
 function StatusPill({ status }: { status: string }) {
   const color =
@@ -89,7 +89,7 @@ function StatusPill({ status }: { status: string }) {
       ? 'bg-red-500/10 text-red-400 border-red-500/20'
       : status === 'active'
       ? 'bg-primary/10 text-primary border-primary/20'
-      : 'bg-slate-500/10 text-slate-300 border-slate-500/20';
+      : 'bg-slate-500/10 text-[var(--text)] border-slate-500/20';
 
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold capitalize border ${color}`}>
@@ -114,15 +114,15 @@ function StageCard({
   onMove: (stageId: string, direction: -1 | 1) => void;
 }) {
   return (
-    <div className="bg-slate-900/50 border border-white/5 rounded-2xl p-4">
+    <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
       <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
         <div className="flex gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center text-slate-300 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text)] shrink-0">
             <span className="text-sm font-bold">{index + 1}</span>
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2 mb-1">
-              <h3 className="text-white font-bold break-words">{stage.title}</h3>
+              <h3 className="text-[var(--text)] font-bold break-words">{stage.title}</h3>
               <span
                 className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold capitalize border ${
                   stageStatusClasses[stage.status]
@@ -132,11 +132,11 @@ function StageCard({
               </span>
             </div>
             {stage.description ? (
-              <p className="text-sm text-slate-400 leading-relaxed">{stage.description}</p>
+              <p className="text-sm text-[var(--text-muted)] leading-relaxed">{stage.description}</p>
             ) : (
-              <p className="text-sm text-slate-600">No description added.</p>
+              <p className="text-sm text-[var(--text-muted)]">No description added.</p>
             )}
-            <div className="flex flex-wrap gap-3 mt-3 text-xs text-slate-500">
+            <div className="flex flex-wrap gap-3 mt-3 text-xs text-[var(--text-muted)]">
               <span className="flex items-center gap-1">
                 <UserRound size={13} /> {stage.assignedTo || 'Unassigned'}
               </span>
@@ -155,7 +155,7 @@ function StageCard({
             type="button"
             onClick={() => onMove(stage.id, -1)}
             disabled={index === 0}
-            className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-40 transition-colors"
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40 transition-colors"
             title="Move up"
           >
             <ArrowUp size={15} />
@@ -164,7 +164,7 @@ function StageCard({
             type="button"
             onClick={() => onMove(stage.id, 1)}
             disabled={index === total - 1}
-            className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white hover:bg-white/5 disabled:opacity-40 transition-colors"
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40 transition-colors"
             title="Move down"
           >
             <ArrowDown size={15} />
@@ -172,7 +172,7 @@ function StageCard({
           <button
             type="button"
             onClick={() => onEdit(stage)}
-            className="p-2 bg-slate-800 hover:bg-primary/20 hover:text-primary rounded-lg text-slate-400 transition-colors"
+            className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
             title="Edit stage"
           >
             <Edit2 size={15} />
@@ -180,7 +180,7 @@ function StageCard({
           <button
             type="button"
             onClick={() => onDelete(stage.id)}
-            className="p-2 bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-lg text-slate-400 transition-colors"
+            className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
             title="Delete stage"
           >
             <Trash2 size={15} />
@@ -189,11 +189,11 @@ function StageCard({
       </div>
 
       <div className="mt-4">
-        <div className="flex justify-between text-xs text-slate-500 mb-2">
+        <div className="flex justify-between text-xs text-[var(--text-muted)] mb-2">
           <span>Progress</span>
-          <span className="text-white font-bold">{stage.progress}%</span>
+          <span className="text-[var(--text)] font-bold">{stage.progress}%</span>
         </div>
-        <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+        <div className="h-2 bg-[var(--surface-3)] rounded-full overflow-hidden">
           <div className="h-full bg-primary rounded-full" style={{ width: `${stage.progress}%` }} />
         </div>
       </div>
@@ -210,7 +210,7 @@ export default function AdminUserProjectDetailPage({
 
   if (ops.loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[500px] text-slate-500">
+      <div className="flex flex-col items-center justify-center min-h-[500px] text-[var(--text-muted)]">
         <Loader2 size={32} className="animate-spin mb-4 text-primary" />
         <p>Loading project operations...</p>
       </div>
@@ -219,10 +219,10 @@ export default function AdminUserProjectDetailPage({
 
   if (!ops.project) {
     return (
-      <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-8 text-center">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 text-center">
         <AlertTriangle className="mx-auto text-red-400 mb-4" size={32} />
-        <h1 className="text-xl font-bold text-white mb-2">Project not found</h1>
-        <p className="text-slate-400 text-sm mb-6">{ops.error || 'Unable to load this project.'}</p>
+        <h1 className="text-xl font-bold text-[var(--text)] mb-2">Project not found</h1>
+        <p className="text-[var(--text-muted)] text-sm mb-6">{ops.error || 'Unable to load this project.'}</p>
         <Button type="button" variant="outline" onClick={() => router.push('/admin/user-projects')}>
           Back to User Projects
         </Button>
@@ -238,30 +238,30 @@ export default function AdminUserProjectDetailPage({
         <button
           type="button"
           onClick={() => router.push('/admin/user-projects')}
-          className="text-slate-400 hover:text-white text-sm font-medium flex items-center gap-2 w-fit transition-colors"
+          className="text-[var(--text-muted)] hover:text-[var(--text)] text-sm font-medium flex items-center gap-2 w-fit transition-colors"
         >
           <ArrowLeft size={16} />
           Back to User Projects
         </button>
 
-        <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5 shadow-xl">
+        <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 shadow-xl">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
             <div className="flex items-start gap-4 min-w-0">
               <div
-                className="w-14 h-14 rounded-2xl border border-white/10 flex items-center justify-center text-white shrink-0 shadow-inner"
+                className="w-14 h-14 rounded-2xl border border-[var(--border)] flex items-center justify-center text-[var(--text)] shrink-0 shadow-inner"
                 style={{ background: project.brandColor || project.iconBg || '#1DB7F0' }}
               >
                 <LayoutGrid size={24} />
               </div>
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
-                  <h1 className="text-2xl font-bold text-white break-words">{project.name}</h1>
+                  <h1 className="text-2xl font-bold text-[var(--text)] break-words">{project.name}</h1>
                   <StatusPill status={project.status || 'pricing'} />
                 </div>
-                <p className="text-slate-400 text-sm leading-relaxed max-w-3xl">
+                <p className="text-[var(--text-muted)] text-sm leading-relaxed max-w-3xl">
                   {project.description || 'No project description has been added yet.'}
                 </p>
-                <div className="flex flex-wrap gap-3 mt-3 text-xs text-slate-500">
+                <div className="flex flex-wrap gap-3 mt-3 text-xs text-[var(--text-muted)]">
                   <span>{project.ownerName}</span>
                   <span>{project.ownerEmail}</span>
                   <span>Created {formatDate(project.createdAt)}</span>
@@ -276,25 +276,25 @@ export default function AdminUserProjectDetailPage({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-6">
-            <div className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
-              <p className="text-xs text-slate-500 mb-1">Overall Progress</p>
-              <p className="text-2xl font-bold text-white">{ops.overallProgress}%</p>
+            <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
+              <p className="text-xs text-[var(--text-muted)] mb-1">Overall Progress</p>
+              <p className="text-2xl font-bold text-[var(--text)]">{ops.overallProgress}%</p>
             </div>
-            <div className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
-              <p className="text-xs text-slate-500 mb-1">Stages</p>
-              <p className="text-2xl font-bold text-white">
+            <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
+              <p className="text-xs text-[var(--text-muted)] mb-1">Stages</p>
+              <p className="text-2xl font-bold text-[var(--text)]">
                 {ops.completedStages}/{ops.stages.length}
               </p>
             </div>
-            <div className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
-              <p className="text-xs text-slate-500 mb-1">Estimated Price</p>
-              <p className="text-lg font-bold text-white">
+            <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
+              <p className="text-xs text-[var(--text-muted)] mb-1">Estimated Price</p>
+              <p className="text-lg font-bold text-[var(--text)]">
                 {project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : 'Not set'}
               </p>
             </div>
-            <div className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
-              <p className="text-xs text-slate-500 mb-1">Estimated Duration</p>
-              <p className="text-lg font-bold text-white">
+            <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
+              <p className="text-xs text-[var(--text-muted)] mb-1">Estimated Duration</p>
+              <p className="text-lg font-bold text-[var(--text)]">
                 {project.estimatedDuration ? `${project.estimatedDuration} days` : 'Not set'}
               </p>
             </div>
@@ -315,14 +315,14 @@ export default function AdminUserProjectDetailPage({
         </div>
       ) : null}
 
-      <div className="flex overflow-x-auto no-scrollbar bg-slate-800/50 p-1 rounded-xl w-fit max-w-full border border-white/5">
+      <div className="flex overflow-x-auto no-scrollbar bg-[var(--surface-3)] p-1 rounded-xl w-fit max-w-full border border-[var(--border)]">
         {tabs.map((tab) => (
           <button
             type="button"
             key={tab.id}
             onClick={() => ops.setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-              ops.activeTab === tab.id ? 'bg-primary text-white shadow-lg' : 'text-slate-400 hover:text-white'
+              ops.activeTab === tab.id ? 'bg-primary text-white shadow-lg' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
           >
             <tab.icon size={16} />
@@ -333,8 +333,8 @@ export default function AdminUserProjectDetailPage({
 
       {ops.activeTab === 'overview' ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 bg-[#0f172a] border border-white/5 rounded-2xl p-5">
-            <h2 className="text-lg font-bold text-white mb-4">Project Snapshot</h2>
+          <div className="lg:col-span-2 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
+            <h2 className="text-lg font-bold text-[var(--text)] mb-4">Project Snapshot</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 ['Industry', project.industry === 'Other' ? project.industryOther || 'Other' : project.industry || 'Not set'],
@@ -344,27 +344,27 @@ export default function AdminUserProjectDetailPage({
                 ['Service Model', project.serviceModel || 'Not set'],
                 ['Closest App', project.closestApp || 'Not set'],
               ].map(([label, value]) => (
-                <div key={label} className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
-                  <p className="text-xs text-slate-500 mb-1">{label}</p>
-                  <p className="text-sm text-white">{value}</p>
+                <div key={label} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
+                  <p className="text-xs text-[var(--text-muted)] mb-1">{label}</p>
+                  <p className="text-sm text-[var(--text)]">{value}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
-            <h2 className="text-lg font-bold text-white mb-4">Recent Updates</h2>
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
+            <h2 className="text-lg font-bold text-[var(--text)] mb-4">Recent Updates</h2>
             {ops.progressUpdates.length === 0 ? (
-              <p className="text-sm text-slate-500">No progress updates have been logged yet.</p>
+              <p className="text-sm text-[var(--text-muted)]">No progress updates have been logged yet.</p>
             ) : (
               <div className="space-y-4">
                 {ops.progressUpdates.slice(0, 4).map((update) => (
                   <div key={update.id} className="border-l border-primary/30 ps-3">
-                    <p className="text-sm font-medium text-white">{update.stageTitle}</p>
-                    <p className="text-xs text-slate-500">
+                    <p className="text-sm font-medium text-[var(--text)]">{update.stageTitle}</p>
+                    <p className="text-xs text-[var(--text-muted)]">
                       {update.previousProgress}% to {update.nextProgress}% on {formatDate(update.createdAt)}
                     </p>
-                    <p className="text-xs text-slate-400 mt-1 line-clamp-2">{update.note}</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2">{update.note}</p>
                   </div>
                 ))}
               </div>
@@ -377,8 +377,8 @@ export default function AdminUserProjectDetailPage({
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
           <div className="space-y-4">
             {ops.stages.length === 0 ? (
-              <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-10 text-center text-slate-500">
-                <ClipboardCheck size={32} className="mx-auto mb-4 text-slate-600" />
+              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-10 text-center text-[var(--text-muted)]">
+                <ClipboardCheck size={32} className="mx-auto mb-4 text-[var(--text-muted)]" />
                 <p>No stages have been planned yet.</p>
               </div>
             ) : (
@@ -396,11 +396,11 @@ export default function AdminUserProjectDetailPage({
             )}
           </div>
 
-          <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5 h-fit sticky top-4">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 h-fit sticky top-4">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-white">{ops.editingStageId ? 'Edit Stage' : 'Add Stage'}</h2>
+              <h2 className="text-lg font-bold text-[var(--text)]">{ops.editingStageId ? 'Edit Stage' : 'Add Stage'}</h2>
               {ops.editingStageId ? (
-                <button type="button" onClick={ops.resetStageForm} className="text-xs text-slate-400 hover:text-white">
+                <button type="button" onClick={ops.resetStageForm} className="text-xs text-[var(--text-muted)] hover:text-[var(--text)]">
                   Clear
                 </button>
               ) : null}
@@ -489,10 +489,10 @@ export default function AdminUserProjectDetailPage({
 
       {ops.activeTab === 'progress' ? (
         <div className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
-          <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5 h-fit">
-            <h2 className="text-lg font-bold text-white mb-5">Update Stage Progress</h2>
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 h-fit">
+            <h2 className="text-lg font-bold text-[var(--text)] mb-5">Update Stage Progress</h2>
             {ops.stages.length === 0 ? (
-              <p className="text-sm text-slate-500">Add stages in the Plan tab before logging progress.</p>
+              <p className="text-sm text-[var(--text-muted)]">Add stages in the Plan tab before logging progress.</p>
             ) : (
               <div className="space-y-4">
                 <div className="space-y-2">
@@ -512,7 +512,7 @@ export default function AdminUserProjectDetailPage({
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <FieldLabel>Progress</FieldLabel>
-                    <span className="text-white font-bold text-sm">{ops.progressValue}%</span>
+                    <span className="text-[var(--text)] font-bold text-sm">{ops.progressValue}%</span>
                   </div>
                   <input
                     type="range"
@@ -555,21 +555,21 @@ export default function AdminUserProjectDetailPage({
             )}
           </div>
 
-          <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
-            <h2 className="text-lg font-bold text-white mb-5">Progress History</h2>
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
+            <h2 className="text-lg font-bold text-[var(--text)] mb-5">Progress History</h2>
             {ops.progressUpdates.length === 0 ? (
-              <div className="text-center py-16 text-slate-500">
-                <Clock size={28} className="mx-auto mb-3 text-slate-600" />
+              <div className="text-center py-16 text-[var(--text-muted)]">
+                <Clock size={28} className="mx-auto mb-3 text-[var(--text-muted)]" />
                 <p>No progress history yet.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {ops.progressUpdates.map((update) => (
-                  <div key={update.id} className="bg-slate-900/50 border border-white/5 rounded-xl p-4">
+                  <div key={update.id} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
                     <div className="flex flex-col md:flex-row md:items-center justify-between gap-2 mb-2">
                       <div>
-                        <p className="text-white font-bold text-sm">{update.stageTitle}</p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-[var(--text)] font-bold text-sm">{update.stageTitle}</p>
+                        <p className="text-xs text-[var(--text-muted)]">
                           {formatDate(update.createdAt)} by {update.createdByName || 'Admin'}
                         </p>
                       </div>
@@ -577,7 +577,7 @@ export default function AdminUserProjectDetailPage({
                         {update.previousProgress}% to {update.nextProgress}%
                       </span>
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed">{update.note}</p>
+                    <p className="text-sm text-[var(--text)] leading-relaxed">{update.note}</p>
                   </div>
                 ))}
               </div>
@@ -588,16 +588,16 @@ export default function AdminUserProjectDetailPage({
 
       {ops.activeTab === 'reports' ? (
         <div className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
-          <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5 h-fit">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 h-fit">
             <div className="flex items-center justify-between gap-3 mb-5">
               <div>
-                <h2 className="text-lg font-bold text-white">
+                <h2 className="text-lg font-bold text-[var(--text)]">
                   {ops.editingReportId ? 'Edit Weekly Report' : 'Draft Weekly Report'}
                 </h2>
-                <p className="text-xs text-slate-500 mt-1">Text-only client report for the selected week.</p>
+                <p className="text-xs text-[var(--text-muted)] mt-1">Text-only client report for the selected week.</p>
               </div>
               {ops.editingReportId ? (
-                <button type="button" onClick={ops.resetReportForm} className="text-xs text-slate-400 hover:text-white">
+                <button type="button" onClick={ops.resetReportForm} className="text-xs text-[var(--text-muted)] hover:text-[var(--text)]">
                   Clear
                 </button>
               ) : null}
@@ -666,30 +666,30 @@ export default function AdminUserProjectDetailPage({
             </div>
           </div>
 
-          <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
               <div>
-                <h2 className="text-lg font-bold text-white">Report History</h2>
-                <p className="text-xs text-slate-500">Drafts and sent weekly reports for this project.</p>
+                <h2 className="text-lg font-bold text-[var(--text)]">Report History</h2>
+                <p className="text-xs text-[var(--text-muted)]">Drafts and sent weekly reports for this project.</p>
               </div>
-              <span className="text-xs text-slate-500 bg-slate-900/70 border border-white/5 rounded-full px-3 py-1">
+              <span className="text-xs text-[var(--text-muted)] bg-[var(--surface-2)] border border-[var(--border)] rounded-full px-3 py-1">
                 {ops.weeklyReports.length} total
               </span>
             </div>
 
             {ops.weeklyReports.length === 0 ? (
-              <div className="text-center py-16 text-slate-500">
-                <FileText size={28} className="mx-auto mb-3 text-slate-600" />
+              <div className="text-center py-16 text-[var(--text-muted)]">
+                <FileText size={28} className="mx-auto mb-3 text-[var(--text-muted)]" />
                 <p>No weekly reports have been created yet.</p>
               </div>
             ) : (
               <div className="space-y-4">
                 {ops.weeklyReports.map((report) => (
-                  <div key={report.id} className="bg-slate-900/50 border border-white/5 rounded-2xl p-4">
+                  <div key={report.id} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
                     <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 mb-3">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-2">
-                          <h3 className="text-white font-bold">
+                          <h3 className="text-[var(--text)] font-bold">
                             {formatDate(report.weekStart)} - {formatDate(report.weekEnd)}
                           </h3>
                           <span
@@ -707,7 +707,7 @@ export default function AdminUserProjectDetailPage({
                             </span>
                           ) : null}
                         </div>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-xs text-[var(--text-muted)]">
                           Updated {formatDate(report.updatedAt)} by {report.createdByName || 'Admin'}
                         </p>
                       </div>
@@ -716,7 +716,7 @@ export default function AdminUserProjectDetailPage({
                         <button
                           type="button"
                           onClick={() => navigator.clipboard?.writeText(report.content)}
-                          className="p-2 bg-slate-800 hover:bg-primary/20 hover:text-primary rounded-lg text-slate-400 transition-colors"
+                          className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
                           title="Copy report"
                         >
                           <Copy size={15} />
@@ -724,7 +724,7 @@ export default function AdminUserProjectDetailPage({
                         <button
                           type="button"
                           onClick={() => ops.startEditReport(report)}
-                          className="p-2 bg-slate-800 hover:bg-primary/20 hover:text-primary rounded-lg text-slate-400 transition-colors"
+                          className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
                           title="Edit report"
                         >
                           <Edit2 size={15} />
@@ -732,14 +732,14 @@ export default function AdminUserProjectDetailPage({
                         <button
                           type="button"
                           onClick={() => ops.deleteWeeklyReport(report.id)}
-                          className="p-2 bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-lg text-slate-400 transition-colors"
+                          className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
                           title="Delete report"
                         >
                           <Trash2 size={15} />
                         </button>
                       </div>
                     </div>
-                    <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap line-clamp-6">
+                    <p className="text-sm text-[var(--text)] leading-relaxed whitespace-pre-wrap line-clamp-6">
                       {report.content}
                     </p>
                   </div>
@@ -753,19 +753,19 @@ export default function AdminUserProjectDetailPage({
       {ops.activeTab === 'files' ? (
         <div className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
           <div className="space-y-6">
-            <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                   <Upload size={18} />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Add Stage Attachment</h2>
-                  <p className="text-xs text-slate-500">Visible only inside the dashboard.</p>
+                  <h2 className="text-lg font-bold text-[var(--text)]">Add Stage Attachment</h2>
+                  <p className="text-xs text-[var(--text-muted)]">Visible only inside the dashboard.</p>
                 </div>
               </div>
 
               {ops.stages.length === 0 ? (
-                <p className="text-sm text-slate-500">Add stages in the Plan tab before attaching files.</p>
+                <p className="text-sm text-[var(--text-muted)]">Add stages in the Plan tab before attaching files.</p>
               ) : (
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -812,21 +812,21 @@ export default function AdminUserProjectDetailPage({
                   </div>
                   <div className="space-y-2">
                     <FieldLabel>File Or Image</FieldLabel>
-                    <label className="block border border-dashed border-white/10 hover:border-primary/40 bg-slate-900/50 rounded-2xl p-5 cursor-pointer transition-colors">
+                    <label className="block border border-dashed border-[var(--border)] hover:border-primary/40 bg-[var(--surface-2)] rounded-2xl p-5 cursor-pointer transition-colors">
                       <input
                         type="file"
                         className="hidden"
                         onChange={(e) => ops.setAttachmentFile(e.target.files?.[0] || null)}
                       />
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-xl bg-slate-800 border border-white/5 flex items-center justify-center text-slate-400">
+                        <div className="w-10 h-10 rounded-xl bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
                           <Paperclip size={18} />
                         </div>
                         <div className="min-w-0">
-                          <p className="text-sm font-medium text-white truncate">
+                          <p className="text-sm font-medium text-[var(--text)] truncate">
                             {ops.attachmentFile ? ops.attachmentFile.name : 'Choose a file'}
                           </p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-[var(--text-muted)]">
                             {ops.attachmentFile ? formatFileSize(ops.attachmentFile.size) : 'Images, PDFs, docs, or other project files'}
                           </p>
                         </div>
@@ -853,19 +853,19 @@ export default function AdminUserProjectDetailPage({
               )}
             </div>
 
-            <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
               <div className="flex items-center gap-3 mb-5">
                 <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
                   <StickyNote size={18} />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-white">Add Internal Note</h2>
-                  <p className="text-xs text-slate-500">Admin-only, never shown to the client.</p>
+                  <h2 className="text-lg font-bold text-[var(--text)]">Add Internal Note</h2>
+                  <p className="text-xs text-[var(--text-muted)]">Admin-only, never shown to the client.</p>
                 </div>
               </div>
 
               {ops.stages.length === 0 ? (
-                <p className="text-sm text-slate-500">Add stages in the Plan tab before adding notes.</p>
+                <p className="text-sm text-[var(--text-muted)]">Add stages in the Plan tab before adding notes.</p>
               ) : (
                 <div className="space-y-4">
                   <div className="space-y-2">
@@ -908,20 +908,20 @@ export default function AdminUserProjectDetailPage({
           </div>
 
           <div className="space-y-6">
-            <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
                 <div>
-                  <h2 className="text-lg font-bold text-white">Stage Attachments</h2>
-                  <p className="text-xs text-slate-500">Dashboard-only files grouped by project stage.</p>
+                  <h2 className="text-lg font-bold text-[var(--text)]">Stage Attachments</h2>
+                  <p className="text-xs text-[var(--text-muted)]">Dashboard-only files grouped by project stage.</p>
                 </div>
-                <span className="text-xs text-slate-500 bg-slate-900/70 border border-white/5 rounded-full px-3 py-1">
+                <span className="text-xs text-[var(--text-muted)] bg-[var(--surface-2)] border border-[var(--border)] rounded-full px-3 py-1">
                   {ops.attachments.length} total
                 </span>
               </div>
 
               {ops.attachments.length === 0 ? (
-                <div className="text-center py-14 text-slate-500">
-                  <Paperclip size={28} className="mx-auto mb-3 text-slate-600" />
+                <div className="text-center py-14 text-[var(--text-muted)]">
+                  <Paperclip size={28} className="mx-auto mb-3 text-[var(--text-muted)]" />
                   <p>No attachments added yet.</p>
                 </div>
               ) : (
@@ -931,22 +931,22 @@ export default function AdminUserProjectDetailPage({
                     const isImage = attachment.fileType.startsWith('image/');
 
                     return (
-                      <div key={attachment.id} className="bg-slate-900/50 border border-white/5 rounded-2xl p-4">
+                      <div key={attachment.id} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
                         <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4">
                           <div className="flex gap-3 min-w-0">
-                            <div className="w-11 h-11 rounded-xl bg-slate-800 border border-white/10 flex items-center justify-center text-slate-400 shrink-0">
+                            <div className="w-11 h-11 rounded-xl bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)] shrink-0">
                               {isImage ? <ImageIcon size={18} /> : <Paperclip size={18} />}
                             </div>
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-2">
-                                <h3 className="text-white font-bold break-words">{attachment.title}</h3>
+                                <h3 className="text-[var(--text)] font-bold break-words">{attachment.title}</h3>
                                 <span className="text-[10px] text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5">
                                   {stage?.title || 'Unknown stage'}
                                 </span>
                               </div>
-                              <p className="text-sm text-slate-400 mt-1 leading-relaxed">{attachment.description}</p>
-                              <p className="text-xs text-slate-500 mt-2">Reason: {attachment.reason}</p>
-                              <div className="flex flex-wrap gap-3 mt-3 text-xs text-slate-500">
+                              <p className="text-sm text-[var(--text-muted)] mt-1 leading-relaxed">{attachment.description}</p>
+                              <p className="text-xs text-[var(--text-muted)] mt-2">Reason: {attachment.reason}</p>
+                              <div className="flex flex-wrap gap-3 mt-3 text-xs text-[var(--text-muted)]">
                                 <span>{attachment.fileName}</span>
                                 <span>{formatFileSize(attachment.fileSize)}</span>
                                 <span>{formatDate(attachment.createdAt)}</span>
@@ -960,7 +960,7 @@ export default function AdminUserProjectDetailPage({
                               href={attachment.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="p-2 bg-slate-800 hover:bg-primary/20 hover:text-primary rounded-lg text-slate-400 transition-colors"
+                              className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
                               title="Open file"
                             >
                               <ExternalLink size={15} />
@@ -968,7 +968,7 @@ export default function AdminUserProjectDetailPage({
                             <button
                               type="button"
                               onClick={() => ops.deleteAttachment(attachment.id)}
-                              className="p-2 bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-lg text-slate-400 transition-colors"
+                              className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
                               title="Delete attachment"
                             >
                               <Trash2 size={15} />
@@ -982,11 +982,11 @@ export default function AdminUserProjectDetailPage({
               )}
             </div>
 
-            <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
+            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
                 <div>
-                  <h2 className="text-lg font-bold text-white">Admin-Only Notes</h2>
-                  <p className="text-xs text-slate-500">Internal notes are hidden from clients and non-admin views.</p>
+                  <h2 className="text-lg font-bold text-[var(--text)]">Admin-Only Notes</h2>
+                  <p className="text-xs text-[var(--text-muted)]">Internal notes are hidden from clients and non-admin views.</p>
                 </div>
                 <span className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1">
                   Admin only
@@ -994,8 +994,8 @@ export default function AdminUserProjectDetailPage({
               </div>
 
               {ops.internalNotes.length === 0 ? (
-                <div className="text-center py-14 text-slate-500">
-                  <StickyNote size={28} className="mx-auto mb-3 text-slate-600" />
+                <div className="text-center py-14 text-[var(--text-muted)]">
+                  <StickyNote size={28} className="mx-auto mb-3 text-[var(--text-muted)]" />
                   <p>No internal notes added yet.</p>
                 </div>
               ) : (
@@ -1004,22 +1004,22 @@ export default function AdminUserProjectDetailPage({
                     const stage = ops.stages.find((item) => item.id === note.stageId);
 
                     return (
-                      <div key={note.id} className="bg-slate-900/50 border border-white/5 rounded-2xl p-4">
+                      <div key={note.id} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
                         <div className="flex items-start justify-between gap-4">
                           <div className="min-w-0">
                             <div className="flex flex-wrap items-center gap-2 mb-2">
                               <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
                                 {stage?.title || 'Unknown stage'}
                               </span>
-                              <span className="text-xs text-slate-500">{formatDate(note.createdAt)}</span>
-                              <span className="text-xs text-slate-500">{note.createdByName || 'Admin'}</span>
+                              <span className="text-xs text-[var(--text-muted)]">{formatDate(note.createdAt)}</span>
+                              <span className="text-xs text-[var(--text-muted)]">{note.createdByName || 'Admin'}</span>
                             </div>
-                            <p className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">{note.text}</p>
+                            <p className="text-sm text-[var(--text)] leading-relaxed whitespace-pre-wrap">{note.text}</p>
                           </div>
                           <button
                             type="button"
                             onClick={() => ops.deleteInternalNote(note.id)}
-                            className="p-2 bg-slate-800 hover:bg-red-500/20 hover:text-red-400 rounded-lg text-slate-400 transition-colors shrink-0"
+                            className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors shrink-0"
                             title="Delete note"
                           >
                             <Trash2 size={15} />
@@ -1037,14 +1037,14 @@ export default function AdminUserProjectDetailPage({
 
       {ops.activeTab === 'final' ? (
         <div className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
-          <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5 h-fit">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 h-fit">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
                 <ClipboardCheck size={18} />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-white">Completion Checklist</h2>
-                <p className="text-xs text-slate-500">All required items must pass before approval.</p>
+                <h2 className="text-lg font-bold text-[var(--text)]">Completion Checklist</h2>
+                <p className="text-xs text-[var(--text-muted)]">All required items must pass before approval.</p>
               </div>
             </div>
 
@@ -1055,15 +1055,15 @@ export default function AdminUserProjectDetailPage({
                 ['Progress history exists', ops.completionChecks.hasProgressHistory],
                 ['At least one weekly report was sent', ops.completionChecks.hasReportHistory],
               ].map(([label, passed]) => (
-                <div key={String(label)} className="bg-slate-900/50 border border-white/5 rounded-xl p-3 flex items-center gap-3">
+                <div key={String(label)} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-3 flex items-center gap-3">
                   <div
                     className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                      passed ? 'bg-emerald-500/10 text-emerald-400' : 'bg-slate-800 text-slate-500'
+                      passed ? 'bg-emerald-500/10 text-emerald-400' : 'bg-[var(--surface-3)] text-[var(--text-muted)]'
                     }`}
                   >
                     {passed ? <CheckCircle2 size={15} /> : <Lock size={15} />}
                   </div>
-                  <span className="text-sm text-slate-300">{label}</span>
+                  <span className="text-sm text-[var(--text)]">{label}</span>
                 </div>
               ))}
             </div>
@@ -1086,11 +1086,11 @@ export default function AdminUserProjectDetailPage({
             </div>
           </div>
 
-          <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-5">
+          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
               <div>
-                <h2 className="text-lg font-bold text-white">Final Report</h2>
-                <p className="text-xs text-slate-500">Review and edit before approving project completion.</p>
+                <h2 className="text-lg font-bold text-[var(--text)]">Final Report</h2>
+                <p className="text-xs text-[var(--text-muted)]">Review and edit before approving project completion.</p>
               </div>
               {project.finalReport?.approvedAt ? (
                 <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1">
@@ -1122,7 +1122,7 @@ export default function AdminUserProjectDetailPage({
                 type="button"
                 onClick={() => navigator.clipboard?.writeText(ops.finalReportContent)}
                 disabled={!ops.finalReportContent.trim()}
-                className="inline-flex items-center gap-2 bg-slate-800/50 text-slate-300 border border-white/10 hover:bg-slate-700 hover:text-white disabled:opacity-50 rounded-xl px-4 py-2 text-sm font-bold transition-colors"
+                className="inline-flex items-center gap-2 bg-[var(--surface-3)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--surface-3)] hover:text-[var(--text)] disabled:opacity-50 rounded-xl px-4 py-2 text-sm font-bold transition-colors"
               >
                 <Copy size={16} />
                 Copy
@@ -1145,12 +1145,12 @@ function PlaceholderPanel({
   text: string;
 }) {
   return (
-    <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-10 text-center">
-      <div className="w-16 h-16 bg-slate-800/50 rounded-2xl flex items-center justify-center mx-auto mb-5 border border-white/5">
-        <Icon size={28} className="text-slate-500" />
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-10 text-center">
+      <div className="w-16 h-16 bg-[var(--surface-3)] rounded-2xl flex items-center justify-center mx-auto mb-5 border border-[var(--border)]">
+        <Icon size={28} className="text-[var(--text-muted)]" />
       </div>
-      <h2 className="text-xl font-bold text-white mb-2">{title}</h2>
-      <p className="text-sm text-slate-400 max-w-xl mx-auto leading-relaxed">{text}</p>
+      <h2 className="text-xl font-bold text-[var(--text)] mb-2">{title}</h2>
+      <p className="text-sm text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed">{text}</p>
     </div>
   );
 }

@@ -66,18 +66,18 @@ export default function NotificationComposer({
 
   return (
     <div className="lg:col-span-2 space-y-6">
-      <div className="bg-[#0f172a] border border-white/10 rounded-2xl p-6 shadow-xl">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-xl">
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <div className="space-y-3">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Recipients</label>
-            <div className="flex bg-slate-900 p-1 rounded-xl border border-white/5 w-full sm:w-fit">
+            <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Recipients</label>
+            <div className="flex bg-[var(--surface-2)] p-1 rounded-xl border border-[var(--border)] w-full sm:w-fit">
               <button
                 type="button"
                 onClick={() => setTargetType('all')}
                 className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-medium transition-all ${
                   targetType === 'all'
-                    ? 'bg-slate-800 text-white shadow-sm ring-1 ring-white/10'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-[var(--surface-3)] text-[var(--text)] shadow-sm ring-1 ring-[var(--border)]'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
               >
                 All Users
@@ -87,8 +87,8 @@ export default function NotificationComposer({
                 onClick={() => setTargetType('single')}
                 className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-medium transition-all ${
                   targetType === 'single'
-                    ? 'bg-slate-800 text-white shadow-sm ring-1 ring-white/10'
-                    : 'text-slate-400 hover:text-slate-200'
+                    ? 'bg-[var(--surface-3)] text-[var(--text)] shadow-sm ring-1 ring-[var(--border)]'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
               >
                 Single User
@@ -105,7 +105,7 @@ export default function NotificationComposer({
                 >
                   {!selectedUser ? (
                     <div className="relative" ref={dropdownRef}>
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
                       <input
                         type="text"
                         value={searchQuery}
@@ -115,7 +115,7 @@ export default function NotificationComposer({
                         }}
                         onFocus={() => setShowUserDropdown(true)}
                         placeholder="Search user by name, email, or phone..."
-                        className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl py-3 pl-10 pr-4 text-white placeholder:text-slate-600 focus:outline-none focus:border-primary transition-colors"
+                        className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
                       />
 
                       <AnimatePresence>
@@ -124,7 +124,7 @@ export default function NotificationComposer({
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
-                            className="absolute top-full left-0 right-0 mt-2 bg-slate-900 border border-white/10 rounded-xl shadow-2xl z-50 overflow-hidden"
+                            className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl shadow-2xl z-50 overflow-hidden"
                           >
                             {filteredUsers.length > 0 ? (
                               filteredUsers.map((user) => (
@@ -132,14 +132,14 @@ export default function NotificationComposer({
                                   key={user.id}
                                   type="button"
                                   onClick={() => handleUserSelect(user)}
-                                  className="w-full text-left p-3 hover:bg-white/5 border-b border-white/5 last:border-0 flex items-center gap-3 transition-colors"
+                                  className="w-full text-left p-3 hover:bg-white/5 border-b border-[var(--border)] last:border-0 flex items-center gap-3 transition-colors"
                                 >
                                   <Avatar name={`${user.firstName} ${user.lastName}`} size="sm" className="w-8 h-8 text-xs" />
                                   <div>
-                                    <div className="text-sm font-medium text-white">
+                                    <div className="text-sm font-medium text-[var(--text)]">
                                       {user.firstName} {user.lastName}
                                     </div>
-                                    <div className="text-xs text-slate-500">{user.email}</div>
+                                    <div className="text-xs text-[var(--text-muted)]">{user.email}</div>
                                   </div>
                                   <span
                                     className={`ml-auto text-[10px] px-2 py-0.5 rounded-full ${
@@ -153,14 +153,14 @@ export default function NotificationComposer({
                                 </button>
                               ))
                             ) : (
-                              <div className="p-4 text-center text-slate-500 text-sm">No users found</div>
+                              <div className="p-4 text-center text-[var(--text-muted)] text-sm">No users found</div>
                             )}
                           </motion.div>
                         ) : null}
                       </AnimatePresence>
                     </div>
                   ) : (
-                    <div className="flex items-center justify-between bg-slate-800/50 border border-primary/30 rounded-xl p-3">
+                    <div className="flex items-center justify-between bg-[var(--surface-3)] border border-primary/30 rounded-xl p-3">
                       <div className="flex items-center gap-3">
                         <Avatar
                           name={`${selectedUser.firstName} ${selectedUser.lastName}`}
@@ -168,16 +168,16 @@ export default function NotificationComposer({
                           className="w-10 h-10 text-sm"
                         />
                         <div>
-                          <div className="font-bold text-white text-sm">
+                          <div className="font-bold text-[var(--text)] text-sm">
                             {selectedUser.firstName} {selectedUser.lastName}
                           </div>
-                          <div className="text-xs text-slate-400">{selectedUser.email}</div>
+                          <div className="text-xs text-[var(--text-muted)]">{selectedUser.email}</div>
                         </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => setSelectedUser(null)}
-                        className="p-2 text-slate-400 hover:text-white bg-slate-700/50 hover:bg-slate-700 rounded-lg transition-colors"
+                        className="p-2 text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-3)] hover:bg-[var(--surface-3)] rounded-lg transition-colors"
                       >
                         <X size={16} />
                       </button>
@@ -199,7 +199,7 @@ export default function NotificationComposer({
                     {...field}
                     type="text"
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-slate-900 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                   />
@@ -220,7 +220,7 @@ export default function NotificationComposer({
                     {...field}
                     rows={4}
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-slate-900 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors resize-none ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors resize-none ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                   />
@@ -242,7 +242,7 @@ export default function NotificationComposer({
                       {...field}
                       type="url"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-slate-900 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     />
@@ -263,7 +263,7 @@ export default function NotificationComposer({
                       {...field}
                       type="text"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-slate-900 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     />
@@ -285,9 +285,9 @@ export default function NotificationComposer({
                     id="schedule"
                     checked={field.value}
                     onChange={field.onChange}
-                    className="w-4 h-4 rounded border-slate-700 text-primary focus:ring-primary bg-slate-900"
+                    className="w-4 h-4 rounded border-[var(--border)] text-primary focus:ring-primary bg-[var(--surface-2)]"
                   />
-                  <label htmlFor="schedule" className="text-sm font-medium text-slate-300">
+                  <label htmlFor="schedule" className="text-sm font-medium text-[var(--text)]">
                     Schedule for later
                   </label>
                 </div>
@@ -305,7 +305,7 @@ export default function NotificationComposer({
                       {...field}
                       type="datetime-local"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-slate-900 border border-slate-700/50 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-primary transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     />

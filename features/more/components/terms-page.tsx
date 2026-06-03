@@ -11,8 +11,8 @@ interface SectionProps {
 
 const Section: React.FC<SectionProps> = ({ title, children }) => (
   <div className="mb-6 last:mb-0">
-    <h3 className="text-base font-bold text-white mb-2">{title}</h3>
-    <div className="text-sm text-slate-400 leading-relaxed space-y-2">{children}</div>
+    <h3 className="text-base font-bold text-[var(--text)] mb-2">{title}</h3>
+    <div className="text-sm text-[var(--text-muted)] leading-relaxed space-y-2">{children}</div>
   </div>
 );
 
@@ -25,21 +25,24 @@ export default function TermsPage() {
       initial={{ opacity: 0, x: dir === 'rtl' ? -20 : 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: dir === 'rtl' ? 20 : -20 }}
-      className="flex flex-col h-full bg-[#020617] relative overflow-y-auto no-scrollbar pb-24"
+      className="app-page app-page-narrow"
     >
-      <div className="sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md px-4 py-4 border-b border-white/5 flex items-center shadow-lg">
-        <button
-          type="button"
-          onClick={() => router.push('/more')}
-          className="p-2 -ms-2 text-slate-400 hover:text-white transition-colors"
-        >
-          {dir === 'rtl' ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
-        </button>
-        <h1 className="text-lg font-bold text-white ms-2">{t('more.terms')}</h1>
-      </div>
+      <header className="app-header">
+        <div>
+          <button
+            type="button"
+            onClick={() => router.push('/more')}
+            className="text-[var(--text-muted)] hover:text-[var(--text)] mb-4 flex items-center gap-1"
+          >
+            {dir === 'rtl' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            <span className="text-sm">{t('auth.back')}</span>
+          </button>
+          <h1 className="app-title">{t('more.terms')}</h1>
+        </div>
+      </header>
 
-      <div className="p-6">
-        <div className="bg-slate-800/30 border border-white/5 rounded-2xl p-6 backdrop-blur-sm">
+      <div>
+        <div className="app-card rounded-2xl p-6">
           <Section title="1. Acceptance of Terms">
             <p>
               By downloading, installing, or using the Raiyansoft® application, you agree to be bound by these Terms of Use. If you do not agree, please do not use our services.
@@ -84,7 +87,7 @@ export default function TermsPage() {
             <p>We may modify these terms at any time. Continued use of the app constitutes acceptance of the new terms.</p>
           </Section>
 
-          <div className="mt-8 pt-6 border-t border-white/5 text-xs text-slate-500 text-center">
+          <div className="mt-8 pt-6 border-t border-[var(--border)] text-xs text-[var(--text-muted)] text-center">
             Last updated: December 2025
           </div>
         </div>

@@ -12,14 +12,7 @@ import LoginForm from './login-form';
 export default function LoginPage() {
   const router = useRouter();
   const { t, language, setLanguage, dir } = useTranslation();
-  const {
-    error,
-    loading,
-    resetLoading,
-    successMessage,
-    login,
-    forgotPassword,
-  } = useLogin();
+  const { error, loading, resetLoading, successMessage, login, forgotPassword } = useLogin();
 
   const handleGuestLogin = () => {
     guestStore.setGuest(true);
@@ -31,9 +24,9 @@ export default function LoginPage() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="min-h-full p-6 pt-8 pb-10 relative overflow-y-auto no-scrollbar"
+      className="app-page app-page-narrow min-h-[calc(100dvh-5.5rem)] lg:min-h-[calc(100dvh-4.5rem)] flex items-center"
     >
-      <div className="w-full">
+      <div className="w-full app-card rounded-3xl p-6 sm:p-8">
         <div className="flex justify-center mb-10">
           <SafeImage
             src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
@@ -43,8 +36,8 @@ export default function LoginPage() {
         </div>
 
         <div className="mb-10">
-          <h1 className="text-3xl font-bold text-white mb-2">{t('auth.welcome')}</h1>
-          <p className="text-slate-400 text-sm">{t('auth.signin_subtitle')}</p>
+          <h1 className="text-3xl font-bold text-[var(--text)] mb-2">{t('auth.welcome')}</h1>
+          <p className="text-[var(--text-muted)] text-sm">{t('auth.signin_subtitle')}</p>
         </div>
 
         {error ? (
@@ -84,36 +77,36 @@ export default function LoginPage() {
           <span>{t('auth.continue_guest')}</span>
           <ArrowRight size={16} className={dir === 'rtl' ? 'rotate-180' : ''} />
         </Button>
-      </div>
 
-      <div className="flex flex-col items-center gap-6 pt-10">
-        <button
-          type="button"
-          onClick={() => router.push('/signup')}
-          className="text-sm text-slate-400 hover:text-white transition-colors"
-        >
-          {t('auth.no_account')} <span className="text-primary">{t('auth.signup_link')}</span>
-        </button>
-
-        <div className="flex bg-slate-800/50 backdrop-blur-md rounded-full p-1 border border-white/10 shadow-lg">
+        <div className="flex flex-col items-center gap-6 pt-10">
           <button
             type="button"
-            onClick={() => setLanguage('en')}
-            className={`px-4 py-1.5 rounded-full text-[10px] font-medium transition-all duration-300 ${
-              language === 'en' ? 'bg-primary text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
-            }`}
+            onClick={() => router.push('/signup')}
+            className="text-sm text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
           >
-            English
+            {t('auth.no_account')} <span className="text-primary">{t('auth.signup_link')}</span>
           </button>
-          <button
-            type="button"
-            onClick={() => setLanguage('ar')}
-            className={`px-4 py-1.5 rounded-full text-[10px] font-medium transition-all duration-300 ${
-              language === 'ar' ? 'bg-primary text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            العربية
-          </button>
+
+          <div className="flex lg:hidden bg-[var(--surface-2)] backdrop-blur-md rounded-full p-1 border border-[var(--border)] shadow-lg">
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              className={`px-4 py-1.5 rounded-full text-[10px] font-medium transition-all duration-300 ${
+                language === 'en' ? 'bg-primary text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+              }`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('ar')}
+              className={`px-4 py-1.5 rounded-full text-[10px] font-medium transition-all duration-300 ${
+                language === 'ar' ? 'bg-primary text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+              }`}
+            >
+              العربية
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>

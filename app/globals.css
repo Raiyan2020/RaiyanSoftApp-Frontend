@@ -239,6 +239,128 @@ li {
   transform: translateY(1px) scale(0.99);
 }
 
+.app-shell {
+  min-height: 100dvh;
+  width: 100%;
+  background:
+    radial-gradient(circle at top left, rgba(18, 169, 217, 0.12), transparent 32rem),
+    linear-gradient(180deg, var(--bg-2), var(--bg));
+  color: var(--text);
+}
+
+.app-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 100dvh;
+  width: 100%;
+  flex-direction: column;
+}
+
+.app-main {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  padding-bottom: 5.5rem;
+}
+
+@media (min-width: 1024px) {
+  .app-main {
+    padding-bottom: 0;
+  }
+}
+
+.app-page {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding: 1rem;
+}
+
+@media (min-width: 640px) {
+  .app-page {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-page {
+    padding: 2rem;
+  }
+}
+
+.app-page-narrow {
+  max-width: 56rem;
+}
+
+.app-page-wide {
+  max-width: 90rem;
+}
+
+.app-surface {
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-soft);
+}
+
+.app-surface-muted {
+  background: color-mix(in srgb, var(--surface-2) 74%, transparent);
+  border: 1px solid var(--border);
+}
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .app-header {
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+}
+
+.app-title {
+  color: var(--text);
+  font-size: clamp(1.75rem, 2vw, 2.5rem);
+  font-weight: 700;
+  line-height: 1.15 !important;
+}
+
+.app-subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  max-width: 42rem;
+}
+
+.app-card {
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+  border: 1px solid var(--border);
+  box-shadow: 0 18px 50px rgba(8, 38, 58, 0.08);
+}
+
+.dark .app-card {
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+}
+
+.app-muted {
+  color: var(--text-muted);
+}
+
+.app-input {
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  border: 1px solid var(--border);
+  color: var(--text);
+}
+
+.app-input::placeholder {
+  color: var(--text-muted);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

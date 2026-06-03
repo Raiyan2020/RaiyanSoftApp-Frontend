@@ -45,16 +45,16 @@ export default function SignupForm({
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>{t('auth.firstname')}</FieldLabel>
               <div className="relative">
-                <div className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none flex items-center justify-center">
+                <div className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none flex items-center justify-center">
                   <User size={16} />
                 </div>
                 <input
                   {...field}
                   aria-invalid={fieldState.invalid}
-                  className={`w-full bg-slate-800 rounded-xl ps-10 pe-4 py-3.5 text-white border focus:outline-none transition-all ${
+                  className={`w-full app-input rounded-xl ps-10 pe-4 py-3.5 focus:outline-none transition-all ${
                     fieldState.invalid
                       ? 'border-red-500/50 focus:border-red-500'
-                      : 'border-white/10 focus:border-primary'
+                      : 'focus:border-primary'
                   }`}
                   dir={dir}
                 />
@@ -72,16 +72,16 @@ export default function SignupForm({
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>{t('auth.lastname')}</FieldLabel>
               <div className="relative">
-                <div className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none flex items-center justify-center">
+                <div className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none flex items-center justify-center">
                   <User size={16} />
                 </div>
                 <input
                   {...field}
                   aria-invalid={fieldState.invalid}
-                  className={`w-full bg-slate-800 rounded-xl ps-10 pe-4 py-3.5 text-white border focus:outline-none transition-all ${
+                  className={`w-full app-input rounded-xl ps-10 pe-4 py-3.5 focus:outline-none transition-all ${
                     fieldState.invalid
                       ? 'border-red-500/50 focus:border-red-500'
-                      : 'border-white/10 focus:border-primary'
+                      : 'focus:border-primary'
                   }`}
                   dir={dir}
                 />
@@ -115,17 +115,17 @@ export default function SignupForm({
           <Field data-invalid={fieldState.invalid}>
             <FieldLabel>{t('auth.email')}</FieldLabel>
             <div className="relative">
-              <div className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500 pointer-events-none flex items-center justify-center">
+              <div className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none flex items-center justify-center">
                 <Mail size={16} />
               </div>
               <input
                 {...field}
                 type="email"
                 aria-invalid={fieldState.invalid}
-                className={`w-full bg-slate-800 rounded-xl ps-10 pe-4 py-3.5 text-white border focus:outline-none transition-all ${
+                className={`w-full app-input rounded-xl ps-10 pe-4 py-3.5 focus:outline-none transition-all ${
                   fieldState.invalid
                     ? 'border-red-500/50 focus:border-red-500'
-                    : 'border-white/10 focus:border-primary'
+                    : 'focus:border-primary'
                 }`}
                 dir="ltr"
               />
@@ -183,7 +183,7 @@ export default function SignupForm({
             <label className="flex items-center space-x-3 rtl:space-x-reverse cursor-pointer group w-fit">
               <div
                 className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${
-                  field.value ? 'bg-primary border-primary' : 'border-slate-600 bg-slate-800/50 group-hover:border-slate-500'
+                  field.value ? 'bg-primary border-primary' : 'border-[var(--border)] bg-[var(--surface-2)] group-hover:border-primary/50'
                 }`}
               >
                 <input
@@ -192,9 +192,9 @@ export default function SignupForm({
                   onChange={field.onChange}
                   className="hidden"
                 />
-                {field.value ? <Check size={14} className="text-white" /> : null}
+                {field.value ? <Check size={14} className="text-[var(--text)]" /> : null}
               </div>
-              <span className="text-xs text-slate-400 group-hover:text-slate-300 transition-colors font-medium">
+              <span className="text-xs text-[var(--text-muted)] group-hover:text-[var(--text)] transition-colors font-medium">
                 {t('auth.agree_terms')}
               </span>
             </label>

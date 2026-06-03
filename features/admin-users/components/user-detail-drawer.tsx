@@ -46,27 +46,27 @@ export default function UserDetailDrawer({
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-[#0f172a] border-l border-white/10 shadow-2xl flex flex-col"
+        className="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-[var(--surface)] border-l border-[var(--border)] shadow-2xl flex flex-col"
       >
-        <div className="flex items-center justify-between p-6 border-b border-white/5">
-          <h2 className="text-xl font-bold text-white">User Details</h2>
+        <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
+          <h2 className="text-xl font-bold text-[var(--text)]">User Details</h2>
           <button
             type="button"
             onClick={onClose}
-            className="p-2 text-slate-400 hover:text-white rounded-lg hover:bg-white/5 transition-colors"
+            className="p-2 text-[var(--text-muted)] hover:text-[var(--text)] rounded-lg hover:bg-white/5 transition-colors"
           >
             <X size={20} />
           </button>
         </div>
 
-        <div className="flex border-b border-white/5 bg-slate-900/50">
+        <div className="flex border-b border-[var(--border)] bg-[var(--surface-2)]">
           <button
             type="button"
             onClick={() => setActiveTab('profile')}
             className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${
               activeTab === 'profile'
                 ? 'border-primary text-primary bg-primary/5'
-                : 'border-transparent text-slate-400 hover:text-white'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
           >
             Profile Info
@@ -77,7 +77,7 @@ export default function UserDetailDrawer({
             className={`flex-1 py-3 text-sm font-medium transition-colors border-b-2 ${
               activeTab === 'projects'
                 ? 'border-primary text-primary bg-primary/5'
-                : 'border-transparent text-slate-400 hover:text-white'
+                : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
           >
             Projects ({selectedUser.projectsCount || 0})
@@ -101,7 +101,7 @@ export default function UserDetailDrawer({
         </div>
 
         {activeTab === 'profile' ? (
-          <div className="p-6 border-t border-white/5 bg-[#0f172a]">
+          <div className="p-6 border-t border-[var(--border)] bg-[var(--surface)]">
             <div className="flex gap-3">
               <button
                 type="button"

@@ -23,7 +23,7 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
 
   if (isChecking) {
     return (
-      <div className="h-screen w-full bg-[#020617] flex items-center justify-center text-white">Loading...</div>
+      <div className="h-screen w-full bg-[var(--bg)] flex items-center justify-center text-[var(--text)]">Loading...</div>
     );
   }
 

@@ -53,13 +53,13 @@ export default function ProjectFormModal({
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-[#0f172a] w-full max-w-lg rounded-2xl border border-white/10 shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface)] w-full max-w-lg rounded-2xl border border-[var(--border)] shadow-2xl flex flex-col max-h-[90vh]"
       >
-        <div className="p-5 border-b border-white/10 flex justify-between items-center">
-          <h2 className="text-xl font-bold text-white">
+        <div className="p-5 border-b border-[var(--border)] flex justify-between items-center">
+          <h2 className="text-xl font-bold text-[var(--text)]">
             {editingProject ? 'Edit Project' : 'Add New Project'}
           </h2>
-          <button type="button" onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+          <button type="button" onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
             <X size={20} />
           </button>
         </div>
@@ -76,7 +76,7 @@ export default function ProjectFormModal({
                     {...field}
                     type="text"
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                     placeholder="e.g. Raiyan CRM"
@@ -98,7 +98,7 @@ export default function ProjectFormModal({
                     {...field}
                     maxLength={120}
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors h-24 resize-none ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors h-24 resize-none ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                     placeholder="Brief overview (max 120 chars)"
@@ -109,7 +109,7 @@ export default function ProjectFormModal({
                     ) : (
                       <span />
                     )}
-                    <div className="text-[10px] text-slate-500">
+                    <div className="text-[10px] text-[var(--text-muted)]">
                       {(field.value || '').length}/120
                     </div>
                   </div>
@@ -127,7 +127,7 @@ export default function ProjectFormModal({
                     {...field}
                     type="url"
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                     placeholder="https://..."
@@ -151,13 +151,13 @@ export default function ProjectFormModal({
                       value={field.value || ''}
                       type="text"
                       aria-invalid={fieldState.invalid}
-                      className={`flex-1 bg-slate-900 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-primary focus:outline-none transition-colors text-sm ${
+                      className={`flex-1 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors text-sm ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                       placeholder="Paste image URL..."
                     />
-                    <label className="bg-slate-800 hover:bg-slate-700 border border-white/10 rounded-xl px-4 flex items-center justify-center cursor-pointer transition-colors shrink-0">
-                      <ImageIcon size={20} className="text-slate-400" />
+                    <label className="bg-[var(--surface-3)] hover:bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 flex items-center justify-center cursor-pointer transition-colors shrink-0">
+                      <ImageIcon size={20} className="text-[var(--text-muted)]" />
                       <input type="file" accept="image/*" onChange={onFileChange} className="hidden" />
                     </label>
                   </div>
@@ -165,12 +165,12 @@ export default function ProjectFormModal({
                     <FieldError errors={[fieldState.error]} />
                   )}
                   {isValidImageUrl(field.value) ? (
-                    <div className="mt-2 w-16 h-16 bg-slate-800 rounded-xl border border-white/10 overflow-hidden relative group">
+                    <div className="mt-2 w-16 h-16 bg-[var(--surface-3)] rounded-xl border border-[var(--border)] overflow-hidden relative group">
                       <div className="relative w-full h-full">
                         <Image src={field.value || ''} alt="Preview" fill className="object-cover" />
                       </div>
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                        <span className="text-[10px] text-white">Preview</span>
+                        <span className="text-[10px] text-[var(--text)]">Preview</span>
                       </div>
                     </div>
                   ) : null}
@@ -180,11 +180,11 @@ export default function ProjectFormModal({
           </form>
         </div>
 
-        <div className="p-5 border-t border-white/10 flex justify-end gap-3">
+        <div className="p-5 border-t border-[var(--border)] flex justify-end gap-3">
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 rounded-xl text-slate-400 hover:text-white font-medium text-sm transition-colors"
+            className="px-5 py-2.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text)] font-medium text-sm transition-colors"
           >
             Cancel
           </button>

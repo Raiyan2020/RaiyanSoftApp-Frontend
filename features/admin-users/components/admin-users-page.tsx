@@ -36,18 +36,18 @@ export default function AdminUsersPage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white flex items-center gap-2">
+          <h1 className="text-2xl font-bold text-[var(--text)] flex items-center gap-2">
             Users
-            <span className="text-sm font-normal text-slate-400 bg-slate-800 px-2 py-1 rounded-full border border-white/5">
+            <span className="text-sm font-normal text-[var(--text-muted)] bg-[var(--surface-3)] px-2 py-1 rounded-full border border-[var(--border)]">
               {users.length}
             </span>
           </h1>
-          <p className="text-slate-400 text-sm">Registered accounts management.</p>
+          <p className="text-[var(--text-muted)] text-sm">Registered accounts management.</p>
         </div>
         <button
           type="button"
           onClick={handleExport}
-          className="bg-slate-800 hover:bg-slate-700 text-slate-200 px-4 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors border border-white/5"
+          className="bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] px-4 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors border border-[var(--border)]"
         >
           <Download size={18} />
           <span>Export CSV</span>
@@ -71,10 +71,10 @@ export default function AdminUsersPage() {
         setFilterStatus={setFilterStatus}
       />
 
-      <div className="bg-[#0f172a] border border-white/5 rounded-2xl shadow-xl overflow-hidden min-h-[400px]">
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden min-h-[400px]">
         {filteredUsers.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-slate-500">
-            <div className="w-16 h-16 bg-slate-800/50 rounded-full flex items-center justify-center mb-4 border border-white/5">
+          <div className="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
+            <div className="w-16 h-16 bg-[var(--surface-3)] rounded-full flex items-center justify-center mb-4 border border-[var(--border)]">
               <UserIcon size={24} />
             </div>
             <p>{error ? 'Unable to load users.' : 'No users found matching your criteria.'}</p>

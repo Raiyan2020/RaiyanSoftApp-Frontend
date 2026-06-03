@@ -41,16 +41,16 @@ export default function CalendarSlotPicker({
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-2">
-          <button type="button" onClick={onPrevMonth} className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white border border-white/5">
+          <button type="button" onClick={onPrevMonth} className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] border border-[var(--border)]">
             <ChevronLeft size={20} />
           </button>
           <h3 className="text-lg font-bold uppercase tracking-wide">{monthLabel}</h3>
-          <button type="button" onClick={onNextMonth} className="p-2 bg-slate-800 rounded-lg text-slate-400 hover:text-white border border-white/5">
+          <button type="button" onClick={onNextMonth} className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] border border-[var(--border)]">
             <ChevronRight size={20} />
           </button>
         </div>
 
-        <div className="grid grid-cols-5 gap-2 mb-2 text-center text-xs font-bold text-slate-500 uppercase">
+        <div className="grid grid-cols-5 gap-2 mb-2 text-center text-xs font-bold text-[var(--text-muted)] uppercase">
           {weekDays.map((d) => (
             <div key={d}>{d}</div>
           ))}
@@ -80,8 +80,8 @@ export default function CalendarSlotPicker({
                         : isSelected
                         ? 'bg-primary border-primary text-white shadow-lg'
                         : isClickable
-                        ? 'bg-slate-800 text-slate-300 border-white/5 hover:bg-slate-700'
-                        : 'bg-slate-900/50 text-slate-600 border-transparent cursor-not-allowed'
+                        ? 'bg-[var(--surface-3)] text-[var(--text)] border-[var(--border)] hover:bg-[var(--surface-3)]'
+                        : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-transparent cursor-not-allowed'
                     }`}
                   >
                     <span className="text-sm font-bold">{date.getDate()}</span>
@@ -94,14 +94,14 @@ export default function CalendarSlotPicker({
       </div>
 
       {selectedDate ? (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 pt-4 border-t border-white/5">
-          <h3 className="text-white font-bold">Select Time</h3>
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 pt-4 border-t border-[var(--border)]">
+          <h3 className="text-[var(--text)] font-bold">Select Time</h3>
           {loadingSlots ? (
             <div className="flex justify-center py-4">
               <Loader2 className="animate-spin text-primary" />
             </div>
           ) : availableSlots.length === 0 ? (
-            <div className="text-center py-4 text-slate-500 bg-slate-800/30 rounded-xl">No slots available</div>
+            <div className="text-center py-4 text-[var(--text-muted)] bg-[var(--surface-3)] rounded-xl">No slots available</div>
           ) : (
             <div className="grid grid-cols-3 gap-3">
               {availableSlots.map((time) => (
@@ -112,7 +112,7 @@ export default function CalendarSlotPicker({
                   className={`py-3 rounded-xl border font-medium text-sm transition-all ${
                     selectedTime === time
                       ? 'bg-primary text-white border-primary shadow-lg'
-                      : 'bg-slate-800 text-slate-300 border-white/10 hover:bg-slate-700'
+                      : 'bg-[var(--surface-3)] text-[var(--text)] border-[var(--border)] hover:bg-[var(--surface-3)]'
                   }`}
                 >
                   {time}

@@ -19,6 +19,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang={siteConfig.language} dir={siteConfig.direction}>
       <body className={cairo.className}>
+        <Script id="theme-bootstrap" strategy="beforeInteractive">
+          {`
+            try {
+              var theme = localStorage.getItem('theme') || 'dark';
+              document.documentElement.classList.toggle('dark', theme === 'dark');
+            } catch (_) {
+              document.documentElement.classList.add('dark');
+            }
+          `}
+        </Script>
         <Providers>
           <MetaPixelTracker />
           {children}

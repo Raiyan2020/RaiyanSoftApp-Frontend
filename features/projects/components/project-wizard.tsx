@@ -187,8 +187,8 @@ export default function ProjectWizard({
         }
         return (
           <div className="p-6 overflow-y-auto h-full pb-24">
-            <h2 className="text-2xl font-bold text-white mb-2">{t('auth.create_account')}</h2>
-            <p className="text-slate-400 text-sm mb-6">{t('auth.signup_subtitle')}</p>
+            <h2 className="text-2xl font-bold text-[var(--text)] mb-2">{t('auth.create_account')}</h2>
+            <p className="text-[var(--text-muted)] text-sm mb-6">{t('auth.signup_subtitle')}</p>
             <SignupForm
               defaultValues={{
                 firstName: formData.signupFirstName,

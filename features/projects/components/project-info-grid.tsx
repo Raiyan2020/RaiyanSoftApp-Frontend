@@ -9,6 +9,31 @@ interface ProjectInfoGridProps {
   t: (key: string) => string;
 }
 
+function Chip({ children }: { children: React.ReactNode }) {
+  return (
+    <span className="px-2 py-0.5 bg-[var(--surface-2)] text-[var(--text)] rounded text-xs border border-[var(--border)]">
+      {children}
+    </span>
+  );
+}
+
+function InfoBlock({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div>
+      <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide font-bold block mb-1">
+        {label}
+      </span>
+      {children}
+    </div>
+  );
+}
+
 export default function ProjectInfoGrid({
   industry = '',
   industryOther,
@@ -20,65 +45,35 @@ export default function ProjectInfoGrid({
   const displayIndustry = industry === 'Other' ? industryOther || industry : industry ? t(`industry.${industry}`) : '';
 
   return (
-    <div className="bg-slate-800/30 border border-white/5 rounded-2xl p-4 space-y-4">
-      <div>
-        <span className="text-[10px] text-slate-400 uppercase tracking-wide font-bold block mb-1">
-          {t('wizard.step_industry')}
-        </span>
-        <span className="text-white text-sm font-medium">{displayIndustry || '—'}</span>
-      </div>
+    <div className="app-card rounded-2xl p-4 space-y-4">
+      <InfoBlock label={t('wizard.step_industry')}>
+        <span className="text-[var(--text)] text-sm font-medium">{displayIndustry || '-'}</span>
+      </InfoBlock>
 
-      <div>
-        <span className="text-[10px] text-slate-400 uppercase tracking-wide font-bold block mb-1">
-          {t('wizard.step_markets')}
-        </span>
+      <InfoBlock label={t('wizard.step_markets')}>
         <div className="flex flex-wrap gap-1.5 mt-1">
-          {markets.length > 0 ? (
-            markets.map((m) => (
-              <span key={m} className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-xs border border-white/5">
-                {t(`market.${m}`)}
-              </span>
-            ))
-          ) : (
-            <span className="text-slate-500 text-xs">—</span>
+          {markets.length > 0 ? markets.map((m) => <Chip key={m}>{t(`market.${m}`)}</Chip>) : (
+            <span className="text-[var(--text-muted)] text-xs">-</span>
           )}
         </div>
-      </div>
+      </InfoBlock>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div>
-          <span className="text-[10px] text-slate-400 uppercase tracking-wide font-bold block mb-1">
-            {t('wizard.step_languages')}
-          </span>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <InfoBlock label={t('wizard.step_languages')}>
           <div className="flex flex-wrap gap-1.5 mt-1">
-            {languages.length > 0 ? (
-              languages.map((l) => (
-                <span key={l} className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-xs border border-white/5">
-                  {t(`lang.${l}`)}
-                </span>
-              ))
-            ) : (
-              <span className="text-slate-500 text-xs">—</span>
+            {languages.length > 0 ? languages.map((l) => <Chip key={l}>{t(`lang.${l}`)}</Chip>) : (
+              <span className="text-[var(--text-muted)] text-xs">-</span>
             )}
           </div>
-        </div>
+        </InfoBlock>
 
-        <div>
-          <span className="text-[10px] text-slate-400 uppercase tracking-wide font-bold block mb-1">
-            {t('wizard.step_platforms')}
-          </span>
+        <InfoBlock label={t('wizard.step_platforms')}>
           <div className="flex flex-wrap gap-1.5 mt-1">
-            {platforms.length > 0 ? (
-              platforms.map((p) => (
-                <span key={p} className="px-2 py-0.5 bg-slate-800 text-slate-300 rounded text-xs border border-white/5">
-                  {t(`platform.${p}`)}
-                </span>
-              ))
-            ) : (
-              <span className="text-slate-500 text-xs">—</span>
+            {platforms.length > 0 ? platforms.map((p) => <Chip key={p}>{t(`platform.${p}`)}</Chip>) : (
+              <span className="text-[var(--text-muted)] text-xs">-</span>
             )}
           </div>
-        </div>
+        </InfoBlock>
       </div>
     </div>
   );

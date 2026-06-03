@@ -15,48 +15,48 @@ export default function WizardIntro({ t, onStart }: WizardIntroProps) {
         </div>
 
         <div>
-          <h2 className="text-2xl font-bold text-white mb-2 leading-tight">{t('wizard.start_title')}</h2>
-          <p className="text-slate-400 text-sm leading-relaxed max-w-xs mx-auto">
+          <h2 className="text-2xl font-bold text-[var(--text)] mb-2 leading-tight">{t('wizard.start_title')}</h2>
+          <p className="text-[var(--text-muted)] text-sm leading-relaxed max-w-xs mx-auto">
             {t('wizard.start_subtitle')}
           </p>
         </div>
 
         <div className="w-full flex flex-col gap-3">
           <div className="grid grid-cols-3 gap-3 w-full">
-            <div className="bg-slate-800/40 border border-white/5 p-3 rounded-xl flex flex-col items-center justify-center gap-2">
+            <div className="bg-[var(--surface-3)] border border-[var(--border)] p-3 rounded-xl flex flex-col items-center justify-center gap-2">
               <Timer size={20} className="text-primary" />
-              <span className="text-[10px] font-bold text-slate-300 leading-tight">{t('wizard.feat_time')}</span>
+              <span className="text-[10px] font-bold text-[var(--text)] leading-tight">{t('wizard.feat_time')}</span>
             </div>
-            <div className="bg-slate-800/40 border border-white/5 p-3 rounded-xl flex flex-col items-center justify-center gap-2">
+            <div className="bg-[var(--surface-3)] border border-[var(--border)] p-3 rounded-xl flex flex-col items-center justify-center gap-2">
               <BarChart2 size={20} className="text-emerald-400" />
-              <span className="text-[10px] font-bold text-slate-300 leading-tight">{t('wizard.feat_analysis')}</span>
+              <span className="text-[10px] font-bold text-[var(--text)] leading-tight">{t('wizard.feat_analysis')}</span>
             </div>
-            <div className="bg-slate-800/40 border border-white/5 p-3 rounded-xl flex flex-col items-center justify-center gap-2">
+            <div className="bg-[var(--surface-3)] border border-[var(--border)] p-3 rounded-xl flex flex-col items-center justify-center gap-2">
               <MessageCircle size={20} className="text-blue-400" />
-              <span className="text-[10px] font-bold text-slate-300 leading-tight">{t('wizard.feat_reply')}</span>
+              <span className="text-[10px] font-bold text-[var(--text)] leading-tight">{t('wizard.feat_reply')}</span>
             </div>
           </div>
 
           <div className="flex items-center justify-between w-full px-8 relative">
-            <div className="absolute top-1/2 start-8 end-8 h-0.5 bg-slate-800 -z-10" />
+            <div className="absolute top-1/2 start-8 end-8 h-0.5 bg-[var(--surface-3)] -z-10" />
 
-            <div className="flex flex-col items-center gap-2 bg-[#020617] px-2">
-              <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-slate-400">
+            <div className="flex flex-col items-center gap-2 bg-[var(--bg)] px-2">
+              <div className="w-8 h-8 rounded-full bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
                 <MousePointerClick size={14} />
               </div>
-              <span className="text-[10px] text-slate-500 font-medium">{t('wizard.step_1_label')}</span>
+              <span className="text-[10px] text-[var(--text-muted)] font-medium">{t('wizard.step_1_label')}</span>
             </div>
-            <div className="flex flex-col items-center gap-2 bg-[#020617] px-2">
-              <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-slate-400">
+            <div className="flex flex-col items-center gap-2 bg-[var(--bg)] px-2">
+              <div className="w-8 h-8 rounded-full bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
                 <Edit3 size={14} />
               </div>
-              <span className="text-[10px] text-slate-500 font-medium">{t('wizard.step_2_label')}</span>
+              <span className="text-[10px] text-[var(--text-muted)] font-medium">{t('wizard.step_2_label')}</span>
             </div>
-            <div className="flex flex-col items-center gap-2 bg-[#020617] px-2">
-              <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center text-slate-400">
+            <div className="flex flex-col items-center gap-2 bg-[var(--bg)] px-2">
+              <div className="w-8 h-8 rounded-full bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
                 <CheckCircle2 size={14} />
               </div>
-              <span className="text-[10px] text-slate-500 font-medium">{t('wizard.step_3_label')}</span>
+              <span className="text-[10px] text-[var(--text-muted)] font-medium">{t('wizard.step_3_label')}</span>
             </div>
           </div>
         </div>
@@ -77,7 +77,7 @@ export default function WizardIntro({ t, onStart }: WizardIntroProps) {
           >
             {t('wizard.start_btn')}
           </button>
-          <p className="text-[10px] text-slate-500 mt-2 font-medium">{t('wizard.no_commit')}</p>
+          <p className="text-[10px] text-[var(--text-muted)] mt-2 font-medium">{t('wizard.no_commit')}</p>
         </div>
 
         <div className="h-4" />

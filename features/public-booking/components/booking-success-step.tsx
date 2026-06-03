@@ -12,15 +12,15 @@ export default function BookingSuccessStep({ bookingRef }: BookingSuccessStepPro
       <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/30">
         <CheckCircle size={48} />
       </div>
-      <h2 className="text-2xl font-bold text-white">Booking Confirmed!</h2>
-      <p className="text-slate-400 text-sm">Your appointment is set. We've sent a confirmation to your contact details.</p>
+      <h2 className="text-2xl font-bold text-[var(--text)]">Booking Confirmed!</h2>
+      <p className="text-[var(--text-muted)] text-sm">Your appointment is set. We've sent a confirmation to your contact details.</p>
       {bookingRef ? (
-        <div className="bg-slate-800 p-3 rounded-lg border border-white/5 mt-4">
-          <span className="text-xs text-slate-500 uppercase block mb-1">Reference ID</span>
-          <span className="font-mono text-white select-all">{bookingRef}</span>
+        <div className="bg-[var(--surface-3)] p-3 rounded-lg border border-[var(--border)] mt-4">
+          <span className="text-xs text-[var(--text-muted)] uppercase block mb-1">Reference ID</span>
+          <span className="font-mono text-[var(--text)] select-all">{bookingRef}</span>
         </div>
       ) : null}
-      <button type="button" onClick={() => window.location.reload()} className="bg-slate-800 hover:bg-slate-700 text-white px-8 py-3 rounded-xl font-bold transition-colors mt-6">
+      <button type="button" onClick={() => window.location.reload()} className="bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] px-8 py-3 rounded-xl font-bold transition-colors mt-6">
         Book Another
       </button>
     </motion.div>

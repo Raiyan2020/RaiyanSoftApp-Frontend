@@ -30,17 +30,25 @@ export default function AppointmentsPage() {
       initial={{ opacity: 0, x: dir === 'rtl' ? -20 : 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: dir === 'rtl' ? 20 : -20 }}
-      className="flex flex-col h-full bg-[#020617] relative overflow-y-auto no-scrollbar pb-24"
+      className="app-page app-page-wide"
     >
-      <div className="sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md px-4 py-4 border-b border-white/5 flex items-center shadow-lg">
-        <h1 className="text-xl font-bold text-white ms-2">{t('appt.title')}</h1>
-      </div>
+      <header className="app-header">
+        <div>
+          <h1 className="app-title">{t('appt.title')}</h1>
+          <p className="app-subtitle">{upcomingAppointments.length > 0 ? t('appt.active_title') : t('appt.no_appts_sub')}</p>
+        </div>
+        <Button onClick={handleOpenWizard} disabled={hasActiveBooking} className="gap-2">
+          {hasActiveBooking ? <AlertTriangle size={18} /> : <Calendar size={18} />}
+          {hasActiveBooking ? t('appt.complete_current') : t('appt.book_btn')}
+        </Button>
+      </header>
 
-      <div className="p-6 flex-1 flex flex-col">
+      <div>
         {upcomingAppointments.length > 0 ? (
           <div className="space-y-6">
-            <h2 className="text-sm font-bold text-slate-400 uppercase tracking-wider">{t('appt.active_title')}</h2>
+            <h2 className="text-sm font-bold text-[var(--text-muted)] uppercase tracking-wider">{t('appt.active_title')}</h2>
 
+            <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
             {upcomingAppointments.map((appt) => (
               <AppointmentCard
                 key={appt.id}
@@ -57,14 +65,15 @@ export default function AppointmentsPage() {
                 onCancel={initiateCancel}
               />
             ))}
+            </div>
 
             <button
               type="button"
               onClick={handleOpenWizard}
               className={`w-full py-4 border rounded-2xl transition-colors flex items-center justify-center gap-2 ${
                 hasActiveBooking
-                  ? 'bg-slate-900/50 border-white/5 text-slate-500 cursor-not-allowed opacity-70'
-                  : 'bg-slate-800/50 hover:bg-slate-800 border-white/10 text-slate-400 hover:text-white'
+                  ? 'bg-[var(--surface-2)] border-[var(--border)] text-[var(--text-muted)] cursor-not-allowed opacity-70'
+                  : 'bg-[var(--surface)] hover:bg-[var(--surface-2)] border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text)]'
               }`}
             >
               {hasActiveBooking ? <AlertTriangle size={20} /> : <Plus size={20} />}
@@ -72,9 +81,9 @@ export default function AppointmentsPage() {
             </button>
           </div>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center space-y-6">
+          <div className="min-h-[40vh] flex flex-col items-center justify-center text-center space-y-6">
             <EmptyState
-              icon={<Calendar size={40} className="text-slate-500 animate-pulse" />}
+              icon={<Calendar size={40} className="text-[var(--text-muted)] animate-pulse" />}
               title={t('appt.no_appts')}
               subtitle={t('appt.no_appts_sub')}
               action={

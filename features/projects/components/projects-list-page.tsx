@@ -16,23 +16,24 @@ export default function ProjectsListPage() {
       initial={{ opacity: 0, x: dir === 'rtl' ? -20 : 20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: dir === 'rtl' ? 20 : -20 }}
-      className="flex flex-col h-full p-6 pt-8 relative overflow-y-auto no-scrollbar"
+      className="app-page app-page-wide"
     >
-      <button
-        type="button"
-        onClick={() => router.push('/home')}
-        className="self-start text-slate-400 hover:text-white mb-6 flex items-center space-x-1 rtl:space-x-reverse"
-      >
-        {dir === 'rtl' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
-        <span className="text-sm">{t('auth.back')}</span>
-      </button>
+      <header className="app-header">
+        <div>
+          <button
+            type="button"
+            onClick={() => router.push('/home')}
+            className="text-[var(--text-muted)] hover:text-[var(--text)] mb-4 flex items-center gap-1"
+          >
+            {dir === 'rtl' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            <span className="text-sm">{t('auth.back')}</span>
+          </button>
+          <h1 className="app-title">{t('client_projects.title')}</h1>
+          <p className="app-subtitle">{t('client_projects.subtitle')}</p>
+        </div>
+      </header>
 
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold text-white mb-2">{t('client_projects.title')}</h1>
-        <p className="text-slate-400 text-sm">{t('client_projects.subtitle')}</p>
-      </div>
-
-      <div className="space-y-1">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {projects.length > 0 ? (
           projects.map((project) => (
             <ProjectListItem
@@ -44,15 +45,15 @@ export default function ProjectsListPage() {
             />
           ))
         ) : (
-          <div className="text-center py-10 text-slate-500">
+          <div className="sm:col-span-2 xl:col-span-3 text-center py-10 text-[var(--text-muted)]">
             <p>{t('client_projects.empty')}</p>
           </div>
         )}
       </div>
 
-      <div className="mt-12 flex flex-col items-center justify-center opacity-50">
+      <div className="mt-12 flex flex-col items-center justify-center opacity-70">
         <div className="h-1 w-12 bg-primary/50 rounded-full mb-3" />
-        <p className="text-slate-500 text-sm font-medium">{t('client_projects.coming_soon')}</p>
+        <p className="text-[var(--text-muted)] text-sm font-medium">{t('client_projects.coming_soon')}</p>
       </div>
     </motion.div>
   );

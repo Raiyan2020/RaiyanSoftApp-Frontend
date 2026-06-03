@@ -33,17 +33,17 @@ export default function AdminProfileForm({
   const watchedLastName = form.watch('lastName');
 
   return (
-    <div className="bg-[#0f172a] border border-white/5 rounded-2xl p-8 shadow-xl relative overflow-hidden w-full">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 shadow-xl relative overflow-hidden w-full">
       <div className="flex flex-col md:flex-row gap-8 items-start">
         <div className="flex flex-col items-center space-y-3 w-full md:w-auto">
-          <div className="w-24 h-24 rounded-full border-4 border-slate-800 shadow-2xl relative">
+          <div className="w-24 h-24 rounded-full border-4 border-[var(--border)] shadow-2xl relative">
             <Avatar 
               name={`${watchedFirstName || ''} ${watchedLastName || ''}`.trim() || 'Admin'} 
               size="xl" 
               className="w-full h-full text-3xl" 
             />
-            <div className="absolute bottom-0 right-0 bg-slate-800 rounded-full p-1 border border-white/10">
-              <div className="bg-emerald-500 w-4 h-4 rounded-full border-2 border-slate-800" title="Active" />
+            <div className="absolute bottom-0 right-0 bg-[var(--surface-3)] rounded-full p-1 border border-[var(--border)]">
+              <div className="bg-emerald-500 w-4 h-4 rounded-full border-2 border-[var(--border)]" title="Active" />
             </div>
           </div>
           <div className="text-center">
@@ -62,12 +62,12 @@ export default function AdminProfileForm({
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel className="uppercase tracking-wider font-bold">First Name</FieldLabel>
                   <div className="relative">
-                    <User className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                    <User className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
                     <input
                       {...field}
                       type="text"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-slate-900 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     />
@@ -86,12 +86,12 @@ export default function AdminProfileForm({
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel className="uppercase tracking-wider font-bold">Last Name</FieldLabel>
                   <div className="relative">
-                    <User className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                    <User className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
                     <input
                       {...field}
                       type="text"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-slate-900 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     />
@@ -111,12 +111,12 @@ export default function AdminProfileForm({
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel className="uppercase tracking-wider font-bold">Phone Number</FieldLabel>
                 <div className="relative" dir="ltr">
-                  <Phone className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+                  <Phone className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
                   <input
                     {...field}
                     type="tel"
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-slate-900 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                     placeholder="+965 ..."
@@ -130,16 +130,16 @@ export default function AdminProfileForm({
           />
 
           <div className="space-y-2">
-            <label className="text-xs font-bold text-slate-400 uppercase tracking-wider ms-1">Email Address</label>
+            <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider ms-1">Email Address</label>
             <div className="relative opacity-60">
-              <Mail className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500" size={18} />
+              <Mail className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
               <input
                 type="email"
                 value={defaultValues.email || ''}
                 disabled
-                className="w-full bg-slate-900/50 border border-white/5 rounded-xl py-3 pl-10 pr-4 text-slate-400 cursor-not-allowed"
+                className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text-muted)] cursor-not-allowed"
               />
-              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-slate-500 flex items-center gap-1">
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[var(--text-muted)] flex items-center gap-1">
                 <Lock size={12} /> Read-only
               </div>
             </div>

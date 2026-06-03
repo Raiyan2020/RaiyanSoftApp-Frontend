@@ -29,7 +29,7 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
 
   if (!project) {
     return (
-      <div className="flex flex-col h-full items-center justify-center p-6 text-center text-slate-500">
+      <div className="app-page app-page-narrow flex min-h-[60vh] items-center justify-center text-center text-[var(--text-muted)]">
         <EmptyState
           icon={<Box size={24} />}
           title={t('project.not_found')}
@@ -45,22 +45,23 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-[#020617] relative overflow-y-auto no-scrollbar pb-24">
-      <div className="sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md px-4 py-4 border-b border-white/5 flex items-center shadow-lg">
-        <button
-          type="button"
-          onClick={() => router.push('/home')}
-          className="p-2 -ms-2 text-slate-400 hover:text-white transition-colors flex items-center gap-1"
-        >
-          {dir === 'rtl' ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
-          <span className="text-sm font-medium">{t('auth.back')}</span>
-        </button>
-        <h1 className="text-lg font-bold text-white ms-2 flex-1 text-center pe-8 rtl:pe-0 rtl:ps-8 truncate">
-          {t('project.details')}
-        </h1>
-      </div>
+    <div className="app-page app-page-wide">
+      <header className="app-header">
+        <div>
+          <button
+            type="button"
+            onClick={() => router.push('/home')}
+            className="text-[var(--text-muted)] hover:text-[var(--text)] mb-4 flex items-center gap-1"
+          >
+            {dir === 'rtl' ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+            <span className="text-sm font-medium">{t('auth.back')}</span>
+          </button>
+          <h1 className="app-title">{t('project.details')}</h1>
+        </div>
+      </header>
 
-      <div className="p-6 space-y-6">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,26rem)_minmax(0,1fr)]">
+        <div className="space-y-6">
         <ProjectHeader
           name={project.name}
           version={project.version}
@@ -86,7 +87,9 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
           t={t}
           language={language}
         />
+        </div>
 
+        <div className="space-y-6">
         <ProjectInfoGrid
           industry={project.industry}
           industryOther={project.industryOther}
@@ -98,7 +101,7 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
 
         <div className="space-y-3">
           <div className="flex items-center justify-between px-1">
-            <h3 className="text-white font-bold text-base">{t('project.desc_title')}</h3>
+            <h3 className="text-[var(--text)] font-bold text-base">{t('project.desc_title')}</h3>
             {!isEditingDesc ? (
               <button
                 type="button"
@@ -110,13 +113,13 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
             ) : null}
           </div>
 
-          <div className="bg-slate-800/30 border border-white/5 rounded-2xl p-4 min-h-[120px]">
+          <div className="app-card rounded-2xl p-4 min-h-[120px]">
             {isEditingDesc ? (
               <div className="flex flex-col gap-3">
                 <textarea
                   value={descDraft}
                   onChange={(e) => setDescDraft(e.target.value)}
-                  className="w-full h-32 bg-slate-900/50 border border-primary/50 rounded-xl p-3 text-white text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
+                  className="w-full h-32 app-input border-primary/50 rounded-xl p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
                 />
                 <div className="flex justify-end gap-2">
                   <button
@@ -125,14 +128,14 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
                       setIsEditingDesc(false);
                       setDescDraft(project.description);
                     }}
-                    className="px-4 py-2 rounded-xl text-xs font-medium text-slate-400 hover:text-white bg-slate-800 border border-white/5"
+                    className="px-4 py-2 rounded-xl text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)]"
                   >
                     {t('project.cancel')}
                   </button>
                   <button
                     type="button"
                     onClick={handleSaveDesc}
-                    className="px-4 py-2 rounded-xl text-xs font-medium text-white bg-primary shadow-lg shadow-primary/20 flex items-center gap-1"
+                    className="px-4 py-2 rounded-xl text-xs font-medium text-[var(--text)] bg-primary shadow-lg shadow-primary/20 flex items-center gap-1"
                   >
                     <Save size={14} />
                     {t('project.save')}
@@ -140,7 +143,7 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
                 </div>
               </div>
             ) : (
-              <p className="text-slate-300 text-sm leading-relaxed whitespace-pre-wrap">{project.description}</p>
+              <p className="text-[var(--text-muted)] text-sm leading-relaxed whitespace-pre-wrap">{project.description}</p>
             )}
           </div>
         </div>
@@ -150,20 +153,21 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
             href={project.projectUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-between p-4 bg-slate-800/30 border border-white/5 rounded-2xl hover:bg-slate-800/50 transition-colors group"
+            className="flex items-center justify-between p-4 app-card rounded-2xl hover:border-primary/40 transition-colors group"
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-400">
                 <Globe size={20} />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-bold text-white">{t('project.visit_web')}</span>
-                <span className="text-xs text-slate-500 truncate max-w-[200px]">{project.projectUrl}</span>
+                <span className="text-sm font-bold text-[var(--text)]">{t('project.visit_web')}</span>
+                <span className="text-xs text-[var(--text-muted)] truncate max-w-[200px]">{project.projectUrl}</span>
               </div>
             </div>
-            <ExternalLink size={18} className="text-slate-500 group-hover:text-white transition-colors" />
+            <ExternalLink size={18} className="text-[var(--text-muted)] group-hover:text-[var(--text)] transition-colors" />
           </a>
         ) : null}
+        </div>
       </div>
     </div>
   );

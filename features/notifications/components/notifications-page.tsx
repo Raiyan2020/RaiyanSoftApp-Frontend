@@ -23,39 +23,41 @@ export default function NotificationsPage() {
 
   return (
     <>
-      <div className="flex flex-col h-full pb-24 relative overflow-y-auto no-scrollbar">
-        <div className="sticky top-0 z-20 bg-slate-900/90 backdrop-blur-md px-6 py-5 border-b border-white/5 flex flex-col gap-4 shadow-lg">
-          <div className="flex justify-between items-center">
-            <h1 className="text-2xl font-bold text-white">{t('notif.title')}</h1>
+      <div className="app-page app-page-wide">
+        <header className="app-header">
+          <div>
+            <h1 className="app-title">{t('notif.title')}</h1>
+            <p className="app-subtitle">{t(`notif.filter_${activeFilter}`)}</p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
             <button
               type="button"
               onClick={handleMarkAllRead}
-              className="text-xs font-medium text-primary flex items-center gap-1 hover:text-blue-300 transition-colors bg-primary/10 px-3 py-1.5 rounded-lg"
+              className="text-xs font-medium text-primary flex items-center gap-1 hover:text-blue-500 transition-colors bg-primary/10 px-3 py-1.5 rounded-lg"
             >
               <CheckCheck size={14} />
               <span>{t('notif.mark_all')}</span>
             </button>
+            <div className="flex gap-2 no-scrollbar overflow-x-auto bg-[var(--surface)] border border-[var(--border)] rounded-full p-1">
+              {filters.map((filter) => (
+                <button
+                  type="button"
+                  key={filter}
+                  onClick={() => setActiveFilter(filter)}
+                  className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 border ${
+                    activeFilter === filter
+                      ? 'bg-primary text-white border-primary shadow-[0_0_10px_rgba(29,183,240,0.3)]'
+                      : 'bg-transparent text-[var(--text-muted)] border-transparent hover:text-[var(--text)]'
+                  } capitalize`}
+                >
+                  {t(`notif.filter_${filter}`)}
+                </button>
+              ))}
+            </div>
           </div>
+        </header>
 
-          <div className="flex space-x-2 rtl:space-x-reverse no-scrollbar overflow-x-auto">
-            {filters.map((filter) => (
-              <button
-                type="button"
-                key={filter}
-                onClick={() => setActiveFilter(filter)}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 border ${
-                  activeFilter === filter
-                    ? 'bg-primary text-white border-primary shadow-[0_0_10px_rgba(29,183,240,0.3)]'
-                    : 'bg-slate-800 text-slate-400 border-white/5 hover:border-white/20'
-                } capitalize`}
-              >
-                {t(`notif.filter_${filter}`)}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="p-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           <AnimatePresence mode="popLayout">
             {filteredNotifications.length > 0 ? (
               filteredNotifications.map((n) => (
@@ -70,7 +72,7 @@ export default function NotificationsPage() {
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex flex-col items-center justify-center py-20 text-slate-500"
+                className="md:col-span-2 xl:col-span-3 flex flex-col items-center justify-center py-20 text-[var(--text-muted)]"
               >
                 <EmptyState
                   icon={<CheckCheck size={32} className="opacity-50" />}

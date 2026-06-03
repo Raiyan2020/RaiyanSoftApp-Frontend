@@ -10,14 +10,14 @@ interface LeadsTableProps {
 
 export default function LeadsTable({ filteredLeads, onSelectLead, toWhatsAppDigits }: LeadsTableProps) {
   return (
-    <div className="bg-[#0f172a] border border-white/5 rounded-2xl shadow-xl overflow-hidden">
+    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden">
       {filteredLeads.length === 0 ? (
-        <div className="p-12 text-center text-slate-500">No leads found.</div>
+        <div className="p-12 text-center text-[var(--text-muted)]">No leads found.</div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-left">
             <thead>
-              <tr className="border-b border-white/5 text-xs text-slate-500 uppercase tracking-wider">
+              <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
                 <th className="p-5 font-medium">Name</th>
                 <th className="p-5 font-medium">Project Info</th>
                 <th className="p-5 font-medium">Status</th>
@@ -25,7 +25,7 @@ export default function LeadsTable({ filteredLeads, onSelectLead, toWhatsAppDigi
                 <th className="p-5 font-medium text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5 text-sm">
+            <tbody className="divide-y divide-[var(--border)] text-sm">
               {filteredLeads.map((lead) => (
                 <LeadsTableRow
                   key={lead.id}

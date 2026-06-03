@@ -46,7 +46,7 @@ export function useAdminLogin() {
     }
   };
 
-  const handleBootstrap = async () => {
+  const handleBootstrap = async (): Promise<AdminLoginValues | null> => {
     // Bootstrap is not needed with the backend database
     return null;
   };

@@ -40,9 +40,9 @@ export default function GuestDetailsForm({
           <p className="text-primary font-bold text-sm">
             {selectedDate?.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}
           </p>
-          <p className="text-white text-lg font-bold">{selectedTime}</p>
+          <p className="text-[var(--text)] text-lg font-bold">{selectedTime}</p>
         </div>
-        <button type="button" onClick={onChangeStep} className="text-xs text-slate-400 underline hover:text-white">
+        <button type="button" onClick={onChangeStep} className="text-xs text-[var(--text-muted)] underline hover:text-[var(--text)]">
           Change
         </button>
       </div>
@@ -55,12 +55,12 @@ export default function GuestDetailsForm({
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>Full Name <span className="text-red-400">*</span></FieldLabel>
               <div className="relative">
-                <User size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <User size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
                   {...field}
                   type="text"
                   aria-invalid={fieldState.invalid}
-                  className={`w-full bg-slate-800 border border-white/10 rounded-xl ps-10 pe-4 py-3 text-white focus:outline-none transition-all ${
+                  className={`w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] focus:outline-none transition-all ${
                     fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'focus:border-primary'
                   }`}
                 />
@@ -89,12 +89,12 @@ export default function GuestDetailsForm({
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel>Email Address (Optional)</FieldLabel>
               <div className="relative">
-                <Mail size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Mail size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
                   {...field}
                   type="email"
                   aria-invalid={fieldState.invalid}
-                  className={`w-full bg-slate-800 border border-white/10 rounded-xl ps-10 pe-4 py-3 text-white focus:outline-none transition-all ${
+                  className={`w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] focus:outline-none transition-all ${
                     fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'focus:border-primary'
                   }`}
                 />
@@ -114,7 +114,7 @@ export default function GuestDetailsForm({
                 {...field}
                 type="text"
                 aria-invalid={fieldState.invalid}
-                className={`w-full bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none transition-all ${
+                className={`w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none transition-all ${
                   fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'focus:border-primary'
                 }`}
                 placeholder="e.g. Project Consultation"
@@ -133,7 +133,7 @@ export default function GuestDetailsForm({
               <textarea
                 {...field}
                 aria-invalid={fieldState.invalid}
-                className={`w-full h-24 bg-slate-800 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none transition-all resize-none ${
+                className={`w-full h-24 bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none transition-all resize-none ${
                   fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'focus:border-primary'
                 }`}
               />

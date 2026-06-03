@@ -27,10 +27,10 @@ export default function ConversationList({
   setSearchTerm,
 }: ConversationListProps) {
   return (
-    <div className="w-1/3 min-w-[300px] flex flex-col bg-[#0f172a] border border-white/5 rounded-2xl overflow-hidden shadow-xl">
-      <div className="p-4 border-b border-white/5 bg-slate-900/50">
+    <div className="w-1/3 min-w-[300px] flex flex-col bg-[var(--surface)] border border-[var(--border)] rounded-2xl overflow-hidden shadow-xl">
+      <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-2)]">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-white font-bold text-lg flex items-center gap-2">
+          <h2 className="text-[var(--text)] font-bold text-lg flex items-center gap-2">
             <MessageCircle size={20} className="text-primary" />
             Inbox
             <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full ml-auto">
@@ -41,7 +41,7 @@ export default function ConversationList({
             type="button"
             onClick={toggleSound}
             className={`p-2 rounded-lg transition-colors ${
-              isSoundEnabled ? 'text-primary bg-primary/10' : 'text-slate-500 hover:text-slate-300'
+              isSoundEnabled ? 'text-primary bg-primary/10' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
             title={isSoundEnabled ? 'Sound On' : 'Sound Off'}
           >
@@ -50,20 +50,20 @@ export default function ConversationList({
         </div>
 
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" size={16} />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={16} />
           <input
             type="text"
             placeholder="Search customers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-slate-800 border border-white/10 rounded-xl py-2 pl-9 pr-3 text-sm text-white focus:outline-none focus:border-primary transition-colors"
+            className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl py-2 pl-9 pr-3 text-sm text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
           />
         </div>
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {filteredConversations.length === 0 ? (
-          <div className="p-8 text-center text-slate-500">
+          <div className="p-8 text-center text-[var(--text-muted)]">
             <p>No open conversations</p>
           </div>
         ) : (

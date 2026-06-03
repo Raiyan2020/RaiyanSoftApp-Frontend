@@ -27,12 +27,15 @@ import {
   Handshake,
   FileText,
   Settings,
+  Sun,
+  Moon,
 } from 'lucide-react';
 import { authService } from '@/lib/auth-service';
 import { collection, query, where, onSnapshot, Timestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase-client';
 import { useAdminChatNotifications } from '@/lib/adminChatStore';
 import { hasPermission } from '@/lib/permissions';
+import { useTheme } from '@/lib/themeContext';
 import SafeImage from '../ui/safe-image';
 import Avatar from '../ui/avatar';
 
@@ -51,6 +54,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { totalUnread } = useAdminChatNotifications();
+  const { theme, toggleTheme } = useTheme();
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -157,7 +161,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   function SidebarContent() {
     return (
       <div className="flex flex-col h-full">
-        <div className="p-6 flex items-center space-x-3 border-b border-white/5">
+        <div className="p-6 flex items-center space-x-3 border-b border-[var(--border)]">
           <div className="w-8 h-8 relative">
             <SafeImage
               src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
@@ -166,7 +170,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             />
           </div>
           <div>
-            <h1 className="text-white font-bold text-lg leading-none">Raiyansoft</h1>
+            <h1 className="text-[var(--text)] font-bold text-lg leading-none">Raiyansoft</h1>
             <span className="text-xs text-primary font-medium">Admin Panel</span>
           </div>
         </div>
@@ -185,13 +189,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 relative ${
                   isActive
                     ? 'bg-primary/10 text-primary border border-primary/20'
-                    : 'text-slate-400 hover:text-white hover:bg-white/5'
+                    : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]'
                 }`}
               >
                 <div className="relative">
                   <item.icon size={20} />
                   {item.badge > 0 ? (
-                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-[#0f172a] shadow-sm z-10">
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm z-10">
                       {item.badge > 99 ? '99+' : item.badge}
                     </span>
                   ) : null}
@@ -202,8 +206,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           })}
 
           {websiteNavItems.length > 0 ? (
-            <div className="pt-5 mt-5 border-t border-white/5">
-              <p className="px-4 mb-2 text-[10px] uppercase tracking-[0.18em] text-slate-600 font-bold">
+            <div className="pt-5 mt-5 border-t border-[var(--border)]">
+              <p className="px-4 mb-2 text-[10px] uppercase tracking-[0.18em] text-[var(--text-muted)] font-bold">
                 Website Content
               </p>
               <div className="space-y-1">
@@ -220,7 +224,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 relative ${
                         isActive
                           ? 'bg-primary/10 text-primary border border-primary/20'
-                          : 'text-slate-400 hover:text-white hover:bg-white/5'
+                          : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)]'
                       }`}
                     >
                       <item.icon size={20} />
@@ -233,26 +237,26 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           ) : null}
         </div>
 
-        <div className="p-4 border-t border-white/5 text-center">
-          <p className="text-[10px] text-slate-600">v1.2.0 • Admin Dashboard</p>
+        <div className="p-4 border-t border-[var(--border)] text-center">
+          <p className="text-[10px] text-[var(--text-muted)]">v1.2.0 • Admin Dashboard</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#020617] text-white flex overflow-hidden font-sans">
-      <aside className="hidden md:block w-64 bg-[#0f172a] border-r border-white/5 shadow-2xl z-20 shrink-0">
+    <div className="min-h-screen w-full bg-[var(--bg)] text-[var(--text)] flex overflow-hidden font-sans">
+      <aside className="hidden md:block w-64 bg-[var(--surface)] border-r border-[var(--border)] shadow-2xl z-20 shrink-0">
         <SidebarContent />
       </aside>
 
       <div className="flex-1 flex flex-col relative w-full h-screen overflow-hidden">
-        <header className="h-16 shrink-0 bg-[#0f172a]/80 backdrop-blur-md border-b border-white/5 flex items-center justify-between px-4 z-30 sticky top-0">
+        <header className="h-16 shrink-0 bg-[var(--surface)] backdrop-blur-md border-b border-[var(--border)] flex items-center justify-between px-4 z-30 sticky top-0">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(true)}
-              className="p-2 text-slate-400 hover:text-white transition-colors md:hidden"
+              className="p-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors md:hidden"
             >
               <Menu size={24} />
             </button>
@@ -262,30 +266,40 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 alt="Logo"
                 className="w-8 h-8 object-contain"
               />
-              <span className="font-bold text-white text-sm">Admin</span>
+              <span className="font-bold text-[var(--text)] text-sm">Admin</span>
             </div>
 
-            <div className="hidden md:block text-slate-500 text-sm font-medium" />
+            <div className="hidden md:block text-[var(--text-muted)] text-sm font-medium" />
           </div>
+
+          <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={toggleTheme}
+            className="grid h-10 w-10 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+            aria-label="Toggle theme"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </button>
 
           <div className="relative" ref={userMenuRef}>
             <button
               type="button"
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="flex items-center gap-3 p-1.5 pr-3 rounded-full hover:bg-white/5 border border-transparent hover:border-white/5 transition-all group"
+              className="flex items-center gap-3 p-1.5 pr-3 rounded-full hover:bg-[var(--surface-2)] border border-transparent hover:border-[var(--border)] transition-all group"
             >
-              <div className="w-8 h-8 rounded-full bg-slate-800 border border-white/10 flex items-center justify-center overflow-hidden">
+              <div className="w-8 h-8 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center overflow-hidden">
                 <Avatar name={currentUser?.displayName || 'Admin'} size="sm" className="w-full h-full text-xs" />
               </div>
               <div className="hidden sm:block text-left">
-                <p className="text-xs font-bold text-white leading-none">{currentUser?.displayName || 'Admin User'}</p>
-                <p className="text-[10px] text-slate-400 leading-none mt-1 group-hover:text-primary transition-colors">
+                <p className="text-xs font-bold text-[var(--text)] leading-none">{currentUser?.displayName || 'Admin User'}</p>
+                <p className="text-[10px] text-[var(--text-muted)] leading-none mt-1 group-hover:text-primary transition-colors">
                   View Account
                 </p>
               </div>
               <ChevronDown
                 size={14}
-                className={`text-slate-500 transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`}
+                className={`text-[var(--text-muted)] transition-transform duration-200 ${isUserMenuOpen ? 'rotate-180' : ''}`}
               />
             </button>
 
@@ -296,11 +310,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.1 }}
-                  className="absolute right-0 top-full mt-2 w-56 bg-[#0f172a] border border-white/10 rounded-xl shadow-2xl py-2 z-50 overflow-hidden"
+                  className="absolute right-0 top-full mt-2 w-56 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-2xl py-2 z-50 overflow-hidden"
                 >
-                  <div className="px-4 py-3 border-b border-white/5 mb-1">
-                    <p className="text-sm font-bold text-white truncate">{currentUser?.displayName}</p>
-                    <p className="text-xs text-slate-500 truncate">{currentUser?.email}</p>
+                  <div className="px-4 py-3 border-b border-[var(--border)] mb-1">
+                    <p className="text-sm font-bold text-[var(--text)] truncate">{currentUser?.displayName}</p>
+                    <p className="text-xs text-[var(--text-muted)] truncate">{currentUser?.email}</p>
                   </div>
 
                   <button
@@ -309,13 +323,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       setIsUserMenuOpen(false);
                       router.push('/admin/account');
                     }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-slate-300 hover:text-white hover:bg-white/5 flex items-center gap-2 transition-colors"
+                    className="w-full text-left px-4 py-2.5 text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] flex items-center gap-2 transition-colors"
                   >
                     <User size={16} />
                     <span>Edit Account</span>
                   </button>
 
-                  <div className="my-1 border-t border-white/5" />
+                  <div className="my-1 border-t border-[var(--border)]" />
 
                   <button
                     type="button"
@@ -328,6 +342,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 </motion.div>
               ) : null}
             </AnimatePresence>
+          </div>
           </div>
         </header>
 
@@ -346,13 +361,13 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 animate={{ x: 0 }}
                 exit={{ x: '-100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="fixed inset-y-0 left-0 w-64 bg-[#0f172a] border-r border-white/10 z-50 md:hidden shadow-2xl"
+                className="fixed inset-y-0 left-0 w-64 bg-[var(--surface)] border-r border-[var(--border)] z-50 md:hidden shadow-2xl"
               >
                 <SidebarContent />
                 <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="absolute top-4 right-4 p-2 text-slate-500 hover:text-white"
+                  className="absolute top-4 right-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)]"
                 >
                   <X size={20} />
                 </button>
@@ -361,7 +376,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           ) : null}
         </AnimatePresence>
 
-        <main className="flex-1 overflow-y-auto bg-[#020617] p-4 md:p-8 relative">
+        <main className="flex-1 overflow-y-auto bg-[var(--bg)] p-4 md:p-8 relative">
           <div className="absolute inset-0 opacity-20 pointer-events-none">
             <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/5 to-transparent" />
           </div>
@@ -372,3 +387,4 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     </div>
   );
 }
+

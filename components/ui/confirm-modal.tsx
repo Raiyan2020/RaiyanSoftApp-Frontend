@@ -37,7 +37,7 @@ export default function ConfirmModal({
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.9, opacity: 0, y: 20 }}
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm bg-[#0f172a] border border-white/10 rounded-2xl p-6 shadow-2xl overflow-hidden relative"
+            className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-2xl overflow-hidden relative"
           >
             <div
               className={`absolute top-0 start-0 w-full h-1 ${
@@ -45,19 +45,19 @@ export default function ConfirmModal({
               } opacity-80`}
             />
 
-            <h3 className="text-xl font-bold text-white mb-2">{title}</h3>
-            <p className="text-slate-400 text-sm mb-6 leading-relaxed">{message}</p>
+            <h3 className="text-xl font-bold text-[var(--text)] mb-2">{title}</h3>
+            <p className="text-[var(--text-muted)] text-sm mb-6 leading-relaxed">{message}</p>
 
             <div className="flex space-x-3 rtl:space-x-reverse">
               <button
                 onClick={onCancel}
-                className="flex-1 py-3 rounded-xl bg-slate-800 text-white font-medium text-sm hover:bg-slate-700 transition-colors border border-white/5"
+                className="flex-1 py-3 rounded-xl bg-[var(--surface-2)] text-[var(--text)] font-medium text-sm hover:opacity-90 transition-colors border border-[var(--border)]"
               >
                 {cancelText}
               </button>
               <button
                 onClick={onConfirm}
-                className={`flex-1 py-3 rounded-xl text-white font-medium text-sm transition-all shadow-lg ${
+                className={`flex-1 py-3 rounded-xl text-[var(--text)] font-medium text-sm transition-all shadow-lg ${
                   isDestructive
                     ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20'
                     : 'bg-primary hover:bg-sky-500 shadow-primary/20'

@@ -13,6 +13,7 @@ export default function HomePage() {
   const router = useRouter();
   const { t, dir } = useTranslation();
   const {
+    currentUser,
     userName,
     projects,
     isWizardOpen,
@@ -22,33 +23,55 @@ export default function HomePage() {
   } = useHome();
 
   return (
-    <div className="flex flex-col h-full pb-20 relative overflow-y-auto no-scrollbar">
-      <header className="p-6 pb-2 flex justify-between items-center z-20">
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={handleNotificationsClick}
-          className="w-10 h-10 bg-slate-800/50 rounded-full flex items-center justify-center border border-white/5"
-        >
-          <Bell size={20} className="text-white" />
-        </motion.button>
+    <div className="app-page app-page-wide">
+      <header className="app-header">
+        <div>
+          <p className="text-sm font-semibold text-primary mb-2">{t('home.greeting')}, {userName}</p>
+          <h1 className="app-title">{t('home.my_apps')}</h1>
+          <p className="app-subtitle">{projects.length > 0 ? t('home.create_another') : t('home.create_first')}</p>
+        </div>
 
-        <div className="flex items-center space-x-3 rtl:space-x-reverse bg-slate-800/50 ps-4 pe-1 py-1 rounded-full border border-white/5">
-          <span className="text-sm font-medium text-white">
-            {t('home.greeting')}, {userName} 👋
-          </span>
-          <div className="w-8 h-8 rounded-full border-2 border-primary/30 overflow-hidden shrink-0">
-            <Avatar name={userName} size="sm" className="w-full h-full text-xs" />
-          </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            onClick={handleNotificationsClick}
+            className="w-11 h-11 bg-[var(--surface)] rounded-full flex items-center justify-center border border-[var(--border)] text-[var(--text)] shadow-sm"
+            aria-label={t('notif.title')}
+          >
+            <Bell size={20} />
+          </motion.button>
+
+          {currentUser ? (
+            <div className="flex items-center gap-3 bg-[var(--surface)] ps-4 pe-1 py-1 rounded-full border border-[var(--border)] shadow-sm">
+              <span className="text-sm font-medium text-[var(--text)]">{userName}</span>
+              <div className="w-9 h-9 rounded-full border-2 border-primary/30 overflow-hidden shrink-0">
+                <Avatar name={userName} size="sm" className="w-full h-full text-xs" />
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => router.push('/login')}
+                className="px-4 py-2 text-xs font-semibold text-[var(--text)] bg-[var(--surface)] border border-[var(--border)] rounded-xl transition-all hover:bg-[var(--surface-2)]"
+              >
+                {t('auth.login_action')}
+              </button>
+              <button
+                type="button"
+                onClick={() => router.push('/signup')}
+                className="px-4 py-2 text-xs font-semibold text-[var(--text)] bg-primary hover:bg-primary/80 rounded-xl transition-all shadow-[0_0_15px_rgba(29,183,240,0.3)]"
+              >
+                {t('auth.signup_action')}
+              </button>
+            </div>
+          )}
         </div>
       </header>
 
-      <div className="p-6 space-y-8">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <section>
-          <h2 className="text-lg font-bold text-white mb-4 flex items-center">
-            <span className="w-1 h-5 bg-primary rounded-full me-2" />
-            {t('home.my_apps')}
-          </h2>
-          <div className="flex flex-col">
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {projects.length > 0 ? (
               projects.map((app) => (
                 <AppCard
@@ -63,34 +86,36 @@ export default function HomePage() {
                 />
               ))
             ) : (
-              <EmptyState
-                icon={<Plus size={24} />}
-                title={t('home.no_apps')}
-                subtitle={t('home.create_first')}
-              />
+              <div className="sm:col-span-2 xl:col-span-3">
+                <EmptyState
+                  icon={<Plus size={24} />}
+                  title={t('home.no_apps')}
+                  subtitle={t('home.create_first')}
+                />
+              </div>
             )}
           </div>
         </section>
 
         <motion.button
           onClick={handleCreateClick}
-          whileHover={{ scale: 1.02 }}
+          whileHover={{ scale: 1.01 }}
           whileTap={{ scale: 0.98 }}
-          className="w-full bg-gradient-to-r from-primary to-blue-500 rounded-2xl p-4 flex items-center justify-between shadow-[0_0_15px_rgba(29,183,240,0.2)] group"
+          className="min-h-[12rem] bg-gradient-to-br from-primary to-blue-500 rounded-2xl p-6 flex flex-col items-start justify-between shadow-[0_0_20px_rgba(29,183,240,0.22)] group text-start"
         >
-          <div className="flex items-center space-x-3 rtl:space-x-reverse">
-            <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-              <Plus size={24} className="text-white" />
-            </div>
-            <span className="text-white font-semibold">
+          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+            <Plus size={26} className="text-[var(--text)]" />
+          </div>
+          <div className="flex w-full items-end justify-between gap-4">
+            <span className="text-[var(--text)] text-lg font-semibold">
               {projects.length > 0 ? t('home.create_another') : t('home.add_first')}
             </span>
+            {dir === 'rtl' ? (
+              <ChevronLeft className="text-[var(--text)]/70 group-hover:-translate-x-1 transition-transform shrink-0" />
+            ) : (
+              <ChevronRight className="text-[var(--text)]/70 group-hover:translate-x-1 transition-transform shrink-0" />
+            )}
           </div>
-          {dir === 'rtl' ? (
-            <ChevronLeft className="text-white/70 group-hover:-translate-x-1 transition-transform" />
-          ) : (
-            <ChevronRight className="text-white/70 group-hover:translate-x-1 transition-transform" />
-          )}
         </motion.button>
       </div>
 

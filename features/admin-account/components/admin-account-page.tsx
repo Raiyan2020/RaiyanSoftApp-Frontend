@@ -8,7 +8,7 @@ export default function AdminAccountPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-full text-slate-500 min-h-[50vh]">
+      <div className="flex items-center justify-center h-full text-[var(--text-muted)] min-h-[50vh]">
         <Loader2 className="animate-spin mr-2" /> Loading profile...
       </div>
     );
@@ -17,8 +17,8 @@ export default function AdminAccountPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8 pb-20">
       <div>
-        <h1 className="text-2xl font-bold text-white">Account Settings</h1>
-        <p className="text-slate-400 text-sm">Manage your admin profile and preferences.</p>
+        <h1 className="text-2xl font-bold text-[var(--text)]">Account Settings</h1>
+        <p className="text-[var(--text-muted)] text-sm">Manage your admin profile and preferences.</p>
       </div>
 
       <AdminProfileForm

@@ -18,8 +18,8 @@ export default function LeadContactForm({ formData, onChange }: LeadContactFormP
 
   return (
     <div className="flex flex-col h-full p-6 overflow-y-auto no-scrollbar pb-24">
-      <h2 className="text-2xl font-bold text-white mb-2">{t('lead_contact.title')}</h2>
-      <p className="text-slate-400 text-sm mb-6">{t('lead_contact.subtitle')}</p>
+      <h2 className="text-2xl font-bold text-[var(--text)] mb-2">{t('lead_contact.title')}</h2>
+      <p className="text-[var(--text-muted)] text-sm mb-6">{t('lead_contact.subtitle')}</p>
 
       <div className="space-y-4">
         <Input
@@ -32,7 +32,7 @@ export default function LeadContactForm({ formData, onChange }: LeadContactFormP
         />
 
         <div className="space-y-1">
-          <label className="text-xs text-slate-400 ms-1 font-medium">{t('lead_contact.phone')}</label>
+          <label className="text-xs text-[var(--text-muted)] ms-1 font-medium">{t('lead_contact.phone')}</label>
           <PhoneInput value={formData.phone} onChange={(val) => onChange('phone', val)} required />
         </div>
 

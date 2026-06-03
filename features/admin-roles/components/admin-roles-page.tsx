@@ -26,8 +26,8 @@ export default function AdminRolesPage() {
     <div className="space-y-8 pb-20">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Roles & Permissions</h1>
-          <p className="text-slate-400 text-sm">Define access levels for employees.</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">Roles & Permissions</h1>
+          <p className="text-[var(--text-muted)] text-sm">Define access levels for employees.</p>
         </div>
         <button
           type="button"

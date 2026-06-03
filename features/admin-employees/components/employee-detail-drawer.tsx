@@ -35,11 +35,11 @@ export default function EmployeeDetailDrawer({
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-[#0f172a] border-l border-white/10 shadow-2xl flex flex-col"
+        className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-[var(--surface)] border-l border-[var(--border)] shadow-2xl flex flex-col"
       >
-        <div className="flex items-center justify-between p-6 border-b border-white/5">
-          <h2 className="text-xl font-bold text-white">Admin Details</h2>
-          <button type="button" onClick={onClose} className="p-2 text-slate-400 hover:text-white">
+        <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
+          <h2 className="text-xl font-bold text-[var(--text)]">Admin Details</h2>
+          <button type="button" onClick={onClose} className="p-2 text-[var(--text-muted)] hover:text-[var(--text)]">
             <X size={20} />
           </button>
         </div>
@@ -47,46 +47,46 @@ export default function EmployeeDetailDrawer({
         <div className="flex-1 overflow-y-auto p-6">
           <div className="flex flex-col items-center mb-8">
             <div className="w-24 h-24 mb-4">
-              <Avatar name={selectedAdmin.name} size="xl" className="w-full h-full text-3xl border-4 border-slate-800 shadow-xl" />
+              <Avatar name={selectedAdmin.name} size="xl" className="w-full h-full text-3xl border-4 border-[var(--border)] shadow-xl" />
             </div>
-            <h3 className="text-2xl font-bold text-white">{selectedAdmin.name}</h3>
-            <p className="text-slate-400">{getRoleName(selectedAdmin.role)}</p>
+            <h3 className="text-2xl font-bold text-[var(--text)]">{selectedAdmin.name}</h3>
+            <p className="text-[var(--text-muted)]">{getRoleName(selectedAdmin.role)}</p>
           </div>
 
           <div className="space-y-4">
-            <div className="bg-slate-800/40 p-4 rounded-xl border border-white/5">
-              <div className="text-xs text-slate-500 mb-1 flex items-center gap-2">
+            <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
+              <div className="text-xs text-[var(--text-muted)] mb-1 flex items-center gap-2">
                 <Mail size={12} /> Email
               </div>
-              <div className="text-white">{selectedAdmin.email}</div>
+              <div className="text-[var(--text)]">{selectedAdmin.email}</div>
             </div>
-            <div className="bg-slate-800/40 p-4 rounded-xl border border-white/5">
-              <div className="text-xs text-slate-500 mb-1 flex items-center gap-2">
+            <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
+              <div className="text-xs text-[var(--text-muted)] mb-1 flex items-center gap-2">
                 <Phone size={12} /> Phone
               </div>
-              <div className="text-white">{selectedAdmin.phone || 'N/A'}</div>
+              <div className="text-[var(--text)]">{selectedAdmin.phone || 'N/A'}</div>
             </div>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-slate-800/40 p-4 rounded-xl border border-white/5">
-                <div className="text-xs text-slate-500 mb-1">Status</div>
+              <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
+                <div className="text-xs text-[var(--text-muted)] mb-1">Status</div>
                 <div className={selectedAdmin.status === 'Active' ? 'text-emerald-400' : 'text-red-400'}>
                   {selectedAdmin.status}
                 </div>
               </div>
-              <div className="bg-slate-800/40 p-4 rounded-xl border border-white/5">
-                <div className="text-xs text-slate-500 mb-1">Created</div>
-                <div className="text-white text-sm">{formatDate(selectedAdmin.createdAt)}</div>
+              <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
+                <div className="text-xs text-[var(--text-muted)] mb-1">Created</div>
+                <div className="text-[var(--text)] text-sm">{formatDate(selectedAdmin.createdAt)}</div>
               </div>
             </div>
 
             <div className="mt-4">
-              <h4 className="text-xs font-bold text-slate-500 uppercase mb-2">Effective Permissions</h4>
+              <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase mb-2">Effective Permissions</h4>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(selectedAdmin.permissions || {}).map(([perm, enabled]) =>
                   enabled ? (
                     <span
                       key={perm}
-                      className="text-[10px] bg-slate-800 border border-white/10 px-2 py-1 rounded text-slate-300"
+                      className="text-[10px] bg-[var(--surface-3)] border border-[var(--border)] px-2 py-1 rounded text-[var(--text)]"
                     >
                       {perm}
                     </span>
@@ -97,7 +97,7 @@ export default function EmployeeDetailDrawer({
           </div>
         </div>
 
-        <div className="p-6 border-t border-white/5 bg-[#0f172a] flex gap-3">
+        <div className="p-6 border-t border-[var(--border)] bg-[var(--surface)] flex gap-3">
           <button
             type="button"
             onClick={() => onToggleStatus(selectedAdmin)}
