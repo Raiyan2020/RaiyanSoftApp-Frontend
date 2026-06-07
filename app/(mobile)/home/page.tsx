@@ -1,7 +1,5 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import HomePage from '@/features/home/components/home-page';
+import { redirect } from 'next/navigation';
 
 export default function Page() {
-  return <HomePage />;
+  redirect('/profile');
 }

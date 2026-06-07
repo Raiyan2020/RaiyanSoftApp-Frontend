@@ -8,13 +8,13 @@ interface CalendarSlotPickerProps {
   selectedTime: string | null;
   availableSlots: string[];
   loadingSlots: boolean;
-  settings: any;
   dir: string;
   onPrevMonth: () => void;
   onNextMonth: () => void;
   onSelectDate: (date: Date) => void;
   onSelectTime: (time: string) => void;
   getCalendarRows: () => Date[][];
+  isDateAvailable: (date: Date) => boolean;
 }
 
 export default function CalendarSlotPicker({
@@ -23,13 +23,13 @@ export default function CalendarSlotPicker({
   selectedTime,
   availableSlots,
   loadingSlots,
-  settings,
   dir,
   onPrevMonth,
   onNextMonth,
   onSelectDate,
   onSelectTime,
   getCalendarRows,
+  isDateAvailable,
 }: CalendarSlotPickerProps) {
   const calendarRows = getCalendarRows();
   const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
@@ -42,11 +42,11 @@ export default function CalendarSlotPicker({
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-2">
           <button type="button" onClick={onPrevMonth} className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] border border-[var(--border)]">
-            <ChevronLeft size={20} />
+            <ChevronLeft size={20} className={dir === 'rtl' ? 'rotate-180' : ''} />
           </button>
           <h3 className="text-lg font-bold uppercase tracking-wide">{monthLabel}</h3>
           <button type="button" onClick={onNextMonth} className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] border border-[var(--border)]">
-            <ChevronRight size={20} />
+            <ChevronRight size={20} className={dir === 'rtl' ? 'rotate-180' : ''} />
           </button>
         </div>
 
@@ -63,10 +63,7 @@ export default function CalendarSlotPicker({
                 const isCurrent = date.getMonth() === viewDate.getMonth();
                 const isSelected = selectedDate?.toDateString() === date.toDateString();
                 const isPast = date < today;
-
-                const dayConfig = settings.weeklyAvailability?.[date.getDay()];
-                const isDayEnabled = dayConfig?.enabled;
-                const isClickable = isCurrent && !isPast && isDayEnabled;
+                const isClickable = isCurrent && !isPast && isDateAvailable(date);
 
                 return (
                   <button

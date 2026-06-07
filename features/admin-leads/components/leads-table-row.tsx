@@ -1,16 +1,17 @@
 import React from 'react';
 import { Phone, MessageCircle, Eye } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
-import { Lead } from '@/lib/leadStore';
+import { AdminLeadListItem } from '../types/admin-lead.types';
+import { getLeadStatusTone } from '../utils/lead-status';
 
 interface LeadsTableRowProps {
-  lead: Lead;
-  onSelectLead: (lead: Lead) => void;
+  lead: AdminLeadListItem;
+  onSelectLead: (lead: AdminLeadListItem) => void;
   toWhatsAppDigits: (phone: string) => string | null;
 }
 
 export default function LeadsTableRow({ lead, onSelectLead, toWhatsAppDigits }: LeadsTableRowProps) {
-  const waDigits = toWhatsAppDigits(lead.phone);
+  const waDigits = toWhatsAppDigits(lead.user.full_phone);
   const waMessage =
     'السلام عليكم ورحمة الله وبركاته\nحضرتك قدمت عندنا طلب تطبيق ، طلبك مقبول ان شاء الله ممكن تفاصيل اكثر عن المشروع';
   const encodedWaMessage = encodeURIComponent(waMessage);
@@ -19,45 +20,33 @@ export default function LeadsTableRow({ lead, onSelectLead, toWhatsAppDigits }: 
     ? `https://web.whatsapp.com/send/?phone=${waDigits}&text=${encodedWaMessage}&type=phone_number&app_absent=0`
     : null;
 
+  const statusTone = getLeadStatusTone(lead.status);
+
   return (
     <tr className="hover:bg-white/[0.02] transition-colors group">
       <td className="p-5">
         <div className="flex items-center gap-3">
-          <Avatar name={lead.name} size="md" className="w-10 h-10 text-sm" />
+          <Avatar name={lead.user.full_name} size="md" className="w-10 h-10 text-sm" />
           <div>
-            <div className="font-bold text-[var(--text)]">{lead.name}</div>
+            <div className="font-bold text-[var(--text)]">{lead.user.full_name}</div>
             <div className="text-xs text-[var(--text-muted)] flex items-center gap-1">
-              <Phone size={10} /> {lead.phone}
+              <Phone size={10} /> {lead.user.full_phone}
             </div>
           </div>
         </div>
       </td>
       <td className="p-5">
-        <div className="font-medium text-[var(--text)]">{lead.projectPayload.name}</div>
-        <div className="text-xs text-[var(--text-muted)] truncate max-w-[150px]">
-          {lead.projectPayload.industry} • {lead.projectPayload.serviceModel}
-        </div>
+        <div className="font-medium text-[var(--text)]">{lead.project_name}</div>
+        <div className="text-xs text-[var(--text-muted)] truncate max-w-[220px]">{lead.description}</div>
       </td>
       <td className="p-5">
         <span
-          className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold capitalize ${
-            lead.status === 'new'
-              ? 'bg-blue-500/10 text-blue-400'
-              : lead.status === 'approved'
-              ? 'bg-emerald-500/10 text-emerald-400'
-              : lead.status === 'rejected'
-              ? 'bg-red-500/10 text-red-400'
-              : lead.status === 'claimed'
-              ? 'bg-purple-500/10 text-purple-400'
-              : lead.status === 'deleted'
-              ? 'bg-[var(--surface-3)] text-[var(--text-muted)] line-through'
-              : 'bg-[var(--surface-3)] text-[var(--text)]'
-          }`}
+          className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${statusTone.badgeClass}`}
         >
           {lead.status}
         </span>
       </td>
-      <td className="p-5 text-[var(--text-muted)] text-xs">{new Date(lead.createdAt).toLocaleDateString()}</td>
+      <td className="p-5 text-[var(--text-muted)] text-xs">{lead.date}</td>
       <td className="p-5 text-right">
         <div className="flex items-center justify-end gap-2">
           <a

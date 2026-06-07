@@ -1,102 +1,108 @@
-import { useState, useEffect } from 'react';
-import { leadStore, Lead } from '@/lib/leadStore';
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18nContext';
+import { AdminLeadListItem, LEAD_STATUS, LeadStatusCode } from '../types/admin-lead.types';
+import { useAdminLeadsList } from './use-admin-leads-list';
+import { useAdminLead } from './use-admin-lead';
+import { useChangeLeadStatus } from './use-change-lead-status';
+
+export type LeadStatusFilter = 'all' | 'pending' | 'approved' | 'rejected';
+
+const STATUS_FILTER_MAP: Record<Exclude<LeadStatusFilter, 'all'>, LeadStatusCode> = {
+  pending: LEAD_STATUS.PENDING,
+  approved: LEAD_STATUS.APPROVED,
+  rejected: LEAD_STATUS.REJECTED,
+};
 
 export function useAdminLeads() {
-  const [leads, setLeads] = useState<Lead[]>([]);
-  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [claimLink, setClaimLink] = useState<string | null>(null);
-  const [isGeneratingLink, setIsGeneratingLink] = useState(false);
-  const [rejectReason, setRejectReason] = useState('');
-  const [assignedTo, setAssignedTo] = useState('');
-  const [reviewNotes, setReviewNotes] = useState('');
   const { language } = useTranslation();
+  const [statusFilter, setStatusFilter] = useState<LeadStatusFilter>('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [page, setPage] = useState(1);
+  const [selectedLeadId, setSelectedLeadId] = useState<number | null>(null);
+  const [selectedListItem, setSelectedListItem] = useState<AdminLeadListItem | null>(null);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    const unsubscribe = leadStore.subscribeToLeads(() => {
-      setLeads(leadStore.getLeads());
-    });
-    return () => unsubscribe();
-  }, []);
+    const timer = window.setTimeout(() => setDebouncedSearch(searchQuery.trim()), 350);
+    return () => window.clearTimeout(timer);
+  }, [searchQuery]);
 
-  const filteredLeads = leads.filter((lead) => {
-    const matchesStatus = statusFilter === 'all' ? lead.status !== 'deleted' : lead.status === statusFilter;
-    const matchesSearch =
-      lead.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      lead.phone.includes(searchQuery) ||
-      lead.id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      (lead.email && lead.email.toLowerCase().includes(searchQuery.toLowerCase()));
-    return matchesStatus && matchesSearch;
-  });
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedSearch, statusFilter]);
 
-  const handleGenerateLink = async (lead: Lead) => {
-    setIsGeneratingLink(true);
-    setClaimLink(null);
+  const filters = useMemo(
+    () => ({
+      name: debouncedSearch || undefined,
+      status: statusFilter === 'all' ? undefined : STATUS_FILTER_MAP[statusFilter],
+      page,
+    }),
+    [debouncedSearch, page, statusFilter]
+  );
+
+  const {
+    leads,
+    pagination,
+    loading: listLoading,
+    error: listError,
+    reload: reloadList,
+  } = useAdminLeadsList(filters, language);
+
+  useEffect(() => {
+    if (!selectedLeadId) return;
+    const refreshed = leads.find((lead) => lead.id === selectedLeadId);
+    if (refreshed) setSelectedListItem(refreshed);
+  }, [leads, selectedLeadId]);
+
+  const {
+    lead: selectedLead,
+    loading: detailLoading,
+    error: detailError,
+    reload: reloadDetail,
+  } = useAdminLead(selectedLeadId, language, selectedLeadId !== null);
+
+  const {
+    changeStatus,
+    loading: statusLoading,
+    error: statusError,
+  } = useChangeLeadStatus();
+
+  const openLead = (lead: AdminLeadListItem) => {
+    setSelectedLeadId(lead.id);
+    setSelectedListItem(lead);
+    setActionMessage(null);
+  };
+
+  const closeLead = () => {
+    setSelectedLeadId(null);
+    setSelectedListItem(null);
+    setActionMessage(null);
+  };
+
+  const handleApprove = async () => {
+    if (!selectedLeadId) return;
+
     try {
-      if (lead.status !== 'approved') {
-        await leadStore.updateLeadStatus(lead.id, 'approved');
-      }
-
-      const token = await leadStore.generateClaimToken(lead.id);
-      const url = `${window.location.origin}/#/claim?token=${token}`;
-      setClaimLink(url);
-    } catch (e) {
-      console.error(e);
-      alert('Failed to generate link');
-    } finally {
-      setIsGeneratingLink(false);
+      await changeStatus(selectedLeadId, 'approve');
+      setActionMessage('Lead approved successfully.');
+      await Promise.all([reloadList(), reloadDetail()]);
+    } catch {
+      // error surfaced via statusError
     }
   };
 
-  const handleUpdateStatus = async (status: Lead['status']) => {
-    if (!selectedLead) return;
-    if (status === 'rejected') {
-      if (!rejectReason.trim()) return;
-      await leadStore.updateLeadStatus(selectedLead.id, status, rejectReason.trim());
-      setRejectReason('');
-    } else {
-      await leadStore.updateLeadStatus(selectedLead.id, status);
-    }
-    setSelectedLead(null);
-  };
+  const handleReject = async () => {
+    if (!selectedLeadId) return;
 
-  const openLead = (lead: Lead) => {
-    setSelectedLead(lead);
-    setAssignedTo(lead.assignedTo || '');
-    setReviewNotes(lead.reviewNotes || '');
-    setRejectReason(lead.rejectReason || '');
-  };
-
-  const handleSaveReview = async () => {
-    if (!selectedLead) return;
-    await leadStore.updateLeadReview(selectedLead.id, {
-      assignedTo: assignedTo.trim(),
-      reviewNotes: reviewNotes.trim(),
-    });
-    setSelectedLead({
-      ...selectedLead,
-      assignedTo: assignedTo.trim(),
-      reviewNotes: reviewNotes.trim(),
-    });
-  };
-
-  const handleDeleteLead = async () => {
-    if (!selectedLead) return;
-    if (
-      !window.confirm(
-        'Delete this lead?\n\nThis will hide it from the main list, but it will remain in the database.'
-      )
-    )
-      return;
     try {
-      await leadStore.deleteLead(selectedLead.id);
-      setSelectedLead(null);
-      alert('Lead moved to Deleted');
-    } catch (e: any) {
-      console.error(e);
-      alert(`Failed to delete lead: ${e.message}`);
+      await changeStatus(selectedLeadId, 'reject');
+      setActionMessage('Lead rejected successfully.');
+      await Promise.all([reloadList(), reloadDetail()]);
+    } catch {
+      // error surfaced via statusError
     }
   };
 
@@ -110,30 +116,36 @@ export function useAdminLeads() {
     return digits;
   };
 
+  const goToPage = (nextPage: number) => {
+    if (!pagination) return;
+    const safePage = Math.min(Math.max(1, nextPage), pagination.last_page);
+    setPage(safePage);
+  };
+
   return {
     leads,
+    pagination,
+    listLoading,
+    listError,
+    reloadList,
     selectedLead,
-    setSelectedLead,
-    openLead,
+    selectedListItem,
+    detailLoading,
+    detailError,
+    statusLoading,
+    statusError,
+    actionMessage,
     statusFilter,
     setStatusFilter,
     searchQuery,
     setSearchQuery,
-    claimLink,
-    setClaimLink,
-    isGeneratingLink,
-    rejectReason,
-    setRejectReason,
-    assignedTo,
-    setAssignedTo,
-    reviewNotes,
-    setReviewNotes,
     language,
-    filteredLeads,
-    handleGenerateLink,
-    handleUpdateStatus,
-    handleSaveReview,
-    handleDeleteLead,
+    openLead,
+    closeLead,
+    handleApprove,
+    handleReject,
     toWhatsAppDigits,
+    page,
+    goToPage,
   };
 }

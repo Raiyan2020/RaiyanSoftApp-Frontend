@@ -1,63 +1,75 @@
-import { useState } from 'react';
+'use client';
+
+import { useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18nContext';
-import { useAppointments, appointmentStore } from '@/lib/appointmentStore';
+import { authService } from '@/lib/auth-service';
+import { useUserMeetings } from '@/features/meetings/hooks/use-user-meetings';
+import { useCancelMeeting } from '@/features/meetings/hooks/use-cancel-meeting';
+import {
+  canCancelMeeting,
+  isActiveMeetingStatus,
+  parseMeetingDateTime,
+} from '@/features/meetings/utils/meeting-helpers';
+import { UserMeeting } from '@/features/meetings/types/meeting.types';
 
 export function useAppointmentsList() {
   const { t, dir } = useTranslation();
-  const { appointments } = useAppointments();
+  const isAuthenticated = Boolean(authService.getUserToken());
   const [showWizard, setShowWizard] = useState(false);
   const [showCancel, setShowCancel] = useState(false);
-  const [appointmentToCancel, setAppointmentToCancel] = useState<string | null>(null);
+  const [meetingToCancel, setMeetingToCancel] = useState<number | null>(null);
 
-  const formatDate = (val: any) => {
-    let ts;
-    if (val && typeof val.toMillis === 'function') {
-      ts = val.toMillis();
-    } else if (typeof val === 'number') {
-      ts = val;
-    } else {
-      ts = Date.now();
-    }
-    return new Date(ts).toLocaleDateString(dir === 'rtl' ? 'ar-KW' : 'en-US', {
+  const { meetings, loading, error, reload } = useUserMeetings({}, isAuthenticated);
+  const { cancelMeeting, loading: cancelLoading } = useCancelMeeting();
+
+  const formatDate = (meeting: UserMeeting) => {
+    const date = parseMeetingDateTime(meeting.date_time);
+    return date.toLocaleDateString(dir === 'rtl' ? 'ar-KW' : 'en-US', {
       weekday: 'long',
       month: 'long',
       day: 'numeric',
     });
   };
 
-  const formatTime = (val: any) => {
-    let ts;
-    if (val && typeof val.toMillis === 'function') {
-      ts = val.toMillis();
-    } else if (typeof val === 'number') {
-      ts = val;
-    } else {
-      ts = Date.now();
-    }
-    return new Date(ts).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  const formatTime = (meeting: UserMeeting) => {
+    const date = parseMeetingDateTime(meeting.date_time);
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
-  const initiateCancel = (id: string) => {
-    setAppointmentToCancel(id);
+  const upcomingAppointments = useMemo(
+    () =>
+      meetings.filter((meeting) => {
+        const date = parseMeetingDateTime(meeting.date_time);
+        return date.getTime() >= Date.now() - 60 * 60 * 1000 && meeting.status !== 4;
+      }),
+    [meetings]
+  );
+
+  const hasActiveBooking = upcomingAppointments.some((meeting) => isActiveMeetingStatus(meeting.status));
+
+  const initiateCancel = (id: number) => {
+    setMeetingToCancel(id);
     setShowCancel(true);
   };
 
   const handleCancel = async () => {
-    if (appointmentToCancel) {
-      await appointmentStore.cancelAppointment(appointmentToCancel);
+    if (!meetingToCancel) return;
+
+    try {
+      await cancelMeeting(meetingToCancel);
+      await reload();
       setShowCancel(false);
-      setAppointmentToCancel(null);
+      setMeetingToCancel(null);
+    } catch {
+      // error handled in hook
     }
   };
 
-  const upcomingAppointments = appointments || [];
-
-  const hasActiveBooking = upcomingAppointments.some((appt) => {
-    const endAtMs = appt.endAt?.toMillis ? appt.endAt.toMillis() : typeof appt.endAt === 'number' ? appt.endAt : 0;
-    return appt.status === 'confirmed' && endAtMs > Date.now();
-  });
-
   const handleOpenWizard = () => {
+    if (!isAuthenticated) {
+      alert(t('auth.phone_dialog_title'));
+      return;
+    }
     if (hasActiveBooking) {
       alert(t('appt.limit_error'));
       return;
@@ -69,6 +81,8 @@ export function useAppointmentsList() {
     t,
     dir,
     upcomingAppointments,
+    loading,
+    error,
     showWizard,
     setShowWizard,
     showCancel,
@@ -77,7 +91,11 @@ export function useAppointmentsList() {
     formatTime,
     initiateCancel,
     handleCancel,
+    cancelLoading,
     hasActiveBooking,
     handleOpenWizard,
+    isAuthenticated,
+    reload,
+    canCancelMeeting,
   };
 }

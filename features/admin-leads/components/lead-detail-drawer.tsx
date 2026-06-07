@@ -1,55 +1,55 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Clock, MessageCircle, Save, X, Copy, CheckCircle, Loader2 } from 'lucide-react';
-import { Lead } from '@/lib/leadStore';
+import { MessageCircle, X, Copy, CheckCircle, Loader2, XCircle } from 'lucide-react';
+import { AdminLeadDetail, AdminLeadListItem } from '../types/admin-lead.types';
+import { formatLeadStatusLabel, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
 import LeadProjectSummary from './lead-project-summary';
 
 interface LeadDetailDrawerProps {
-  selectedLead: Lead;
-  onClose: () => void;
+  listItem: AdminLeadListItem;
+  lead: AdminLeadDetail | null;
+  detailLoading: boolean;
+  detailError: string | null;
+  statusLoading: boolean;
+  statusError: string | null;
+  actionMessage: string | null;
   language: string;
+  onClose: () => void;
   toWhatsAppDigits: (phone: string) => string | null;
-  onUpdateStatus: (status: Lead['status']) => void;
-  onDeleteLead: () => void;
-  claimLink: string | null;
-  isGeneratingLink: boolean;
-  onGenerateLink: (lead: Lead) => void;
-  rejectReason: string;
-  onRejectReasonChange: (value: string) => void;
-  assignedTo: string;
-  onAssignedToChange: (value: string) => void;
-  reviewNotes: string;
-  onReviewNotesChange: (value: string) => void;
-  onSaveReview: () => void;
+  onApprove: () => void;
+  onReject: () => void;
 }
 
 export default function LeadDetailDrawer({
-  selectedLead,
-  onClose,
+  listItem,
+  lead,
+  detailLoading,
+  detailError,
+  statusLoading,
+  statusError,
+  actionMessage,
   language,
+  onClose,
   toWhatsAppDigits,
-  onUpdateStatus,
-  onDeleteLead,
-  claimLink,
-  isGeneratingLink,
-  onGenerateLink,
-  rejectReason,
-  onRejectReasonChange,
-  assignedTo,
-  onAssignedToChange,
-  reviewNotes,
-  onReviewNotesChange,
-  onSaveReview,
+  onApprove,
+  onReject,
 }: LeadDetailDrawerProps) {
-  const waDigits = toWhatsAppDigits(selectedLead.phone);
-  const waMessage = 'السلام عليكم ورحمة الله وبركاته\nحضرتك قدمت عندنا طلب تطبيق ، طلبك مقبول ان شاء الله ممكن تفاصيل اكثر عن المشروع';
+  const phone = lead?.user.phone || listItem.user.full_phone;
+  const displayName = lead?.user.name || listItem.user.full_name;
+  const projectName = lead?.project_name || listItem.project_name;
+  const statusLabel = formatLeadStatusLabel(lead?.status ?? listItem.status, language);
+  const statusTone = getLeadStatusTone(lead?.status ?? listItem.status);
+  const canChangeStatus = lead ? isLeadPending(lead.status) : isLeadPending(listItem.status);
+
+  const waDigits = toWhatsAppDigits(phone);
+  const waMessage =
+    'السلام عليكم ورحمة الله وبركاته\nحضرتك قدمت عندنا طلب تطبيق ، طلبك مقبول ان شاء الله ممكن تفاصيل اكثر عن المشروع';
   const encodedWaMessage = encodeURIComponent(waMessage);
   const waUrl = waDigits
     ? `https://web.whatsapp.com/send/?phone=${waDigits}&text=${encodedWaMessage}&type=phone_number&app_absent=0`
     : null;
-  const claimExpiry = selectedLead.claimTokenExpiresAt
-    ? new Date(selectedLead.claimTokenExpiresAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })
-    : null;
+
+  const requestId = lead?.request_id || String(listItem.id);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
@@ -61,13 +61,13 @@ export default function LeadDetailDrawer({
       >
         <div className="p-6 border-b border-[var(--border)] flex justify-between items-start">
           <div>
-            <h2 className="text-xl font-bold text-[var(--text)] mb-2">{selectedLead.projectPayload.name}</h2>
+            <h2 className="text-xl font-bold text-[var(--text)] mb-2">{projectName}</h2>
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
-                <span>{selectedLead.name}</span>
+                <span>{displayName}</span>
                 <span>•</span>
                 <div className="flex items-center gap-2">
-                  <span>{selectedLead.phone}</span>
+                  <span dir="ltr">{phone}</span>
                   <a
                     href={waUrl || undefined}
                     target="_blank"
@@ -86,13 +86,9 @@ export default function LeadDetailDrawer({
                   </a>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                {selectedLead.email ? (
-                  <span className="text-[var(--text-muted)]">{selectedLead.email}</span>
-                ) : (
-                  <span className="text-[var(--text-muted)] italic">No Email</span>
-                )}
-              </div>
+              {lead?.user.email ? (
+                <div className="text-sm text-[var(--text-muted)]">{lead.user.email}</div>
+              ) : null}
             </div>
           </div>
           <button type="button" onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text)]">
@@ -103,41 +99,12 @@ export default function LeadDetailDrawer({
         <div className="p-6 overflow-y-auto custom-scrollbar space-y-6">
           <div className="flex items-center justify-between bg-[var(--surface-2)] p-4 rounded-xl border border-[var(--border)]">
             <div className="flex items-center gap-3">
-              <span className="text-sm text-[var(--text-muted)] uppercase font-bold tracking-wider">Current Status:</span>
-              <span
-                className={`text-sm font-bold capitalize ${
-                  selectedLead.status === 'new'
-                    ? 'text-blue-400'
-                    : selectedLead.status === 'approved'
-                    ? 'text-emerald-400'
-                    : selectedLead.status === 'deleted'
-                    ? 'text-[var(--text-muted)] line-through'
-                    : 'text-[var(--text)]'
-                }`}
-              >
-                {selectedLead.status}
+              <span className="text-sm text-[var(--text-muted)] uppercase font-bold tracking-wider">
+                Current Status:
               </span>
+              <span className={`text-sm font-bold ${statusTone.textClass}`}>{statusLabel}</span>
             </div>
-            <div className="flex gap-2">
-              {selectedLead.status === 'new' ? (
-                <button
-                  type="button"
-                  onClick={() => onUpdateStatus('reviewing')}
-                  className="px-3 py-1.5 bg-[var(--surface-3)] text-[var(--text)] text-xs rounded-lg hover:bg-slate-600"
-                >
-                  Mark Reviewing
-                </button>
-              ) : null}
-              {selectedLead.status !== 'deleted' ? (
-                <button
-                  type="button"
-                  onClick={onDeleteLead}
-                  className="px-3 py-1.5 bg-red-900/30 text-red-400 text-xs rounded-lg hover:bg-red-900/50 border border-red-500/30 transition-colors"
-                >
-                  Delete
-                </button>
-              ) : null}
-            </div>
+            <span className="text-xs text-[var(--text-muted)]">{listItem.date}</span>
           </div>
 
           <div className="flex items-center justify-between bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
@@ -146,12 +113,12 @@ export default function LeadDetailDrawer({
             </span>
             <div className="flex items-center gap-2">
               <code className="text-[var(--text)] text-sm font-mono bg-[var(--surface-2)] px-2 py-1 rounded border border-[var(--border)]">
-                {selectedLead.id}
+                {requestId}
               </code>
               <button
                 type="button"
                 onClick={() => {
-                  navigator.clipboard.writeText(selectedLead.id);
+                  navigator.clipboard.writeText(requestId);
                   alert(language === 'ar' ? 'تم النسخ!' : 'Copied!');
                 }}
                 className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-2)] rounded border border-[var(--border)] hover:bg-[var(--surface-3)] transition-colors"
@@ -162,127 +129,71 @@ export default function LeadDetailDrawer({
             </div>
           </div>
 
-          <LeadProjectSummary projectPayload={selectedLead.projectPayload} />
-
-          <div className="bg-[var(--surface-2)] p-4 rounded-xl border border-[var(--border)] space-y-4">
-            <h3 className="text-sm font-bold text-[var(--text)] uppercase tracking-wider">Review Controls</h3>
-            <div className="space-y-2">
-              <label className="text-xs text-[var(--text-muted)] font-medium ms-1">Assigned To</label>
-              <input
-                value={assignedTo}
-                onChange={(event) => onAssignedToChange(event.target.value)}
-                className="w-full bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none"
-                placeholder="Sales or admin owner"
-              />
-            </div>
-            <div className="space-y-2">
-              <label className="text-xs text-[var(--text-muted)] font-medium ms-1">Internal Review Notes</label>
-              <textarea
-                value={reviewNotes}
-                onChange={(event) => onReviewNotesChange(event.target.value)}
-                className="w-full h-24 resize-none bg-[var(--surface)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none"
-                placeholder="Notes visible to dashboard users only."
-              />
-            </div>
-            <button
-              type="button"
-              onClick={onSaveReview}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[var(--surface-3)] text-[var(--text)] hover:text-[var(--text)] hover:bg-[var(--surface-3)] text-sm font-bold"
-            >
-              <Save size={15} />
-              Save Review
-            </button>
-          </div>
-
-          {selectedLead.status !== 'rejected' &&
-          selectedLead.status !== 'claimed' &&
-          selectedLead.status !== 'deleted' ? (
-            <div className="bg-red-500/5 p-4 rounded-xl border border-red-500/10 space-y-3">
-              <label className="text-xs text-red-300 font-bold uppercase tracking-wider">Rejection Reason</label>
-              <textarea
-                value={rejectReason}
-                onChange={(event) => onRejectReasonChange(event.target.value)}
-                className="w-full h-20 resize-none bg-[var(--surface)] border border-red-500/20 rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-red-400 focus:outline-none"
-                placeholder="Required before rejecting this lead."
-              />
-              <button
-                type="button"
-                onClick={() => onUpdateStatus('rejected')}
-                disabled={!rejectReason.trim()}
-                className="px-3 py-1.5 bg-red-500/10 text-red-400 text-xs rounded-lg hover:bg-red-500/20 border border-red-500/20 disabled:opacity-40"
-              >
-                Reject Lead
-              </button>
+          {detailLoading ? (
+            <div className="flex items-center justify-center py-10">
+              <Loader2 className="animate-spin text-primary" size={28} />
             </div>
           ) : null}
 
-          <div className="bg-[var(--surface-2)] p-4 rounded-xl border border-[var(--border)]">
-            <h3 className="text-sm font-bold text-[var(--text)] uppercase tracking-wider mb-4 flex items-center gap-2">
-              <Clock size={15} /> Timeline
-            </h3>
-            {selectedLead.timeline?.length ? (
-              <div className="space-y-3">
-                {selectedLead.timeline.map((item, index) => (
-                  <div key={`${item.action}-${item.createdAt}-${index}`} className="border-l border-primary/30 ps-3">
-                    <p className="text-sm text-[var(--text)] font-bold">{item.action.replace('.', ' ')}</p>
-                    <p className="text-xs text-[var(--text-muted)]">
-                      {new Date(item.createdAt).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' })} by{' '}
-                      {item.createdByName || 'Admin'}
-                    </p>
-                    {item.reason ? <p className="text-xs text-[var(--text-muted)] mt-1">{item.reason}</p> : null}
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <p className="text-sm text-[var(--text-muted)]">No timeline events yet.</p>
-            )}
-          </div>
+          {detailError ? (
+            <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
+              {detailError}
+            </div>
+          ) : null}
 
-          {selectedLead.status !== 'rejected' &&
-          selectedLead.status !== 'claimed' &&
-          selectedLead.status !== 'deleted' ? (
-            <div className="pt-4 border-t border-[var(--border)]">
-              <h3 className="text-sm font-bold text-[var(--text)] uppercase tracking-wider mb-4">
-                Approval & Access
+          {lead ? (
+            <LeadProjectSummary
+              projectName={lead.project_name}
+              color={lead.color}
+              description={lead.description}
+              answers={lead.answers}
+            />
+          ) : !detailLoading && !detailError ? (
+            <LeadProjectSummary
+              projectName={listItem.project_name}
+              color="#3498db"
+              description={listItem.description}
+              answers={[]}
+            />
+          ) : null}
+
+          {statusError ? (
+            <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
+              {statusError}
+            </div>
+          ) : null}
+
+          {actionMessage ? (
+            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">
+              {actionMessage}
+            </div>
+          ) : null}
+
+          {canChangeStatus ? (
+            <div className="pt-4 border-t border-[var(--border)] space-y-3">
+              <h3 className="text-sm font-bold text-[var(--text)] uppercase tracking-wider">
+                Review Actions
               </h3>
-
-              {!claimLink ? (
+              <div className="flex flex-col sm:flex-row gap-3">
                 <button
                   type="button"
-                  onClick={() => onGenerateLink(selectedLead)}
-                  disabled={isGeneratingLink}
-                  className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2"
+                  onClick={onApprove}
+                  disabled={statusLoading}
+                  className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 disabled:opacity-60"
                 >
-                  {isGeneratingLink ? <Loader2 className="animate-spin" /> : <CheckCircle size={20} />}
-                  <span>Approve & Generate Claim Link</span>
+                  {statusLoading ? <Loader2 className="animate-spin" size={18} /> : <CheckCircle size={18} />}
+                  <span>Approve Lead</span>
                 </button>
-              ) : (
-                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4">
-                  <p className="text-emerald-400 text-xs font-bold mb-2 flex items-center gap-2">
-                    <CheckCircle size={14} /> Project Approved! Share this link with the client:
-                  </p>
-                  <div className="flex gap-2">
-                    <input
-                      readOnly
-                      value={claimLink}
-                      className="flex-1 bg-[var(--surface-2)] border border-emerald-500/30 rounded-lg px-3 py-2 text-sm text-[var(--text)] focus:outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => {
-                        navigator.clipboard.writeText(claimLink);
-                        alert('Copied!');
-                      }}
-                      className="px-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors"
-                    >
-                      <Copy size={18} />
-                    </button>
-                  </div>
-                  <p className="text-[var(--text-muted)] text-[10px] mt-2">
-                    {claimExpiry ? `Link expires ${claimExpiry}.` : 'Link expires in 7 days.'}
-                  </p>
-                </div>
-              )}
+                <button
+                  type="button"
+                  onClick={onReject}
+                  disabled={statusLoading}
+                  className="flex-1 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl font-bold border border-red-500/20 flex items-center justify-center gap-2 disabled:opacity-60"
+                >
+                  {statusLoading ? <Loader2 className="animate-spin" size={18} /> : <XCircle size={18} />}
+                  <span>Reject Lead</span>
+                </button>
+              </div>
             </div>
           ) : null}
         </div>

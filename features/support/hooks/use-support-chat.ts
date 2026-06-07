@@ -7,10 +7,11 @@ import { doc, updateDoc, setDoc } from 'firebase/firestore';
 export const TAB_BAR_HEIGHT = 80;
 export const BOTTOM_SAFE_AREA = 20;
 
-export function useSupportChat() {
+export function useSupportChat(options?: { embedded?: boolean }) {
   const { messages } = useStoreMessages();
   const [inputText, setInputText] = useState('');
   const { t, dir } = useTranslation();
+  const tabBarHeight = options?.embedded ? 0 : TAB_BAR_HEIGHT;
 
   const pageRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -22,7 +23,7 @@ export function useSupportChat() {
     const updateHeights = () => {
       const composerH = composerRef.current?.offsetHeight || 60;
       pageRef.current?.style.setProperty('--composer-h', `${composerH}px`);
-      pageRef.current?.style.setProperty('--tabbar-h', `${TAB_BAR_HEIGHT}px`);
+      pageRef.current?.style.setProperty('--tabbar-h', `${tabBarHeight}px`);
     };
 
     updateHeights();
@@ -31,7 +32,7 @@ export function useSupportChat() {
     observer.observe(composerRef.current);
 
     return () => observer.disconnect();
-  }, []);
+  }, [tabBarHeight]);
 
   const scrollToBottom = (behavior: ScrollBehavior = 'auto') => {
     messagesEndRef.current?.scrollIntoView({ behavior, block: 'end' });

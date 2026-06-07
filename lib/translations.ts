@@ -35,6 +35,24 @@ export const translations = {
     "auth.login_required_body": "To complete this step, please login or create an account.",
     "auth.login_action": "Log in",
     "auth.signup_action": "Create Account",
+    "auth.close": "Close",
+    "auth.phone_dialog_title": "Login or create account",
+    "auth.phone_dialog_subtitle": "Enter your phone number and we will send an OTP. If this number is new, we will ask for your name before signing you in.",
+    "auth.otp_dialog_title": "Enter verification code",
+    "auth.otp_existing_user_subtitle": "Enter the OTP sent to your phone number to continue.",
+    "auth.otp_new_user_subtitle": "This looks like a new number. Add your name and the OTP to create your account.",
+    "auth.phone_placeholder": "Enter phone number",
+    "auth.phone_invalid": "Please enter a valid phone number.",
+    "auth.phone_check_loading": "Checking phone...",
+    "auth.continue": "Continue",
+    "auth.change_phone": "Change phone number",
+    "auth.full_name": "Full Name",
+    "auth.name_placeholder": "Your name",
+    "auth.name_required": "Please enter your name.",
+    "auth.otp": "OTP",
+    "auth.otp_invalid": "Please enter a valid OTP.",
+    "auth.verify_loading": "Verifying...",
+    "auth.verify_and_enter": "Verify and enter",
 
     // Home
     "home.greeting": "Hi",
@@ -285,11 +303,13 @@ export const translations = {
     "landing.nav.pages": "Pages",
     "landing.nav.sections_title": "Page Sections",
     "landing.nav.pages_title": "Site Pages",
+    "landing.nav.actions_title": "Quick Actions",
     "landing.nav.quote": "Get a Quote",
     "landing.nav.book_consultation": "Book Consultation",
     "landing.nav.dashboard": "Dashboard",
     "landing.nav.toggle_dark": "Toggle Dark Mode",
-    "landing.nav.menu": "Menu"
+    "landing.nav.menu": "Menu",
+    "profile.title": "Profile"
   },
   ar: {
     // Auth
@@ -326,6 +346,24 @@ export const translations = {
     "auth.login_required_body": "لإكمال هذه الخطوة، يرجى تسجيل الدخول أو إنشاء حساب.",
     "auth.login_action": "تسجيل الدخول",
     "auth.signup_action": "إنشاء حساب",
+    "auth.close": "إغلاق",
+    "auth.phone_dialog_title": "تسجيل الدخول أو إنشاء حساب",
+    "auth.phone_dialog_subtitle": "أدخل رقم هاتفك وسنرسل رمز تحقق. إذا كان الرقم جديداً سنطلب اسمك قبل تسجيل الدخول.",
+    "auth.otp_dialog_title": "أدخل رمز التحقق",
+    "auth.otp_existing_user_subtitle": "أدخل رمز التحقق المرسل إلى رقم هاتفك للمتابعة.",
+    "auth.otp_new_user_subtitle": "يبدو أن هذا الرقم جديد. أضف اسمك ورمز التحقق لإنشاء الحساب.",
+    "auth.phone_placeholder": "أدخل رقم الهاتف",
+    "auth.phone_invalid": "يرجى إدخال رقم هاتف صحيح.",
+    "auth.phone_check_loading": "جاري التحقق من الرقم...",
+    "auth.continue": "متابعة",
+    "auth.change_phone": "تغيير رقم الهاتف",
+    "auth.full_name": "الاسم الكامل",
+    "auth.name_placeholder": "اسمك",
+    "auth.name_required": "يرجى إدخال الاسم.",
+    "auth.otp": "رمز التحقق",
+    "auth.otp_invalid": "يرجى إدخال رمز تحقق صحيح.",
+    "auth.verify_loading": "جاري التحقق...",
+    "auth.verify_and_enter": "تحقق وادخل",
 
     // Home
     "home.greeting": "مرحباً",
@@ -576,10 +614,12 @@ export const translations = {
     "landing.nav.pages": "الصفحات",
     "landing.nav.sections_title": "أقسام الصفحة",
     "landing.nav.pages_title": "صفحات الموقع",
+    "landing.nav.actions_title": "إجراءات سريعة",
     "landing.nav.quote": "اطلب عرض سعر",
     "landing.nav.book_consultation": "احجز استشارة",
     "landing.nav.dashboard": "لوحة التحكم",
     "landing.nav.toggle_dark": "تبديل الوضع الليلي",
-    "landing.nav.menu": "القائمة"
+    "landing.nav.menu": "القائمة",
+    "profile.title": "الملف الشخصي"
   }
 };

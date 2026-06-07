@@ -1,33 +1,29 @@
 import React from 'react';
 import { Briefcase } from 'lucide-react';
-import { AdminUser } from '@/lib/adminStore';
+import { AdminEmployee } from '../types/admin-employee.types';
 import EmployeeTableRow from './employee-table-row';
 
 interface EmployeesTableProps {
-  filteredAdmins: AdminUser[];
-  getRoleName: (id: string) => string;
-  formatDate: (ts: number) => string;
-  onSelectAdmin: (admin: AdminUser) => void;
-  onOpenModal: (admin: AdminUser) => void;
-  onDeleteAdmin: (id: string) => void;
+  employees: AdminEmployee[];
+  onSelectEmployee: (employee: AdminEmployee) => void;
+  onOpenModal: (employee: AdminEmployee) => void;
+  onDeleteEmployee: (id: number) => void;
 }
 
 export default function EmployeesTable({
-  filteredAdmins,
-  getRoleName,
-  formatDate,
-  onSelectAdmin,
+  employees,
+  onSelectEmployee,
   onOpenModal,
-  onDeleteAdmin,
+  onDeleteEmployee,
 }: EmployeesTableProps) {
   return (
     <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden">
-      {filteredAdmins.length === 0 ? (
+      {employees.length === 0 ? (
         <div className="py-20 text-center text-[var(--text-muted)]">
           <div className="w-16 h-16 bg-[var(--surface-3)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border)]">
             <Briefcase size={24} />
           </div>
-          <p>No admins found.</p>
+          <p>No employees found.</p>
         </div>
       ) : (
         <>
@@ -44,15 +40,13 @@ export default function EmployeesTable({
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-sm">
-                {filteredAdmins.map((admin) => (
+                {employees.map((employee) => (
                   <EmployeeTableRow
-                    key={admin.id}
-                    admin={admin}
-                    getRoleName={getRoleName}
-                    formatDate={formatDate}
-                    onSelectAdmin={onSelectAdmin}
+                    key={employee.id}
+                    employee={employee}
+                    onSelectEmployee={onSelectEmployee}
                     onOpenModal={onOpenModal}
-                    onDeleteAdmin={onDeleteAdmin}
+                    onDeleteEmployee={onDeleteEmployee}
                   />
                 ))}
               </tbody>
@@ -60,15 +54,13 @@ export default function EmployeesTable({
           </div>
 
           <div className="md:hidden divide-y divide-[var(--border)]">
-            {filteredAdmins.map((admin) => (
+            {employees.map((employee) => (
               <EmployeeTableRow
-                key={admin.id}
-                admin={admin}
-                getRoleName={getRoleName}
-                formatDate={formatDate}
-                onSelectAdmin={onSelectAdmin}
+                key={employee.id}
+                employee={employee}
+                onSelectEmployee={onSelectEmployee}
                 onOpenModal={onOpenModal}
-                onDeleteAdmin={onDeleteAdmin}
+                onDeleteEmployee={onDeleteEmployee}
               />
             ))}
           </div>

@@ -1,17 +1,46 @@
 import React from 'react';
-import { Lead } from '@/lib/leadStore';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { AdminLeadListItem, AdminLeadsPagination } from '../types/admin-lead.types';
 import LeadsTableRow from './leads-table-row';
 
 interface LeadsTableProps {
-  filteredLeads: Lead[];
-  onSelectLead: (lead: Lead) => void;
+  leads: AdminLeadListItem[];
+  loading: boolean;
+  error: string | null;
+  pagination: AdminLeadsPagination | null;
+  onSelectLead: (lead: AdminLeadListItem) => void;
   toWhatsAppDigits: (phone: string) => string | null;
+  onPageChange: (page: number) => void;
 }
 
-export default function LeadsTable({ filteredLeads, onSelectLead, toWhatsAppDigits }: LeadsTableProps) {
+export default function LeadsTable({
+  leads,
+  loading,
+  error,
+  pagination,
+  onSelectLead,
+  toWhatsAppDigits,
+  onPageChange,
+}: LeadsTableProps) {
+  if (loading && leads.length === 0) {
+    return (
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl p-12 flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary" size={28} />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-[var(--surface)] border border-red-500/20 rounded-2xl shadow-xl p-12 text-center text-red-400">
+        {error}
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden">
-      {filteredLeads.length === 0 ? (
+      {leads.length === 0 ? (
         <div className="p-12 text-center text-[var(--text-muted)]">No leads found.</div>
       ) : (
         <div className="overflow-x-auto">
@@ -26,7 +55,7 @@ export default function LeadsTable({ filteredLeads, onSelectLead, toWhatsAppDigi
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)] text-sm">
-              {filteredLeads.map((lead) => (
+              {leads.map((lead) => (
                 <LeadsTableRow
                   key={lead.id}
                   lead={lead}
@@ -38,6 +67,32 @@ export default function LeadsTable({ filteredLeads, onSelectLead, toWhatsAppDigi
           </table>
         </div>
       )}
+
+      {pagination && pagination.last_page > 1 ? (
+        <div className="flex items-center justify-between border-t border-[var(--border)] px-5 py-4 text-sm text-[var(--text-muted)]">
+          <span>
+            Page {pagination.current_page} of {pagination.last_page} ({pagination.total} total)
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              disabled={pagination.current_page <= 1 || loading}
+              onClick={() => onPageChange(pagination.current_page - 1)}
+              className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--border)] disabled:opacity-40"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <button
+              type="button"
+              disabled={pagination.current_page >= pagination.last_page || loading}
+              onClick={() => onPageChange(pagination.current_page + 1)}
+              className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--border)] disabled:opacity-40"
+            >
+              <ChevronRight size={16} />
+            </button>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -1,10 +1,12 @@
 import React from 'react';
-import { AppointmentSettings } from '@/lib/appointmentStore';
+import { MeetingSettingsForm } from '@/features/meetings/types/meeting.types';
 
 interface AdminSettingsTabProps {
-  settings: AppointmentSettings;
-  setSettings: (val: AppointmentSettings) => void;
+  settings: MeetingSettingsForm;
+  setSettings: (val: MeetingSettingsForm) => void;
   loading: boolean;
+  error: string | null;
+  message: string | null;
   onSaveSettings: () => void;
 }
 
@@ -12,11 +14,20 @@ export default function AdminSettingsTab({
   settings,
   setSettings,
   loading,
+  error,
+  message,
   onSaveSettings,
 }: AdminSettingsTabProps) {
   return (
     <div className="max-w-2xl">
       <div className="space-y-6">
+        {error ? (
+          <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{error}</div>
+        ) : null}
+        {message ? (
+          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">{message}</div>
+        ) : null}
+
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">
             <label className="text-sm font-bold text-[var(--text-muted)]">Duration (Minutes)</label>
@@ -78,7 +89,7 @@ export default function AdminSettingsTab({
             disabled={loading}
             className="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-primary/20 transition-all disabled:opacity-50"
           >
-            {loading ? 'Saving...' : 'Save Configuration'}
+            {loading ? 'Saving...' : 'Save Settings'}
           </button>
         </div>
       </div>

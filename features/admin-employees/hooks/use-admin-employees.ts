@@ -1,74 +1,88 @@
-import React, { useState } from 'react';
-import { initializeApp, deleteApp } from 'firebase/app';
-import { getAuth, createUserWithEmailAndPassword, updateProfile, signOut } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { useAdmins, adminStore, AdminUser } from '@/lib/adminStore';
-import { useRoles } from '@/lib/roleStore';
-import { firebaseConfig, db } from '@/lib/firebase-client';
+'use client';
+
+import { useMemo, useState } from 'react';
 import { EmployeeValues } from '../schemas/employee.schema';
+import { AdminEmployee } from '../types/admin-employee.types';
+import { getEmployeeFullName } from '../utils/employee-helpers';
+import { useAdminEmployeesList } from './use-admin-employees-list';
+import { useAdminEmployee } from './use-admin-employee';
+import { useCreateEmployee } from './use-create-employee';
+import { useUpdateEmployee } from './use-update-employee';
+import { useDeleteEmployee } from './use-delete-employee';
+import { useToggleEmployeeBlock } from './use-toggle-employee-block';
+
+const emptyForm: EmployeeValues = {
+  firstName: '',
+  lastName: '',
+  email: '',
+  phone: '',
+  role: 'staff',
+  password: '',
+};
 
 export function useAdminEmployees() {
-  const { admins } = useAdmins();
-  const { roles } = useRoles();
-
   const [searchTerm, setSearchTerm] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingAdmin, setEditingAdmin] = useState<AdminUser | null>(null);
-  const [selectedAdmin, setSelectedAdmin] = useState<AdminUser | null>(null);
-  const [deleteId, setDeleteId] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState<AdminEmployee | null>(null);
+  const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
+  const [deleteId, setDeleteId] = useState<number | null>(null);
   const [createdPassword, setCreatedPassword] = useState<string | null>(null);
+  const [formData, setFormData] = useState<EmployeeValues>(emptyForm);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [selectedListEmployee, setSelectedListEmployee] = useState<AdminEmployee | null>(null);
 
-  const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    roleId: '',
-    status: 'Active' as 'Active' | 'Disabled',
-    password: '',
-  });
+  const { employees, loading: listLoading, error: listError, reload: reloadList } = useAdminEmployeesList();
+  const {
+    employee: selectedEmployee,
+    loading: detailLoading,
+    error: detailError,
+    reload: reloadDetail,
+  } = useAdminEmployee(selectedEmployeeId, selectedEmployeeId !== null);
 
-  const getRoleName = (id: string) => roles.find((r) => r.id === id)?.name || id;
+  const { createEmployee, loading: createLoading, error: createError } = useCreateEmployee();
+  const { updateEmployee, loading: updateLoading, error: updateError } = useUpdateEmployee();
+  const { deleteEmployee, loading: deleteLoading, error: deleteError } = useDeleteEmployee();
+  const { toggleBlock, loading: toggleLoading, error: toggleError } = useToggleEmployeeBlock();
 
-  const formatDate = (ts: number) =>
-    new Date(ts).toLocaleDateString('en-UK', { day: 'numeric', month: 'short', year: 'numeric' });
+  const filteredEmployees = useMemo(() => {
+    const query = searchTerm.trim().toLowerCase();
+    if (!query) return employees;
 
-  const filteredAdmins = admins.filter(
-    (admin) =>
-      admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      admin.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+    return employees.filter((employee) => {
+      const haystack = [
+        getEmployeeFullName(employee),
+        employee.email,
+        employee.phone,
+        employee.role,
+        String(employee.id),
+      ]
+        .filter(Boolean)
+        .join(' ')
+        .toLowerCase();
 
-  const handleOpenModal = (admin?: AdminUser) => {
+      return haystack.includes(query);
+    });
+  }, [employees, searchTerm]);
+
+  const handleOpenModal = (employee?: AdminEmployee) => {
     setCreatedPassword(null);
-    if (admin) {
-      const nameParts = admin.name.split(' ');
-      const fName = nameParts[0] || '';
-      const lName = nameParts.slice(1).join(' ') || '';
+    setActionMessage(null);
 
-      setEditingAdmin(admin);
+    if (employee) {
+      setEditingEmployee(employee);
       setFormData({
-        firstName: fName,
-        lastName: lName,
-        email: admin.email,
-        phone: admin.phone || '',
-        roleId: admin.role,
-        status: admin.status,
+        firstName: employee.first_name,
+        lastName: employee.last_name,
+        email: employee.email,
+        phone: employee.phone || '',
+        role: (employee.role === 'admin' ? 'admin' : 'staff') as EmployeeValues['role'],
         password: '',
       });
     } else {
-      setEditingAdmin(null);
-      setFormData({
-        firstName: '',
-        lastName: '',
-        email: '',
-        phone: '',
-        roleId: roles[0]?.id || 'admin',
-        status: 'Active',
-        password: '',
-      });
+      setEditingEmployee(null);
+      setFormData(emptyForm);
     }
+
     setIsModalOpen(true);
   };
 
@@ -82,119 +96,111 @@ export function useAdminEmployees() {
   };
 
   const handleSubmit = async (data: EmployeeValues) => {
-    setIsSubmitting(true);
+    setActionMessage(null);
 
     try {
-      const selectedRole = roles.find((r) => r.id === data.roleId);
-      const permissionsMap: Record<string, boolean> = {};
-      if (selectedRole) {
-        selectedRole.permissions.forEach((p) => {
-          permissionsMap[p] = true;
+      if (editingEmployee) {
+        await updateEmployee(editingEmployee.id, {
+          first_name: data.firstName.trim(),
+          last_name: data.lastName.trim(),
+          email: data.email.trim(),
+          phone: data.phone?.trim() || undefined,
+          role: data.role,
         });
-      }
-
-      if (editingAdmin) {
-        await adminStore.updateAdmin(editingAdmin.id, {
-          name: `${data.firstName} ${data.lastName}`,
-          email: data.email,
-          phone: data.phone || '',
-          role: data.roleId,
-          status: data.status,
-          permissions: permissionsMap,
-        });
+        setActionMessage('Employee updated successfully.');
         setIsModalOpen(false);
+        await reloadList();
+        if (selectedEmployeeId === editingEmployee.id) await reloadDetail();
       } else {
         if (!data.password || data.password.length < 8) {
-          alert('Password must be at least 8 characters');
-          setIsSubmitting(false);
-          return;
+          throw new Error('Password must be at least 8 characters.');
         }
 
-        const secondaryAppName = `secondaryApp-${Date.now()}`;
-        const secondaryApp = initializeApp(firebaseConfig, secondaryAppName);
-        const secondaryAuth = getAuth(secondaryApp);
+        await createEmployee({
+          first_name: data.firstName.trim(),
+          last_name: data.lastName.trim(),
+          email: data.email.trim(),
+          phone: data.phone?.trim() || undefined,
+          password: data.password,
+          role: data.role,
+        });
 
-        try {
-          const authEmail = `admin_${data.email}`;
-
-          const userCredential = await createUserWithEmailAndPassword(secondaryAuth, authEmail, data.password);
-          const newUser = userCredential.user;
-
-          await updateProfile(newUser, {
-            displayName: `${data.firstName} ${data.lastName}`,
-          });
-
-          const adminRef = doc(db, 'admins', newUser.uid);
-
-          await setDoc(adminRef, {
-            id: newUser.uid,
-            name: `${data.firstName} ${data.lastName}`,
-            email: data.email,
-            phone: data.phone || '',
-            role: data.roleId,
-            status: data.status,
-            permissions: permissionsMap,
-            createdAt: serverTimestamp(),
-            lastLoginAt: null,
-          });
-
-          await signOut(secondaryAuth);
-          await deleteApp(secondaryApp);
-
-          setCreatedPassword(data.password);
-        } catch (innerError: any) {
-          await deleteApp(secondaryApp);
-          throw innerError;
-        }
+        setCreatedPassword(data.password);
+        await reloadList();
       }
-    } catch (error: any) {
-      console.error('Operation failed:', error);
-      alert(`Error: ${error.message}`);
-    } finally {
-      setIsSubmitting(false);
+    } catch {
+      // errors surfaced via mutation hooks
     }
   };
 
-  const handleToggleStatus = (admin: AdminUser) => {
-    adminStore.toggleStatus(admin.id);
-    if (selectedAdmin?.id === admin.id) {
-      setSelectedAdmin((prev) =>
-        prev ? { ...prev, status: prev.status === 'Active' ? 'Disabled' : 'Active' } : null
-      );
+  const openEmployee = (employee: AdminEmployee) => {
+    setSelectedEmployeeId(employee.id);
+    setSelectedListEmployee(employee);
+    setActionMessage(null);
+  };
+
+  const closeEmployee = () => {
+    setSelectedEmployeeId(null);
+    setSelectedListEmployee(null);
+    setActionMessage(null);
+  };
+
+  const handleToggleStatus = async (employee: AdminEmployee) => {
+    try {
+      await toggleBlock(employee.id);
+      setActionMessage('Employee status updated successfully.');
+      await Promise.all([reloadList(), selectedEmployeeId === employee.id ? reloadDetail() : Promise.resolve()]);
+    } catch {
+      // error surfaced via toggleError
     }
   };
 
-  const handleDelete = () => {
-    if (deleteId) {
-      adminStore.deleteAdmin(deleteId);
-      if (selectedAdmin?.id === deleteId) setSelectedAdmin(null);
+  const handleDelete = async () => {
+    if (!deleteId) return;
+
+    try {
+      await deleteEmployee(deleteId);
+      if (selectedEmployeeId === deleteId) closeEmployee();
       setDeleteId(null);
+      await reloadList();
+    } catch {
+      // error surfaced via deleteError
     }
   };
+
+  const isSubmitting = createLoading || updateLoading;
+  const actionError = createError || updateError || deleteError || toggleError || detailError;
 
   return {
-    admins,
-    roles,
+    employees,
+    filteredEmployees,
+    listLoading,
+    listError,
     searchTerm,
     setSearchTerm,
     isModalOpen,
     setIsModalOpen,
-    editingAdmin,
-    selectedAdmin,
-    setSelectedAdmin,
+    editingEmployee,
+    selectedEmployee: selectedEmployee || selectedListEmployee,
+    selectedEmployeeId,
+    detailLoading,
     deleteId,
     setDeleteId,
     isSubmitting,
+    deleteLoading,
+    toggleLoading,
     createdPassword,
     formData,
     setFormData,
-    getRoleName,
-    formatDate,
-    filteredAdmins,
+    actionMessage,
+    actionError,
     handleOpenModal,
     generatePassword,
     handleSubmit,
     handleToggleStatus,
     handleDelete,
+    openEmployee,
+    closeEmployee,
+    reloadList,
   };
 }

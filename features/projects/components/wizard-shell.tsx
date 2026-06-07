@@ -19,6 +19,8 @@ interface WizardShellProps {
   onPrev: () => void;
   onNext: () => void;
   children: React.ReactNode;
+  customFooterLabel?: string;
+  showFooter?: boolean;
 }
 
 export default function WizardShell({
@@ -38,6 +40,8 @@ export default function WizardShell({
   onPrev,
   onNext,
   children,
+  customFooterLabel,
+  showFooter = true,
 }: WizardShellProps) {
   return (
     <div className="fixed inset-0 z-50 flex justify-center items-start md:items-center bg-black/60 backdrop-blur-sm p-0 md:p-6" dir={dir}>
@@ -77,7 +81,7 @@ export default function WizardShell({
 
         <div className="flex-1 relative overflow-hidden">{children}</div>
 
-        {step !== 0 ? (
+        {step !== 0 && showFooter ? (
           <div
             className={`p-6 border-t border-[var(--border)] bg-[var(--surface)] z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.08)] transition-all duration-300 ${
               nextButtonHidden ? 'opacity-0 pointer-events-none absolute bottom-0 w-full' : 'opacity-100'
@@ -104,19 +108,9 @@ export default function WizardShell({
               ) : (
                 <>
                   <span>
-                    {step === 12
-                      ? isLeadMode
-                        ? t('lead_contact.submit_btn')
-                        : isAuthenticated
-                        ? t('wizard.create_btn')
-                        : t('wizard.create_account_project')
-                      : step === 11
-                      ? isLeadMode
-                        ? t('lead_contact.review_btn')
-                        : t('wizard.create_account_only')
-                      : t('wizard.next')}
+                    {customFooterLabel || t('wizard.next')}
                   </span>
-                  {step !== 12 ? dir === 'rtl' ? <ChevronLeft size={20} /> : <ChevronRight size={20} /> : null}
+                  {customFooterLabel ? null : dir === 'rtl' ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
                 </>
               )}
             </button>

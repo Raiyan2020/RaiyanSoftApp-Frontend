@@ -1,12 +1,8 @@
 'use client';
-import Image from 'next/image';
-import { motion, useReducedMotion, type TargetAndTransition, type Variants } from 'framer-motion';
+import { motion, useReducedMotion, type Variants } from 'framer-motion';
 
-const capabilities = [
-  { image: '/landing-icons/mobile-app.svg', label: 'تطبيقات' },
-  { image: '/landing-icons/ecommerce.svg', label: 'متاجر' },
-  { image: '/landing-icons/business-platform.svg', label: 'منصات' },
-];
+const HERO_VIDEO_ID = 'Z5c5-F3rApk';
+const HERO_VIDEO_START = 2;
 
 const proof = ['استشارة أولى مجانية', 'تصميم قبل البرمجة', 'تسليم مرحلي واضح'];
 
@@ -32,13 +28,6 @@ export default function HeroBanner() {
           filter: 'blur(0px)',
           transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
         },
-      };
-
-  const float: TargetAndTransition | undefined = shouldReduceMotion
-    ? undefined
-    : {
-        y: [0, -12, 0],
-        transition: { duration: 5.5, repeat: Infinity, ease: 'easeInOut' as const },
       };
 
   return (
@@ -112,60 +101,19 @@ export default function HeroBanner() {
           </motion.div>
 
           <motion.div variants={item} className="order-1 lg:order-2">
-            <div className="relative mx-auto min-h-[320px] w-full max-w-[360px] sm:min-h-[420px] sm:max-w-[480px] lg:max-w-[520px]">
-              <motion.div
-                aria-hidden
-                className="absolute inset-8 rounded-full bg-gradient-to-br from-primary/35 via-emerald-300/15 to-transparent blur-3xl"
-                animate={shouldReduceMotion ? undefined : { opacity: [0.55, 0.9, 0.55] }}
-                transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-              />
-
-              <motion.div
-                aria-hidden
-                className="absolute inset-2 rounded-full border border-primary/25"
-                animate={shouldReduceMotion ? undefined : { rotate: 360 }}
-                transition={{ duration: 34, repeat: Infinity, ease: 'linear' }}
-              />
-              <motion.div
-                aria-hidden
-                className="absolute inset-14 rounded-full border border-dashed border-cyan-300/20 sm:inset-12"
-                animate={shouldReduceMotion ? undefined : { rotate: -360 }}
-                transition={{ duration: 48, repeat: Infinity, ease: 'linear' }}
-              />
-
-              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-                <motion.div
-                  animate={float}
-                  className="grid h-36 w-36 place-items-center rounded-[2.2rem] border border-white/15 bg-white/10 shadow-2xl shadow-primary/25 backdrop-blur-2xl sm:h-44 sm:w-44"
-                >
-                  <div className="relative h-24 w-24 overflow-hidden rounded-3xl bg-primary shadow-2xl shadow-primary/45 sm:h-28 sm:w-28">
-                    <Image src="/logo.webp" alt="ريان سوفت" fill className="object-cover" priority />
-                  </div>
-                </motion.div>
+            <div className="relative mx-auto w-full max-w-[420px] sm:max-w-[540px] lg:max-w-[620px]">
+              <div className="overflow-hidden rounded-2xl border border-white/15 shadow-lg shadow-black/25 sm:rounded-3xl">
+                <div className="relative aspect-[16/10] w-full min-h-[220px] sm:min-h-[300px] lg:min-h-[360px]">
+                  <iframe
+                    src={`https://www.youtube.com/embed/${HERO_VIDEO_ID}?start=${HERO_VIDEO_START}&rel=0&modestbranding=1`}
+                    title="ريان سوفت"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    loading="lazy"
+                    className="absolute inset-0 h-full w-full"
+                  />
+                </div>
               </div>
-
-              {capabilities.map((capability, index) => {
-                const positions = [
-                  'right-0 top-10 sm:right-8 sm:top-12',
-                  'left-0 top-28 sm:left-8 sm:top-36',
-                  'bottom-8 right-14 sm:bottom-14 sm:right-20',
-                ];
-
-                return (
-                  <motion.div
-                    key={capability.label}
-                    className={`absolute ${positions[index]} flex items-center gap-2 rounded-2xl border border-white/10 bg-slate-950/60 px-3 py-2 shadow-2xl backdrop-blur-2xl sm:gap-3 sm:rounded-3xl sm:px-4 sm:py-3`}
-                    initial={shouldReduceMotion ? false : { opacity: 0, y: 16, scale: 0.96 }}
-                    animate={shouldReduceMotion ? undefined : { opacity: 1, y: [0, index % 2 ? 10 : -10, 0], scale: 1 }}
-                    transition={shouldReduceMotion ? undefined : { delay: 0.35 + index * 0.12, duration: index === 0 ? 4.6 : 5.2, repeat: Infinity, repeatType: 'mirror', ease: 'easeInOut' }}
-                  >
-                    <div className="relative h-8 w-8 sm:h-10 sm:w-10">
-                      <Image src={capability.image} alt="" fill className="object-contain" sizes="40px" />
-                    </div>
-                    <p className="text-xs font-black text-white sm:text-sm">{capability.label}</p>
-                  </motion.div>
-                );
-              })}
             </div>
           </motion.div>
         </div>

@@ -7,29 +7,28 @@ import LeadDetailDrawer from './lead-detail-drawer';
 
 export default function AdminLeadsPage() {
   const {
+    leads,
+    pagination,
+    listLoading,
+    listError,
     selectedLead,
-    setSelectedLead,
-    openLead,
+    selectedListItem,
+    detailLoading,
+    detailError,
+    statusLoading,
+    statusError,
+    actionMessage,
     statusFilter,
     setStatusFilter,
     searchQuery,
     setSearchQuery,
-    claimLink,
-    setClaimLink,
-    isGeneratingLink,
-    rejectReason,
-    setRejectReason,
-    assignedTo,
-    setAssignedTo,
-    reviewNotes,
-    setReviewNotes,
     language,
-    filteredLeads,
-    handleGenerateLink,
-    handleUpdateStatus,
-    handleSaveReview,
-    handleDeleteLead,
+    openLead,
+    closeLead,
+    handleApprove,
+    handleReject,
     toWhatsAppDigits,
+    goToPage,
   } = useAdminLeads();
 
   return (
@@ -39,6 +38,9 @@ export default function AdminLeadsPage() {
           <h1 className="text-2xl font-bold text-[var(--text)]">Leads</h1>
           <p className="text-[var(--text-muted)] text-sm">Manage incoming project requests.</p>
         </div>
+        {pagination ? (
+          <p className="text-sm text-[var(--text-muted)]">{pagination.total} total leads</p>
+        ) : null}
       </div>
 
       <LeadsFilterBar
@@ -49,33 +51,30 @@ export default function AdminLeadsPage() {
       />
 
       <LeadsTable
-        filteredLeads={filteredLeads}
+        leads={leads}
+        loading={listLoading}
+        error={listError}
+        pagination={pagination}
         onSelectLead={openLead}
         toWhatsAppDigits={toWhatsAppDigits}
+        onPageChange={goToPage}
       />
 
       <AnimatePresence>
-        {selectedLead ? (
+        {selectedListItem ? (
           <LeadDetailDrawer
-            selectedLead={selectedLead}
-            onClose={() => {
-              setSelectedLead(null);
-              setClaimLink(null);
-            }}
+            listItem={selectedListItem}
+            lead={selectedLead}
+            detailLoading={detailLoading}
+            detailError={detailError}
+            statusLoading={statusLoading}
+            statusError={statusError}
+            actionMessage={actionMessage}
             language={language}
+            onClose={closeLead}
             toWhatsAppDigits={toWhatsAppDigits}
-            onUpdateStatus={handleUpdateStatus}
-            onDeleteLead={handleDeleteLead}
-            claimLink={claimLink}
-            isGeneratingLink={isGeneratingLink}
-            onGenerateLink={handleGenerateLink}
-            rejectReason={rejectReason}
-            onRejectReasonChange={setRejectReason}
-            assignedTo={assignedTo}
-            onAssignedToChange={setAssignedTo}
-            reviewNotes={reviewNotes}
-            onReviewNotesChange={setReviewNotes}
-            onSaveReview={handleSaveReview}
+            onApprove={handleApprove}
+            onReject={handleReject}
           />
         ) : null}
       </AnimatePresence>

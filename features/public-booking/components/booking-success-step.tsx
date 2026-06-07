@@ -3,24 +3,18 @@ import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 
 interface BookingSuccessStepProps {
-  bookingRef: string | null;
+  onBookAnother: () => void;
 }
 
-export default function BookingSuccessStep({ bookingRef }: BookingSuccessStepProps) {
+export default function BookingSuccessStep({ onBookAnother }: BookingSuccessStepProps) {
   return (
     <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-10 space-y-6 text-center">
       <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/30">
         <CheckCircle size={48} />
       </div>
       <h2 className="text-2xl font-bold text-[var(--text)]">Booking Confirmed!</h2>
-      <p className="text-[var(--text-muted)] text-sm">Your appointment is set. We've sent a confirmation to your contact details.</p>
-      {bookingRef ? (
-        <div className="bg-[var(--surface-3)] p-3 rounded-lg border border-[var(--border)] mt-4">
-          <span className="text-xs text-[var(--text-muted)] uppercase block mb-1">Reference ID</span>
-          <span className="font-mono text-[var(--text)] select-all">{bookingRef}</span>
-        </div>
-      ) : null}
-      <button type="button" onClick={() => window.location.reload()} className="bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] px-8 py-3 rounded-xl font-bold transition-colors mt-6">
+      <p className="text-[var(--text-muted)] text-sm">Your appointment request has been submitted successfully.</p>
+      <button type="button" onClick={onBookAnother} className="bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] px-8 py-3 rounded-xl font-bold transition-colors mt-6">
         Book Another
       </button>
     </motion.div>

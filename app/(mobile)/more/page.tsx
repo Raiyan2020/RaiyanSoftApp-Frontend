@@ -1,7 +1,5 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import MorePage from '@/features/more/components/more-page';
+import { redirect } from 'next/navigation';
 
 export default function Page() {
-  return <MorePage />;
+  redirect('/profile?tab=info');
 }

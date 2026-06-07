@@ -1,6 +1,6 @@
 import React from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Plus, Search } from 'lucide-react';
+import { Loader2, Plus, Search } from 'lucide-react';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import { useAdminEmployees } from '../hooks/use-admin-employees';
 import EmployeesTable from './employees-table';
@@ -9,28 +9,33 @@ import EmployeeDetailDrawer from './employee-detail-drawer';
 
 export default function AdminEmployeesPage() {
   const {
-    roles,
     searchTerm,
     setSearchTerm,
     isModalOpen,
     setIsModalOpen,
-    editingAdmin,
-    selectedAdmin,
-    setSelectedAdmin,
+    editingEmployee,
+    selectedEmployee,
+    detailLoading,
     deleteId,
     setDeleteId,
     isSubmitting,
+    deleteLoading,
+    toggleLoading,
     createdPassword,
     formData,
     setFormData,
-    getRoleName,
-    formatDate,
-    filteredAdmins,
+    actionMessage,
+    actionError,
+    listLoading,
+    listError,
+    filteredEmployees,
     handleOpenModal,
     generatePassword,
     handleSubmit,
     handleToggleStatus,
     handleDelete,
+    openEmployee,
+    closeEmployee,
   } = useAdminEmployees();
 
   return (
@@ -46,7 +51,7 @@ export default function AdminEmployeesPage() {
           className="bg-primary hover:bg-sky-400 text-white px-4 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shadow-lg shadow-primary/20"
         >
           <Plus size={20} />
-          <span>Add Admin</span>
+          <span>Add Employee</span>
         </button>
       </div>
 
@@ -63,47 +68,57 @@ export default function AdminEmployeesPage() {
         </div>
       </div>
 
-      <EmployeesTable
-        filteredAdmins={filteredAdmins}
-        getRoleName={getRoleName}
-        formatDate={formatDate}
-        onSelectAdmin={setSelectedAdmin}
-        onOpenModal={handleOpenModal}
-        onDeleteAdmin={setDeleteId}
-      />
+      {listError ? (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{listError}</div>
+      ) : null}
+
+      {listLoading && filteredEmployees.length === 0 ? (
+        <div className="flex justify-center py-16">
+          <Loader2 className="animate-spin text-primary" size={28} />
+        </div>
+      ) : (
+        <EmployeesTable
+          employees={filteredEmployees}
+          onSelectEmployee={openEmployee}
+          onOpenModal={handleOpenModal}
+          onDeleteEmployee={setDeleteId}
+        />
+      )}
 
       <AnimatePresence>
         {isModalOpen ? (
           <EmployeeFormModal
             onClose={() => setIsModalOpen(false)}
-            editingAdmin={editingAdmin}
+            editingEmployee={editingEmployee}
             createdPassword={createdPassword}
             formData={formData}
             setFormData={setFormData}
-            roles={roles}
             onSubmit={handleSubmit}
             generatePassword={generatePassword}
             isSubmitting={isSubmitting}
+            errorMessage={actionError}
           />
         ) : null}
       </AnimatePresence>
 
       <AnimatePresence>
-        {selectedAdmin ? (
+        {selectedEmployee ? (
           <EmployeeDetailDrawer
-            selectedAdmin={selectedAdmin}
-            onClose={() => setSelectedAdmin(null)}
-            getRoleName={getRoleName}
-            formatDate={formatDate}
+            employee={selectedEmployee}
+            loading={detailLoading}
+            onClose={closeEmployee}
             onToggleStatus={handleToggleStatus}
-            onDeleteAdmin={setDeleteId}
+            onDeleteEmployee={setDeleteId}
+            toggleLoading={toggleLoading}
+            actionMessage={actionMessage}
+            actionError={actionError}
           />
         ) : null}
       </AnimatePresence>
 
       <ConfirmModal
         isOpen={!!deleteId}
-        title="Delete Admin?"
+        title="Delete Employee?"
         message="This action is permanent."
         confirmText="Delete"
         isDestructive={true}

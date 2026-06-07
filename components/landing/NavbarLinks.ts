@@ -26,3 +26,7 @@ export const pageLinks: NavLink[] = [
   { key: 'landing.nav.privacy', href: '/privacy' },
   { key: 'landing.nav.terms', href: '/terms' },
 ];
+
+export const headerPageLinks: NavLink[] = [
+  { key: 'landing.nav.packages', href: '/pricing' },
+];

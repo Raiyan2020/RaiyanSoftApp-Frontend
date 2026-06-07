@@ -1,12 +1,13 @@
-'use client';
-
 import React from 'react';
 import Link from 'next/link';
 import { Menu } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
-import { User } from '@/lib/auth-service';
+import { authService, User } from '@/lib/auth-service';
+import { guestStore } from '@/lib/guestStore';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { sectionLinks, pageLinks } from './NavbarLinks';
+import Avatar from '@/components/ui/avatar';
+
 
 interface NavbarMobileProps {
   menuOpen: boolean;
@@ -14,6 +15,9 @@ interface NavbarMobileProps {
   user: User | null;
   activeHref: string;
   scrollTo: (href: string) => void;
+  onOpenAuth: () => void;
+  onOpenBooking: () => void;
+  onOpenLead: () => void;
 }
 
 export default function NavbarMobile({
@@ -22,6 +26,9 @@ export default function NavbarMobile({
   user,
   activeHref,
   scrollTo,
+  onOpenAuth,
+  onOpenBooking,
+  onOpenLead,
 }: NavbarMobileProps) {
   const { t, dir } = useTranslation();
 
@@ -30,7 +37,7 @@ export default function NavbarMobile({
       <SheetTrigger asChild>
         <button
           id="mobile-menu-btn"
-          className="grid h-10 w-10 place-items-center rounded-2xl bg-white/75 text-slate-600 shadow-sm ring-1 ring-cyan-950/10 transition-colors hover:text-primary dark:bg-white/10 dark:text-slate-300 dark:ring-white/10 xl:hidden"
+          className="grid h-10 w-10 place-items-center rounded-2xl bg-white text-slate-800 shadow-sm ring-1 ring-slate-200/80 transition-colors hover:bg-slate-50 hover:text-primary dark:bg-white/10 dark:text-slate-200 dark:shadow-none dark:ring-white/10 dark:hover:bg-white/15 xl:hidden"
           aria-label={t('landing.nav.menu')}
         >
           <Menu size={22} />
@@ -74,47 +81,105 @@ export default function NavbarMobile({
             </div>
           </div>
 
+          <div>
+            <p className="mb-2 px-2 text-xs font-black text-slate-400">{t('landing.nav.actions_title')}</p>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onOpenLead();
+                }}
+                className="touch-lift rounded-2xl border border-primary/25 bg-primary/10 px-4 py-3 text-center text-sm font-bold text-primary transition-all duration-200 hover:bg-primary hover:text-white"
+              >
+                {t('landing.nav.quote')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setMenuOpen(false);
+                  onOpenBooking();
+                }}
+                className="premium-button touch-lift rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-4 py-3 text-center text-sm font-bold text-white shadow-md shadow-primary/25 transition-all duration-200"
+              >
+                {t('landing.nav.book_consultation')}
+              </button>
+            </div>
+          </div>
+
           <div className="grid gap-2 grid-cols-2 pt-2">
             {user ? (
-              <Link
-                href="/home"
-                onClick={() => setMenuOpen(false)}
-                className="premium-button touch-lift rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-4 py-3 text-center font-bold text-white shadow-lg shadow-primary/25 transition-all duration-200"
-              >
-                {t('landing.nav.dashboard')}
-              </Link>
+              <div className="col-span-2 space-y-2 text-right">
+                <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/10 mb-2 justify-end">
+                  <div className="min-w-0 text-right flex-1">
+                    <p className="text-xs text-slate-400">{t('home.greeting')}</p>
+                    <p className="text-sm font-bold text-white truncate">{`${user.first_name} ${user.last_name}`}</p>
+                  </div>
+                  <Avatar name={`${user.first_name} ${user.last_name}`} size="md" />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href="/home"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary"
+                  >
+                    <span>{t('home.my_apps')}</span>
+                  </Link>
+                  <Link
+                    href="/appointments"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary"
+                  >
+                    <span>{t('appt.title')}</span>
+                  </Link>
+                  <Link
+                    href="/support"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary"
+                  >
+                    <span>{t('status.support')}</span>
+                  </Link>
+                  <Link
+                    href="/notifications"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary"
+                  >
+                    <span>{t('notif.title')}</span>
+                  </Link>
+                  <Link
+                    href="/profile"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary col-span-2"
+                  >
+                    <span>{t('more.view_profile')}</span>
+                  </Link>
+                  <button
+                    onClick={() => {
+                      setMenuOpen(false);
+                      authService.clearUserSession();
+                      guestStore.setGuest(false);
+                      window.location.href = '/login';
+                    }}
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm font-bold text-red-400 transition-colors hover:bg-red-500/20 col-span-2"
+                  >
+                    <span>{t('more.signout')}</span>
+                  </button>
+                </div>
+              </div>
             ) : (
               <>
-                <Link
-                  href="/login"
-                  onClick={() => setMenuOpen(false)}
-                  className="touch-lift rounded-2xl border border-cyan-950/10 px-4 py-3 text-center font-bold text-slate-800 transition-all duration-200 hover:border-primary hover:text-primary dark:border-white/10 dark:text-slate-200"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setMenuOpen(false);
+                    onOpenAuth();
+                  }}
+                  className="touch-lift rounded-2xl border border-cyan-950/10 px-4 py-3 text-center font-bold text-slate-800 transition-all duration-200 hover:border-primary hover:text-primary dark:border-white/10 dark:text-slate-200 col-span-2"
                 >
                   {t('auth.login_action')}
-                </Link>
-                <Link
-                  href="/signup"
-                  onClick={() => setMenuOpen(false)}
-                  className="premium-button touch-lift rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-4 py-3 text-center font-bold text-white shadow-lg shadow-primary/25 transition-all duration-200"
-                >
-                  {t('auth.signup_action')}
-                </Link>
+                </button>
               </>
             )}
-            <Link
-              href="/quote"
-              onClick={() => setMenuOpen(false)}
-              className="touch-lift rounded-2xl border border-cyan-950/10 px-4 py-3 text-center font-bold text-slate-800 transition-all duration-200 hover:border-primary hover:text-primary dark:border-white/10 dark:text-slate-200"
-            >
-              {t('landing.nav.quote')}
-            </Link>
-            <Link
-              href="/consultation"
-              onClick={() => setMenuOpen(false)}
-              className="touch-lift rounded-2xl border border-cyan-950/10 px-4 py-3 text-center font-bold text-slate-800 transition-all duration-200 hover:border-primary hover:text-primary dark:border-white/10 dark:text-slate-200"
-            >
-              {t('landing.nav.book_consultation')}
-            </Link>
           </div>
         </div>
       </SheetContent>

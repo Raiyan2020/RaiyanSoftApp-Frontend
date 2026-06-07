@@ -1,22 +1,24 @@
 import React from 'react';
 import { Save, Plus, Trash2 } from 'lucide-react';
-import { AppointmentSettings } from '@/lib/appointmentStore';
+import { WeeklyAvailability } from '@/features/meetings/types/meeting.types';
 
 interface AdminScheduleTabProps {
-  settings: AppointmentSettings;
-  savingId: number | null;
-  onSaveSettings: () => void;
+  weeklyAvailability: WeeklyAvailability;
+  saving: boolean;
+  error: string | null;
+  onSave: () => void;
   onUpdateAvailability: (dayIndex: number, enabled: boolean) => void;
   onAddRange: (dayIndex: number) => void;
   onRemoveRange: (dayIndex: number, rangeIndex: number) => void;
-  onChangeRange: (dayIndex: number, rangeIndex: number, field: 'start' | 'end', value: string) => void;
+  onChangeRange: (dayIndex: number, rangeIndex: number, field: 'start_time' | 'end_time', value: string) => void;
   days: string[];
 }
 
 export default function AdminScheduleTab({
-  settings,
-  savingId,
-  onSaveSettings,
+  weeklyAvailability,
+  saving,
+  error,
+  onSave,
   onUpdateAvailability,
   onAddRange,
   onRemoveRange,
@@ -29,17 +31,21 @@ export default function AdminScheduleTab({
         <h3 className="text-lg font-bold text-[var(--text)]">Weekly Availability</h3>
         <button
           type="button"
-          onClick={onSaveSettings}
-          className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-sky-400 transition-colors"
+          onClick={onSave}
+          disabled={saving}
+          className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-sky-400 transition-colors disabled:opacity-60"
         >
-          <Save size={16} /> Save Changes
+          <Save size={16} /> {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
 
+      {error ? (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{error}</div>
+      ) : null}
+
       <div className="space-y-4">
         {days.map((dayName, idx) => {
-          const dayConfig = settings.weeklyAvailability[idx] ||
-            settings.weeklyAvailability[String(idx)] || { enabled: false, ranges: [] };
+          const dayConfig = weeklyAvailability[idx] || { enabled: false, ranges: [] };
           const isEnabled = dayConfig.enabled;
 
           return (
@@ -52,10 +58,7 @@ export default function AdminScheduleTab({
               <div className="w-32 flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    onUpdateAvailability(idx, !isEnabled);
-                  }}
+                  onClick={() => onUpdateAvailability(idx, !isEnabled)}
                   className={`w-12 h-6 rounded-full p-1 transition-colors relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 ${
                     isEnabled ? 'bg-primary' : 'bg-[var(--surface-3)]'
                   }`}
@@ -68,50 +71,46 @@ export default function AdminScheduleTab({
                   />
                 </button>
 
-                <div className="flex flex-col">
-                  <span className={`font-bold ${isEnabled ? 'text-[var(--text)]' : 'text-[var(--text-muted)]'}`}>{dayName}</span>
-                  {savingId === idx ? <span className="text-[10px] text-primary animate-pulse">Saving...</span> : null}
-                </div>
+                <span className={`font-bold ${isEnabled ? 'text-[var(--text)]' : 'text-[var(--text-muted)]'}`}>{dayName}</span>
               </div>
 
               <div className="flex-1 space-y-2">
                 {isEnabled ? (
                   <>
-                    {dayConfig.ranges &&
-                      dayConfig.ranges.map((range, rIdx) => (
-                        <div key={rIdx} className="flex items-center gap-2 flex-wrap">
-                          <input
-                            type="time"
-                            value={(range as any).start}
-                            onChange={(e) => onChangeRange(idx, rIdx, 'start', e.target.value)}
-                            className="bg-[var(--surface-3)] text-[var(--text)] px-3 py-2 rounded-lg border border-[var(--border)] focus:border-primary outline-none text-sm"
-                          />
-                          <span className="text-[var(--text-muted)]">-</span>
-                          <input
-                            type="time"
-                            value={(range as any).end}
-                            onChange={(e) => onChangeRange(idx, rIdx, 'end', e.target.value)}
-                            className="bg-[var(--surface-3)] text-[var(--text)] px-3 py-2 rounded-lg border border-[var(--border)] focus:border-primary outline-none text-sm"
-                          />
-                          <button
-                            type="button"
-                            onClick={() => onRemoveRange(idx, rIdx)}
-                            className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      ))}
+                    {dayConfig.ranges?.map((range, rangeIdx) => (
+                      <div key={rangeIdx} className="flex items-center gap-2">
+                        <input
+                          type="time"
+                          value={range.start_time}
+                          onChange={(e) => onChangeRange(idx, rangeIdx, 'start_time', e.target.value)}
+                          className="bg-[var(--surface-3)] border border-[var(--border)] rounded-lg px-3 py-2 text-[var(--text)] text-sm"
+                        />
+                        <span className="text-[var(--text-muted)]">to</span>
+                        <input
+                          type="time"
+                          value={range.end_time}
+                          onChange={(e) => onChangeRange(idx, rangeIdx, 'end_time', e.target.value)}
+                          className="bg-[var(--surface-3)] border border-[var(--border)] rounded-lg px-3 py-2 text-[var(--text)] text-sm"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => onRemoveRange(idx, rangeIdx)}
+                          className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    ))}
                     <button
                       type="button"
                       onClick={() => onAddRange(idx)}
-                      className="text-xs text-primary font-bold flex items-center gap-1 mt-2 hover:underline"
+                      className="text-xs text-primary flex items-center gap-1 hover:underline"
                     >
-                      <Plus size={14} /> Add Range
+                      <Plus size={14} /> Add Time Range
                     </button>
                   </>
                 ) : (
-                  <span className="text-[var(--text-muted)] text-sm italic flex items-center h-full">Unavailable</span>
+                  <span className="text-sm text-[var(--text-muted)]">Unavailable</span>
                 )}
               </div>
             </div>

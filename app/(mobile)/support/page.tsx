@@ -1,7 +1,5 @@
-'use client';
-export const dynamic = 'force-dynamic';
-import SupportChatPage from '@/features/support/components/support-chat-page';
+import { redirect } from 'next/navigation';
 
 export default function Page() {
-  return <SupportChatPage />;
+  redirect('/profile?tab=info');
 }

@@ -116,7 +116,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const navItems = [
     { id: 'leads', label: 'Leads', icon: Inbox, path: '/admin/leads', badge: 0, permission: 'leads.view' },
-    { id: 'project-types', label: 'Project Types', icon: Briefcase, path: '/admin/project-types', badge: 0, permission: 'project_types.manage' },
     { id: 'project-questions', label: 'Project Questions', icon: ListChecks, path: '/admin/project-questions', badge: 0, permission: 'lead_questions.manage' },
     { id: 'projects', label: 'Portfolio', icon: FolderKanban, path: '/admin/projects', badge: 0, permission: 'portfolio.manage' },
     { id: 'user-projects', label: 'User Projects', icon: LayoutGrid, path: '/admin/user-projects', badge: 0, permission: 'projects.view' },

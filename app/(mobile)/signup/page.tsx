@@ -1,7 +1,7 @@
 'use client';
 export const dynamic = 'force-dynamic';
-import SignupPage from '@/features/auth/components/signup-page';
+import AuthDialogRoutePage from '@/features/auth/components/auth-dialog-route-page';
 
 export default function Page() {
-  return <SignupPage />;
+  return <AuthDialogRoutePage />;
 }

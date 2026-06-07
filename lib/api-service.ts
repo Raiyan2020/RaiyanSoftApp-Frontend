@@ -1,6 +1,11 @@
 import { globalToast } from './toast-context';
 
-export const BASE_URL = 'https://portal.raiyan.cc/api';
+export function getApiBaseUrl() {
+  const url = process.env.NEXT_PUBLIC_API_URL || 'https://portal.raiyan.cc/api';
+  return url.replace(/\/$/, '');
+}
+
+export const BASE_URL = getApiBaseUrl();
 
 export interface ApiResponse<T = any> {
   status: boolean;
@@ -41,7 +46,7 @@ class ApiService {
     body?: any,
     options?: RequestOptions
   ): Promise<ApiResponse<T>> {
-    const url = `${BASE_URL}/${path.replace(/^\//, '')}`;
+    const url = `${getApiBaseUrl()}/${path.replace(/^\//, '')}`;
     const isFormData = body instanceof FormData;
     const headers = this.getHeaders(isFormData, path);
 
@@ -99,6 +104,10 @@ class ApiService {
 
   async post<T = any>(path: string, body?: any, options?: RequestOptions): Promise<ApiResponse<T>> {
     return this.request<T>(path, 'POST', body, options);
+  }
+
+  async delete<T = any>(path: string, options?: RequestOptions): Promise<ApiResponse<T>> {
+    return this.request<T>(path, 'DELETE', undefined, options);
   }
 }
 

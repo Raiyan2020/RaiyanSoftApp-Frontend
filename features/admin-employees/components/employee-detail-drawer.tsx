@@ -1,26 +1,40 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { X, Mail, Phone, Ban, CheckCircle, Trash2 } from 'lucide-react';
+import { X, Mail, Phone, Ban, CheckCircle, Trash2, Loader2 } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
-import { AdminUser } from '@/lib/adminStore';
+import { AdminEmployee } from '../types/admin-employee.types';
+import {
+  formatEmployeeDate,
+  formatRoleLabel,
+  getEmployeeFullName,
+  getEmployeeStatusLabel,
+  isEmployeeBlocked,
+} from '../utils/employee-helpers';
 
 interface EmployeeDetailDrawerProps {
-  selectedAdmin: AdminUser;
+  employee: AdminEmployee;
+  loading?: boolean;
   onClose: () => void;
-  getRoleName: (id: string) => string;
-  formatDate: (ts: number) => string;
-  onToggleStatus: (admin: AdminUser) => void;
-  onDeleteAdmin: (id: string) => void;
+  onToggleStatus: (employee: AdminEmployee) => void;
+  onDeleteEmployee: (id: number) => void;
+  toggleLoading?: boolean;
+  actionMessage?: string | null;
+  actionError?: string | null;
 }
 
 export default function EmployeeDetailDrawer({
-  selectedAdmin,
+  employee,
+  loading = false,
   onClose,
-  getRoleName,
-  formatDate,
   onToggleStatus,
-  onDeleteAdmin,
+  onDeleteEmployee,
+  toggleLoading = false,
+  actionMessage,
+  actionError,
 }: EmployeeDetailDrawerProps) {
+  const fullName = getEmployeeFullName(employee);
+  const isBlocked = isEmployeeBlocked(employee);
+
   return (
     <>
       <motion.div
@@ -38,19 +52,25 @@ export default function EmployeeDetailDrawer({
         className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-[var(--surface)] border-l border-[var(--border)] shadow-2xl flex flex-col"
       >
         <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
-          <h2 className="text-xl font-bold text-[var(--text)]">Admin Details</h2>
+          <h2 className="text-xl font-bold text-[var(--text)]">Employee Details</h2>
           <button type="button" onClick={onClose} className="p-2 text-[var(--text-muted)] hover:text-[var(--text)]">
             <X size={20} />
           </button>
         </div>
 
         <div className="flex-1 overflow-y-auto p-6">
+          {loading ? (
+            <div className="flex justify-center py-10">
+              <Loader2 className="animate-spin text-primary" size={24} />
+            </div>
+          ) : null}
+
           <div className="flex flex-col items-center mb-8">
             <div className="w-24 h-24 mb-4">
-              <Avatar name={selectedAdmin.name} size="xl" className="w-full h-full text-3xl border-4 border-[var(--border)] shadow-xl" />
+              <Avatar name={fullName} size="xl" className="w-full h-full text-3xl border-4 border-[var(--border)] shadow-xl" />
             </div>
-            <h3 className="text-2xl font-bold text-[var(--text)]">{selectedAdmin.name}</h3>
-            <p className="text-[var(--text-muted)]">{getRoleName(selectedAdmin.role)}</p>
+            <h3 className="text-2xl font-bold text-[var(--text)]">{fullName}</h3>
+            <p className="text-[var(--text-muted)]">{formatRoleLabel(employee.role)}</p>
           </div>
 
           <div className="space-y-4">
@@ -58,59 +78,61 @@ export default function EmployeeDetailDrawer({
               <div className="text-xs text-[var(--text-muted)] mb-1 flex items-center gap-2">
                 <Mail size={12} /> Email
               </div>
-              <div className="text-[var(--text)]">{selectedAdmin.email}</div>
+              <div className="text-[var(--text)]">{employee.email}</div>
             </div>
             <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
               <div className="text-xs text-[var(--text-muted)] mb-1 flex items-center gap-2">
                 <Phone size={12} /> Phone
               </div>
-              <div className="text-[var(--text)]">{selectedAdmin.phone || 'N/A'}</div>
+              <div className="text-[var(--text)]">{employee.phone || 'N/A'}</div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
                 <div className="text-xs text-[var(--text-muted)] mb-1">Status</div>
-                <div className={selectedAdmin.status === 'Active' ? 'text-emerald-400' : 'text-red-400'}>
-                  {selectedAdmin.status}
+                <div className={isBlocked ? 'text-red-400' : 'text-emerald-400'}>
+                  {getEmployeeStatusLabel(employee)}
                 </div>
               </div>
               <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
                 <div className="text-xs text-[var(--text-muted)] mb-1">Created</div>
-                <div className="text-[var(--text)] text-sm">{formatDate(selectedAdmin.createdAt)}</div>
+                <div className="text-[var(--text)] text-sm">{formatEmployeeDate(employee.created_at)}</div>
               </div>
             </div>
 
-            <div className="mt-4">
-              <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase mb-2">Effective Permissions</h4>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(selectedAdmin.permissions || {}).map(([perm, enabled]) =>
-                  enabled ? (
-                    <span
-                      key={perm}
-                      className="text-[10px] bg-[var(--surface-3)] border border-[var(--border)] px-2 py-1 rounded text-[var(--text)]"
-                    >
-                      {perm}
-                    </span>
-                  ) : null
-                )}
+            {actionError ? (
+              <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
+                {actionError}
               </div>
-            </div>
+            ) : null}
+            {actionMessage ? (
+              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-400">
+                {actionMessage}
+              </div>
+            ) : null}
           </div>
         </div>
 
         <div className="p-6 border-t border-[var(--border)] bg-[var(--surface)] flex gap-3">
           <button
             type="button"
-            onClick={() => onToggleStatus(selectedAdmin)}
-            className={`flex-1 py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 ${
-              selectedAdmin.status === 'Active' ? 'bg-amber-500/10 text-amber-500' : 'bg-emerald-500/10 text-emerald-500'
+            onClick={() => onToggleStatus(employee)}
+            disabled={toggleLoading}
+            className={`flex-1 py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-60 ${
+              isBlocked ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
             }`}
           >
-            {selectedAdmin.status === 'Active' ? <Ban size={18} /> : <CheckCircle size={18} />}
-            {selectedAdmin.status === 'Active' ? 'Disable' : 'Enable'}
+            {toggleLoading ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : isBlocked ? (
+              <CheckCircle size={18} />
+            ) : (
+              <Ban size={18} />
+            )}
+            {isBlocked ? 'Unblock' : 'Block'}
           </button>
           <button
             type="button"
-            onClick={() => onDeleteAdmin(selectedAdmin.id)}
+            onClick={() => onDeleteEmployee(employee.id)}
             className="flex-1 py-3 rounded-xl bg-red-500/10 text-red-400 font-medium text-sm flex items-center justify-center gap-2"
           >
             <Trash2 size={18} /> Delete
