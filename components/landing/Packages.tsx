@@ -10,10 +10,10 @@ export default function Packages() {
   const { packages } = content;
 
   return (
-    <section id="packages" className="relative overflow-hidden bg-slate-50 py-24 dark:bg-navy-900 lg:py-28">
+    <section id="packages" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
       <div className="pointer-events-none absolute left-0 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-14 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end`}>
+        <div className={`reveal mb-10 grid gap-6 lg:mb-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end`}>
           <div className={`space-y-4 ${textAlign}`}>
             <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
               {packages.badge}

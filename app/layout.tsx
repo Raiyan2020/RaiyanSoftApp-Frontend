@@ -17,18 +17,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const jsonLd = createOrganizationJsonLd();
 
   return (
-    <html lang={siteConfig.language} dir={siteConfig.direction}>
+    <html lang={siteConfig.language} dir={siteConfig.direction} className="dark" suppressHydrationWarning>
       <body className={cairo.className}>
-        <Script id="theme-bootstrap" strategy="beforeInteractive">
-          {`
-            try {
-              var theme = localStorage.getItem('theme') || 'dark';
-              document.documentElement.classList.toggle('dark', theme === 'dark');
-            } catch (_) {
-              document.documentElement.classList.add('dark');
-            }
-          `}
-        </Script>
         <Providers>
           <MetaPixelTracker />
           {children}
@@ -54,4 +44,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-

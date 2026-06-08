@@ -25,13 +25,13 @@ export default function Contact() {
     'w-full rounded-2xl border border-cyan-950/10 bg-slate-50 px-4 py-3.5 text-slate-950 placeholder-slate-400 transition-all duration-200 focus:border-primary focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-slate-500 dark:focus:bg-white/10';
 
   return (
-    <section id="contact" className="relative overflow-hidden bg-slate-50 py-24 dark:bg-navy-900 lg:py-28">
+    <section id="contact" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
       <div className="pointer-events-none absolute right-10 top-20 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
       <div className="pointer-events-none absolute bottom-10 left-10 h-64 w-64 rounded-full bg-emerald-300/10 blur-3xl" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-14 text-center ${textAlign}`}>
+        <div className={`reveal mb-10 text-center lg:mb-12 ${textAlign}`}>
           <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
             {contact.badge}
           </div>

@@ -10,11 +10,11 @@ export default function Partners() {
   const { partners } = content;
 
   return (
-    <section id="partners" className="relative overflow-hidden bg-white py-24 dark:bg-navy-950 lg:py-28">
+    <section id="partners" className="relative overflow-hidden bg-white py-12 dark:bg-navy-950 sm:py-16 lg:py-20">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(33,211,162,0.14),transparent_34%)]" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-14 text-center ${textAlign}`}>
+        <div className={`reveal mb-10 text-center lg:mb-12 ${textAlign}`}>
           <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
             {partners.badge}
           </div>

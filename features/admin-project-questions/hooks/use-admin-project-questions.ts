@@ -1,21 +1,19 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import {
-  addDoc,
-  collection,
-  deleteDoc,
-  doc,
-  onSnapshot,
-  orderBy,
-  query,
-  serverTimestamp,
-  updateDoc,
-  writeBatch,
-} from 'firebase/firestore';
-import { db } from '@/lib/firebase-client';
-import { sanitizeForFirestore } from '@/lib/firestoreSanitize';
-import { createAuditLogSafe } from '@/lib/auditLogStore';
+  AdminFormQuestion,
+  AdminFormQuestionOption,
+  createAdminFormQuestion,
+  deleteAdminFormQuestion,
+  fetchAdminFormQuestion,
+  fetchAdminFormQuestionTypes,
+  fetchAdminFormQuestions,
+  updateAdminFormQuestion,
+  updateAdminFormQuestionActiveStatus,
+  updateAdminFormQuestionSortOrder,
+  type AdminFormQuestionPayload,
+} from '../api/admin-form-questions-api';
 
 export type ProjectQuestionType =
   | 'text'
@@ -30,6 +28,8 @@ export interface ProjectQuestionOption {
   id: string;
   label: string;
   labelAr?: string;
+  active?: boolean;
+  order?: number;
 }
 
 export interface ProjectQuestion {
@@ -51,9 +51,15 @@ export interface ProjectQuestionFormState {
   labelAr: string;
   type: ProjectQuestionType;
   optionsText: string;
+  optionIds?: string[];
   required: boolean;
   active: boolean;
   locked: boolean;
+}
+
+export interface ProjectQuestionTypeOption {
+  value: ProjectQuestionType;
+  label: string;
 }
 
 const emptyForm: ProjectQuestionFormState = {
@@ -66,21 +72,56 @@ const emptyForm: ProjectQuestionFormState = {
   locked: false,
 };
 
-const normalizeTimestamp = (value: any) => value?.toMillis?.() || value || Date.now();
+const fallbackQuestionTypes: ProjectQuestionTypeOption[] = [
+  { value: 'text', label: 'Text' },
+  { value: 'single_select', label: 'Single select' },
+];
 
-const normalizeQuestion = (docId: string, data: any, index: number): ProjectQuestion => ({
-  id: docId,
-  label: data.label || 'Untitled question',
-  labelAr: data.labelAr || '',
-  type: data.type || 'text',
-  options: data.options || [],
-  order: typeof data.order === 'number' ? data.order : index,
-  required: Boolean(data.required),
-  active: data.active !== false,
-  locked: Boolean(data.locked),
-  createdAt: normalizeTimestamp(data.createdAt),
-  updatedAt: normalizeTimestamp(data.updatedAt),
-});
+const optionTypes: ProjectQuestionType[] = ['single_select', 'multi_select', 'yes_no', 'color'];
+
+function readTranslatedValue(value: string | { en?: string; ar?: string } | undefined, locale: 'en' | 'ar') {
+  if (!value) return '';
+  if (typeof value === 'string') return locale === 'en' ? value : '';
+  return value[locale] || '';
+}
+
+function mapApiType(type: AdminFormQuestion['type'], options: AdminFormQuestionOption[] = []): ProjectQuestionType {
+  if (type === 2) return 'text';
+  return options.length > 0 ? 'single_select' : 'single_select';
+}
+
+function mapApiQuestionTypeOption(type: { value?: number; id?: number; name?: string; label?: string; key?: string }): ProjectQuestionTypeOption | null {
+  const value = type.value ?? type.id;
+  if (value === 1) return { value: 'single_select', label: type.label || type.name || 'Single select' };
+  if (value === 2) return { value: 'text', label: type.label || type.name || 'Text' };
+  return null;
+}
+
+function normalizeQuestion(question: AdminFormQuestion, index: number): ProjectQuestion {
+  const options = (question.options || [])
+    .map((option, optionIndex) => ({
+      id: String(option.id ?? `option_${optionIndex + 1}`),
+      label: readTranslatedValue(option.value, 'en') || `Option ${optionIndex + 1}`,
+      labelAr: readTranslatedValue(option.value, 'ar'),
+      active: option.is_active !== false && option.is_active !== 0,
+      order: typeof option.sort_order === 'number' ? option.sort_order : optionIndex,
+    }))
+    .sort((first, second) => (first.order ?? 0) - (second.order ?? 0));
+
+  return {
+    id: String(question.id),
+    label: readTranslatedValue(question.name, 'en') || 'Untitled question',
+    labelAr: readTranslatedValue(question.name, 'ar'),
+    type: mapApiType(question.type, question.options),
+    options,
+    order: typeof question.sort_order === 'number' ? question.sort_order : index,
+    required: true,
+    active: question.is_active !== false && question.is_active !== 0,
+    locked: false,
+    createdAt: Date.now(),
+    updatedAt: Date.now(),
+  };
+}
 
 const optionsToText = (options: ProjectQuestionOption[]) =>
   options.map((option) => (option.labelAr ? `${option.label} | ${option.labelAr}` : option.label)).join('\n');
@@ -96,156 +137,165 @@ const textToOptions = (value: string): ProjectQuestionOption[] =>
         id: `option_${index + 1}`,
         label,
         labelAr: labelAr || '',
+        active: true,
+        order: index + 1,
       };
     });
+
+function mapFormToPayload(form: ProjectQuestionFormState, sortOrder: number): AdminFormQuestionPayload {
+  const options = optionTypes.includes(form.type)
+    ? textToOptions(form.optionsText).map((option, index) => ({
+        id: form.optionIds?.[index],
+        value_en: option.label,
+        value_ar: option.labelAr,
+        is_active: option.active !== false,
+        sort_order: index + 1,
+      }))
+    : [];
+
+  return {
+    name_en: form.label.trim(),
+    name_ar: form.labelAr.trim() || form.label.trim(),
+    type: optionTypes.includes(form.type) ? 1 : 2,
+    is_active: form.active,
+    sort_order: sortOrder,
+    options,
+  };
+}
 
 export function useAdminProjectQuestions() {
   const [questions, setQuestions] = useState<ProjectQuestion[]>([]);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [form, setForm] = useState<ProjectQuestionFormState>(emptyForm);
+  const [questionTypes, setQuestionTypes] = useState<ProjectQuestionTypeOption[]>(fallbackQuestionTypes);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!db) {
-      setLoading(false);
-      setError('Firestore is not configured.');
-      return;
-    }
+  const loadQuestions = useCallback(async () => {
+    setLoading(true);
+    setError(null);
 
-    const q = query(collection(db, 'project_questions'), orderBy('order', 'asc'));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const nextQuestions = snapshot.docs
-          .map((snap, index) => normalizeQuestion(snap.id, snap.data(), index))
-          .sort((a, b) => a.order - b.order);
-        setQuestions(nextQuestions);
-        setLoading(false);
-      },
-      (err) => {
-        console.error('Project questions subscription error:', err);
-        setError(err.message || 'Failed to load project questions.');
-        setLoading(false);
+    try {
+      const [data, types] = await Promise.all([
+        fetchAdminFormQuestions(),
+        fetchAdminFormQuestionTypes().catch(() => []),
+      ]);
+      const nextTypes = types.map(mapApiQuestionTypeOption).filter((type): type is ProjectQuestionTypeOption => Boolean(type));
+      if (nextTypes.length > 0) {
+        setQuestionTypes(nextTypes);
       }
-    );
-
-    return () => unsubscribe();
+      const nextQuestions = data
+        .map((item, index) => normalizeQuestion(item, index))
+        .sort((first, second) => first.order - second.order);
+      setQuestions(nextQuestions);
+    } catch (err: any) {
+      console.error('Project questions load error:', err);
+      setError(err.message || 'Failed to load project questions.');
+    } finally {
+      setLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    loadQuestions().catch(() => undefined);
+  }, [loadQuestions]);
 
   const selectedQuestion = useMemo(
     () => questions.find((question) => question.id === selectedId) || null,
     [questions, selectedId]
   );
 
-  const startCreate = () => {
+  const startCreate = useCallback(() => {
     setSelectedId(null);
     setForm(emptyForm);
-  };
+  }, []);
 
-  const startEdit = (question: ProjectQuestion) => {
-    setSelectedId(question.id);
-    setForm({
-      label: question.label,
-      labelAr: question.labelAr || '',
-      type: question.type,
-      optionsText: optionsToText(question.options),
-      required: question.required,
-      active: question.active,
-      locked: question.locked,
-    });
-  };
+  const startEdit = useCallback(async (question: ProjectQuestion) => {
+    setSaving(true);
+    setError(null);
+    try {
+      const detail = await fetchAdminFormQuestion(question.id);
+      const freshQuestion = normalizeQuestion(detail, question.order);
+      setSelectedId(freshQuestion.id);
+      setForm({
+        label: freshQuestion.label,
+        labelAr: freshQuestion.labelAr || '',
+        type: freshQuestion.type,
+        optionsText: optionsToText(freshQuestion.options),
+        optionIds: freshQuestion.options.map((option) => option.id),
+        required: freshQuestion.required,
+        active: freshQuestion.active,
+        locked: freshQuestion.locked,
+      });
+    } catch (err: any) {
+      console.error('Failed to load project question:', err);
+      setError(err.message || 'Failed to load project question.');
+    } finally {
+      setSaving(false);
+    }
+  }, []);
 
-  const saveQuestion = async () => {
-    if (!db || !form.label.trim()) return;
+  const saveQuestion = useCallback(async () => {
+    if (!form.label.trim()) return;
 
     setSaving(true);
     setError(null);
 
     try {
-      const payload = sanitizeForFirestore({
-        label: form.label.trim(),
-        labelAr: form.labelAr.trim(),
-        type: form.type,
-        options: ['single_select', 'multi_select'].includes(form.type) ? textToOptions(form.optionsText) : [],
-        required: form.required,
-        active: form.active,
-        locked: form.locked,
-        updatedAt: serverTimestamp(),
-      });
+      const existing = selectedId ? questions.find((question) => question.id === selectedId) : null;
+      const sortOrder = existing?.order ?? questions.length + 1;
+      const payload = mapFormToPayload(form, sortOrder);
 
       if (selectedId) {
-        await updateDoc(doc(db, 'project_questions', selectedId), payload);
-        await createAuditLogSafe({
-          entityType: 'project',
-          entityId: selectedId,
-          action: 'project_question.updated',
-          newValue: payload,
-        });
+        await updateAdminFormQuestion(selectedId, payload);
       } else {
-        const created = await addDoc(
-          collection(db, 'project_questions'),
-          sanitizeForFirestore({
-            ...payload,
-            order: questions.length,
-            createdAt: serverTimestamp(),
-          })
-        );
-        setSelectedId(created.id);
-        await createAuditLogSafe({
-          entityType: 'project',
-          entityId: created.id,
-          action: 'project_question.created',
-          newValue: payload,
-        });
+        const created = await createAdminFormQuestion(payload);
+        if (created?.id) setSelectedId(String(created.id));
       }
+
+      await loadQuestions();
     } catch (err: any) {
       console.error('Failed to save project question:', err);
       setError(err.message || 'Failed to save project question.');
     } finally {
       setSaving(false);
     }
-  };
+  }, [form, loadQuestions, questions, selectedId]);
 
-  const moveQuestion = async (questionId: string, direction: -1 | 1) => {
-    if (!db) return;
+  const moveQuestion = useCallback(async (questionId: string, direction: -1 | 1) => {
     const index = questions.findIndex((question) => question.id === questionId);
     const targetIndex = index + direction;
     if (index < 0 || targetIndex < 0 || targetIndex >= questions.length) return;
 
     const nextQuestions = [...questions];
     [nextQuestions[index], nextQuestions[targetIndex]] = [nextQuestions[targetIndex], nextQuestions[index]];
+    const reordered = nextQuestions.map((question, order) => ({ ...question, order: order + 1 }));
 
+    setQuestions(reordered);
     setSaving(true);
     setError(null);
 
     try {
-      const batch = writeBatch(db);
-      nextQuestions.forEach((question, order) => {
-        batch.update(doc(db, 'project_questions', question.id), {
-          order,
-          updatedAt: serverTimestamp(),
-        });
-      });
-      await batch.commit();
-      await createAuditLogSafe({
-        entityType: 'project',
-        entityId: questionId,
-        action: 'project_question.reordered',
-        newValue: nextQuestions.map((question, order) => ({ id: question.id, order })),
-      });
+      await updateAdminFormQuestionSortOrder(
+        reordered.map((question) => ({
+          id: question.id,
+          sort_order: question.order,
+        }))
+      );
+      await loadQuestions();
     } catch (err: any) {
       console.error('Failed to reorder project questions:', err);
       setError(err.message || 'Failed to reorder project questions.');
+      await loadQuestions();
     } finally {
       setSaving(false);
     }
-  };
+  }, [loadQuestions, questions]);
 
-  const deleteQuestion = async () => {
-    if (!db || !deleteId) return;
+  const deleteQuestion = useCallback(async () => {
+    if (!deleteId) return;
     const question = questions.find((item) => item.id === deleteId);
     if (question?.locked) {
       setError('Locked questions cannot be deleted.');
@@ -257,25 +307,46 @@ export function useAdminProjectQuestions() {
     setError(null);
 
     try {
-      await deleteDoc(doc(db, 'project_questions', deleteId));
-      await createAuditLogSafe({
-        entityType: 'project',
-        entityId: deleteId,
-        action: 'project_question.deleted',
-        oldValue: question,
-      });
+      await deleteAdminFormQuestion(deleteId);
       if (selectedId === deleteId) startCreate();
       setDeleteId(null);
+      await loadQuestions();
     } catch (err: any) {
       console.error('Failed to delete project question:', err);
       setError(err.message || 'Failed to delete project question.');
     } finally {
       setSaving(false);
     }
-  };
+  }, [deleteId, loadQuestions, questions, selectedId, startCreate]);
+
+  const toggleQuestionActive = useCallback(async (questionId: string) => {
+    const question = questions.find((item) => item.id === questionId);
+    if (!question) return;
+    const nextActive = !question.active;
+    setQuestions((current) =>
+      current.map((item) => (item.id === questionId ? { ...item, active: nextActive } : item))
+    );
+    setSaving(true);
+    setError(null);
+
+    try {
+      await updateAdminFormQuestionActiveStatus([{ id: questionId, is_active: nextActive }]);
+      if (selectedId === questionId) {
+        setForm((current) => ({ ...current, active: nextActive }));
+      }
+      await loadQuestions();
+    } catch (err: any) {
+      console.error('Failed to update question status:', err);
+      setError(err.message || 'Failed to update question status.');
+      await loadQuestions();
+    } finally {
+      setSaving(false);
+    }
+  }, [loadQuestions, questions, selectedId]);
 
   return {
     questions,
+    questionTypes,
     selectedQuestion,
     form,
     setForm,
@@ -290,5 +361,6 @@ export function useAdminProjectQuestions() {
     saveQuestion,
     moveQuestion,
     deleteQuestion,
+    toggleQuestionActive,
   };
 }

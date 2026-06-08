@@ -17,7 +17,7 @@ export default function Works() {
   const { works } = content;
 
   return (
-    <section id="works" className="relative overflow-hidden bg-slate-50 py-16 dark:bg-navy-900 sm:py-20 lg:py-24">
+    <section id="works" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
       <div className="pointer-events-none absolute -right-32 top-32 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
 

@@ -1,0 +1,5058 @@
+{
+  "info": {
+    "_postman_id": "9668cf61-dac6-4d70-860a-b0afbfbfa8f2",
+    "name": "Raiyan",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "52130943",
+    "_collection_link": "https://go.postman.co/collection/52130943-9668cf61-dac6-4d70-860a-b0afbfbfa8f2?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Parse the response body as JSON\r",
+                      "const jsonResponse = pm.response.json();\r",
+                      "\r",
+                      "// Extract the desired value from the response\r",
+                      "var token = jsonResponse.data.token;\r",
+                      "\r",
+                      "// Set the extracted value to a collection variable\r",
+                      "pm.environment.set(\"admin_token\",token);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "admin@gmail.com",
+                      "type": "text",
+                      "description": "['required', 'min:2', 'max:255', 'email']"
+                    },
+                    {
+                      "key": "password",
+                      "value": "12345678",
+                      "type": "text",
+                      "description": "['required', 'string', 'min:8', 'max:255']"
+                    },
+                    {
+                      "key": "device_id",
+                      "value": "test_device",
+                      "type": "text",
+                      "description": "['nullable', 'string']"
+                    },
+                    {
+                      "key": "device_type",
+                      "value": "web",
+                      "type": "text",
+                      "description": "['nullable', 'in:android,ios,web']"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Login",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "email",
+                          "value": "admin@gmail.com",
+                          "type": "text",
+                          "description": "['required', 'min:2', 'max:255', 'email']"
+                        },
+                        {
+                          "key": "password",
+                          "value": "12345678",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:8', 'max:255']"
+                        },
+                        {
+                          "key": "device_id",
+                          "value": "test_device",
+                          "type": "text",
+                          "description": "['nullable', 'string']"
+                        },
+                        {
+                          "key": "device_type",
+                          "value": "web",
+                          "type": "text",
+                          "description": "['nullable', 'in:android,ios,web']"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/admin/auth/login",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 22:10:31 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم تسجيل الدخول بنجاح\",\n    \"data\": {\n        \"admin\": {\n            \"id\": 1,\n            \"name\": \"Super Admin\",\n            \"email\": \"admin@gmail.com\"\n        },\n        \"token\": \"17|bc3XHqH7eGUVNq8DBo3YI6lxw5w1ZBl3BRr8ONPHa3f07cc5\"\n    },\n    \"errors\": []\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Leads",
+          "item": [
+            {
+              "name": "Get Leads",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/leads?name",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "leads"
+                  ],
+                  "query": [
+                    {
+                      "key": "name",
+                      "value": null
+                    },
+                    {
+                      "key": "status",
+                      "value": "1",
+                      "description": "  case PENDING    = 1;\n    case APPROVED   = 2;\n    case REJECTED   = 3;",
+                      "disabled": true
+                    },
+                    {
+                      "key": "requestId",
+                      "value": "www",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "<img src=\"https://content.pstmn.io/7e52a7ca-2571-428c-b7f0-87ab8e2b2948/aW1hZ2UucG5n\" alt=\"\" height=\"807\" width=\"1447\">"
+              },
+              "response": [
+                {
+                  "name": "success",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/admin/leads?name",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "leads"
+                      ],
+                      "query": [
+                        {
+                          "key": "name",
+                          "value": null
+                        },
+                        {
+                          "key": "status",
+                          "value": "1",
+                          "description": "  case PENDING    = 1;\n    case APPROVED   = 2;\n    case REJECTED   = 3;",
+                          "disabled": true
+                        },
+                        {
+                          "key": "requestId",
+                          "value": "www",
+                          "disabled": true
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 22:31:26 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم استرجاع البيانات بنجاح \",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user\": {\n                \"id\": 9,\n                \"full_name\": \"mohamed walaa\",\n                \"full_phone\": \"+1001234567\"\n            },\n            \"description\": \"كلاهما, العربية\",\n            \"project_name\": \"My Awesome Project\",\n            \"status\": \"قيد الانتظار\",\n            \"date\": \"2026/05/24\"\n        }\n    ],\n    \"errors\": [],\n    \"pagination\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 15,\n        \"total\": 1\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "show",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/leads/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "leads",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "success",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/admin/leads?name",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "leads"
+                      ],
+                      "query": [
+                        {
+                          "key": "name",
+                          "value": null
+                        },
+                        {
+                          "key": "status",
+                          "value": "1",
+                          "description": "  case PENDING    = 1;\n    case APPROVED   = 2;\n    case REJECTED   = 3;",
+                          "disabled": true
+                        },
+                        {
+                          "key": "requestId",
+                          "value": "www",
+                          "disabled": true
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 22:31:26 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم استرجاع البيانات بنجاح \",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"user\": {\n                \"id\": 9,\n                \"full_name\": \"mohamed walaa\",\n                \"full_phone\": \"+1001234567\"\n            },\n            \"description\": \"كلاهما, العربية\",\n            \"project_name\": \"My Awesome Project\",\n            \"status\": \"قيد الانتظار\",\n            \"date\": \"2026/05/24\"\n        }\n    ],\n    \"errors\": [],\n    \"pagination\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 15,\n        \"total\": 1\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Change Lead Status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "action",
+                      "value": "approve",
+                      "type": "text",
+                      "description": " 'required|in:reject,approve'"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/leads/1/status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "leads",
+                    "1",
+                    "status"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "fail",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "action",
+                          "value": "approve",
+                          "type": "text",
+                          "description": " 'required|in:reject,approve'"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/admin/leads/1/status",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "leads",
+                        "1",
+                        "status"
+                      ]
+                    }
+                  },
+                  "status": "Unprocessable Content",
+                  "code": 422,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 22:37:07 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": false,\n    \"message\": \"يجب ان تكون الحاله قيد الانتظار\",\n    \"data\": [],\n    \"errors\": []\n}"
+                },
+                {
+                  "name": "success",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "action",
+                          "value": "approve",
+                          "type": "text",
+                          "description": " 'required|in:reject,approve'"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/admin/leads/1/status",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "leads",
+                        "1",
+                        "status"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 22:37:34 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم تحديث الحالة بنجاح\",\n    \"data\": {\n        \"user\": {\n            \"id\": 9,\n            \"name\": null,\n            \"phone\": \"1001234567\",\n            \"email\": \"user@example.com\"\n        },\n        \"id\": 1,\n        \"project_name\": \"My Awesome Project\",\n        \"color\": \"#3498db\",\n        \"status\": 2,\n        \"request_id\": \"eWK76MV31hrhQC3KmtYR\",\n        \"description\": \"كلاهما, العربية\",\n        \"answers\": [\n            {\n                \"id\": 1,\n                \"form_question_id\": 1,\n                \"question\": \"ما المنصات التي تحتاجها؟\",\n                \"form_question_option_id\": 3,\n                \"answer\": \"كلاهما\"\n            },\n            {\n                \"id\": 2,\n                \"form_question_id\": 2,\n                \"question\": \"ما اللغات التي تحتاجها؟\",\n                \"form_question_option_id\": 4,\n                \"answer\": \"العربية\"\n            }\n        ]\n    },\n    \"errors\": []\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Form Questions",
+          "item": [
+            {
+              "name": "Get Question Types",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/form-questions/types",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "form-questions",
+                    "types"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Get Question Types",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/admin/form-questions/types",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "form-questions",
+                        "types"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 08 Jun 2026 07:07:21 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم استرجاع البيانات بنجاح \",\n    \"data\": [\n        {\n            \"value\": 1,\n            \"key\": \"SELECT\",\n            \"name\": \"اختيار\"\n        },\n        {\n            \"value\": 6,\n            \"key\": \"FREE_TEXT\",\n            \"name\": \"نص حر\"\n        }\n    ],\n    \"errors\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "Get Questions",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/form-questions",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "form-questions"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Get Questions",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/admin/form-questions",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "form-questions"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 08 Jun 2026 07:09:54 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم استرجاع البيانات بنجاح \",\n    \"data\": [\n        {\n            \"id\": 2,\n            \"name\": \"ما المنصات التي تحتاجها؟\",\n            \"type\": {\n                \"value\": 1,\n                \"key\": \"SELECT\",\n                \"name\": \"اختيار\"\n            },\n            \"is_active\": true,\n            \"sort_order\": 1\n        },\n        {\n            \"id\": 3,\n            \"name\": \"ما اللغات التي تحتاجها؟\",\n            \"type\": {\n                \"value\": 1,\n                \"key\": \"SELECT\",\n                \"name\": \"اختيار\"\n            },\n            \"is_active\": true,\n            \"sort_order\": 2\n        },\n        {\n            \"id\": 4,\n            \"name\": \"ما الأسواق التي تستهدفها؟\",\n            \"type\": {\n                \"value\": 1,\n                \"key\": \"SELECT\",\n                \"name\": \"اختيار\"\n            },\n            \"is_active\": true,\n            \"sort_order\": 3\n        },\n        {\n            \"id\": 5,\n            \"name\": \"ما هو المجال الذي يستهدفه تطبيقك؟\",\n            \"type\": {\n                \"value\": 1,\n                \"key\": \"SELECT\",\n                \"name\": \"اختيار\"\n            },\n            \"is_active\": true,\n            \"sort_order\": 4\n        },\n        {\n            \"id\": 6,\n            \"name\": \"هل سيتضمن التطبيق الدفع الإلكتروني؟\",\n            \"type\": {\n                \"value\": 1,\n                \"key\": \"SELECT\",\n                \"name\": \"اختيار\"\n            },\n            \"is_active\": true,\n            \"sort_order\": 5\n        },\n        {\n            \"id\": 7,\n            \"name\": \"هل لديك نشاط تجاري قائم بالفعل؟\",\n            \"type\": {\n                \"value\": 1,\n                \"key\": \"SELECT\",\n                \"name\": \"اختيار\"\n            },\n            \"is_active\": true,\n            \"sort_order\": 6\n        },\n        {\n            \"id\": 8,\n            \"name\": \"كيف سيتم تقديم الخدمة؟\",\n            \"type\": {\n                \"value\": 1,\n                \"key\": \"SELECT\",\n                \"name\": \"اختيار\"\n            },\n            \"is_active\": true,\n            \"sort_order\": 7\n        },\n        {\n            \"id\": 9,\n            \"name\": \"أي تطبيق هو الأقرب لفكرتك؟\",\n            \"type\": {\n                \"value\": 1,\n                \"key\": \"SELECT\",\n                \"name\": \"اختيار\"\n            },\n            \"is_active\": true,\n            \"sort_order\": 8\n        },\n        {\n            \"id\": 10,\n            \"name\": \"اسم المشروع\",\n            \"type\": {\n                \"value\": 1,\n                \"key\": \"SELECT\",\n                \"name\": \"اختيار\"\n            },\n            \"is_active\": true,\n            \"sort_order\": 9\n        }\n    ],\n    \"errors\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "Show Question",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/form-questions/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "form-questions",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "2"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Show Question",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/admin/form-questions/:id",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "form-questions",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "2"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 08 Jun 2026 07:10:05 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم استرجاع البيانات بنجاح \",\n    \"data\": {\n        \"id\": 2,\n        \"name\": \"ما المنصات التي تحتاجها؟\",\n        \"type\": {\n            \"value\": 1,\n            \"key\": \"SELECT\",\n            \"name\": \"اختيار\"\n        },\n        \"is_active\": true,\n        \"sort_order\": 1,\n        \"options\": [\n            {\n                \"id\": 1,\n                \"form_question_id\": 2,\n                \"value\": \"موقع إلكتروني\",\n                \"is_active\": true,\n                \"sort_order\": 1\n            },\n            {\n                \"id\": 2,\n                \"form_question_id\": 2,\n                \"value\": \"تطبيق\",\n                \"is_active\": true,\n                \"sort_order\": 2\n            },\n            {\n                \"id\": 3,\n                \"form_question_id\": 2,\n                \"value\": \"كلاهما\",\n                \"is_active\": true,\n                \"sort_order\": 3\n            }\n        ]\n    },\n    \"errors\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "Create Question",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name[en]",
+                      "value": "support way ",
+                      "description": "required|array|size:' . count(config('translatable.locales'))\nstring|min:3|max:255",
+                      "type": "text",
+                      "uuid": "e725762f-1b72-48d2-9ec9-05a847d0507d"
+                    },
+                    {
+                      "key": "name[ar]",
+                      "value": "طرق الدعم",
+                      "description": "required|array|size:' . count(config('translatable.locales'))\nstring|min:3|max:255",
+                      "type": "text",
+                      "uuid": "c99e4b0d-ea9f-42e8-92c0-4cd80d508bb3"
+                    },
+                    {
+                      "key": "type",
+                      "value": "2",
+                      "description": " case SELECT = 1;\n    case FREE_TEXT = 2;",
+                      "type": "text",
+                      "uuid": "614ea45b-6d95-4686-9675-471a288745d0"
+                    },
+                    {
+                      "key": "is_active",
+                      "value": "1",
+                      "description": "['required', 'boolean']",
+                      "type": "text",
+                      "uuid": "f22f37a8-8fb8-43aa-a6f2-46d8c387653e"
+                    },
+                    {
+                      "key": "sort_order",
+                      "value": "4",
+                      "description": "['required', 'integer']",
+                      "type": "text",
+                      "uuid": "6617a5ee-2e9c-4256-9822-5bd0ca124ff3"
+                    },
+                    {
+                      "key": "options[0][value][en]",
+                      "value": "chat",
+                      "description": "['prohibited_if:type,' . FormQuestionType::FREE_TEXT->value, 'nullable', 'array']\n\nstring|min:3|max:255",
+                      "type": "text",
+                      "uuid": "5063d2da-cd3f-4271-9863-dda53b5e35f2"
+                    },
+                    {
+                      "key": "options[0][value][ar]",
+                      "value": "شات",
+                      "description": "string|min:3|max:255",
+                      "type": "text",
+                      "uuid": "ec16ab7b-cee3-4077-87ae-09462886bcc7"
+                    },
+                    {
+                      "key": "options[0][is_active]",
+                      "value": "1",
+                      "description": "['required', 'boolean']",
+                      "type": "text",
+                      "uuid": "4760952a-258b-4f04-bbf6-321874a737ff"
+                    },
+                    {
+                      "key": "options[0][sort_order]",
+                      "value": "2",
+                      "description": "['required', 'integer']",
+                      "type": "text",
+                      "uuid": "0bc91a0f-0510-419f-9f50-3d515158ee98"
+                    },
+                    {
+                      "key": "options[1][value][en]",
+                      "value": "voice",
+                      "description": "string|min:3|max:255",
+                      "type": "text",
+                      "uuid": "65745564-9403-4430-b8c4-11c379cc6998"
+                    },
+                    {
+                      "key": "options[1][value][ar]",
+                      "value": "صوت",
+                      "description": "string|min:3|max:255",
+                      "type": "text",
+                      "uuid": "d6581ff1-c8af-47de-b3e3-239852985b08"
+                    },
+                    {
+                      "key": "options[1][is_active]",
+                      "value": "1",
+                      "description": "['required', 'boolean']",
+                      "type": "text",
+                      "uuid": "bf45c563-6540-4860-b065-b918cfaed516"
+                    },
+                    {
+                      "key": "options[1][sort_order]",
+                      "value": "2",
+                      "description": " ['required', 'integer']",
+                      "type": "text",
+                      "uuid": "724322cc-02c7-4795-9b1a-fce6dc90418b"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/form-questions",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "form-questions"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Question",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name[en]",
+                      "value": "support way ",
+                      "type": "text"
+                    },
+                    {
+                      "key": "name[ar]",
+                      "value": "طرق الدعم تعديل",
+                      "type": "text"
+                    },
+                    {
+                      "key": "type",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "is_active",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "sort_order",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "options[0][id]",
+                      "value": "38",
+                      "type": "text"
+                    },
+                    {
+                      "key": "options[0][value][en]",
+                      "value": "chat(Updated)",
+                      "type": "text"
+                    },
+                    {
+                      "key": "options[0][value][ar]",
+                      "value": "شات(معدل)",
+                      "type": "text"
+                    },
+                    {
+                      "key": "options[0][is_active]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "options[0][sort_order]",
+                      "value": "1",
+                      "type": "text"
+                    },
+                    {
+                      "key": "options[1][value][en]",
+                      "value": "video",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "options[1][value][ar]",
+                      "value": "فيديو",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "options[1][is_active]",
+                      "value": "1",
+                      "type": "text",
+                      "disabled": true
+                    },
+                    {
+                      "key": "options[1][sort_order]",
+                      "value": "3",
+                      "type": "text",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/form-questions/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "form-questions",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "11"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Question",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/form-questions/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "form-questions",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Sort Order",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "questions[2]",
+                      "value": "3",
+                      "type": "text",
+                      "uuid": "7c77e885-6f8c-4056-bd1d-c782eb814226"
+                    },
+                    {
+                      "key": "questions[2]",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "44287487-808b-4d2c-896d-a2b04648f089",
+                      "disabled": true
+                    },
+                    {
+                      "key": "options[1]",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "44a983a2-023f-4fe2-bc5c-32c61f60bd97",
+                      "disabled": true
+                    },
+                    {
+                      "key": "options[2]",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "e88a401b-ef81-410f-bdf5-fa70d12eca9a",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/form-questions/update-sort-order",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "form-questions",
+                    "update-sort-order"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Status",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "questions[2]",
+                      "value": "3",
+                      "type": "text",
+                      "uuid": "7c77e885-6f8c-4056-bd1d-c782eb814226"
+                    },
+                    {
+                      "key": "questions[2]",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "44287487-808b-4d2c-896d-a2b04648f089",
+                      "disabled": true
+                    },
+                    {
+                      "key": "options[1]",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "44a983a2-023f-4fe2-bc5c-32c61f60bd97",
+                      "disabled": true
+                    },
+                    {
+                      "key": "options[2]",
+                      "value": "",
+                      "type": "text",
+                      "uuid": "e88a401b-ef81-410f-bdf5-fa70d12eca9a",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/form-questions/update-active-status",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "form-questions",
+                    "update-active-status"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Meetings",
+          "item": [
+            {
+              "name": "Bookings",
+              "item": [
+                {
+                  "name": "Reject Meeting",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/admin/meetings/:id/reject",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "meetings",
+                        ":id",
+                        "reject"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": ""
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "Approve Meeting",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/admin/meetings/:id/approve",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "meetings",
+                        ":id",
+                        "approve"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "3"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "meetings",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{admin_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": []
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/admin/meetings?status=2",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "meetings"
+                      ],
+                      "query": [
+                        {
+                          "key": "name",
+                          "value": "",
+                          "disabled": true
+                        },
+                        {
+                          "key": "email",
+                          "value": "",
+                          "disabled": true
+                        },
+                        {
+                          "key": "phone",
+                          "value": "",
+                          "disabled": true
+                        },
+                        {
+                          "key": "status",
+                          "value": "2",
+                          "description": " case PENDING = 1;\n    case APPROVED = 2;\n    case REJECTED = 3;\n    case CANCELED = 4;"
+                        }
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "success",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{user_token}}"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "formdata",
+                          "formdata": []
+                        },
+                        "url": {
+                          "raw": "{{base_url}}/admin/meetings",
+                          "host": [
+                            "{{base_url}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "meetings"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Server",
+                          "value": "nginx/1.25.2"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        },
+                        {
+                          "key": "Transfer-Encoding",
+                          "value": "chunked"
+                        },
+                        {
+                          "key": "Connection",
+                          "value": "keep-alive"
+                        },
+                        {
+                          "key": "Vary",
+                          "value": "Accept-Encoding"
+                        },
+                        {
+                          "key": "X-Powered-By",
+                          "value": "PHP/8.4.11"
+                        },
+                        {
+                          "key": "Cache-Control",
+                          "value": "no-cache, private"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 07 Jun 2026 12:21:18 GMT"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "*"
+                        },
+                        {
+                          "key": "Content-Encoding",
+                          "value": "gzip"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"status\": true,\n    \"message\": \"تم استرجاع البيانات بنجاح \",\n    \"data\": [\n        {\n            \"id\": 3,\n            \"date_time\": \"2026-06-08 11:00:00\",\n            \"subject\": \"subject\",\n            \"notes\": \"notes\",\n            \"type\": 1,\n            \"type_label\": \"أونلاين\",\n            \"status\": 2,\n            \"status_label\": \"مقبول\",\n            \"cancel_by\": null,\n            \"cancel_by_name\": null,\n            \"created_at\": \"2026-06-07 12:15:41\"\n        }\n    ],\n    \"errors\": [],\n    \"pagination\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 15,\n        \"total\": 1\n    }\n}"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "Availabiltiy",
+              "item": [
+                {
+                  "name": "time-slots",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{admin_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": []
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/admin/settings/time-slots",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "settings",
+                        "time-slots"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "time-slots",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{admin_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Content-Type",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n  \"days\": {\r\n    \"1\": {\r\n      \"is_active\": true,\r\n      \"time_slots\": [\r\n        {\r\n          \"start_time\": \"09:00\",\r\n          \"end_time\": \"17:00\"\r\n        },\r\n        {\r\n          \"start_time\": \"09:00\",\r\n          \"end_time\": \"17:00\"\r\n        }\r\n      ]\r\n    },\r\n    \"2\": {\r\n      \"is_active\": true,\r\n      \"time_slots\": [\r\n        {\r\n          \"start_time\": \"09:00\",\r\n          \"end_time\": \"17:00\"\r\n        }\r\n      ]\r\n    },\r\n    \"3\": {\r\n      \"is_active\": true,\r\n      \"time_slots\": [\r\n        {\r\n          \"start_time\": \"09:00\",\r\n          \"end_time\": \"17:00\"\r\n        }\r\n      ]\r\n    },\r\n    \"4\": {\r\n      \"is_active\": true,\r\n      \"time_slots\": [\r\n        {\r\n          \"start_time\": \"09:00\",\r\n          \"end_time\": \"17:00\"\r\n        }\r\n      ]\r\n    },\r\n    \"5\": {\r\n      \"is_active\": true,\r\n      \"time_slots\": [\r\n        {\r\n          \"start_time\": \"09:00\",\r\n          \"end_time\": \"17:00\"\r\n        }\r\n      ]\r\n    },\r\n    \"6\": {\r\n      \"is_active\": false,\r\n      \"time_slots\": []\r\n    },\r\n    \"7\": {\r\n      \"is_active\": false,\r\n      \"time_slots\": []\r\n    }\r\n  }\r\n}"
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/admin/settings/time-slots",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "settings",
+                        "time-slots"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "settings",
+              "item": [
+                {
+                  "name": "Update Settings",
+                  "request": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "duration_minutes",
+                          "value": "60",
+                          "type": "text",
+                          "description": "'required|intege|max:9999',"
+                        },
+                        {
+                          "key": "buffer_after_minutes",
+                          "value": "0",
+                          "type": "text",
+                          "description": "'required|intege|max:9999',"
+                        },
+                        {
+                          "key": "min_notice_hours",
+                          "value": "2",
+                          "type": "text",
+                          "description": "'required|intege|max:9999',"
+                        },
+                        {
+                          "key": "booking_window_days",
+                          "value": "15",
+                          "type": "text",
+                          "description": "'required|intege|max:9999',"
+                        },
+                        {
+                          "key": "daily_meeting_limit",
+                          "value": "5",
+                          "type": "text",
+                          "description": "'required|intege|max:9999',"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/admin/settings/update-settings",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "settings",
+                        "update-settings"
+                      ]
+                    },
+                    "description": "<img src=\"https://content.pstmn.io/6db9498c-8f87-4314-8ab9-b48b75a2e74e/aW1hZ2UucG5n\" alt=\"\" height=\"414\" width=\"1036\">"
+                  },
+                  "response": [
+                    {
+                      "name": "success",
+                      "originalRequest": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "Authorization",
+                            "value": "Bearer {{admin_token}}"
+                          },
+                          {
+                            "key": "Accept",
+                            "value": "application/json"
+                          }
+                        ],
+                        "body": {
+                          "mode": "formdata",
+                          "formdata": [
+                            {
+                              "key": "duration_minutes",
+                              "value": "60",
+                              "type": "text",
+                              "description": "'required|integer|min:1000|max:9999',"
+                            },
+                            {
+                              "key": "buffer_after_minutes",
+                              "value": "10",
+                              "type": "text",
+                              "description": "'required|integer|min:1000|max:9999',"
+                            },
+                            {
+                              "key": "min_notice_hours",
+                              "value": "2",
+                              "type": "text",
+                              "description": "'required|integer|min:1000|max:9999',"
+                            },
+                            {
+                              "key": "booking_window_days",
+                              "value": "15",
+                              "type": "text",
+                              "description": "'required|integer|min:1000|max:9999',"
+                            },
+                            {
+                              "key": "daily_meeting_limit",
+                              "value": "5",
+                              "type": "text",
+                              "description": "'required|integer|min:1000|max:9999',"
+                            }
+                          ]
+                        },
+                        "url": {
+                          "raw": "{{base_url}}/admin/settings/update-settings",
+                          "host": [
+                            "{{base_url}}"
+                          ],
+                          "path": [
+                            "admin",
+                            "settings",
+                            "update-settings"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Server",
+                          "value": "nginx/1.25.2"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        },
+                        {
+                          "key": "Transfer-Encoding",
+                          "value": "chunked"
+                        },
+                        {
+                          "key": "Connection",
+                          "value": "keep-alive"
+                        },
+                        {
+                          "key": "Vary",
+                          "value": "Accept-Encoding"
+                        },
+                        {
+                          "key": "X-Powered-By",
+                          "value": "PHP/8.4.11"
+                        },
+                        {
+                          "key": "Cache-Control",
+                          "value": "no-cache, private"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 24 May 2026 22:39:11 GMT"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "*"
+                        },
+                        {
+                          "key": "Content-Encoding",
+                          "value": "gzip"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"status\": true,\n    \"message\": \"تم تحديث البيانات بنجاح\",\n    \"data\": [],\n    \"errors\": []\n}"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Users",
+          "item": [
+            {
+              "name": "index",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/users?name&email&phone",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users"
+                  ],
+                  "query": [
+                    {
+                      "key": "name",
+                      "value": null,
+                      "description": "string"
+                    },
+                    {
+                      "key": "email",
+                      "value": null,
+                      "description": "string"
+                    },
+                    {
+                      "key": "phone",
+                      "value": null,
+                      "description": "string"
+                    },
+                    {
+                      "key": "is_block",
+                      "value": "1",
+                      "description": "boolean",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "<img src=\"https://content.pstmn.io/0c99b32d-2875-4157-9155-50e9c1100f72/aW1hZ2UucG5n\" alt=\"\" height=\"645\" width=\"1451\">"
+              },
+              "response": [
+                {
+                  "name": "index",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{admin_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/admin/users?name&email&phone",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "admin",
+                        "users"
+                      ],
+                      "query": [
+                        {
+                          "key": "name",
+                          "value": null,
+                          "description": "string"
+                        },
+                        {
+                          "key": "email",
+                          "value": null,
+                          "description": "string"
+                        },
+                        {
+                          "key": "phone",
+                          "value": null,
+                          "description": "string"
+                        },
+                        {
+                          "key": "is_block",
+                          "value": "1",
+                          "description": "boolean",
+                          "disabled": true
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "",
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 02 Jun 2026 13:17:16 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [
+                    {
+                      "expires": "Invalid Date",
+                      "domain": "",
+                      "path": ""
+                    }
+                  ],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم استرجاع البيانات بنجاح \",\n    \"data\": [\n        {\n            \"id\": 1,\n             \"full_name\": \"mohamed walaa\",\n            \"email\": \"user@example.com\",\n            \"phone\": \"1001234567\",\n            \"user_code\": \"atrIFL\",\n            \"registered\": \"2 Jun 2026\",\n            \"is_block\": false\n        }\n    ],\n    \"errors\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "toggle block",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{admin_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/users/:id/toggle-block",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "users",
+                    ":id",
+                    "toggle-block"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "1"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Employees",
+          "item": [
+            {
+              "name": "Get Employees",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/employess",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "employess"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Employee",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"Employee\",\n  \"last_name\": \"One\",\n  \"email\": \"employee1@example.com\",\n  \"phone\": \"0123456789\",\n  \"password\": \"password123\",\n  \"role\": \"staff\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/employess",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "employess"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Show Employee",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/employess/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "employess",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Employee",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"first_name\": \"Employee Updated\",\n  \"last_name\": \"One Updated\",\n  \"email\": \"employee1_updated@example.com\",\n  \"phone\": \"0987654321\",\n  \"role\": \"admin\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/employess/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "employess",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Employee",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/employess/2",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "employess",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Toggle Block Employee",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/employess/2/toggle-block",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "employess",
+                    "2",
+                    "toggle-block"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Colors",
+          "item": [
+            {
+              "name": "Get Colors",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/colors",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "colors"
+                  ],
+                  "query": [
+                    {
+                      "key": "search",
+                      "value": "#000000",
+                      "disabled": true
+                    },
+                    {
+                      "key": "is_active",
+                      "value": "1",
+                      "disabled": true
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Create Color",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "hex_code",
+                      "value": "#FF0000",
+                      "type": "text",
+                      "description": "['required', 'string', 'max:10']"
+                    },
+                    {
+                      "key": "is_active",
+                      "value": "1",
+                      "type": "text",
+                      "description": "['required', 'boolean']"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/colors",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "colors"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Show Color",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/colors/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "colors",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "8"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Color",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "hex_code",
+                      "value": "#00FF00",
+                      "type": "text"
+                    },
+                    {
+                      "key": "is_active",
+                      "value": "0",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/admin/colors/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "colors",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Color",
+              "request": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/admin/colors/1",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "admin",
+                    "colors",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Auth",
+          "item": [
+            {
+              "name": "Register",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Parse the response body as JSON\r",
+                      "const jsonResponse = pm.response.json();\r",
+                      "\r",
+                      "// Extract the desired value from the response\r",
+                      "var token = jsonResponse.data.token;\r",
+                      "\r",
+                      "// Set the extracted value to a collection variable\r",
+                      "pm.environment.set(\"user_token\",token);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "first_name",
+                      "value": "mohamed",
+                      "type": "text",
+                      "description": "['required', 'string', 'min:2', 'max:255']"
+                    },
+                    {
+                      "key": "last_name",
+                      "value": "walaa",
+                      "type": "text",
+                      "description": "['required', 'string', 'min:2', 'max:255']"
+                    },
+                    {
+                      "key": "country_code",
+                      "value": "+20",
+                      "type": "text",
+                      "description": " ['required', 'string', 'regex:/^\\+?\\d{2,5}$/']"
+                    },
+                    {
+                      "key": "phone",
+                      "value": "1001234567",
+                      "type": "text",
+                      "description": "['required', 'numeric', 'digits_between:8,15', 'unique:users,phone,NULL,id,deleted_at,NULL']"
+                    },
+                    {
+                      "key": "email",
+                      "value": "user@example.com",
+                      "type": "text",
+                      "description": "['nullable', 'min:2', 'email', 'max:255', 'unique:users,email,NULL,id,deleted_at,NULL']"
+                    },
+                    {
+                      "key": "password",
+                      "value": "12345678",
+                      "type": "text",
+                      "description": "['required', 'string', 'min:8', 'max:255', 'confirmed']"
+                    },
+                    {
+                      "key": "password_confirmation",
+                      "value": "12345678",
+                      "type": "text"
+                    },
+                    {
+                      "key": "device_id",
+                      "value": "device_abc123",
+                      "type": "text",
+                      "description": " ['nullable', 'string']"
+                    },
+                    {
+                      "key": "device_type",
+                      "value": "web",
+                      "type": "text",
+                      "description": "['nullable', 'in:android,ios,web']"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/auth/register",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "auth",
+                    "register"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "fail",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "first_name",
+                          "value": "mohamed",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:2', 'max:255']"
+                        },
+                        {
+                          "key": "last_name",
+                          "value": "walaa",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:2', 'max:255']"
+                        },
+                        {
+                          "key": "country_code",
+                          "value": "+20",
+                          "type": "text",
+                          "description": " ['required', 'string', 'regex:/^\\+?\\d{2,5}$/']"
+                        },
+                        {
+                          "key": "phone",
+                          "value": "1001234567",
+                          "type": "text",
+                          "description": "['required', 'numeric', 'digits_between:8,15', 'unique:users,phone,NULL,id,deleted_at,NULL']"
+                        },
+                        {
+                          "key": "email",
+                          "value": "user@example.com",
+                          "type": "text",
+                          "description": "['nullable', 'min:2', 'email', 'max:255', 'unique:users,email,NULL,id,deleted_at,NULL']"
+                        },
+                        {
+                          "key": "password",
+                          "value": "password123",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:8', 'max:255', 'confirmed']"
+                        },
+                        {
+                          "key": "password_confirmation",
+                          "value": "password123",
+                          "type": "text"
+                        },
+                        {
+                          "key": "device_id",
+                          "value": "device_abc123",
+                          "type": "text",
+                          "description": " ['nullable', 'string']"
+                        },
+                        {
+                          "key": "device_type",
+                          "value": "web",
+                          "type": "text",
+                          "description": "['nullable', 'in:android,ios,web']"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/auth/register",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "auth",
+                        "register"
+                      ]
+                    }
+                  },
+                  "status": "Unprocessable Content",
+                  "code": 422,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 20:50:12 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": false,\n    \"message\": \" رقم الهاتف مُستخدم من قبل\",\n    \"errors\": {\n        \"phone\": [\n            \" رقم الهاتف مُستخدم من قبل\"\n        ],\n        \"email\": [\n            \" البريد الالكتروني مُستخدم من قبل\"\n        ]\n    },\n    \"data\": []\n}"
+                },
+                {
+                  "name": "success",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "first_name",
+                          "value": "mohamed",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:2', 'max:255']"
+                        },
+                        {
+                          "key": "last_name",
+                          "value": "walaa",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:2', 'max:255']"
+                        },
+                        {
+                          "key": "country_code",
+                          "value": "+20",
+                          "type": "text",
+                          "description": " ['required', 'string', 'regex:/^\\+?\\d{2,5}$/']"
+                        },
+                        {
+                          "key": "phone",
+                          "value": "1001234567",
+                          "type": "text",
+                          "description": "['required', 'numeric', 'digits_between:8,15', 'unique:users,phone,NULL,id,deleted_at,NULL']"
+                        },
+                        {
+                          "key": "email",
+                          "value": "user@example.com",
+                          "type": "text",
+                          "description": "['nullable', 'min:2', 'email', 'max:255', 'unique:users,email,NULL,id,deleted_at,NULL']"
+                        },
+                        {
+                          "key": "password",
+                          "value": "password123",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:8', 'max:255', 'confirmed']"
+                        },
+                        {
+                          "key": "password_confirmation",
+                          "value": "password123",
+                          "type": "text"
+                        },
+                        {
+                          "key": "device_id",
+                          "value": "device_abc123",
+                          "type": "text",
+                          "description": " ['nullable', 'string']"
+                        },
+                        {
+                          "key": "device_type",
+                          "value": "web",
+                          "type": "text",
+                          "description": "['nullable', 'in:android,ios,web']"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/auth/register",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "auth",
+                        "register"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 20:53:21 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم تسجيل الحساب بنجاح\",\n    \"data\": {\n        \"user\": {\n            \"id\": 8,\n            \"first_name\": \"mohamed\",\n            \"last_name\": \"walaa\",\n            \"country_code\": \"20\",\n            \"phone\": \"1001234567\",\n            \"email\": \"user@example.com\",\n            \"unread_notifications_count\": 0\n        },\n        \"token\": \"8|WEQzjHAE0uYE11MmbtyadHv8QBlZAD33NI1LlAIGfabce121\"\n    },\n    \"errors\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "// Parse the response body as JSON\r",
+                      "const jsonResponse = pm.response.json();\r",
+                      "\r",
+                      "// Extract the desired value from the response\r",
+                      "var token = jsonResponse.data.token;\r",
+                      "\r",
+                      "// Set the extracted value to a collection variable\r",
+                      "pm.environment.set(\"user_token\",token);"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "email",
+                      "value": "user@example.com",
+                      "type": "text",
+                      "description": "['required', 'min:2', 'max:255', 'email']"
+                    },
+                    {
+                      "key": "password",
+                      "value": "12345678",
+                      "type": "text",
+                      "description": "['required', 'string', 'min:8', 'max:255']"
+                    },
+                    {
+                      "key": "device_id",
+                      "value": "device_abc123",
+                      "type": "text",
+                      "description": "['nullable', 'string']"
+                    },
+                    {
+                      "key": "device_type",
+                      "value": "web",
+                      "type": "text",
+                      "description": "['nullable', 'in:android,ios,web']"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/auth/login",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "fail",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "email",
+                          "value": "user@example.com1",
+                          "type": "text",
+                          "description": "['required', 'min:2', 'max:255', 'email']"
+                        },
+                        {
+                          "key": "password",
+                          "value": "12345678",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:8', 'max:255']"
+                        },
+                        {
+                          "key": "device_id",
+                          "value": "device_abc123",
+                          "type": "text",
+                          "description": "['nullable', 'string']"
+                        },
+                        {
+                          "key": "device_type",
+                          "value": "web",
+                          "type": "text",
+                          "description": "['nullable', 'in:android,ios,web']"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/auth/login",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "status": "Unprocessable Content",
+                  "code": 422,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 20:55:53 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": false,\n    \"message\": \"المستخدم غير موجود.\",\n    \"errors\": {\n        \"user\": [\n            \"المستخدم غير موجود.\"\n        ]\n    },\n    \"data\": []\n}"
+                },
+                {
+                  "name": "success",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "email",
+                          "value": "user@example.com",
+                          "type": "text",
+                          "description": "['required', 'min:2', 'max:255', 'email']"
+                        },
+                        {
+                          "key": "password",
+                          "value": "12345678",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:8', 'max:255']"
+                        },
+                        {
+                          "key": "device_id",
+                          "value": "device_abc123",
+                          "type": "text",
+                          "description": "['nullable', 'string']"
+                        },
+                        {
+                          "key": "device_type",
+                          "value": "web",
+                          "type": "text",
+                          "description": "['nullable', 'in:android,ios,web']"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/auth/login",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "auth",
+                        "login"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 21:07:54 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم تسجيل الدخول بنجاح\",\n    \"data\": {\n        \"user\": {\n            \"id\": 9,\n            \"first_name\": \"mohamed\",\n            \"last_name\": \"walaa\",\n            \"country_code\": \"20\",\n            \"phone\": \"1001234567\",\n            \"email\": \"user@example.com\",\n            \"unread_notifications_count\": 0\n        },\n        \"token\": \"11|InlSoKN8x9A4IRYzmPXpZP1RHKqPW5OT52tPw0r8b5756502\"\n    },\n    \"errors\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "Logout",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{user_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/auth/logout",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "auth",
+                    "logout"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Logout",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/user/auth/logout",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "auth",
+                        "logout"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 21:09:54 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم تسجيل الخروج بنجاح.\",\n    \"data\": [],\n    \"errors\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "delete-account",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{user_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/auth/delete-account",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "auth",
+                    "delete-account"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Projects",
+          "item": [
+            {
+              "name": "Form Questions",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Accept-Language",
+                    "value": "ar",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/form-questions",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "form-questions"
+                  ]
+                },
+                "description": "<img src=\"https://content.pstmn.io/132150d4-f7ab-42d2-a838-f2c0ee939f2d/aW1hZ2UucG5n\" alt=\"\" height=\"480\" width=\"534\">"
+              },
+              "response": [
+                {
+                  "name": "success",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/user/form-questions",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "form-questions"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 21:22:50 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم استرجاع البيانات بنجاح \",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"ما المنصات التي تحتاجها؟\",\n            \"options\": [\n                {\n                    \"id\": 1,\n                    \"value\": \"موقع إلكتروني\"\n                },\n                {\n                    \"id\": 2,\n                    \"value\": \"تطبيق\"\n                },\n                {\n                    \"id\": 3,\n                    \"value\": \"كلاهما\"\n                }\n            ]\n        },\n        {\n            \"id\": 2,\n            \"name\": \"ما اللغات التي تحتاجها؟\",\n            \"options\": [\n                {\n                    \"id\": 4,\n                    \"value\": \"العربية\"\n                },\n                {\n                    \"id\": 5,\n                    \"value\": \"الإنجليزية\"\n                },\n                {\n                    \"id\": 6,\n                    \"value\": \"كلاهما\"\n                }\n            ]\n        },\n        {\n            \"id\": 3,\n            \"name\": \"ما الأسواق التي تستهدفها؟\",\n            \"options\": [\n                {\n                    \"id\": 7,\n                    \"value\": \"الكويت\"\n                },\n                {\n                    \"id\": 8,\n                    \"value\": \"الخليج\"\n                },\n                {\n                    \"id\": 9,\n                    \"value\": \"الوطن العربي\"\n                },\n                {\n                    \"id\": 10,\n                    \"value\": \"عالمي\"\n                }\n            ]\n        },\n        {\n            \"id\": 4,\n            \"name\": \"ما هو المجال الذي يستهدفه تطبيقك؟\",\n            \"options\": [\n                {\n                    \"id\": 11,\n                    \"value\": \"أغذية وتوصيل\"\n                },\n                {\n                    \"id\": 12,\n                    \"value\": \"أزياء وملابس\"\n                },\n                {\n                    \"id\": 13,\n                    \"value\": \"صيدلة ورعاية صحية\"\n                },\n                {\n                    \"id\": 14,\n                    \"value\": \"حيوانات أليفة\"\n                },\n                {\n                    \"id\": 15,\n                    \"value\": \"خدمات عامة\"\n                },\n                {\n                    \"id\": 16,\n                    \"value\": \"تعليم\"\n                },\n                {\n                    \"id\": 17,\n                    \"value\": \"عقارات\"\n                },\n                {\n                    \"id\": 18,\n                    \"value\": \"سفر وسياحة\"\n                },\n                {\n                    \"id\": 19,\n                    \"value\": \"مالية\"\n                },\n                {\n                    \"id\": 20,\n                    \"value\": \"لوجستيات وشحن\"\n                },\n                {\n                    \"id\": 21,\n                    \"value\": \"أخرى\"\n                }\n            ]\n        },\n        {\n            \"id\": 5,\n            \"name\": \"هل سيتضمن التطبيق الدفع الإلكتروني؟\",\n            \"options\": [\n                {\n                    \"id\": 22,\n                    \"value\": \"نعم\"\n                },\n                {\n                    \"id\": 23,\n                    \"value\": \"لا\"\n                }\n            ]\n        },\n        {\n            \"id\": 6,\n            \"name\": \"هل لديك نشاط تجاري قائم بالفعل؟\",\n            \"options\": [\n                {\n                    \"id\": 24,\n                    \"value\": \"نعم\"\n                },\n                {\n                    \"id\": 25,\n                    \"value\": \"لا\"\n                }\n            ]\n        },\n        {\n            \"id\": 7,\n            \"name\": \"كيف سيتم تقديم الخدمة؟\",\n            \"options\": [\n                {\n                    \"id\": 26,\n                    \"value\": \"التطبيق سينفذ الخدمة ( مورد واحد )\"\n                },\n                {\n                    \"id\": 27,\n                    \"value\": \"التطبيق وسيط فقط ( متعدد الموردين )\"\n                }\n            ]\n        },\n        {\n            \"id\": 8,\n            \"name\": \"أي تطبيق هو الأقرب لفكرتك؟\",\n            \"options\": [\n                {\n                    \"id\": 28,\n                    \"value\": \"ref.Talabat\"\n                },\n                {\n                    \"id\": 29,\n                    \"value\": \"ref.4Sale\"\n                },\n                {\n                    \"id\": 30,\n                    \"value\": \"ref.Sheeel\"\n                },\n                {\n                    \"id\": 31,\n                    \"value\": \"ref.Careem\"\n                },\n                {\n                    \"id\": 32,\n                    \"value\": \"لا يوجد\"\n                }\n            ]\n        }\n    ],\n    \"errors\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "Store Project",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "name",
+                      "value": "My Awesome Project",
+                      "type": "text",
+                      "description": "['required', 'string', 'min:3', 'max:255']"
+                    },
+                    {
+                      "key": "color",
+                      "value": "#3498db",
+                      "type": "text",
+                      "description": "['required', 'string', 'max:50']"
+                    },
+                    {
+                      "key": "answers[0][form_question_id]",
+                      "value": "2",
+                      "type": "text",
+                      "description": "['required', 'array']\n['required', 'exists:form_questions,id']"
+                    },
+                    {
+                      "key": "answers[0][form_question_option_id]",
+                      "value": "3",
+                      "type": "text",
+                      "description": "['required', 'exists:form_question_options,id']"
+                    },
+                    {
+                      "key": "answers[1][form_question_id]",
+                      "value": "2",
+                      "type": "text",
+                      "description": "['required', 'array']\n"
+                    },
+                    {
+                      "key": "answers[1][form_question_option_id]",
+                      "value": "4",
+                      "description": "['required', 'exists:form_question_options,id']",
+                      "type": "text",
+                      "uuid": "1a95b25c-b974-4b7e-b27a-a615bc7372a8"
+                    },
+                    {
+                      "key": "answers[2][form_question_id]",
+                      "value": "10",
+                      "type": "text",
+                      "uuid": "8e15b7aa-a40d-41a8-8550-7c804057cfd2"
+                    },
+                    {
+                      "key": "answers[2][text_value]",
+                      "value": "answers",
+                      "description": "     'nullable',\n                'string',\n                'max:1000'",
+                      "type": "text",
+                      "uuid": "3fe11ceb-b805-4028-bf45-11abdc2b5683"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/store-projects",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "store-projects"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "success",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "name",
+                          "value": "My Awesome Project",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:3', 'max:255']"
+                        },
+                        {
+                          "key": "color",
+                          "value": "#3498db",
+                          "type": "text",
+                          "description": "['required', 'string', 'max:50']"
+                        },
+                        {
+                          "key": "answers[0][form_question_id]",
+                          "value": "1",
+                          "type": "text",
+                          "description": "['required', 'array']\n['required', 'exists:form_questions,id']"
+                        },
+                        {
+                          "key": "answers[0][form_question_option_id]",
+                          "value": "3",
+                          "type": "text",
+                          "description": "['required', 'exists:form_question_options,id']"
+                        },
+                        {
+                          "key": "answers[1][form_question_id]",
+                          "value": "2",
+                          "type": "text",
+                          "description": "['required', 'array']\n"
+                        },
+                        {
+                          "key": "answers[1][form_question_option_id]",
+                          "value": "4",
+                          "description": "['required', 'exists:form_question_options,id']",
+                          "type": "text",
+                          "uuid": "1a95b25c-b974-4b7e-b27a-a615bc7372a8"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/store-projects",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "store-projects"
+                      ]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 21:28:12 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"Project created successfully\",\n    \"data\": [],\n    \"errors\": []\n}"
+                },
+                {
+                  "name": "fail",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "name",
+                          "value": "My Awesome Project",
+                          "type": "text",
+                          "description": "['required', 'string', 'min:3', 'max:255']"
+                        },
+                        {
+                          "key": "color",
+                          "value": "#3498db",
+                          "type": "text",
+                          "description": "['required', 'string', 'max:50']",
+                          "disabled": true
+                        },
+                        {
+                          "key": "answers[0][form_question_id]",
+                          "value": "1",
+                          "type": "text",
+                          "description": "['required', 'array']\n['required', 'exists:form_questions,id']"
+                        },
+                        {
+                          "key": "answers[0][form_question_option_id]",
+                          "value": "3",
+                          "type": "text",
+                          "description": "['required', 'exists:form_question_options,id']"
+                        },
+                        {
+                          "key": "answers[1][form_question_id]",
+                          "value": "2",
+                          "type": "text",
+                          "description": "['required', 'array']\n"
+                        },
+                        {
+                          "key": "answers[1][form_question_option_id]",
+                          "value": "4",
+                          "description": "['required', 'exists:form_question_options,id']",
+                          "type": "text",
+                          "uuid": "1a95b25c-b974-4b7e-b27a-a615bc7372a8"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/store-projects",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "store-projects"
+                      ]
+                    }
+                  },
+                  "status": "Unprocessable Content",
+                  "code": 422,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 21:32:50 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": false,\n    \"message\": \"اللون مطلوب.\",\n    \"errors\": {\n        \"color\": [\n            \"اللون مطلوب.\"\n        ]\n    },\n    \"data\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "My Projects",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/my-projects",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "my-projects"
+                  ]
+                },
+                "description": "<img src=\"https://content.pstmn.io/c0226e7c-5bbd-46a2-91ed-b331ebfa87ff/aW1hZ2UucG5n\" alt=\"\" height=\"509\" width=\"1317\">"
+              },
+              "response": []
+            },
+            {
+              "name": "show",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{user_token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/my-projects/:id",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "my-projects",
+                    ":id"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": "5"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "show",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/user/my-projects/:id",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "my-projects",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": "1"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 24 May 2026 21:52:50 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم استرجاع البيانات بنجاح \",\n    \"data\": {\n        \"id\": 1,\n        \"project_name\": \"My Awesome Project\",\n        \"color\": \"#3498db\",\n        \"status\": \"قيد المراجعة\",\n        \"request_id\": \"eWK76MV31hrhQC3KmtYR\",\n        \"description\": \"كلاهما, العربية\",\n        \"answers\": [\n            {\n                \"id\": 1,\n                \"form_question_id\": 1,\n                \"question\": \"ما المنصات التي تحتاجها؟\",\n                \"form_question_option_id\": 3,\n                \"answer\": \"كلاهما\"\n            },\n            {\n                \"id\": 2,\n                \"form_question_id\": 2,\n                \"question\": \"ما اللغات التي تحتاجها؟\",\n                \"form_question_option_id\": 4,\n                \"answer\": \"العربية\"\n            }\n        ]\n    },\n    \"errors\": []\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Meetings",
+          "item": [
+            {
+              "name": "Availability",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/meetings/availability?date=2026-06-08",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "meetings",
+                    "availability"
+                  ],
+                  "query": [
+                    {
+                      "key": "date",
+                      "value": "2026-06-08"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Availability",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/user/meetings/availability?date=2026-06-08",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "meetings",
+                        "availability"
+                      ],
+                      "query": [
+                        {
+                          "key": "date",
+                          "value": "2026-06-08"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 07 Jun 2026 08:48:58 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"Availability retrieved successfully.\",\n    \"data\": {\n        \"available_days\": [\n            \"2026-06-08\",\n            \"2026-06-09\",\n            \"2026-06-10\",\n            \"2026-06-11\",\n            \"2026-06-14\",\n            \"2026-06-15\",\n            \"2026-06-16\",\n            \"2026-06-17\",\n            \"2026-06-18\",\n            \"2026-06-21\",\n            \"2026-06-22\"\n        ],\n        \"available_slots\": [\n            \"09:00\",\n            \"10:00\",\n            \"11:00\",\n            \"12:00\",\n            \"13:00\",\n            \"14:00\",\n            \"15:00\",\n            \"16:00\"\n        ]\n    },\n    \"errors\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "Book Meeting",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "date_time",
+                      "value": "2026-06-08 11:00:00",
+                      "type": "text",
+                      "description": "'required|date_format:Y-m-d H:i|after:now',"
+                    },
+                    {
+                      "key": "subject",
+                      "value": "subject",
+                      "description": "required|string|max:255",
+                      "type": "text",
+                      "uuid": "a116269b-8f21-4a78-8df6-277b089c39d2"
+                    },
+                    {
+                      "key": "notes",
+                      "value": "notes",
+                      "description": "nullable|string",
+                      "type": "text",
+                      "uuid": "09137932-de83-4b95-a33d-7ec785bdac6c"
+                    },
+                    {
+                      "key": "type",
+                      "value": "1",
+                      "description": " case ONLINE = 1;\n    case OFFLINE = 2;",
+                      "type": "text",
+                      "uuid": "fdadac0f-5869-4562-bf42-50612e69fe62"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/meetings/book",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "meetings",
+                    "book"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Book Meeting",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": [
+                        {
+                          "key": "date_time",
+                          "value": "2026-06-08 11:00:00",
+                          "type": "text",
+                          "description": "'required|date_format:Y-m-d H:i|after:now',"
+                        }
+                      ]
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/meetings/book",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "meetings",
+                        "book"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 07 Jun 2026 09:12:25 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"Meeting booked successfully.\",\n    \"data\": [],\n    \"errors\": []\n}"
+                }
+              ]
+            },
+            {
+              "name": "meetings",
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": []
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/meetings",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "meetings"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "meetings",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Authorization",
+                        "value": "Bearer {{user_token}}"
+                      },
+                      {
+                        "key": "Accept",
+                        "value": "application/json"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": []
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/user/meetings",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "meetings"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": null,
+                  "header": [
+                    {
+                      "key": "Server",
+                      "value": "nginx/1.25.2"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json"
+                    },
+                    {
+                      "key": "Transfer-Encoding",
+                      "value": "chunked"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Accept-Encoding"
+                    },
+                    {
+                      "key": "X-Powered-By",
+                      "value": "PHP/8.4.11"
+                    },
+                    {
+                      "key": "Cache-Control",
+                      "value": "no-cache, private"
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Sun, 07 Jun 2026 10:36:28 GMT"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Origin",
+                      "value": "*"
+                    },
+                    {
+                      "key": "Content-Encoding",
+                      "value": "gzip"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"status\": true,\n    \"message\": \"تم استرجاع المواعيد بنجاح\",\n    \"data\": [\n        {\n            \"id\": 2,\n            \"date_time\": \"2026-06-08 11:00:00\",\n            \"subject\": \"\",\n            \"notes\": null,\n            \"type\": null,\n            \"status\": 1,\n            \"status_label\": \"قيد الانتظار\",\n            \"created_at\": \"2026-06-07 09:12:25\"\n        }\n    ],\n    \"errors\": [],\n    \"pagination\": {\n        \"current_page\": 1,\n        \"last_page\": 1,\n        \"per_page\": 10,\n        \"total\": 1\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "Cancel Meeting",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": []
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/meetings/:id/cancel",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "meetings",
+                    ":id",
+                    "cancel"
+                  ],
+                  "variable": [
+                    {
+                      "key": "id",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Profile",
+          "item": [
+            {
+              "name": "Get Profile",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/profile",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "profile"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update Profile",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{user_token}}"
+                  },
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "first_name",
+                      "value": "John Updated",
+                      "type": "text"
+                    },
+                    {
+                      "key": "last_name",
+                      "value": "Doe",
+                      "type": "text"
+                    },
+                    {
+                      "key": "email",
+                      "value": "updated@example.com",
+                      "type": "text"
+                    },
+                    {
+                      "key": "phone",
+                      "value": "1001234567",
+                      "type": "text"
+                    }
+                  ]
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/profile",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "profile"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Public",
+          "item": [
+            {
+              "name": "Settings",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/settings",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "settings"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Colors",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/user/colors",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "colors"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "general",
+      "item": [
+        {
+          "name": "More",
+          "item": [
+            {
+              "name": "Notifications",
+              "item": [
+                {
+                  "name": "notifications",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{user_token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": []
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/notifications",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "notifications"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "notifications",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Accept-Language",
+                            "value": "ar",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "formdata",
+                          "formdata": []
+                        },
+                        "url": {
+                          "raw": "{{url}}/notifications",
+                          "host": [
+                            "{{url}}"
+                          ],
+                          "path": [
+                            "notifications"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Server",
+                          "value": "nginx/1.25.2"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        },
+                        {
+                          "key": "Transfer-Encoding",
+                          "value": "chunked"
+                        },
+                        {
+                          "key": "Connection",
+                          "value": "keep-alive"
+                        },
+                        {
+                          "key": "Vary",
+                          "value": "Accept-Encoding"
+                        },
+                        {
+                          "key": "X-Powered-By",
+                          "value": "PHP/8.4.11"
+                        },
+                        {
+                          "key": "Cache-Control",
+                          "value": "no-cache, private"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 05 Apr 2026 23:37:54 GMT"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "*"
+                        },
+                        {
+                          "key": "Content-Encoding",
+                          "value": "gzip"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"status\": true,\n    \"message\": \"All notifications\",\n    \"data\": [\n        {\n            \"id\": \"5a7fa1bc-3148-11f1-850e-ec8eb5389000\",\n            \"type\": \"ad_approved\",\n            \"data\": {\n                \"title\": \"تم قبول إعلانك\",\n                \"message\": \"تمت الموافقة على إعلانك ويمكن للمستخدمين مشاهدته الآن\",\n                \"ad_id\": 15,\n                \"type\": \"ad_approved\"\n            },\n            \"read_at\": null,\n            \"created_at\": \"2026-04-06T01:37:48.000000Z\",\n            \"created_at_diff\": \"ساعة من الآن\"\n        }\n    ],\n    \"errors\": [],\n    \"pagination\": {\n        \"currentPage\": 1,\n        \"lastPage\": 1,\n        \"perPage\": 10,\n        \"total\": 1\n    }\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "read-all",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": []
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/notifications/read-all",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        "read-all"
+                      ]
+                    }
+                  },
+                  "response": [
+                    {
+                      "name": "notifications",
+                      "originalRequest": {
+                        "method": "GET",
+                        "header": [
+                          {
+                            "key": "Accept",
+                            "value": "application/json",
+                            "type": "text"
+                          },
+                          {
+                            "key": "Accept-Language",
+                            "value": "ar",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "formdata",
+                          "formdata": []
+                        },
+                        "url": {
+                          "raw": "{{url}}/notifications",
+                          "host": [
+                            "{{url}}"
+                          ],
+                          "path": [
+                            "notifications"
+                          ]
+                        }
+                      },
+                      "status": "OK",
+                      "code": 200,
+                      "_postman_previewlanguage": null,
+                      "header": [
+                        {
+                          "key": "Server",
+                          "value": "nginx/1.25.2"
+                        },
+                        {
+                          "key": "Content-Type",
+                          "value": "application/json"
+                        },
+                        {
+                          "key": "Transfer-Encoding",
+                          "value": "chunked"
+                        },
+                        {
+                          "key": "Connection",
+                          "value": "keep-alive"
+                        },
+                        {
+                          "key": "Vary",
+                          "value": "Accept-Encoding"
+                        },
+                        {
+                          "key": "X-Powered-By",
+                          "value": "PHP/8.4.11"
+                        },
+                        {
+                          "key": "Cache-Control",
+                          "value": "no-cache, private"
+                        },
+                        {
+                          "key": "Date",
+                          "value": "Sun, 05 Apr 2026 23:37:54 GMT"
+                        },
+                        {
+                          "key": "Access-Control-Allow-Origin",
+                          "value": "*"
+                        },
+                        {
+                          "key": "Content-Encoding",
+                          "value": "gzip"
+                        }
+                      ],
+                      "cookie": [],
+                      "body": "{\n    \"status\": true,\n    \"message\": \"All notifications\",\n    \"data\": [\n        {\n            \"id\": \"5a7fa1bc-3148-11f1-850e-ec8eb5389000\",\n            \"type\": \"ad_approved\",\n            \"data\": {\n                \"title\": \"تم قبول إعلانك\",\n                \"message\": \"تمت الموافقة على إعلانك ويمكن للمستخدمين مشاهدته الآن\",\n                \"ad_id\": 15,\n                \"type\": \"ad_approved\"\n            },\n            \"read_at\": null,\n            \"created_at\": \"2026-04-06T01:37:48.000000Z\",\n            \"created_at_diff\": \"ساعة من الآن\"\n        }\n    ],\n    \"errors\": [],\n    \"pagination\": {\n        \"currentPage\": 1,\n        \"lastPage\": 1,\n        \"perPage\": 10,\n        \"total\": 1\n    }\n}"
+                    }
+                  ]
+                },
+                {
+                  "name": "notifications unread",
+                  "protocolProfileBehavior": {
+                    "disableBodyPruning": true
+                  },
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": []
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/notifications/unread",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        "unread"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": []
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/notifications/:id",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        ":id"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": ""
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "delete all",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Accept-Language",
+                        "value": "ar",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "formdata",
+                      "formdata": []
+                    },
+                    "url": {
+                      "raw": "{{base_url}}/notifications/",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        ""
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "read single",
+                  "request": {
+                    "method": "POST",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/notifications/:id/read",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "notifications",
+                        ":id",
+                        "read"
+                      ],
+                      "variable": [
+                        {
+                          "key": "id",
+                          "value": ""
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "PAGES",
+              "item": [
+                {
+                  "name": "privacy-policy",
+                  "request": {
+                    "auth": {
+                      "type": "bearer",
+                      "bearer": [
+                        {
+                          "key": "token",
+                          "value": "{{token}}",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "Accept",
+                        "value": "application/json",
+                        "type": "text"
+                      }
+                    ],
+                    "url": {
+                      "raw": "{{base_url}}/user/pages/privacy-policy",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "pages",
+                        "privacy-policy"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "terms-conditions",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/pages/terms-conditions",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "pages",
+                        "terms-conditions"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "about-us",
+                  "request": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{base_url}}/user/pages/about-us",
+                      "host": [
+                        "{{base_url}}"
+                      ],
+                      "path": [
+                        "user",
+                        "pages",
+                        "about-us"
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "countries",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": []
+            },
+            "url": {
+              "raw": "{{base_url}}/user/countries",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "user",
+                "countries"
+              ]
+            }
+          },
+          "response": [
+            {
+              "name": "countries",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Accept",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "formdata",
+                  "formdata": []
+                },
+                "url": {
+                  "raw": "{{base_url}}/user/countries",
+                  "host": [
+                    "{{base_url}}"
+                  ],
+                  "path": [
+                    "user",
+                    "countries"
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": null,
+              "header": [
+                {
+                  "key": "Server",
+                  "value": "nginx/1.25.2"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/json"
+                },
+                {
+                  "key": "Transfer-Encoding",
+                  "value": "chunked"
+                },
+                {
+                  "key": "Connection",
+                  "value": "keep-alive"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                },
+                {
+                  "key": "X-Powered-By",
+                  "value": "PHP/8.4.11"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, private"
+                },
+                {
+                  "key": "Date",
+                  "value": "Sun, 24 May 2026 20:38:46 GMT"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                },
+                {
+                  "key": "Content-Encoding",
+                  "value": "gzip"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n    \"status\": true,\n    \"message\": \"تم استرداد الدول بنجاح\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"name\": \"الكويت\",\n            \"country_code\": \"KW\",\n            \"phone_code\": \"+965\"\n        },\n        {\n            \"id\": 2,\n            \"name\": \"البحرين\",\n            \"country_code\": \"BH\",\n            \"phone_code\": \"+973\"\n        },\n        {\n            \"id\": 3,\n            \"name\": \"دولة الإمارات العربية المتحدة\",\n            \"country_code\": \"AE\",\n            \"phone_code\": \"+971\"\n        },\n        {\n            \"id\": 4,\n            \"name\": \"المغرب\",\n            \"country_code\": \"MA\",\n            \"phone_code\": \"+212\"\n        },\n        {\n            \"id\": 5,\n            \"name\": \"سوريا\",\n            \"country_code\": \"SY\",\n            \"phone_code\": \"+963\"\n        },\n        {\n            \"id\": 6,\n            \"name\": \"لبنان\",\n            \"country_code\": \"LB\",\n            \"phone_code\": \"+961\"\n        },\n        {\n            \"id\": 7,\n            \"name\": \"المملكة العربية السعودية\",\n            \"country_code\": \"SA\",\n            \"phone_code\": \"+966\"\n        },\n        {\n            \"id\": 8,\n            \"name\": \"ليبيا\",\n            \"country_code\": \"LY\",\n            \"phone_code\": \"+218\"\n        },\n        {\n            \"id\": 9,\n            \"name\": \"تونس\",\n            \"country_code\": \"TN\",\n            \"phone_code\": \"+216\"\n        },\n        {\n            \"id\": 10,\n            \"name\": \"قطر\",\n            \"country_code\": \"QA\",\n            \"phone_code\": \"+974\"\n        },\n        {\n            \"id\": 11,\n            \"name\": \"الأردن\",\n            \"country_code\": \"JO\",\n            \"phone_code\": \"+962\"\n        },\n        {\n            \"id\": 12,\n            \"name\": \"العراق\",\n            \"country_code\": \"IQ\",\n            \"phone_code\": \"+964\"\n        }\n    ],\n    \"errors\": []\n}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8000/api"
+    },
+    {
+      "key": "admin_token",
+      "value": ""
+    },
+    {
+      "key": "user_token",
+      "value": ""
+    }
+  ]
+}

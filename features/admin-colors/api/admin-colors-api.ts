@@ -1,6 +1,5 @@
 import { apiService, ApiResponse } from '@/lib/api-service';
-import { fetchUserColors } from '@/features/colors/api/user-colors-api';
-import { AdminColor, CreateColorPayload } from '../types/admin-color.types';
+import { AdminColor, CreateColorPayload, UpdateColorPayload } from '../types/admin-color.types';
 
 function getApiErrorMessage(response: ApiResponse<unknown>) {
   if (response.errors && typeof response.errors === 'object') {
@@ -11,11 +10,38 @@ function getApiErrorMessage(response: ApiResponse<unknown>) {
 }
 
 export async function fetchAdminColors() {
-  return fetchUserColors();
+  const response = await apiService.get<AdminColor[]>('admin/colors', {
+    skipGlobalToast: true,
+  });
+
+  if (!response.status || !Array.isArray(response.data)) {
+    throw new Error(getApiErrorMessage(response));
+  }
+
+  return response.data;
+}
+
+export async function fetchAdminColor(id: number | string) {
+  const response = await apiService.get<AdminColor>(`admin/colors/${id}`, {
+    skipGlobalToast: true,
+  });
+
+  if (!response.status || !response.data) {
+    throw new Error(getApiErrorMessage(response));
+  }
+
+  return response.data;
+}
+
+function buildColorFormData(payload: CreateColorPayload | UpdateColorPayload) {
+  const formData = new FormData();
+  formData.append('hex_code', payload.hex_code);
+  formData.append('is_active', payload.is_active === false ? '0' : '1');
+  return formData;
 }
 
 export async function createAdminColor(payload: CreateColorPayload) {
-  const response = await apiService.post<AdminColor>('admin/colors', payload, {
+  const response = await apiService.post<AdminColor>('admin/colors', buildColorFormData(payload), {
     skipGlobalToast: true,
   });
 
@@ -24,4 +50,28 @@ export async function createAdminColor(payload: CreateColorPayload) {
   }
 
   return response.data;
+}
+
+export async function updateAdminColor(id: number | string, payload: UpdateColorPayload) {
+  const response = await apiService.post<AdminColor>(`admin/colors/${id}`, buildColorFormData(payload), {
+    skipGlobalToast: true,
+  });
+
+  if (!response.status) {
+    throw new Error(getApiErrorMessage(response));
+  }
+
+  return response.data;
+}
+
+export async function deleteAdminColor(id: number | string) {
+  const response = await apiService.delete<[] | Record<string, unknown>>(`admin/colors/${id}`, {
+    skipGlobalToast: true,
+  });
+
+  if (!response.status) {
+    throw new Error(getApiErrorMessage(response));
+  }
+
+  return response;
 }

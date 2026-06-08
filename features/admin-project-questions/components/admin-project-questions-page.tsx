@@ -26,16 +26,6 @@ import {
 const inputClasses =
   'w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
 
-const questionTypes: { value: ProjectQuestionType; label: string }[] = [
-  { value: 'text', label: 'Text' },
-  { value: 'textarea', label: 'Textarea' },
-  { value: 'single_select', label: 'Single select' },
-  { value: 'multi_select', label: 'Multi select' },
-  { value: 'yes_no', label: 'Yes / No' },
-  { value: 'color', label: 'Color' },
-  { value: 'reference_app', label: 'Reference app' },
-];
-
 const optionTypes: ProjectQuestionType[] = ['single_select', 'multi_select'];
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
@@ -49,14 +39,16 @@ function QuestionRow({
   isActive,
   onEdit,
   onMove,
+  onToggleActive,
   onDelete,
 }: {
   question: ProjectQuestion;
   index: number;
   total: number;
   isActive: boolean;
-  onEdit: (question: ProjectQuestion) => void;
+  onEdit: (question: ProjectQuestion) => void | Promise<void>;
   onMove: (id: string, direction: -1 | 1) => void;
+  onToggleActive: (id: string) => void | Promise<void>;
   onDelete: (id: string) => void;
 }) {
   return (
@@ -104,6 +96,18 @@ function QuestionRow({
             title="Move down"
           >
             <ArrowDown size={14} />
+          </button>
+          <button
+            type="button"
+            onClick={() => onToggleActive(question.id)}
+            className={`p-2 rounded-lg transition ${
+              question.active
+                ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
+                : 'bg-[var(--surface-3)] text-[var(--text-muted)] hover:text-emerald-400'
+            }`}
+            title={question.active ? 'Deactivate question' : 'Activate question'}
+          >
+            {question.active ? <Check size={14} /> : <X size={14} />}
           </button>
           <button
             type="button"
@@ -268,7 +272,7 @@ export default function AdminProjectQuestionsPage() {
                     onChange={(e) => state.setForm((prev) => ({ ...prev, type: e.target.value as ProjectQuestionType }))}
                     className={inputClasses}
                   >
-                    {questionTypes.map((type) => (
+                    {state.questionTypes.map((type) => (
                       <option key={type.value} value={type.value}>
                         {type.label}
                       </option>
@@ -361,8 +365,9 @@ export default function AdminProjectQuestionsPage() {
                   index={index}
                   total={state.questions.length}
                   isActive={state.selectedQuestion?.id === question.id}
-                  onEdit={state.startEdit}
+                  onEdit={(question) => state.startEdit(question).catch(() => undefined)}
                   onMove={state.moveQuestion}
+                  onToggleActive={(id) => state.toggleQuestionActive(id).catch(() => undefined)}
                   onDelete={state.setDeleteId}
                 />
               ))}

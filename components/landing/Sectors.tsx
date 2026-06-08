@@ -28,7 +28,7 @@ export default function Sectors() {
       };
 
   return (
-    <section id="sectors" className="relative overflow-hidden bg-white py-16 dark:bg-navy-950 sm:py-20 lg:py-24">
+    <section id="sectors" className="relative overflow-hidden bg-white py-12 dark:bg-navy-950 sm:py-16 lg:py-20">
       <div className="pointer-events-none absolute inset-0 premium-grid opacity-35" />
       <div className="pointer-events-none absolute -left-32 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
 
