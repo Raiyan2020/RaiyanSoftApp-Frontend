@@ -1,5 +1,6 @@
 'use client';
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
+import { useSectionReveal } from './use-section-reveal';
 
 const trustCards = [
   { title: 'التزام سعودي', body: 'نراعي احتياجات السوق المحلي واللغة العربية وتجربة المستخدم RTL من البداية.', stat: 'RTL' },
@@ -24,15 +25,7 @@ const testimonials = [
 
 export default function Partners() {
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add('visible')),
-      { threshold: 0.1 }
-    );
-    ref.current?.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  useSectionReveal(ref);
 
   return (
     <section id="partners" className="relative overflow-hidden bg-white py-24 dark:bg-navy-950 lg:py-28">
@@ -67,7 +60,7 @@ export default function Partners() {
           ))}
         </div>
 
-        <div className="reveal mt-8 overflow-hidden rounded-[2rem] border border-cyan-950/10 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
+        {/* <div className="reveal mt-8 overflow-hidden rounded-[2rem] border border-cyan-950/10 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/5">
           <div className="flex gap-3 overflow-hidden">
             {[...partners, ...partners].map((partner, i) => (
               <div key={`${partner}-${i}`} className="flex min-w-max items-center gap-3 rounded-2xl border border-cyan-950/10 bg-slate-50 px-5 py-3 dark:border-white/10 dark:bg-white/5">
@@ -78,14 +71,14 @@ export default function Partners() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="mt-8 grid gap-6 lg:grid-cols-2">
           {testimonials.map((item, i) => (
             <article
-              key={item.name}
-              className="reveal rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-6 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/10"
-              style={{ transitionDelay: `${i * 0.08}s` }}
+              key={`${item.name}-${item.company}`}
+              className="reveal rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-6 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/15 dark:bg-white/8"
+              style={{ transitionDelay: `${(i + 3) * 0.08}s` }}
             >
               <p className="text-3xl font-black text-primary">“</p>
               <blockquote className="mt-2 text-lg font-semibold leading-relaxed">{item.quote}</blockquote>

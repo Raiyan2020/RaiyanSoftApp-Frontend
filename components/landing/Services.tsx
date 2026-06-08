@@ -120,7 +120,7 @@ export default function Services() {
           ))}
         </div>
 
-        <div className="reveal mt-8 rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-4 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/10 lg:mt-10">
+        {/* <div className="reveal mt-8 rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-4 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/10 lg:mt-10">
           <div className="grid gap-3 md:grid-cols-4">
             {process.map(([num, title, desc]) => (
               <div key={num} className="rounded-3xl border border-white/10 bg-white/7 p-4 sm:p-5">
@@ -130,7 +130,7 @@ export default function Services() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );
