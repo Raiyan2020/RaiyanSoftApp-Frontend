@@ -7,7 +7,6 @@ import WizardShell from '@/features/projects/components/wizard-shell';
 import WizardIntro from '@/features/projects/components/wizard-intro';
 import WizardNameStep from '@/features/projects/components/wizard-name-step';
 import WizardColorPicker from '@/features/projects/components/wizard-color-picker';
-import { PRESET_COLORS } from '@/features/projects/hooks/use-project-wizard';
 import { useLeadProjectWizard } from '../hooks/use-lead-project-wizard';
 import ApiQuestionStep from './api-question-step';
 import LeadProjectAuthGate from './lead-project-auth-gate';
@@ -42,6 +41,7 @@ export default function LeadProjectWizard({
     isAuthenticated,
     name,
     setName,
+    presetColors,
     brandColor,
     setBrandColor,
     showCustomColor,
@@ -108,7 +108,7 @@ export default function LeadProjectWizard({
     if (step === colorStep) {
       return (
         <WizardColorPicker
-          presetColors={PRESET_COLORS}
+          presetColors={presetColors}
           brandColor={brandColor}
           showCustomColor={showCustomColor}
           t={t}

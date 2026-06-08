@@ -4,7 +4,7 @@ import { authService, User } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
 import { useAuthGuard } from '@/lib/authGuardContext';
 import { guestStore } from '@/lib/guestStore';
-import { useUserProjects } from '@/lib/userProjectsStore';
+import { useUserStoredProjects } from '@/features/lead-project/hooks/use-user-stored-projects';
 
 export function useHome() {
   const router = useRouter();
@@ -23,7 +23,11 @@ export function useHome() {
   const isGuest = !currentUser && guestStore.isGuest;
   const userName = currentUser ? `${currentUser.first_name} ${currentUser.last_name || ''}`.trim() : (isGuest ? t('home.guest') : 'User');
 
-  const { projects } = useUserProjects();
+  const {
+    projects,
+    loading: projectsLoading,
+    error: projectsError,
+  } = useUserStoredProjects(Boolean(currentUser));
   const userCreatedProjects = currentUser ? projects : [];
 
   const handleCreateClick = () => {
@@ -39,6 +43,8 @@ export function useHome() {
     isGuest,
     userName,
     projects: userCreatedProjects,
+    projectsLoading,
+    projectsError,
     isWizardOpen,
     setIsWizardOpen,
     handleCreateClick,

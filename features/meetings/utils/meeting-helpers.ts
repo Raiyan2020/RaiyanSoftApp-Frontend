@@ -10,7 +10,7 @@ export function formatDateKey(date: Date): string {
 
 export function buildDateTimeValue(date: Date, time: string): string {
   const dateKey = formatDateKey(date);
-  const normalizedTime = time.length === 5 ? `${time}:00` : time;
+  const normalizedTime = time.slice(0, 5);
   return `${dateKey} ${normalizedTime}`;
 }
 

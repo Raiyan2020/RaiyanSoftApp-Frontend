@@ -5,6 +5,8 @@ import { ToastProvider, ToastInitializer } from '@/lib/toast-context';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
 import { ThemeProvider } from '@/lib/themeContext';
+import { UserColorsProvider } from '@/features/colors';
+import { UserSettingsProvider } from '@/features/settings';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   return (
@@ -12,11 +14,15 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider>
         <ToastProvider>
           <ToastInitializer />
-          <I18nProvider>
-            <AuthGuardProvider>
-              {children}
-            </AuthGuardProvider>
-          </I18nProvider>
+          <UserSettingsProvider>
+            <UserColorsProvider>
+              <I18nProvider>
+                <AuthGuardProvider>
+                  {children}
+                </AuthGuardProvider>
+              </I18nProvider>
+            </UserColorsProvider>
+          </UserSettingsProvider>
         </ToastProvider>
       </ThemeProvider>
     </QueryClientProvider>

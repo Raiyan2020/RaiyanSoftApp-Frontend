@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { BadgePercent, Bell, Calendar, FileText, FolderKanban, Info, LayoutDashboard, MessageCircle } from 'lucide-react';
+import { BadgePercent, Bell, Calendar, FileText, FolderKanban, Info, LayoutDashboard, Loader2, MessageCircle, Pencil } from 'lucide-react';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
 import { User } from '@/lib/auth-service';
@@ -12,6 +12,9 @@ import ProfileBookingsPanel from '@/components/profile/profile-bookings-panel';
 import ProfileChatPanel from '@/components/profile/profile-chat-panel';
 import { ProfileRecordType } from '@/components/profile/profile-records-data';
 import { QuickBookingDialog, QuickLeadDialog } from '@/features/quick-actions/components/quick-action-dialogs';
+import Button from '@/components/ui/button';
+import ProfileEditDialog from '@/features/profile/components/profile-edit-dialog';
+import { useUserProfile } from '@/features/profile/hooks/use-user-profile';
 
 type ProfileTab = 'all' | ProfileRecordType | 'chat';
 
@@ -30,11 +33,21 @@ export default function ProfilePage() {
   const searchParams = useSearchParams();
   const { t, dir } = useTranslation();
 
-  const [currentUser] = useState<User>(staticProfileUser);
+  const {
+    user: profileUser,
+    isFetching,
+    errorMessage,
+    updateProfile,
+    isUpdating,
+    updateError,
+    updateSuccess,
+  } = useUserProfile();
+  const currentUser = profileUser ?? staticProfileUser;
   const [dark, setDark] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>('all');
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [leadDialogOpen, setLeadDialogOpen] = useState(false);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
 
   // Initialize theme
   useEffect(() => {
@@ -93,6 +106,23 @@ export default function ProfilePage() {
               <p className="mt-2 break-words text-sm text-[var(--text-muted)]">
                 {currentUser.first_name} {currentUser.last_name} &bull; {currentUser.email}
               </p>
+              {errorMessage ? (
+                <p className="mt-2 text-xs font-bold text-amber-400">
+                  {dir === 'rtl' ? 'تعذر تحديث بيانات الملف الشخصي من الخادم.' : 'Could not refresh profile data from the server.'}
+                </p>
+              ) : null}
+            </div>
+            <div className="flex shrink-0 items-center gap-3">
+              {isFetching ? (
+                <div className="hidden items-center gap-2 text-xs font-bold text-[var(--text-muted)] sm:flex">
+                  <Loader2 size={14} className="animate-spin" />
+                  {dir === 'rtl' ? 'تحديث البيانات' : 'Refreshing'}
+                </div>
+              ) : null}
+              <Button type="button" onClick={() => setProfileDialogOpen(true)} className="gap-2">
+                <Pencil size={17} />
+                {dir === 'rtl' ? 'تعديل الملف' : 'Edit profile'}
+              </Button>
             </div>
           </div>
 
@@ -110,7 +140,18 @@ export default function ProfilePage() {
                     <p className="truncate text-sm font-black text-[var(--text)]">
                       {currentUser.first_name} {currentUser.last_name}
                     </p>
+                    <p className="truncate text-xs text-[var(--text-muted)]" dir="ltr">
+                      {[currentUser.country_code, currentUser.phone].filter(Boolean).join(' ')}
+                    </p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setProfileDialogOpen(true)}
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:border-primary/40 hover:text-primary"
+                    aria-label={dir === 'rtl' ? 'تعديل الملف الشخصي' : 'Edit profile'}
+                  >
+                    <Pencil size={15} />
+                  </button>
                 </div>
               </div>
 
@@ -172,6 +213,17 @@ export default function ProfilePage() {
         isOpen={leadDialogOpen}
         onClose={() => setLeadDialogOpen(false)}
         user={currentUser}
+      />
+      <ProfileEditDialog
+        isOpen={profileDialogOpen}
+        user={currentUser}
+        isSaving={isUpdating}
+        error={updateError}
+        success={updateSuccess}
+        onClose={() => setProfileDialogOpen(false)}
+        onSubmit={async (values) => {
+          await updateProfile(values);
+        }}
       />
     </div>
   );

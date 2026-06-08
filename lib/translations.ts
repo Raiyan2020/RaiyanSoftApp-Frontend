@@ -183,6 +183,10 @@ export const translations = {
     // Notifications
     "notif.title": "Notifications",
     "notif.mark_all": "Mark all read",
+    "notif.delete_all": "Delete all",
+    "notif.confirm_delete_all": "Delete all notifications?",
+    "notif.refresh": "Refresh",
+    "notif.refreshing": "Refreshing",
     "notif.empty": "No notifications found",
     "notif.filter_all": "All",
     "notif.filter_unread": "Unread",
@@ -494,6 +498,10 @@ export const translations = {
     // Notifications
     "notif.title": "الإشعارات",
     "notif.mark_all": "تحديد الكل كمقروء",
+    "notif.delete_all": "حذف الكل",
+    "notif.confirm_delete_all": "هل تريد حذف كل الإشعارات؟",
+    "notif.refresh": "تحديث",
+    "notif.refreshing": "جار التحديث",
     "notif.empty": "لا توجد إشعارات",
     "notif.filter_all": "الكل",
     "notif.filter_unread": "غير مقروء",

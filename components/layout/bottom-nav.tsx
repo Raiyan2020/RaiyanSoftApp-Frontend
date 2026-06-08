@@ -4,7 +4,7 @@ import React from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Home, MessageCircle, Calendar, Bell, MoreHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useNotifications } from '@/lib/notificationStore';
+import { useNotificationBadgeCount } from '@/features/notifications/hooks/use-notifications';
 import { useUserMetadata } from '@/lib/userMetadataStore';
 import { useTranslation } from '@/lib/i18nContext';
 import { useAuthGuard } from '@/lib/authGuardContext';
@@ -13,7 +13,7 @@ import TabIconWithBadge from '../ui/tab-icon-with-badge';
 export default function BottomNav() {
   const router = useRouter();
   const pathname = usePathname();
-  const { unreadCount } = useNotifications();
+  const { unreadCount } = useNotificationBadgeCount();
   const { chatUnreadCount } = useUserMetadata();
   const { t } = useTranslation();
   const { requireAuth } = useAuthGuard();

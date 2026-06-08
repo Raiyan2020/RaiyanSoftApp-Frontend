@@ -26,6 +26,7 @@ import {
   Star,
   Handshake,
   FileText,
+  Palette,
   Settings,
   Sun,
   Moon,
@@ -138,6 +139,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { id: 'users', label: 'Users', icon: Users, path: '/admin/users', badge: 0, permission: 'users.view' },
     { id: 'employees', label: 'Employees', icon: Briefcase, path: '/admin/employees', badge: 0, permission: 'employees.manage' },
     { id: 'roles', label: 'Roles', icon: Shield, path: '/admin/roles', badge: 0, permission: 'roles.manage' },
+    { id: 'pages', label: 'Pages', icon: FileText, path: '/admin/pages', badge: 0, permission: 'pages.manage' },
+    { id: 'colors', label: 'Colors', icon: Palette, path: '/admin/colors', badge: 0, permission: 'colors.manage' },
   ].filter((item) => hasPermission(currentPermissions, item.permission));
 
   const websiteNavItems = [

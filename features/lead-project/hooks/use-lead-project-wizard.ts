@@ -1,21 +1,14 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { authService } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
-import { PRESET_COLORS } from '@/features/projects/hooks/use-project-wizard';
-import { storeProject } from '../api/lead-project-api';
+import { useUserColors, mapUserColorsToPresetOptions, FALLBACK_PRESET_COLORS } from '@/features/colors';
+import { getApiErrorMessage, leadProjectKeys, storeProject } from '../api/lead-project-api';
 import { FormQuestion } from '../types/form-question.types';
 import { isQuestionAnswered, resolveQuestionType } from '../utils/question-helpers';
 import { useFormQuestions } from './use-form-questions';
-
-function getApiErrorMessage(response: { message?: string; errors?: any }) {
-  if (response.errors && typeof response.errors === 'object') {
-    const errList = Object.values(response.errors).flat();
-    if (errList.length > 0) return errList.join(' ');
-  }
-  return response.message || 'Request failed.';
-}
 
 export function useLeadProjectWizard({
   onComplete,
@@ -25,12 +18,18 @@ export function useLeadProjectWizard({
   questionsEnabled?: boolean;
 }) {
   const { t, dir, language, setLanguage } = useTranslation();
+  const queryClient = useQueryClient();
+  const { colors } = useUserColors();
+  const presetColors = useMemo(
+    () => mapUserColorsToPresetOptions(colors),
+    [colors]
+  );
   const isAuthenticated = Boolean(authService.getUserToken());
   const [needsAuth, setNeedsAuth] = useState(!isAuthenticated);
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
   const [name, setName] = useState('');
-  const [brandColor, setBrandColor] = useState(PRESET_COLORS[0].hex);
+  const [brandColor, setBrandColor] = useState(FALLBACK_PRESET_COLORS[0].hex);
   const [showCustomColor, setShowCustomColor] = useState(false);
   const [answersByQuestionId, setAnswersByQuestionId] = useState<
     Record<number, number | number[] | string>
@@ -42,6 +41,14 @@ export function useLeadProjectWizard({
     language,
     questionsEnabled && !needsAuth
   );
+
+  const [colorsInitialized, setColorsInitialized] = useState(false);
+
+  useEffect(() => {
+    if (colorsInitialized || !presetColors.length) return;
+    setBrandColor(presetColors[0].hex);
+    setColorsInitialized(true);
+  }, [colorsInitialized, presetColors]);
 
   const questionCount = questions.length;
   const nameStep = questionCount + 1;
@@ -140,6 +147,7 @@ export function useLeadProjectWizard({
 
       const data = response.data as { request_id?: string } | [];
       const requestId = Array.isArray(data) ? undefined : data?.request_id;
+      await queryClient.invalidateQueries({ queryKey: leadProjectKeys.myProjectsRoot });
       onComplete(requestId);
     } catch (err: any) {
       setErrors([err.message || (dir === 'rtl' ? 'فشل إرسال الطلب.' : 'Failed to submit request.')]);
@@ -189,6 +197,7 @@ export function useLeadProjectWizard({
     isAuthenticated,
     name,
     setName,
+    presetColors,
     brandColor,
     setBrandColor,
     showCustomColor,

@@ -1,5 +1,7 @@
-import { redirect } from 'next/navigation';
+'use client';
+
+import NotificationsPage from '@/features/notifications/components/notifications-page';
 
 export default function Page() {
-  redirect('/profile?tab=info');
+  return <NotificationsPage />;
 }

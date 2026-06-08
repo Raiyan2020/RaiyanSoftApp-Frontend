@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Info, CheckCircle, AlertTriangle, MessageCircle, CreditCard, X } from 'lucide-react';
-import { Notification, NotificationType } from '@/lib/notificationStore';
+import { type Notification, type NotificationType } from '../types/notification.types';
 import { useTranslation } from '@/lib/i18nContext';
 
 interface NotificationListItemProps {
@@ -27,7 +27,7 @@ const getIcon = (type: NotificationType) => {
 };
 
 export default function NotificationListItem({ notification, onClick, onDismiss }: NotificationListItemProps) {
-  const { id, type, title, message, timestamp, read } = notification;
+  const { id, type, title, message, timestamp, read, createdAtDiff } = notification;
   const { t, dir } = useTranslation();
 
   const getTimeLabel = (ts: number) => {
@@ -69,7 +69,7 @@ export default function NotificationListItem({ notification, onClick, onDismiss 
             <h4 className={`text-sm truncate pe-2 rtl:pe-0 rtl:ps-2 ${!read ? 'text-[var(--text)] font-bold' : 'text-[var(--text)] font-medium'}`}>
               {title}
             </h4>
-            <span className="text-[10px] text-[var(--text-muted)] shrink-0 whitespace-nowrap">{getTimeLabel(timestamp)}</span>
+            <span className="text-[10px] text-[var(--text-muted)] shrink-0 whitespace-nowrap">{createdAtDiff || getTimeLabel(timestamp)}</span>
           </div>
           <p className="text-xs text-[var(--text-muted)] truncate leading-relaxed">{message}</p>
         </div>
@@ -82,6 +82,7 @@ export default function NotificationListItem({ notification, onClick, onDismiss 
       <button
         type="button"
         onClick={(e) => onDismiss(e, id)}
+        aria-label={t('notif.dismiss')}
         className="absolute top-2 end-2 p-2 text-[var(--text-muted)] hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
       >
         <X size={14} />

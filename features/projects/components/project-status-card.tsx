@@ -4,6 +4,7 @@ interface ProjectStatusCardProps {
   estimatedPrice: number | null;
   estimatedDuration: number | null;
   status: string;
+  statusLabel?: string;
   t: (key: string) => string;
   language: string;
 }
@@ -12,10 +13,14 @@ export default function ProjectStatusCard({
   estimatedPrice,
   estimatedDuration,
   status,
+  statusLabel,
   t,
 }: ProjectStatusCardProps) {
   const formatPrice = (price: number | null) => (price ? `${price.toLocaleString()} KWD` : '-');
   const formatDuration = (days: number | null) => (days ? `${days} ${t('days')}` : '-');
+  const statusKey = `status.${status}`;
+  const translatedStatus = t(statusKey);
+  const displayStatus = translatedStatus === statusKey ? statusLabel || status || '-' : translatedStatus;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3">
@@ -36,7 +41,7 @@ export default function ProjectStatusCard({
             status === 'cancelled' ? 'bg-red-500/10 text-red-400' : 'bg-primary/10 text-primary'
           }`}
         >
-          {t(`status.${status}`)}
+          {displayStatus}
         </span>
       </div>
     </div>

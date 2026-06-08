@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Check, ChevronsUpDown, Search } from 'lucide-react';
 import * as RPNInput from 'react-phone-number-input';
 import flags from 'react-phone-number-input/flags';
+import { useManagedCountriesQuery } from '@/features/settings';
 
 type PhoneInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -19,6 +20,8 @@ type CountryEntry = {
   value: RPNInput.Country | undefined;
 };
 
+type CountryCallingCodes = Partial<Record<RPNInput.Country, string>>;
+
 export default function PhoneInput({
   value,
   onChange,
@@ -27,14 +30,54 @@ export default function PhoneInput({
   style,
   ...props
 }: PhoneInputProps) {
+  const { data: managedCountries } = useManagedCountriesQuery();
+
+  const countryConfig = React.useMemo(() => {
+    if (!managedCountries?.length) {
+      return {
+        countries: undefined,
+        labels: undefined,
+        callingCodes: {},
+        defaultCountry,
+      };
+    }
+
+    const countries: RPNInput.Country[] = [];
+    const labels: RPNInput.Labels = {
+      country: 'Country',
+      phone: 'Phone number',
+    };
+    const callingCodes: CountryCallingCodes = {};
+
+    managedCountries.forEach((country) => {
+      const countryCode = country.country_code?.trim().toUpperCase() as RPNInput.Country;
+      if (!countryCode || countries.includes(countryCode)) return;
+
+      countries.push(countryCode);
+      labels[countryCode] = country.name;
+      callingCodes[countryCode] = country.phone_code?.trim() || '';
+    });
+
+    return {
+      countries,
+      labels,
+      callingCodes,
+      defaultCountry: countries.includes(defaultCountry) ? defaultCountry : countries[0] ?? defaultCountry,
+    };
+  }, [defaultCountry, managedCountries]);
+
   return (
     <RPNInput.default
       className={`flex w-full ${className}`}
       value={value || undefined}
       onChange={(nextValue) => onChange(nextValue || '')}
-      defaultCountry={defaultCountry}
+      defaultCountry={countryConfig.defaultCountry}
+      countries={countryConfig.countries}
+      countryOptionsOrder={countryConfig.countries}
+      labels={countryConfig.labels}
       flagComponent={FlagComponent}
       countrySelectComponent={CountrySelect}
+      countrySelectProps={{ callingCodes: countryConfig.callingCodes }}
       inputComponent={InputComponent}
       smartCaret={false}
       {...props}
@@ -67,11 +110,13 @@ function CountrySelect({
   value: selectedCountry,
   options,
   onChange,
+  callingCodes = {},
 }: {
   disabled?: boolean;
   value: RPNInput.Country;
   options: CountryEntry[];
   onChange: (country: RPNInput.Country) => void;
+  callingCodes?: CountryCallingCodes;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -96,18 +141,18 @@ function CountrySelect({
 
   const filteredCountries = options.filter((option) => {
     if (!option.value) return false;
-    const callingCode = RPNInput.getCountryCallingCode(option.value);
+    const callingCode = getDisplayCallingCode(option.value, callingCodes);
     const query = searchQuery.toLowerCase();
 
     return (
       option.label.toLowerCase().includes(query) ||
       option.value.toLowerCase().includes(query) ||
-      callingCode.includes(searchQuery.replace('+', ''))
+      callingCode.replace('+', '').includes(searchQuery.replace('+', ''))
     );
   });
 
   const selectedCallingCode = selectedCountry
-    ? RPNInput.getCountryCallingCode(selectedCountry)
+    ? getDisplayCallingCode(selectedCountry, callingCodes)
     : '';
 
   return (
@@ -124,7 +169,7 @@ function CountrySelect({
         className="flex h-full items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-l-xl border-r-0 px-3 py-3 text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <FlagComponent country={selectedCountry} countryName={selectedCountry} />
-        <span className="text-xs font-mono text-[var(--text-muted)]">+{selectedCallingCode}</span>
+        <span className="text-xs font-mono text-[var(--text-muted)]">{selectedCallingCode}</span>
         <ChevronsUpDown size={14} className="text-[var(--text-muted)]" />
       </button>
 
@@ -166,7 +211,7 @@ function CountrySelect({
                     <div className="flex-1 min-w-0">
                       <div className="text-xs text-[var(--text)] font-medium truncate">{country.label}</div>
                       <div className="text-[10px] text-[var(--text-muted)] text-left">
-                        +{RPNInput.getCountryCallingCode(country.value)}
+                        {getDisplayCallingCode(country.value, callingCodes)}
                       </div>
                     </div>
                     {isSelected ? <Check size={14} className="text-primary" /> : null}
@@ -183,6 +228,15 @@ function CountrySelect({
       ) : null}
     </div>
   );
+}
+
+function getDisplayCallingCode(country: RPNInput.Country, callingCodes: CountryCallingCodes) {
+  const managedCallingCode = callingCodes[country];
+  if (managedCallingCode) {
+    return managedCallingCode.startsWith('+') ? managedCallingCode : `+${managedCallingCode}`;
+  }
+
+  return `+${RPNInput.getCountryCallingCode(country)}`;
 }
 
 function FlagComponent({ country, countryName }: RPNInput.FlagProps) {

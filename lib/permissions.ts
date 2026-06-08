@@ -52,6 +52,8 @@ export const PERMISSION_GROUPS = [
       ['roles.manage', 'Manage roles'],
       ['notifications.send', 'Send notifications'],
       ['chat.manage', 'Manage chat'],
+      ['pages.manage', 'Manage app pages'],
+      ['colors.manage', 'Manage colors'],
     ],
   },
   {

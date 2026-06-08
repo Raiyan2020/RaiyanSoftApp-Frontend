@@ -50,13 +50,14 @@ class ApiService {
     const isFormData = body instanceof FormData;
     const headers = this.getHeaders(isFormData, path);
 
+    const { skipGlobalToast, headers: optionHeaders, ...fetchOptions } = options ?? {};
     const config: RequestInit = {
+      ...fetchOptions,
       method,
       headers: {
         ...headers,
-        ...(options?.headers || {}),
+        ...(optionHeaders || {}),
       },
-      ...options,
     };
 
     if (body) {
@@ -71,7 +72,7 @@ class ApiService {
       const response = await fetch(url, config);
       const data = (await response.json()) as ApiResponse<T>;
 
-      if (data && data.status === false && !options?.skipGlobalToast) {
+      if (data && data.status === false && !skipGlobalToast) {
         let errorMsg = data.message || 'An error occurred.';
         if (data.errors && typeof data.errors === 'object') {
           const errList = Object.values(data.errors).flat();
@@ -86,7 +87,7 @@ class ApiService {
     } catch (error: any) {
       console.error(`API Error on ${method} ${path}:`, error);
       const errorMsg = error.message || 'Network error occurred.';
-      if (!options?.skipGlobalToast) {
+      if (!skipGlobalToast) {
         globalToast.error(errorMsg);
       }
       return {

@@ -65,6 +65,14 @@ class AuthService {
     this.notify();
   }
 
+  setUserProfile(user: User) {
+    this.user = user;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user_profile', JSON.stringify(user));
+    }
+    this.notify();
+  }
+
   setAdminSession(admin: Admin, token: string) {
     this.admin = admin;
     if (typeof window !== 'undefined') {

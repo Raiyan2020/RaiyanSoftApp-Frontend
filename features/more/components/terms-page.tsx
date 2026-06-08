@@ -1,24 +1,17 @@
+'use client';
+
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
-
-interface SectionProps {
-  title: string;
-  children: React.ReactNode;
-}
-
-const Section: React.FC<SectionProps> = ({ title, children }) => (
-  <div className="mb-6 last:mb-0">
-    <h3 className="text-base font-bold text-[var(--text)] mb-2">{title}</h3>
-    <div className="text-sm text-[var(--text-muted)] leading-relaxed space-y-2">{children}</div>
-  </div>
-);
+import { useTermsConditions } from '@/features/pages/hooks/use-terms-conditions';
+import PageHtmlContent from '@/features/pages/components/page-html-content';
 
 export default function TermsPage() {
   const router = useRouter();
   const { t, dir } = useTranslation();
+  const { data, loading, error } = useTermsConditions();
 
   return (
     <motion.div
@@ -37,60 +30,21 @@ export default function TermsPage() {
             {dir === 'rtl' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
             <span className="text-sm">{t('auth.back')}</span>
           </button>
-          <h1 className="app-title">{t('more.terms')}</h1>
+          <h1 className="app-title">{data?.title || t('more.terms')}</h1>
         </div>
       </header>
 
-      <div>
-        <div className="app-card rounded-2xl p-6">
-          <Section title="1. Acceptance of Terms">
-            <p>
-              By downloading, installing, or using the Raiyansoft® application, you agree to be bound by these Terms of Use. If you do not agree, please do not use our services.
-            </p>
-          </Section>
-
-          <Section title="2. Account Registration">
-            <p>
-              You may be required to register an account. You agree to provide accurate information and keep your account credentials secure. You are responsible for all activities under your account.
-            </p>
-          </Section>
-
-          <Section title="3. User Content">
-            <p>
-              You retain ownership of content you submit. By submitting content, you grant us a license to use it to provide our services. Do not submit illegal or offensive material.
-            </p>
-          </Section>
-
-          <Section title="4. Prohibited Use">
-            <p>
-              You may not use the app for any illegal purpose, to harass others, or to interfere with the app's operation. Reverse engineering is strictly prohibited.
-            </p>
-          </Section>
-
-          <Section title="5. Disclaimers">
-            <p>
-              The app is provided "as is" without warranties of any kind. We do not guarantee that the service will be uninterrupted or error-free.
-            </p>
-          </Section>
-
-          <Section title="6. Limitation of Liability">
-            <p>
-              Raiyansoft® shall not be liable for any indirect, incidental, or consequential damages arising from your use of the service.
-            </p>
-          </Section>
-
-          <Section title="7. Termination">
-            <p>We reserve the right to suspend or terminate your access at any time for violation of these terms.</p>
-          </Section>
-
-          <Section title="8. Changes to Terms">
-            <p>We may modify these terms at any time. Continued use of the app constitutes acceptance of the new terms.</p>
-          </Section>
-
-          <div className="mt-8 pt-6 border-t border-[var(--border)] text-xs text-[var(--text-muted)] text-center">
-            Last updated: December 2025
+      <div className="app-card rounded-2xl p-6">
+        {loading ? (
+          <div className="flex items-center justify-center py-10 text-[var(--text-muted)]">
+            <Loader2 className="me-2 animate-spin" size={18} />
+            Loading...
           </div>
-        </div>
+        ) : error ? (
+          <p className="text-red-400">{error}</p>
+        ) : (
+          <PageHtmlContent html={data?.description} emptyMessage="Terms and conditions content is not available yet." />
+        )}
       </div>
     </motion.div>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Clock, ArrowRight, ArrowLeft } from 'lucide-react';
-import { Notification } from '@/lib/notificationStore';
+import { type Notification } from '../types/notification.types';
 import { useTranslation } from '@/lib/i18nContext';
 
 interface NotificationSheetProps {
