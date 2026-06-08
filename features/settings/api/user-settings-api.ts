@@ -1,10 +1,6 @@
 import { apiService, ApiResponse, getApiBaseUrl } from '@/lib/api-service';
 import { UserSettings } from '../types/user-settings.types';
 
-export const userSettingsKeys = {
-  all: ['user-settings'] as const,
-};
-
 function getApiErrorMessage(response: ApiResponse<unknown>) {
   if (response.errors && typeof response.errors === 'object') {
     const errList = Object.values(response.errors).flat();

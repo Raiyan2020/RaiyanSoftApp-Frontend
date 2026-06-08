@@ -21,11 +21,13 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
     step,
     phone,
     isNewUser,
+    newUserOtpSent,
     loading,
     error,
     message,
     reset,
     checkPhone,
+    submitRegistrationDetails,
     submitOtp,
   } = usePhoneAuth();
   const [phoneValue, setPhoneValue] = useState('');
@@ -54,8 +56,24 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
     checkPhone(phoneValue);
   };
 
+  const handleNewUserOtpRequest = () => {
+    setLocalError(null);
+
+    if (!name.trim()) {
+      setLocalError(t('auth.name_required'));
+      return;
+    }
+
+    submitRegistrationDetails(name.trim());
+  };
+
   const handleOtpSubmit = () => {
     setLocalError(null);
+
+    if (isNewUser && !newUserOtpSent) {
+      handleNewUserOtpRequest();
+      return;
+    }
 
     if (isNewUser && !name.trim()) {
       setLocalError(t('auth.name_required'));
@@ -70,7 +88,6 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
     submitOtp({
       phone,
       otp: otp.trim(),
-      name: name.trim(),
     });
   };
 
@@ -113,7 +130,9 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
                 )}
               </div>
               <h2 className="text-2xl font-bold text-[var(--text)] mb-2">
-                {step === 'phone' ? t('auth.phone_dialog_title') : t('auth.otp_dialog_title')}
+                {step === 'phone'
+                  ? t('auth.phone_dialog_title')
+                  : t('auth.otp_dialog_title')}
               </h2>
               <p className="text-sm leading-relaxed text-[var(--text-muted)]">
                 {step === 'phone'
@@ -222,7 +241,13 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
                   inputMode="numeric"
                   autoComplete="one-time-code"
                   dir="ltr"
+                  disabled={Boolean(isNewUser && !newUserOtpSent)}
                 />
+                {isNewUser && !newUserOtpSent ? (
+                  <p className="text-start text-xs leading-5 text-[var(--text-muted)]">
+                    {t('auth.otp_waiting_for_name')}
+                  </p>
+                ) : null}
 
                 <Button
                   type="button"
@@ -231,7 +256,13 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
                   disabled={loading}
                   className="w-full"
                 >
-                  {loading ? t('auth.verify_loading') : t('auth.verify_and_enter')}
+                  {loading
+                    ? isNewUser && !newUserOtpSent
+                      ? t('auth.signup_loading')
+                      : t('auth.verify_loading')
+                    : isNewUser && !newUserOtpSent
+                      ? t('auth.send_otp')
+                      : t('auth.verify_and_enter')}
                 </Button>
               </form>
             )}

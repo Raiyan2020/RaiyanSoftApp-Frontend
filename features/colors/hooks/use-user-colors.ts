@@ -1,7 +1,8 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { fetchUserColors, userColorsKeys } from '../api/user-colors-api';
+import { fetchUserColors } from '../api/user-colors-api';
+import { userColorsKeys } from '../query-keys';
 
 const STALE_TIME_MS = 5 * 60 * 1000;
 

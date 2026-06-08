@@ -2,7 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
-import { userColorsKeys } from '@/features/colors/api/user-colors-api';
+import { userColorsKeys } from '@/features/colors/query-keys';
 import { createAdminColor } from '../api/admin-colors-api';
 import { CreateColorPayload } from '../types/admin-color.types';
 

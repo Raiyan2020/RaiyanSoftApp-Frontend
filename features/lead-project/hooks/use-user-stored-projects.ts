@@ -8,8 +8,8 @@ import {
   fetchMyProject,
   fetchMyProjects,
   getApiErrorMessage,
-  leadProjectKeys,
 } from '../api/lead-project-api';
+import { leadProjectKeys } from '../query-keys';
 import { mapStoredProject } from '../utils/map-stored-project';
 
 function hasUserToken() {

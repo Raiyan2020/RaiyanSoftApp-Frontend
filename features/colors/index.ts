@@ -1,4 +1,5 @@
-export { fetchUserColors, fetchUserColorsServer, userColorsKeys } from './api/user-colors-api';
+export { fetchUserColors, fetchUserColorsServer } from './api/user-colors-api';
+export { userColorsKeys } from './query-keys';
 export { UserColorsProvider, useUserColors } from './context/user-colors-context';
 export { useUserColorsQuery } from './hooks/use-user-colors';
 export type { UserColor } from './types/user-colors.types';

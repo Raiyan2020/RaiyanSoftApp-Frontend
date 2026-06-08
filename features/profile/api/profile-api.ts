@@ -9,11 +9,6 @@ export interface UpdateUserProfilePayload {
   country_code?: string;
 }
 
-export const profileKeys = {
-  all: ['profile'] as const,
-  detail: () => [...profileKeys.all, 'detail'] as const,
-};
-
 function getApiErrorMessage(response: ApiResponse<unknown>) {
   if (response.errors && typeof response.errors === 'object') {
     const errList = Object.values(response.errors).flat();

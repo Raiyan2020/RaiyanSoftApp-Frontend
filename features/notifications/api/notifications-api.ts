@@ -47,13 +47,6 @@ export interface NotificationQueryParams {
   language?: 'ar' | 'en';
 }
 
-const notificationKeys = {
-  all: ['notifications'] as const,
-  lists: () => [...notificationKeys.all, 'list'] as const,
-  list: (params?: NotificationQueryParams) => [...notificationKeys.lists(), params ?? {}] as const,
-  unread: (language?: 'ar' | 'en') => [...notificationKeys.all, 'unread', language ?? 'ar'] as const,
-};
-
 function assertNotificationResponse<T>(response: ApiResponse<T>) {
   if (!response.status) {
     throw new Error(response.message || 'Notification request failed.');
@@ -127,5 +120,3 @@ export async function deleteAllNotifications(language: 'ar' | 'en' = 'ar') {
 
   return assertNotificationResponse(response).data;
 }
-
-export { notificationKeys };

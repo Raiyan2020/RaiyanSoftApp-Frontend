@@ -1,7 +1,8 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { countriesKeys, fetchManagedCountries } from '../api/countries-api';
+import { fetchManagedCountries } from '../api/countries-api';
+import { countriesKeys } from '../query-keys';
 
 const STALE_TIME_MS = 10 * 60 * 1000;
 

@@ -10,6 +10,7 @@ import LeadProjectWizard from '@/features/lead-project/components/lead-project-w
 import BookingWizard from '@/features/appointments/components/booking-wizard';
 import { User as AuthUser } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
+import { getUserDisplayName } from '@/lib/user-display';
 
 type QuickActionMode = 'booking' | 'lead';
 
@@ -98,6 +99,7 @@ export function QuickLeadDialog({ isOpen, onClose }: Omit<QuickActionDialogProps
 function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogProps) {
   const { dir } = useTranslation();
   const isLoggedIn = Boolean(user);
+  const userDisplayName = getUserDisplayName(user);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
@@ -215,7 +217,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-black text-[var(--text)]">
-                      {user?.first_name} {user?.last_name}
+                      {userDisplayName}
                     </p>
                     <p className="text-xs text-[var(--text-muted)]" dir="ltr">
                       {[user?.country_code, user?.phone].filter(Boolean).join(' ')}

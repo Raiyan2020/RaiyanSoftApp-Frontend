@@ -15,7 +15,7 @@ interface LeadProjectAuthGateProps {
 
 export default function LeadProjectAuthGate({ onAuthenticated }: LeadProjectAuthGateProps) {
   const { t, dir } = useTranslation();
-  const { step, isNewUser, loading, error, message, checkPhone, submitOtp } = usePhoneAuth({
+  const { step, phone, isNewUser, newUserOtpSent, loading, error, message, checkPhone, submitRegistrationDetails, submitOtp } = usePhoneAuth({
     onSuccess: onAuthenticated,
   });
   const [phoneValue, setPhoneValue] = useState('');
@@ -34,17 +34,33 @@ export default function LeadProjectAuthGate({ onAuthenticated }: LeadProjectAuth
     checkPhone(phoneValue);
   };
 
+  const handleNewUserOtpRequest = () => {
+    setLocalError(null);
+    if (!name.trim()) {
+      setLocalError(t('auth.name_required'));
+      return;
+    }
+    submitRegistrationDetails(name.trim());
+  };
+
   const handleOtpSubmit = () => {
     setLocalError(null);
+
+    if (isNewUser && !newUserOtpSent) {
+      handleNewUserOtpRequest();
+      return;
+    }
+
     if (isNewUser && !name.trim()) {
       setLocalError(t('auth.name_required'));
       return;
     }
+
     if (!otp.trim() || otp.trim().length < 4) {
       setLocalError(t('auth.otp_invalid'));
       return;
     }
-    submitOtp({ phone: phoneValue, otp: otp.trim(), name: name.trim() });
+    submitOtp({ phone, otp: otp.trim() });
   };
 
   return (
@@ -92,17 +108,30 @@ export default function LeadProjectAuthGate({ onAuthenticated }: LeadProjectAuth
               value={name}
               onChange={(event) => setName(event.target.value)}
               icon={<User size={16} />}
+              placeholder={t('auth.name_placeholder')}
             />
           ) : null}
           <Input
             label={t('auth.otp')}
             value={otp}
-            onChange={(event) => setOtp(event.target.value)}
+            onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))}
             icon={<ShieldCheck size={16} />}
             dir="ltr"
+            disabled={Boolean(isNewUser && !newUserOtpSent)}
           />
+          {isNewUser && !newUserOtpSent ? (
+            <p className="text-start text-xs leading-5 text-[var(--text-muted)]">
+              {t('auth.otp_waiting_for_name')}
+            </p>
+          ) : null}
           <Button type="button" onClick={handleOtpSubmit} disabled={loading} className="w-full">
-            {loading ? t('auth.verify_loading') : t('auth.verify_and_enter')}
+            {loading
+              ? isNewUser && !newUserOtpSent
+                ? t('auth.signup_loading')
+                : t('auth.verify_loading')
+              : isNewUser && !newUserOtpSent
+                ? t('auth.send_otp')
+                : t('auth.verify_and_enter')}
           </Button>
         </div>
       )}

@@ -10,8 +10,8 @@ import {
   fetchUnreadNotifications,
   markAllNotificationsRead,
   markNotificationRead,
-  notificationKeys,
 } from '../api/notifications-api';
+import { notificationKeys } from '../query-keys';
 import { mapApiNotification, type Notification } from '../types/notification.types';
 
 export type NotificationFilterType = 'all' | 'unread' | 'system';

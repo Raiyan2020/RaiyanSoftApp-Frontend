@@ -2,11 +2,13 @@
 
 export interface User {
   id: number;
-  first_name: string;
-  last_name: string;
-  country_code: string;
-  phone: string;
-  email: string;
+  first_name?: string;
+  last_name?: string;
+  full_name?: string;
+  name?: string;
+  country_code?: string;
+  phone?: string;
+  email?: string;
   unread_notifications_count?: number;
 }
 

@@ -8,6 +8,7 @@ import { logoutUser } from '@/features/auth/api/user-auth-api';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { sectionLinks, pageLinks } from './NavbarLinks';
 import Avatar from '@/components/ui/avatar';
+import { getUserDisplayName } from '@/lib/user-display';
 
 
 interface NavbarMobileProps {
@@ -32,6 +33,7 @@ export default function NavbarMobile({
   onOpenLead,
 }: NavbarMobileProps) {
   const { t, dir, language, setLanguage } = useTranslation();
+  const userDisplayName = getUserDisplayName(user, t('home.guest'));
 
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -129,13 +131,13 @@ export default function NavbarMobile({
 
           <div className="grid gap-2 grid-cols-2 pt-2">
             {user ? (
-              <div className="col-span-2 space-y-2 text-right">
-                <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/10 mb-2 justify-end">
-                  <div className="min-w-0 text-right flex-1">
+              <div className="col-span-2 space-y-2 text-start">
+                <div className="flex items-center justify-start gap-3 bg-white/5 p-3 rounded-2xl border border-white/10 mb-2">
+                  <Avatar name={userDisplayName} size="md" />
+                  <div className="min-w-0 text-start flex-1">
                     <p className="text-xs text-slate-400">{t('home.greeting')}</p>
-                    <p className="text-sm font-bold text-white truncate">{`${user.first_name} ${user.last_name}`}</p>
+                    <p className="text-sm font-bold text-white truncate">{userDisplayName}</p>
                   </div>
-                  <Avatar name={`${user.first_name} ${user.last_name}`} size="md" />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <Link

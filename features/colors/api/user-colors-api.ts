@@ -1,10 +1,6 @@
 import { apiService, ApiResponse, getApiBaseUrl } from '@/lib/api-service';
 import { UserColor } from '../types/user-colors.types';
 
-export const userColorsKeys = {
-  all: ['user-colors'] as const,
-};
-
 function getApiErrorMessage(response: ApiResponse<unknown>) {
   if (response.errors && typeof response.errors === 'object') {
     const errList = Object.values(response.errors).flat();

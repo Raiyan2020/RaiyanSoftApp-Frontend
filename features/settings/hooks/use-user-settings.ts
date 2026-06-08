@@ -1,7 +1,8 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { fetchUserSettings, userSettingsKeys } from '../api/user-settings-api';
+import { fetchUserSettings } from '../api/user-settings-api';
+import { userSettingsKeys } from '../query-keys';
 
 const STALE_TIME_MS = 5 * 60 * 1000;
 
