@@ -4,6 +4,7 @@ import { authService, User } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
 import { guestStore } from '@/lib/guestStore';
 import { useAuthGuard } from '@/lib/authGuardContext';
+import { deleteUserAccount, logoutUser } from '@/features/auth/api/user-auth-api';
 
 export function useMore() {
   const router = useRouter();
@@ -26,11 +27,15 @@ export function useMore() {
 
   const handleSignOut = async () => {
     try {
+      if (authService.getUserToken()) {
+        await logoutUser();
+      }
+    } catch (error) {
+      console.error('Backend sign out failed', error);
+    } finally {
       authService.clearUserSession();
       guestStore.setGuest(false);
       router.push('/login');
-    } catch (error) {
-      console.error('Error signing out', error);
     }
   };
 
@@ -40,7 +45,15 @@ export function useMore() {
   };
 
   const handleDeleteAccount = async () => {
-    await handleSignOut();
+    try {
+      await deleteUserAccount();
+    } catch (error) {
+      console.error('Backend account deletion failed', error);
+    } finally {
+      authService.clearUserSession();
+      guestStore.setGuest(false);
+      router.push('/login');
+    }
   };
 
   const protectedNavigate = (path: string) => {
@@ -64,4 +77,3 @@ export function useMore() {
     protectedNavigate,
   };
 }
-

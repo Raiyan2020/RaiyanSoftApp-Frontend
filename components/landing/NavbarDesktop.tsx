@@ -20,6 +20,7 @@ import {
 import { useTranslation } from '@/lib/i18nContext';
 import { authService, User } from '@/lib/auth-service';
 import { guestStore } from '@/lib/guestStore';
+import { logoutUser } from '@/features/auth/api/user-auth-api';
 import { sectionLinks, pageLinks, headerPageLinks } from './NavbarLinks';
 import Avatar from '@/components/ui/avatar';
 import { profileRecords } from '@/components/profile/profile-records-data';
@@ -76,11 +77,19 @@ export default function NavbarDesktop({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSignOut = () => {
-    authService.clearUserSession();
-    guestStore.setGuest(false);
-    setDropdownOpen(false);
-    router.push('/login');
+  const handleSignOut = async () => {
+    try {
+      if (authService.getUserToken()) {
+        await logoutUser();
+      }
+    } catch (error) {
+      console.error('Backend sign out failed', error);
+    } finally {
+      authService.clearUserSession();
+      guestStore.setGuest(false);
+      setDropdownOpen(false);
+      router.push('/login');
+    }
   };
 
   const markNotificationComplete = (recordId: string) => {

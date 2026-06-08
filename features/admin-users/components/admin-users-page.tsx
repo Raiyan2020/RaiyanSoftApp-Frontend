@@ -11,7 +11,9 @@ import UserDetailDrawer from './user-detail-drawer';
 export default function AdminUsersPage() {
   const {
     users,
+    loading,
     error,
+    actionError,
     searchTerm,
     setSearchTerm,
     filterStatus,
@@ -54,12 +56,12 @@ export default function AdminUsersPage() {
         </button>
       </div>
 
-      {error ? (
+      {error || actionError ? (
         <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-start gap-3">
           <AlertTriangle className="text-red-400 shrink-0" size={20} />
           <div>
-            <h3 className="text-red-400 font-bold text-sm">Error Loading Users</h3>
-            <p className="text-red-400/80 text-xs mt-1">{error}</p>
+            <h3 className="text-red-400 font-bold text-sm">{error ? 'Error Loading Users' : 'Action Unavailable'}</h3>
+            <p className="text-red-400/80 text-xs mt-1">{error || actionError}</p>
           </div>
         </div>
       ) : null}
@@ -72,7 +74,14 @@ export default function AdminUsersPage() {
       />
 
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl overflow-hidden min-h-[400px]">
-        {filteredUsers.length === 0 ? (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
+            <div className="w-16 h-16 bg-[var(--surface-3)] rounded-full flex items-center justify-center mb-4 border border-[var(--border)]">
+              <UserIcon size={24} />
+            </div>
+            <p>Loading users...</p>
+          </div>
+        ) : filteredUsers.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
             <div className="w-16 h-16 bg-[var(--surface-3)] rounded-full flex items-center justify-center mb-4 border border-[var(--border)]">
               <UserIcon size={24} />

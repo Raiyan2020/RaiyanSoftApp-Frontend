@@ -1,13 +1,13 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { X, Ban, CheckCircle, Trash2 } from 'lucide-react';
-import { User } from '@/lib/userStore';
 import { UserProject } from '@/lib/userProjectsStore';
+import { AdminUser } from '../types/admin-user.types';
 import UserProfileTab from './user-profile-tab';
 import UserProjectsTab from './user-projects-tab';
 
 interface UserDetailDrawerProps {
-  selectedUser: User;
+  selectedUser: AdminUser;
   onClose: () => void;
   activeTab: 'profile' | 'projects';
   setActiveTab: (tab: 'profile' | 'projects') => void;
@@ -15,7 +15,7 @@ interface UserDetailDrawerProps {
   userProjects: UserProject[];
   formatDate: (ts: number) => string;
   formatDateTime: (ts: number) => string;
-  onToggleStatus: (user: User) => void;
+  onToggleStatus: (user: AdminUser) => void;
   onDeleteUser: (id: string) => void;
 }
 

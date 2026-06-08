@@ -4,6 +4,7 @@ import { Menu } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
 import { authService, User } from '@/lib/auth-service';
 import { guestStore } from '@/lib/guestStore';
+import { logoutUser } from '@/features/auth/api/user-auth-api';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { sectionLinks, pageLinks } from './NavbarLinks';
 import Avatar from '@/components/ui/avatar';
@@ -154,11 +155,19 @@ export default function NavbarMobile({
                     <span>{t('more.view_profile')}</span>
                   </Link>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       setMenuOpen(false);
-                      authService.clearUserSession();
-                      guestStore.setGuest(false);
-                      window.location.href = '/login';
+                      try {
+                        if (authService.getUserToken()) {
+                          await logoutUser();
+                        }
+                      } catch (error) {
+                        console.error('Backend sign out failed', error);
+                      } finally {
+                        authService.clearUserSession();
+                        guestStore.setGuest(false);
+                        window.location.href = '/login';
+                      }
                     }}
                     className="flex items-center justify-center gap-2 rounded-2xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm font-bold text-red-400 transition-colors hover:bg-red-500/20 col-span-2"
                   >

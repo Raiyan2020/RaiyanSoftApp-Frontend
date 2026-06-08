@@ -1,10 +1,10 @@
 import React from 'react';
 import { Phone, User as UserIcon, Calendar, Briefcase, Clock, CheckCircle } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
-import { User } from '@/lib/userStore';
+import { AdminUser } from '../types/admin-user.types';
 
 interface UserProfileTabProps {
-  selectedUser: User;
+  selectedUser: AdminUser;
   formatDate: (ts: number) => string;
   formatDateTime: (ts: number) => string;
 }

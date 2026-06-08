@@ -20,7 +20,7 @@ function getApiErrorMessage(response: ApiResponse<unknown>) {
 }
 
 export async function fetchManagedCountries() {
-  const response = await apiService.get<ManagedCountry[]>('user/pages/privacy-policy', {
+  const response = await apiService.get<ManagedCountry[]>('user/countries', {
     skipGlobalToast: true,
   });
 
