@@ -1,60 +1,34 @@
 'use client';
-import { useEffect, useRef } from 'react';
-
-const packages = [
-  {
-    name: 'إطلاق سريع',
-    bestFor: 'للمشاريع التي تحتاج حضوراً احترافياً بسرعة',
-    features: ['صفحة تعريفية أو متجر بسيط', 'تصميم متجاوب', 'تهيئة SEO أساسية', 'نموذج تواصل وقياس'],
-    cta: 'ابدأ بمرحلة أولى',
-  },
-  {
-    name: 'منتج متكامل',
-    bestFor: 'لتطبيق أو منصة تحتاج تجربة مستخدم ولوحة تحكم',
-    features: ['تحليل وتجربة مستخدم', 'واجهات كاملة', 'تطوير وربط', 'اختبار وإطلاق مرحلي'],
-    cta: 'ناقش المنتج',
-    highlighted: true,
-  },
-  {
-    name: 'نمو وتحسين',
-    bestFor: 'لمنتج قائم يحتاج أداء أفضل وتحويل أعلى',
-    features: ['مراجعة UX/UI', 'تحسين سرعة وSEO', 'تحسين CTAs', 'تقرير فرص النمو'],
-    cta: 'اطلب تدقيقاً',
-  },
-];
+import { useRef } from 'react';
+import { useSectionReveal } from './use-section-reveal';
+import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 
 export default function Packages() {
   const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => entries.forEach((entry) => entry.isIntersecting && entry.target.classList.add('visible')),
-      { threshold: 0.1 }
-    );
-    ref.current?.querySelectorAll('.reveal').forEach((el) => observer.observe(el));
-    return () => observer.disconnect();
-  }, []);
+  useSectionReveal(ref);
+  const { content, textAlign } = useLandingContent();
+  const { packages } = content;
 
   return (
     <section id="packages" className="relative overflow-hidden bg-slate-50 py-24 dark:bg-navy-900 lg:py-28">
       <div className="pointer-events-none absolute left-0 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="reveal mb-14 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end">
-          <div className="space-y-4 text-center lg:text-right">
+        <div className={`reveal mb-14 grid gap-6 lg:grid-cols-[0.9fr_1.1fr] lg:items-end`}>
+          <div className={`space-y-4 ${textAlign}`}>
             <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-              العروض
+              {packages.badge}
             </div>
             <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
-              اختر نقطة البداية، <span className="gradient-text">ونصمم الطريق</span>
+              {packages.title} <span className="gradient-text">{packages.titleHighlight}</span>
             </h2>
           </div>
-          <p className="mx-auto max-w-3xl text-center text-lg leading-relaxed text-slate-600 dark:text-slate-300 lg:text-right">
-            لا نحتاج أن تبدأ بكل شيء. نحدد المرحلة الأعلى أثراً ونبني منها بثبات.
+          <p className={`mx-auto max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300 lg:mx-0 ${textAlign}`}>
+            {packages.description}
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.2fr_0.9fr] lg:items-stretch">
-          {packages.map((item, i) => (
+          {packages.items.map((item, i) => (
             <article
               key={item.name}
               className={`reveal rounded-[2rem] border p-6 shadow-sm transition-all duration-500 hover:-translate-y-2 sm:p-8 ${
@@ -64,11 +38,11 @@ export default function Packages() {
               }`}
               style={{ transitionDelay: `${i * 0.08}s` }}
             >
-              {item.highlighted && (
+              {item.highlighted ? (
                 <span className="mb-5 inline-flex rounded-full bg-primary/20 px-3 py-1 text-xs font-bold text-primary">
-                  الأكثر طلباً
+                  {packages.popularBadge}
                 </span>
-              )}
+              ) : null}
               <h3 className="text-2xl font-bold">{item.name}</h3>
               <p className={`mt-3 leading-relaxed ${item.highlighted ? 'text-slate-300' : 'text-slate-600 dark:text-slate-300'}`}>{item.bestFor}</p>
               <ul className="mt-7 space-y-3">
@@ -80,6 +54,7 @@ export default function Packages() {
                 ))}
               </ul>
               <button
+                type="button"
                 onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
                 className={`mt-8 w-full rounded-2xl px-5 py-3 font-bold transition-all duration-300 hover:-translate-y-0.5 ${
                   item.highlighted

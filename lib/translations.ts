@@ -313,6 +313,7 @@ export const translations = {
     "landing.nav.dashboard": "Dashboard",
     "landing.nav.toggle_dark": "Toggle Dark Mode",
     "landing.nav.menu": "Menu",
+    "landing.nav.language": "Language",
     "profile.title": "Profile"
   },
   ar: {
@@ -628,6 +629,7 @@ export const translations = {
     "landing.nav.dashboard": "لوحة التحكم",
     "landing.nav.toggle_dark": "تبديل الوضع الليلي",
     "landing.nav.menu": "القائمة",
+    "landing.nav.language": "اللغة",
     "profile.title": "الملف الشخصي"
   }
 };

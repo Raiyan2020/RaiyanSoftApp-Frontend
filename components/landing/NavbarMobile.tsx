@@ -31,7 +31,7 @@ export default function NavbarMobile({
   onOpenBooking,
   onOpenLead,
 }: NavbarMobileProps) {
-  const { t, dir } = useTranslation();
+  const { t, dir, language, setLanguage } = useTranslation();
 
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -49,6 +49,25 @@ export default function NavbarMobile({
         <SheetDescription className="sr-only">Mobile Menu Options</SheetDescription>
         
         <div className="space-y-6 pt-4 text-right">
+          <div className="flex items-center justify-between gap-3 px-2">
+            <p className="text-xs font-black text-slate-400">{t('landing.nav.language')}</p>
+            <div className="flex items-center rounded-2xl border border-white/10 bg-white/5 p-1">
+              <button
+                type="button"
+                onClick={() => setLanguage('ar')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold ${language === 'ar' ? 'bg-primary text-white' : 'text-slate-300'}`}
+              >
+                AR
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage('en')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold ${language === 'en' ? 'bg-primary text-white' : 'text-slate-300'}`}
+              >
+                EN
+              </button>
+            </div>
+          </div>
           <div>
             <p className="mb-2 px-2 text-xs font-black text-slate-400">{t('landing.nav.sections_title')}</p>
             <div className="grid grid-cols-2 gap-2">

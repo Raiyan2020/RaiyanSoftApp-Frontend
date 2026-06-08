@@ -50,7 +50,7 @@ export default function NavbarDesktop({
   onOpenBooking,
   onOpenLead,
 }: NavbarDesktopProps) {
-  const { t, dir } = useTranslation();
+  const { t, dir, language, setLanguage } = useTranslation();
   const router = useRouter();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -186,6 +186,22 @@ export default function NavbarDesktop({
       </div>
 
       <div className="flex shrink-0 items-center gap-2">
+        <div className="hidden items-center rounded-2xl border border-cyan-950/10 bg-white/70 p-1 dark:border-white/10 dark:bg-white/5 sm:flex">
+          <button
+            type="button"
+            onClick={() => setLanguage('ar')}
+            className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition-colors ${language === 'ar' ? 'bg-primary text-white' : 'text-slate-600 dark:text-slate-300'}`}
+          >
+            AR
+          </button>
+          <button
+            type="button"
+            onClick={() => setLanguage('en')}
+            className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition-colors ${language === 'en' ? 'bg-primary text-white' : 'text-slate-600 dark:text-slate-300'}`}
+          >
+            EN
+          </button>
+        </div>
         <button
           id="dark-mode-toggle"
           onClick={onToggleDark}
