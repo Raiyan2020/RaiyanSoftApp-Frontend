@@ -5,9 +5,11 @@ import { fetchAdminTimeSlots, saveAdminTimeSlots } from '../api/admin-meetings-a
 import { WeeklyAvailability } from '@/features/meetings/types/meeting.types';
 import {
   defaultWeeklyAvailability,
+  normalizeWeeklyAvailabilityPayload,
   timeSlotsToWeeklyAvailability,
-  weeklyAvailabilityToTimeSlots,
 } from '@/features/meetings/utils/meeting-helpers';
+import { globalToast } from '@/lib/toast-context';
+import { TimeSlotDayApiItem } from '@/features/meetings/types/meeting.types';
 
 export function useAdminTimeSlots() {
   const [weeklyAvailability, setWeeklyAvailability] = useState<WeeklyAvailability>(
@@ -23,7 +25,9 @@ export function useAdminTimeSlots() {
 
     try {
       const data = await fetchAdminTimeSlots();
-      if (data?.days) {
+      if (Array.isArray(data)) {
+        setWeeklyAvailability(timeSlotsToWeeklyAvailability(data as TimeSlotDayApiItem[]));
+      } else if (data?.days) {
         setWeeklyAvailability(timeSlotsToWeeklyAvailability(data.days));
       }
     } catch (err: any) {
@@ -42,10 +46,13 @@ export function useAdminTimeSlots() {
     setError(null);
 
     try {
-      const payload = weeklyAvailabilityToTimeSlots(weeklyAvailability);
-      await saveAdminTimeSlots(payload);
+      const payload = normalizeWeeklyAvailabilityPayload(weeklyAvailability);
+      const response = await saveAdminTimeSlots(payload);
+      globalToast.success(response.message || 'Time slots saved successfully.');
     } catch (err: any) {
-      setError(err.message || 'Failed to save time slots.');
+      const message = err.message || 'Failed to save time slots.';
+      setError(message);
+      globalToast.error(message);
       throw err;
     } finally {
       setSaving(false);

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18nContext';
 import { AdminLeadListItem, LEAD_STATUS, LeadStatusCode } from '../types/admin-lead.types';
+import { getLeadStatusCode } from '../utils/lead-status';
 import { useAdminLeadsList } from './use-admin-leads-list';
 import { useAdminLead } from './use-admin-lead';
 import { useChangeLeadStatus } from './use-change-lead-status';
@@ -24,6 +25,7 @@ export function useAdminLeads() {
   const [selectedLeadId, setSelectedLeadId] = useState<number | null>(null);
   const [selectedListItem, setSelectedListItem] = useState<AdminLeadListItem | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [updatingLeadId, setUpdatingLeadId] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedSearch(searchQuery.trim()), 350);
@@ -106,6 +108,35 @@ export function useAdminLeads() {
     }
   };
 
+  const handleStatusChange = async (lead: AdminLeadListItem, nextStatus: LeadStatusCode) => {
+    const currentStatus = getLeadStatusCode(lead.status);
+    if (currentStatus === nextStatus || updatingLeadId) return;
+    if (nextStatus === LEAD_STATUS.PENDING) return;
+
+    setUpdatingLeadId(lead.id);
+
+    try {
+      await changeStatus(
+        lead.id,
+        nextStatus === LEAD_STATUS.APPROVED ? 'approve' : 'reject'
+      );
+      setActionMessage(
+        nextStatus === LEAD_STATUS.APPROVED
+          ? 'Lead approved successfully.'
+          : 'Lead rejected successfully.'
+      );
+
+      await Promise.all([
+        reloadList(),
+        selectedLeadId === lead.id ? reloadDetail() : Promise.resolve(),
+      ]);
+    } catch {
+      // error surfaced via statusError
+    } finally {
+      setUpdatingLeadId(null);
+    }
+  };
+
   const toWhatsAppDigits = (phone: string): string | null => {
     if (!phone) return null;
     const digits = phone.replace(/\D/g, '');
@@ -134,6 +165,7 @@ export function useAdminLeads() {
     detailError,
     statusLoading,
     statusError,
+    updatingLeadId,
     actionMessage,
     statusFilter,
     setStatusFilter,
@@ -144,6 +176,7 @@ export function useAdminLeads() {
     closeLead,
     handleApprove,
     handleReject,
+    handleStatusChange,
     toWhatsAppDigits,
     page,
     goToPage,

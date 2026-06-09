@@ -1,14 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { collection, getDocs, query, where, doc, getDoc, orderBy } from 'firebase/firestore';
-import { useUsers, userStore, User } from '@/lib/userStore';
 import { app, db } from '@/lib/firebase-client';
 import { UserProject } from '@/lib/userProjectsStore';
+import { fetchAdminUsers, toggleAdminUserBlock } from '../api/admin-users-api';
+import { AdminUser } from '../types/admin-user.types';
+import { mapAdminApiUser } from '../utils/admin-user-mappers';
 
 export function useAdminUsers() {
-  const { users, error } = useUsers();
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'All' | 'Active' | 'Disabled'>('All');
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const [activeTab, setActiveTab] = useState<'profile' | 'projects'>('profile');
@@ -20,6 +25,38 @@ export function useAdminUsers() {
       console.log('Admin Dashboard Loaded. Firebase Project ID:', app.options.projectId);
     }
   }, []);
+
+  const loadUsers = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const query = searchTerm.trim();
+      const data = await fetchAdminUsers({
+        name: query,
+        email: query,
+        phone: query,
+      });
+      const mappedUsers = data.map(mapAdminApiUser);
+      setUsers(mappedUsers);
+      setSelectedUser((current) =>
+        current ? mappedUsers.find((user) => user.id === current.id) || current : null
+      );
+    } catch (err: any) {
+      setError(err.message || 'Failed to load users.');
+      setUsers([]);
+    } finally {
+      setLoading(false);
+    }
+  }, [searchTerm]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadUsers();
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [loadUsers]);
 
   const fetchUserProjects = async (uid: string) => {
     setLoadingProjects(true);
@@ -103,7 +140,7 @@ export function useAdminUsers() {
     }
   }, [selectedUser]);
 
-  const filteredUsers = users.filter((user) => {
+  const filteredUsers = useMemo(() => users.filter((user) => {
     const matchesSearch =
       user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -113,7 +150,7 @@ export function useAdminUsers() {
     const matchesFilter = filterStatus === 'All' || user.status === filterStatus;
 
     return matchesSearch && matchesFilter;
-  });
+  }), [filterStatus, searchTerm, users]);
 
   const formatDate = (ts: number) => {
     if (!ts) return 'N/A';
@@ -135,26 +172,29 @@ export function useAdminUsers() {
     alert(`Exporting ${filteredUsers.length} users to CSV...`);
   };
 
-  const handleToggleStatus = (user: User) => {
-    userStore.toggleStatus(user.id);
-    if (selectedUser?.id === user.id) {
-      setSelectedUser((prev) =>
-        prev ? { ...prev, status: prev.status === 'Active' ? 'Disabled' : 'Active' } : null
-      );
+  const handleToggleStatus = async (user: AdminUser) => {
+    setActionError(null);
+
+    try {
+      await toggleAdminUserBlock(user.id);
+      await loadUsers();
+    } catch (err: any) {
+      setActionError(err.message || 'Failed to update user status.');
     }
   };
 
   const handleDelete = () => {
     if (deleteId) {
-      userStore.deleteUser(deleteId);
-      if (selectedUser?.id === deleteId) setSelectedUser(null);
+      setActionError('Deleting admin users is not available in the Postman collection.');
       setDeleteId(null);
     }
   };
 
   return {
     users,
+    loading,
     error,
+    actionError,
     searchTerm,
     setSearchTerm,
     filterStatus,

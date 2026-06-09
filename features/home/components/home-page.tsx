@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, Plus, ChevronRight, ChevronLeft } from 'lucide-react';
+import { Bell, Box, Plus, ChevronRight, ChevronLeft } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
 import EmptyState from '@/components/ui/empty-state';
 import ProjectWizard from '@/features/projects/components/project-wizard';
@@ -16,6 +16,8 @@ export default function HomePage() {
     currentUser,
     userName,
     projects,
+    projectsLoading,
+    projectsError,
     isWizardOpen,
     setIsWizardOpen,
     handleCreateClick,
@@ -72,7 +74,23 @@ export default function HomePage() {
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <section>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {projects.length > 0 ? (
+            {projectsLoading ? (
+              <div className="sm:col-span-2 xl:col-span-3">
+                <EmptyState
+                  icon={<Box size={24} />}
+                  title={dir === 'rtl' ? 'جاري تحميل المشاريع...' : 'Loading projects...'}
+                  subtitle={t('home.create_first')}
+                />
+              </div>
+            ) : projectsError ? (
+              <div className="sm:col-span-2 xl:col-span-3">
+                <EmptyState
+                  icon={<Box size={24} />}
+                  title={projectsError}
+                  subtitle={t('project.back_home')}
+                />
+              </div>
+            ) : projects.length > 0 ? (
               projects.map((app) => (
                 <AppCard
                   key={app.id}

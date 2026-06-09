@@ -1,5 +1,5 @@
 import React from 'react';
-import { Save, Edit2, ChevronLeft, ChevronRight, Box, Globe, ExternalLink } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Box, Globe, ExternalLink } from 'lucide-react';
 import EmptyState from '@/components/ui/empty-state';
 import Button from '@/components/ui/button';
 import ProjectHeader from './project-header';
@@ -14,25 +14,29 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
     dir,
     language,
     project,
-    isEditingName,
-    setIsEditingName,
-    nameDraft,
-    setNameDraft,
-    isEditingDesc,
-    setIsEditingDesc,
-    descDraft,
-    setDescDraft,
-    handleSaveName,
-    handleSaveDesc,
+    loading,
+    error,
     handleOpenUrl,
   } = useProjectDetails(id);
+
+  if (loading) {
+    return (
+      <div className="app-page app-page-narrow flex min-h-[60vh] items-center justify-center text-center text-[var(--text-muted)]">
+        <EmptyState
+          icon={<Box size={24} />}
+          title={dir === 'rtl' ? 'جاري تحميل المشروع...' : 'Loading project...'}
+          subtitle={t('project.details')}
+        />
+      </div>
+    );
+  }
 
   if (!project) {
     return (
       <div className="app-page app-page-narrow flex min-h-[60vh] items-center justify-center text-center text-[var(--text-muted)]">
         <EmptyState
           icon={<Box size={24} />}
-          title={t('project.not_found')}
+          title={error || t('project.not_found')}
           subtitle={t('project.removed')}
           action={
             <Button onClick={() => router.push('/home')} className="mt-4">
@@ -43,6 +47,15 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
       </div>
     );
   }
+
+  const answerGroups = project.answers.reduce<Record<string, string[]>>((acc, answer) => {
+    const key = answer.question || `Q${answer.form_question_id}`;
+    if (!acc[key]) acc[key] = [];
+    if (answer.answer && !acc[key].includes(answer.answer)) {
+      acc[key].push(answer.answer);
+    }
+    return acc;
+  }, {});
 
   return (
     <div className="app-page app-page-wide">
@@ -67,23 +80,22 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
           version={project.version}
           brandColor={project.brandColor}
           projectUrl={project.projectUrl}
-          isEditingName={isEditingName}
-          nameDraft={nameDraft}
+          isEditingName={false}
+          nameDraft={project.name}
           t={t}
           onOpenUrl={handleOpenUrl}
-          onStartEditName={() => setIsEditingName(true)}
-          onChangeNameDraft={setNameDraft}
-          onSaveName={handleSaveName}
-          onCancelEditName={() => {
-            setIsEditingName(false);
-            setNameDraft(project.name);
-          }}
+          onStartEditName={() => {}}
+          onChangeNameDraft={() => {}}
+          onSaveName={() => {}}
+          onCancelEditName={() => {}}
+          canEdit={false}
         />
 
         <ProjectStatusCard
           estimatedPrice={project.estimatedPrice}
           estimatedDuration={project.estimatedDuration}
           status={project.status}
+          statusLabel={project.statusLabel}
           t={t}
           language={language}
         />
@@ -102,49 +114,10 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
         <div className="space-y-3">
           <div className="flex items-center justify-between px-1">
             <h3 className="text-[var(--text)] font-bold text-base">{t('project.desc_title')}</h3>
-            {!isEditingDesc ? (
-              <button
-                type="button"
-                onClick={() => setIsEditingDesc(true)}
-                className="p-1.5 text-primary hover:bg-primary/10 rounded-lg transition-colors"
-              >
-                <Edit2 size={16} />
-              </button>
-            ) : null}
           </div>
 
           <div className="app-card rounded-2xl p-4 min-h-[120px]">
-            {isEditingDesc ? (
-              <div className="flex flex-col gap-3">
-                <textarea
-                  value={descDraft}
-                  onChange={(e) => setDescDraft(e.target.value)}
-                  className="w-full h-32 app-input border-primary/50 rounded-xl p-3 text-sm focus:outline-none focus:ring-1 focus:ring-primary resize-none"
-                />
-                <div className="flex justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsEditingDesc(false);
-                      setDescDraft(project.description);
-                    }}
-                    className="px-4 py-2 rounded-xl text-xs font-medium text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-2)] border border-[var(--border)]"
-                  >
-                    {t('project.cancel')}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleSaveDesc}
-                    className="px-4 py-2 rounded-xl text-xs font-medium text-[var(--text)] bg-primary shadow-lg shadow-primary/20 flex items-center gap-1"
-                  >
-                    <Save size={14} />
-                    {t('project.save')}
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <p className="text-[var(--text-muted)] text-sm leading-relaxed whitespace-pre-wrap">{project.description}</p>
-            )}
+            <p className="text-[var(--text-muted)] text-sm leading-relaxed whitespace-pre-wrap">{project.description || '-'}</p>
           </div>
         </div>
 
@@ -167,6 +140,30 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
             <ExternalLink size={18} className="text-[var(--text-muted)] group-hover:text-[var(--text)] transition-colors" />
           </a>
         ) : null}
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-[var(--text)] font-bold text-base">{dir === 'rtl' ? 'الإجابات' : 'Answers'}</h3>
+          </div>
+
+          <div className="space-y-3">
+            {Object.entries(answerGroups).map(([question, answers]) => (
+              <div key={question} className="app-card rounded-2xl p-4">
+                <p className="text-sm font-bold text-[var(--text)]">{question}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {answers.map((answer) => (
+                    <span
+                      key={`${question}-${answer}`}
+                      className="rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-3 py-1 text-xs font-medium text-[var(--text-muted)]"
+                    >
+                      {answer}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
         </div>
       </div>
     </div>

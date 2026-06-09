@@ -15,6 +15,7 @@ interface ProjectHeaderProps {
   onChangeNameDraft: (val: string) => void;
   onSaveName: () => void;
   onCancelEditName: () => void;
+  canEdit?: boolean;
 }
 
 export default function ProjectHeader({
@@ -30,6 +31,7 @@ export default function ProjectHeader({
   onChangeNameDraft,
   onSaveName,
   onCancelEditName,
+  canEdit = true,
 }: ProjectHeaderProps) {
   const finalColor = brandColor || '#1DB7F0';
 
@@ -77,7 +79,7 @@ export default function ProjectHeader({
                 </button>
               </div>
             </div>
-          ) : (
+          ) : canEdit ? (
             <button
               type="button"
               onClick={onStartEditName}
@@ -89,6 +91,13 @@ export default function ProjectHeader({
               </h2>
               <p className="text-[var(--text-muted)] text-xs mt-1">{version || 'v1.0.0'}</p>
             </button>
+          ) : (
+            <div className="rounded-lg p-1 -ms-1 w-full text-start">
+              <h2 className="text-2xl font-bold text-[var(--text)] leading-tight break-words">
+                {name}
+              </h2>
+              <p className="text-[var(--text-muted)] text-xs mt-1">{version || 'v1.0.0'}</p>
+            </div>
           )}
         </div>
       </div>

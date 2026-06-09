@@ -1,13 +1,13 @@
 import React from 'react';
 import { Mail, Phone, Eye, Ban, CheckCircle, Trash2 } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
-import { User } from '@/lib/userStore';
+import { AdminUser } from '../types/admin-user.types';
 
 interface UsersTableRowProps {
-  user: User;
+  user: AdminUser;
   formatDate: (ts: number) => string;
-  onSelectUser: (user: User) => void;
-  onToggleStatus: (user: User) => void;
+  onSelectUser: (user: AdminUser) => void;
+  onToggleStatus: (user: AdminUser) => void;
   onDeleteUser: (id: string) => void;
 }
 
@@ -27,7 +27,7 @@ export default function UsersTableRow({
             <div className="font-medium text-[var(--text)]">
               {user.firstName} {user.lastName}
             </div>
-            <div className="text-[var(--text-muted)] text-xs">ID: {user.id.slice(-6)}</div>
+            <div className="text-[var(--text-muted)] text-xs">ID: {user.userCode || user.id}</div>
           </div>
         </div>
       </td>

@@ -1,16 +1,26 @@
 import React from 'react';
-import { Phone, MessageCircle, Eye } from 'lucide-react';
+import { Phone, MessageCircle, Eye, Loader2 } from 'lucide-react';
+import { useTranslation } from '@/lib/i18nContext';
 import Avatar from '@/components/ui/avatar';
-import { AdminLeadListItem } from '../types/admin-lead.types';
-import { getLeadStatusTone } from '../utils/lead-status';
+import { AdminLeadListItem, LEAD_STATUS, LeadStatusCode } from '../types/admin-lead.types';
+import { formatLeadStatusLabel, getLeadStatusCode, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
 
 interface LeadsTableRowProps {
   lead: AdminLeadListItem;
   onSelectLead: (lead: AdminLeadListItem) => void;
   toWhatsAppDigits: (phone: string) => string | null;
+  isUpdatingStatus: boolean;
+  onChangeStatus: (lead: AdminLeadListItem, nextStatus: LeadStatusCode) => void;
 }
 
-export default function LeadsTableRow({ lead, onSelectLead, toWhatsAppDigits }: LeadsTableRowProps) {
+export default function LeadsTableRow({
+  lead,
+  onSelectLead,
+  toWhatsAppDigits,
+  isUpdatingStatus,
+  onChangeStatus,
+}: LeadsTableRowProps) {
+  const { t, language } = useTranslation();
   const waDigits = toWhatsAppDigits(lead.user.full_phone);
   const waMessage =
     'السلام عليكم ورحمة الله وبركاته\nحضرتك قدمت عندنا طلب تطبيق ، طلبك مقبول ان شاء الله ممكن تفاصيل اكثر عن المشروع';
@@ -21,6 +31,9 @@ export default function LeadsTableRow({ lead, onSelectLead, toWhatsAppDigits }: 
     : null;
 
   const statusTone = getLeadStatusTone(lead.status);
+  const statusCode = getLeadStatusCode(lead.status);
+  const statusLabel = formatLeadStatusLabel(statusCode, language);
+  const canChangeStatus = isLeadPending(lead.status);
 
   return (
     <tr className="hover:bg-white/[0.02] transition-colors group">
@@ -40,11 +53,30 @@ export default function LeadsTableRow({ lead, onSelectLead, toWhatsAppDigits }: 
         <div className="text-xs text-[var(--text-muted)] truncate max-w-[220px]">{lead.description}</div>
       </td>
       <td className="p-5">
-        <span
-          className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${statusTone.badgeClass}`}
-        >
-          {lead.status}
-        </span>
+        <div className="flex items-center gap-2">
+          <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${statusTone.badgeClass}`}>
+            {statusLabel}
+          </span>
+          <div className="relative">
+            <select
+              value={statusCode}
+              disabled={!canChangeStatus || isUpdatingStatus}
+              onChange={(event) => onChangeStatus(lead, Number(event.target.value) as LeadStatusCode)}
+              className="h-9 min-w-32 rounded-lg border border-[var(--border)] bg-[var(--surface-3)] px-3 pe-8 text-xs font-bold text-[var(--text)] outline-none transition-colors hover:border-primary/40 focus:border-primary disabled:cursor-not-allowed disabled:opacity-55"
+              title={canChangeStatus ? t('admin.leads.change_status') : t('admin.leads.status_locked')}
+            >
+              <option value={LEAD_STATUS.PENDING}>{formatLeadStatusLabel(LEAD_STATUS.PENDING, language)}</option>
+              <option value={LEAD_STATUS.APPROVED}>{formatLeadStatusLabel(LEAD_STATUS.APPROVED, language)}</option>
+              <option value={LEAD_STATUS.REJECTED}>{formatLeadStatusLabel(LEAD_STATUS.REJECTED, language)}</option>
+            </select>
+            {isUpdatingStatus ? (
+              <Loader2
+                size={14}
+                className="pointer-events-none absolute top-1/2 -translate-y-1/2 animate-spin text-primary ltr:right-2 rtl:left-2"
+              />
+            ) : null}
+          </div>
+        </div>
       </td>
       <td className="p-5 text-[var(--text-muted)] text-xs">{lead.date}</td>
       <td className="p-5 text-right">
@@ -61,7 +93,7 @@ export default function LeadsTableRow({ lead, onSelectLead, toWhatsAppDigits }: 
                 ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'
                 : 'bg-[var(--surface-3)] text-[var(--text-muted)] cursor-not-allowed opacity-50'
             }`}
-            title={waUrl ? 'Chat on WhatsApp Web' : 'No Phone'}
+            title={waUrl ? t('admin.leads.whatsapp') : t('admin.leads.no_phone')}
           >
             <MessageCircle size={16} />
           </a>

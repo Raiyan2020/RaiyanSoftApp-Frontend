@@ -1,14 +1,31 @@
 import { LEAD_STATUS, LeadStatusCode } from '../types/admin-lead.types';
 
+export function getLeadStatusCode(status: string | LeadStatusCode): LeadStatusCode {
+  if (typeof status === 'number') return status;
+
+  const lower = status.toLowerCase();
+  if (
+    lower.includes('reject') ||
+    status.includes('مرفوض') ||
+    status.includes('رفض')
+  ) {
+    return LEAD_STATUS.REJECTED;
+  }
+
+  if (
+    lower.includes('approv') ||
+    status.includes('مقبول') ||
+    status.includes('وافق') ||
+    status.includes('الموافقة')
+  ) {
+    return LEAD_STATUS.APPROVED;
+  }
+
+  return LEAD_STATUS.PENDING;
+}
+
 export function getLeadStatusTone(status: string | LeadStatusCode) {
-  const normalized =
-    typeof status === 'number'
-      ? status
-      : status.toLowerCase().includes('reject') || status.includes('مرفوض')
-        ? LEAD_STATUS.REJECTED
-        : status.toLowerCase().includes('approv') || status.includes('مقبول')
-          ? LEAD_STATUS.APPROVED
-          : LEAD_STATUS.PENDING;
+  const normalized = getLeadStatusCode(status);
 
   if (normalized === LEAD_STATUS.APPROVED) {
     return {
@@ -33,7 +50,7 @@ export function getLeadStatusTone(status: string | LeadStatusCode) {
 export function isLeadPending(status: string | LeadStatusCode) {
   if (typeof status === 'number') return status === LEAD_STATUS.PENDING;
   const lower = status.toLowerCase();
-  return lower.includes('pending') || status.includes('قيد');
+  return lower.includes('pending') || status.includes('قيد') || status.includes('انتظار');
 }
 
 export function formatLeadStatusLabel(status: string | LeadStatusCode, language: string) {

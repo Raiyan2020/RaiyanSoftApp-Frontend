@@ -4,6 +4,8 @@ import { authService, User } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
 import { guestStore } from '@/lib/guestStore';
 import { useAuthGuard } from '@/lib/authGuardContext';
+import { deleteUserAccount, logoutUser } from '@/features/auth/api/user-auth-api';
+import { getUserDisplayName } from '@/lib/user-display';
 
 export function useMore() {
   const router = useRouter();
@@ -21,26 +23,38 @@ export function useMore() {
   }, []);
 
   const isGuest = !user && guestStore.isGuest;
-  const userName = user ? `${user.first_name} ${user.last_name}` : (isGuest ? t('home.guest') : 'User');
+  const userName = user ? getUserDisplayName(user) : (isGuest ? t('home.guest') : 'User');
   const userEmail = user?.email || (isGuest ? 'Guest Access' : 'No Email');
 
   const handleSignOut = async () => {
     try {
+      if (authService.getUserToken()) {
+        await logoutUser();
+      }
+    } catch (error) {
+      console.error('Backend sign out failed', error);
+    } finally {
       authService.clearUserSession();
       guestStore.setGuest(false);
-      router.push('/login');
-    } catch (error) {
-      console.error('Error signing out', error);
+      router.push('/');
     }
   };
 
   const handleGuestExit = () => {
     guestStore.setGuest(false);
-    router.push('/login');
+    router.push('/');
   };
 
   const handleDeleteAccount = async () => {
-    await handleSignOut();
+    try {
+      await deleteUserAccount();
+    } catch (error) {
+      console.error('Backend account deletion failed', error);
+    } finally {
+      authService.clearUserSession();
+      guestStore.setGuest(false);
+      router.push('/login');
+    }
   };
 
   const protectedNavigate = (path: string) => {
@@ -64,4 +78,3 @@ export function useMore() {
     protectedNavigate,
   };
 }
-

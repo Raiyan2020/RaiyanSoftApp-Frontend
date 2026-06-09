@@ -10,12 +10,13 @@ import { useTranslation } from '@/lib/i18nContext';
 import { usePhoneAuth } from '@/features/auth/hooks/use-phone-auth';
 
 interface LeadProjectAuthGateProps {
-  onAuthenticated: () => void;
+  onAuthenticated: () => void | Promise<void>;
+  submitError?: string | null;
 }
 
-export default function LeadProjectAuthGate({ onAuthenticated }: LeadProjectAuthGateProps) {
+export default function LeadProjectAuthGate({ onAuthenticated, submitError }: LeadProjectAuthGateProps) {
   const { t, dir } = useTranslation();
-  const { step, isNewUser, loading, error, message, checkPhone, submitOtp } = usePhoneAuth({
+  const { step, phone, isNewUser, newUserOtpSent, loading, error, message, checkPhone, submitRegistrationDetails, submitOtp } = usePhoneAuth({
     onSuccess: onAuthenticated,
   });
   const [phoneValue, setPhoneValue] = useState('');
@@ -23,7 +24,9 @@ export default function LeadProjectAuthGate({ onAuthenticated }: LeadProjectAuth
   const [otp, setOtp] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
 
-  const activeError = localError || error;
+  const activeError = localError || error || submitError;
+  const needsNameBeforeOtp = Boolean(isNewUser && !newUserOtpSent);
+  const sendOtpLabel = dir === 'rtl' ? 'إنشاء الحساب وإرسال رمز التحقق' : 'Create account and send OTP';
 
   const handlePhoneSubmit = () => {
     setLocalError(null);
@@ -34,17 +37,33 @@ export default function LeadProjectAuthGate({ onAuthenticated }: LeadProjectAuth
     checkPhone(phoneValue);
   };
 
+  const handleNewUserOtpRequest = () => {
+    setLocalError(null);
+    if (!name.trim()) {
+      setLocalError(t('auth.name_required'));
+      return;
+    }
+    submitRegistrationDetails(name.trim());
+  };
+
   const handleOtpSubmit = () => {
     setLocalError(null);
+
+    if (isNewUser && !newUserOtpSent) {
+      handleNewUserOtpRequest();
+      return;
+    }
+
     if (isNewUser && !name.trim()) {
       setLocalError(t('auth.name_required'));
       return;
     }
+
     if (!otp.trim() || otp.trim().length < 4) {
       setLocalError(t('auth.otp_invalid'));
       return;
     }
-    submitOtp({ phone: phoneValue, otp: otp.trim(), name: name.trim() });
+    submitOtp({ phone, otp: otp.trim() });
   };
 
   return (
@@ -85,26 +104,48 @@ export default function LeadProjectAuthGate({ onAuthenticated }: LeadProjectAuth
           </Button>
         </div>
       ) : (
-        <div className="space-y-4">
+        <form
+          className="space-y-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleOtpSubmit();
+          }}
+        >
           {isNewUser ? (
             <Input
               label={t('auth.full_name')}
               value={name}
               onChange={(event) => setName(event.target.value)}
               icon={<User size={16} />}
+              placeholder={t('auth.name_placeholder')}
             />
           ) : null}
-          <Input
-            label={t('auth.otp')}
-            value={otp}
-            onChange={(event) => setOtp(event.target.value)}
-            icon={<ShieldCheck size={16} />}
-            dir="ltr"
-          />
-          <Button type="button" onClick={handleOtpSubmit} disabled={loading} className="w-full">
-            {loading ? t('auth.verify_loading') : t('auth.verify_and_enter')}
+          {needsNameBeforeOtp ? (
+            <div className="rounded-xl border border-primary/20 bg-primary/10 p-3 text-start text-xs font-medium leading-5 text-primary">
+              {dir === 'rtl'
+                ? 'بعد إدخال الاسم اضغط الزر بالأسفل وسنرسل رمز التحقق إلى هاتفك.'
+                : 'After entering your name, press the button below and we will send the OTP to your phone.'}
+            </div>
+          ) : (
+            <Input
+              label={t('auth.otp')}
+              value={otp}
+              onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))}
+              icon={<ShieldCheck size={16} />}
+              dir="ltr"
+              autoFocus
+            />
+          )}
+          <Button type="submit" disabled={loading || (needsNameBeforeOtp && !name.trim())} className="w-full">
+            {loading
+              ? needsNameBeforeOtp
+                ? t('auth.signup_loading')
+                : t('auth.verify_loading')
+              : needsNameBeforeOtp
+                ? sendOtpLabel
+                : t('auth.verify_and_enter')}
           </Button>
-        </div>
+        </form>
       )}
     </div>
   );

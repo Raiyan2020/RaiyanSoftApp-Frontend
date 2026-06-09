@@ -82,7 +82,7 @@ export default function ProfileBookingsPanel() {
         />
       )}
 
-      <AnimatePresence>{showWizard ? <BookingWizard onClose={closeWizard} /> : null}</AnimatePresence>
+      <AnimatePresence>{showWizard ? <BookingWizard onClose={closeWizard} onBooked={reload} /> : null}</AnimatePresence>
 
       <ConfirmModal
         isOpen={showCancel}

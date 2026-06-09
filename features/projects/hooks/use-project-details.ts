@@ -1,39 +1,11 @@
-import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useUserProjects, userProjectsStore } from '@/lib/userProjectsStore';
 import { useTranslation } from '@/lib/i18nContext';
+import { useUserStoredProject } from '@/features/lead-project/hooks/use-user-stored-projects';
 
 export function useProjectDetails(id?: string) {
   const router = useRouter();
-  const { projects } = useUserProjects();
   const { t, dir, language } = useTranslation();
-
-  const project = projects.find((p) => p.id === id);
-
-  const [isEditingName, setIsEditingName] = useState(false);
-  const [nameDraft, setNameDraft] = useState('');
-
-  const [isEditingDesc, setIsEditingDesc] = useState(false);
-  const [descDraft, setDescDraft] = useState('');
-
-  useEffect(() => {
-    if (project) {
-      setNameDraft(project.name);
-      setDescDraft(project.description);
-    }
-  }, [project]);
-
-  const handleSaveName = () => {
-    if (!nameDraft.trim() || !project) return;
-    userProjectsStore.updateProject(project.id, { name: nameDraft });
-    setIsEditingName(false);
-  };
-
-  const handleSaveDesc = () => {
-    if (!descDraft.trim() || !project) return;
-    userProjectsStore.updateProject(project.id, { description: descDraft });
-    setIsEditingDesc(false);
-  };
+  const { project, loading, error } = useUserStoredProject(id);
 
   const handleOpenUrl = () => {
     if (project?.projectUrl) {
@@ -47,16 +19,8 @@ export function useProjectDetails(id?: string) {
     dir,
     language,
     project,
-    isEditingName,
-    setIsEditingName,
-    nameDraft,
-    setNameDraft,
-    isEditingDesc,
-    setIsEditingDesc,
-    descDraft,
-    setDescDraft,
-    handleSaveName,
-    handleSaveDesc,
+    loading,
+    error,
     handleOpenUrl,
   };
 }

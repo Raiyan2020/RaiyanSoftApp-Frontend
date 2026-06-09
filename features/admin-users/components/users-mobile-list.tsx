@@ -1,11 +1,11 @@
 import React from 'react';
 import { MoreHorizontal } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
-import { User } from '@/lib/userStore';
+import { AdminUser } from '../types/admin-user.types';
 
 interface UsersMobileListProps {
-  filteredUsers: User[];
-  onSelectUser: (user: User) => void;
+  filteredUsers: AdminUser[];
+  onSelectUser: (user: AdminUser) => void;
 }
 
 export default function UsersMobileList({ filteredUsers, onSelectUser }: UsersMobileListProps) {

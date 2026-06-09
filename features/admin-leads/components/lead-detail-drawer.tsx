@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle, X, Copy, CheckCircle, Loader2, XCircle } from 'lucide-react';
+import { useTranslation } from '@/lib/i18nContext';
 import { AdminLeadDetail, AdminLeadListItem } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
 import LeadProjectSummary from './lead-project-summary';
@@ -34,6 +35,7 @@ export default function LeadDetailDrawer({
   onApprove,
   onReject,
 }: LeadDetailDrawerProps) {
+  const { t } = useTranslation();
   const phone = lead?.user.phone || listItem.user.full_phone;
   const displayName = lead?.user.name || listItem.user.full_name;
   const projectName = lead?.project_name || listItem.project_name;
@@ -80,7 +82,7 @@ export default function LeadDetailDrawer({
                         ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'
                         : 'bg-[var(--surface-3)] text-[var(--text-muted)] cursor-not-allowed opacity-50'
                     }`}
-                    title={waUrl ? 'Chat on WhatsApp Web' : 'No Phone'}
+                    title={waUrl ? t('admin.leads.whatsapp') : t('admin.leads.no_phone')}
                   >
                     <MessageCircle size={14} />
                   </a>
@@ -100,7 +102,7 @@ export default function LeadDetailDrawer({
           <div className="flex items-center justify-between bg-[var(--surface-2)] p-4 rounded-xl border border-[var(--border)]">
             <div className="flex items-center gap-3">
               <span className="text-sm text-[var(--text-muted)] uppercase font-bold tracking-wider">
-                Current Status:
+                {t('admin.leads.current_status')}
               </span>
               <span className={`text-sm font-bold ${statusTone.textClass}`}>{statusLabel}</span>
             </div>
@@ -109,7 +111,7 @@ export default function LeadDetailDrawer({
 
           <div className="flex items-center justify-between bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
             <span className="text-[var(--text-muted)] text-xs uppercase font-bold tracking-wider">
-              {language === 'ar' ? 'رقم الطلب' : 'Request ID'}
+              {t('admin.leads.request_id')}
             </span>
             <div className="flex items-center gap-2">
               <code className="text-[var(--text)] text-sm font-mono bg-[var(--surface-2)] px-2 py-1 rounded border border-[var(--border)]">
@@ -119,10 +121,10 @@ export default function LeadDetailDrawer({
                 type="button"
                 onClick={() => {
                   navigator.clipboard.writeText(requestId);
-                  alert(language === 'ar' ? 'تم النسخ!' : 'Copied!');
+                  alert(t('admin.leads.copied'));
                 }}
                 className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-2)] rounded border border-[var(--border)] hover:bg-[var(--surface-3)] transition-colors"
-                title="Copy ID"
+                title={t('admin.leads.copy_id')}
               >
                 <Copy size={14} />
               </button>
@@ -143,9 +145,9 @@ export default function LeadDetailDrawer({
 
           {lead ? (
             <LeadProjectSummary
-              projectName={lead.project_name}
-              color={lead.color}
-              description={lead.description}
+              projectName={lead.project_name || listItem.project_name}
+              color={lead.color || '#3498db'}
+              description={lead.description || listItem.description}
               answers={lead.answers}
             />
           ) : !detailLoading && !detailError ? (
@@ -172,7 +174,7 @@ export default function LeadDetailDrawer({
           {canChangeStatus ? (
             <div className="pt-4 border-t border-[var(--border)] space-y-3">
               <h3 className="text-sm font-bold text-[var(--text)] uppercase tracking-wider">
-                Review Actions
+                {t('admin.leads.review_actions')}
               </h3>
               <div className="flex flex-col sm:flex-row gap-3">
                 <button
@@ -182,7 +184,7 @@ export default function LeadDetailDrawer({
                   className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   {statusLoading ? <Loader2 className="animate-spin" size={18} /> : <CheckCircle size={18} />}
-                  <span>Approve Lead</span>
+                  <span>{t('admin.leads.approve')}</span>
                 </button>
                 <button
                   type="button"
@@ -191,7 +193,7 @@ export default function LeadDetailDrawer({
                   className="flex-1 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl font-bold border border-red-500/20 flex items-center justify-center gap-2 disabled:opacity-60"
                 >
                   {statusLoading ? <Loader2 className="animate-spin" size={18} /> : <XCircle size={18} />}
-                  <span>Reject Lead</span>
+                  <span>{t('admin.leads.reject')}</span>
                 </button>
               </div>
             </div>

@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { adminLoginSchema, AdminLoginValues } from '../schemas/admin-login.schema';
 import { Field, FieldLabel, FieldError, PasswordInput } from '@/components/ui/field';
+import AdminLoginRedirect from './admin-login-redirect';
 
 export default function AdminLoginPage() {
   const {
@@ -28,6 +29,7 @@ export default function AdminLoginPage() {
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-[var(--bg)] relative overflow-hidden">
+      <AdminLoginRedirect />
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-50" />
       </div>
@@ -155,4 +157,3 @@ export default function AdminLoginPage() {
     </div>
   );
 }
-

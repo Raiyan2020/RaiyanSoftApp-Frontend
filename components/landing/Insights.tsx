@@ -32,9 +32,9 @@ export default function Insights() {
   }, []);
 
   return (
-    <section id="insights" className="relative overflow-hidden bg-white py-24 dark:bg-navy-950 lg:py-28">
+    <section id="insights" className="relative overflow-hidden bg-white py-12 dark:bg-navy-950 sm:py-16 lg:py-20">
       <div ref={ref} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="reveal mb-14 flex flex-col gap-6 text-center lg:flex-row lg:items-end lg:justify-between lg:text-right">
+        <div className="reveal mb-10 flex flex-col gap-6 text-center lg:mb-12 lg:flex-row lg:items-end lg:justify-between lg:text-right">
           <div className="space-y-4">
             <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
               المعرفة

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchUserMeetings } from '../api/user-meetings-api';
 import { MeetingsPagination, UserMeeting, UserMeetingsFilters } from '../types/meeting.types';
 
@@ -9,6 +9,12 @@ export function useUserMeetings(filters: UserMeetingsFilters = {}, enabled = tru
   const [pagination, setPagination] = useState<MeetingsPagination | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const normalizedFilters = useMemo(
+    () => ({
+      page: filters.page,
+    }),
+    [filters.page]
+  );
 
   const reload = useCallback(async () => {
     if (!enabled) return;
@@ -17,7 +23,7 @@ export function useUserMeetings(filters: UserMeetingsFilters = {}, enabled = tru
     setError(null);
 
     try {
-      const result = await fetchUserMeetings(filters);
+      const result = await fetchUserMeetings(normalizedFilters);
       setMeetings(result.meetings);
       setPagination(result.pagination);
     } catch (err: any) {
@@ -27,7 +33,7 @@ export function useUserMeetings(filters: UserMeetingsFilters = {}, enabled = tru
     } finally {
       setLoading(false);
     }
-  }, [enabled, filters]);
+  }, [enabled, normalizedFilters]);
 
   useEffect(() => {
     reload();

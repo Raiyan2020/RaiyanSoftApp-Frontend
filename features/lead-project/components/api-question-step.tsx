@@ -5,9 +5,8 @@ import { resolveQuestionType } from '../utils/question-helpers';
 
 interface ApiQuestionStepProps {
   question: FormQuestion;
-  answer: number | number[] | string | undefined;
+  answer: number | string | undefined;
   onSelectSingle: (optionId: number) => void;
-  onToggleMulti: (optionId: number) => void;
   onTextChange: (value: string) => void;
 }
 
@@ -15,7 +14,6 @@ export default function ApiQuestionStep({
   question,
   answer,
   onSelectSingle,
-  onToggleMulti,
   onTextChange,
 }: ApiQuestionStepProps) {
   const type = resolveQuestionType(question);
@@ -41,20 +39,13 @@ export default function ApiQuestionStep({
       <h2 className="mb-6 text-2xl font-bold text-[var(--text)]">{question.name}</h2>
       <div className="space-y-3">
         {question.options.map((option) => {
-          const isSelected =
-            type === 'multi_select'
-              ? Array.isArray(answer) && answer.includes(option.id)
-              : answer === option.id;
+          const isSelected = answer === option.id;
 
           return (
             <button
               key={option.id}
               type="button"
-              onClick={() =>
-                type === 'multi_select'
-                  ? onToggleMulti(option.id)
-                  : onSelectSingle(option.id)
-              }
+              onClick={() => onSelectSingle(option.id)}
               className={`flex w-full items-center justify-between rounded-xl border p-4 transition-all ${
                 isSelected
                   ? 'border-primary bg-primary/10 text-primary'

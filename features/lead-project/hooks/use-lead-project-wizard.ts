@@ -1,21 +1,21 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { authService } from '@/lib/auth-service';
+import {
+  clearLeadProjectDraft,
+  loadLeadProjectDraft,
+  saveLeadProjectDraft,
+} from '@/lib/leadProjectDraftStore';
 import { useTranslation } from '@/lib/i18nContext';
-import { PRESET_COLORS } from '@/features/projects/hooks/use-project-wizard';
-import { storeProject } from '../api/lead-project-api';
+import { globalToast } from '@/lib/toast-context';
+import { useUserColors, mapUserColorsToPresetOptions, FALLBACK_PRESET_COLORS } from '@/features/colors';
+import { getApiErrorMessage, storeProject } from '../api/lead-project-api';
+import { leadProjectKeys } from '../query-keys';
 import { FormQuestion } from '../types/form-question.types';
 import { isQuestionAnswered, resolveQuestionType } from '../utils/question-helpers';
 import { useFormQuestions } from './use-form-questions';
-
-function getApiErrorMessage(response: { message?: string; errors?: any }) {
-  if (response.errors && typeof response.errors === 'object') {
-    const errList = Object.values(response.errors).flat();
-    if (errList.length > 0) return errList.join(' ');
-  }
-  return response.message || 'Request failed.';
-}
 
 export function useLeadProjectWizard({
   onComplete,
@@ -25,53 +25,72 @@ export function useLeadProjectWizard({
   questionsEnabled?: boolean;
 }) {
   const { t, dir, language, setLanguage } = useTranslation();
+  const queryClient = useQueryClient();
+  const { colors } = useUserColors();
+  const presetColors = useMemo(
+    () => mapUserColorsToPresetOptions(colors),
+    [colors]
+  );
   const isAuthenticated = Boolean(authService.getUserToken());
-  const [needsAuth, setNeedsAuth] = useState(!isAuthenticated);
-  const [step, setStep] = useState(0);
+  const savedDraft = useMemo(() => loadLeadProjectDraft(), []);
+  const [step, setStep] = useState(savedDraft.step || 0);
   const [direction, setDirection] = useState(1);
-  const [name, setName] = useState('');
-  const [brandColor, setBrandColor] = useState(PRESET_COLORS[0].hex);
-  const [showCustomColor, setShowCustomColor] = useState(false);
+  const [name, setName] = useState(savedDraft.name || '');
+  const [brandColor, setBrandColor] = useState(savedDraft.brandColor || FALLBACK_PRESET_COLORS[0].hex);
+  const [showCustomColor, setShowCustomColor] = useState(savedDraft.showCustomColor || false);
   const [answersByQuestionId, setAnswersByQuestionId] = useState<
-    Record<number, number | number[] | string>
-  >({});
+    Record<number, number | string>
+  >(savedDraft.answersByQuestionId || {});
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { questions, loading: questionsLoading, error: questionsError, reload } = useFormQuestions(
+  const { questions, loading: questionsLoading, error: questionsError } = useFormQuestions(
     language,
-    questionsEnabled && !needsAuth
+    questionsEnabled
   );
+
+  const [colorsInitialized, setColorsInitialized] = useState(false);
+
+  useEffect(() => {
+    if (colorsInitialized || !presetColors.length) return;
+    if (!brandColor) setBrandColor(presetColors[0].hex);
+    setColorsInitialized(true);
+  }, [brandColor, colorsInitialized, presetColors]);
+
+  useEffect(() => {
+    saveLeadProjectDraft({
+      step,
+      name,
+      brandColor,
+      showCustomColor,
+      answersByQuestionId,
+    });
+  }, [answersByQuestionId, brandColor, name, showCustomColor, step]);
 
   const questionCount = questions.length;
   const nameStep = questionCount + 1;
   const colorStep = questionCount + 2;
   const reviewStep = questionCount + 3;
-  const totalSteps = reviewStep + 1;
+  const authStep = questionCount + 4;
+  const totalSteps = (isAuthenticated ? reviewStep : authStep) + 1;
 
   const currentQuestion = useMemo(() => {
     if (step < 1 || step > questionCount) return null;
     return questions[step - 1] ?? null;
   }, [step, questionCount, questions]);
 
-  const handleAuthenticated = () => {
-    setNeedsAuth(false);
-    setStep(0);
-    reload();
+  const handleAuthenticated = async () => {
+    await handleSubmit();
   };
 
-  const setSingleAnswer = (questionId: number, optionId: number) => {
+  const selectSingleAnswerAndContinue = (questionId: number, optionId: number) => {
+    setErrors([]);
     setAnswersByQuestionId((current) => ({ ...current, [questionId]: optionId }));
-  };
-
-  const toggleMultiAnswer = (questionId: number, optionId: number) => {
-    setAnswersByQuestionId((current) => {
-      const existing = current[questionId];
-      const selected = Array.isArray(existing) ? existing : [];
-      const next = selected.includes(optionId)
-        ? selected.filter((id) => id !== optionId)
-        : [...selected, optionId];
-      return { ...current, [questionId]: next };
+    setDirection(1);
+    setStep((current) => {
+      const question = questions[current - 1];
+      if (!question || question.id !== questionId) return current;
+      return Math.min(current + 1, reviewStep);
     });
   };
 
@@ -113,7 +132,7 @@ export function useLeadProjectWizard({
   const nextStep = () => {
     if (!validateStep(step)) return;
     setDirection(1);
-    setStep((current) => Math.min(current + 1, reviewStep));
+    setStep((current) => Math.min(current + 1, isAuthenticated ? reviewStep : authStep));
   };
 
   const prevStep = () => {
@@ -140,6 +159,9 @@ export function useLeadProjectWizard({
 
       const data = response.data as { request_id?: string } | [];
       const requestId = Array.isArray(data) ? undefined : data?.request_id;
+      await queryClient.invalidateQueries({ queryKey: leadProjectKeys.all });
+      globalToast.success(response.message || (dir === 'rtl' ? 'تم إنشاء الطلب بنجاح.' : 'Lead created successfully.'));
+      clearLeadProjectDraft();
       onComplete(requestId);
     } catch (err: any) {
       setErrors([err.message || (dir === 'rtl' ? 'فشل إرسال الطلب.' : 'Failed to submit request.')]);
@@ -150,21 +172,15 @@ export function useLeadProjectWizard({
 
   const isNextHidden = () => {
     if (step === 0) return true;
+    if (step === authStep && !isAuthenticated) return true;
     if (step === reviewStep) return false;
     return false;
   };
 
-  const getAnswerLabel = (question: FormQuestion, answer: number | number[] | string) => {
+  const getAnswerLabel = (question: FormQuestion, answer: number | string) => {
     const type = resolveQuestionType(question);
 
     if (type === 'text' && typeof answer === 'string') return answer;
-
-    if (type === 'multi_select' && Array.isArray(answer)) {
-      return answer
-        .map((optionId) => question.options.find((option) => option.id === optionId)?.value)
-        .filter(Boolean)
-        .join(', ');
-    }
 
     if (typeof answer === 'number') {
       return question.options.find((option) => option.id === answer)?.value || String(answer);
@@ -181,14 +197,15 @@ export function useLeadProjectWizard({
     nameStep,
     colorStep,
     reviewStep,
+    authStep,
     questions,
     currentQuestion,
     questionsLoading,
     questionsError,
-    needsAuth,
     isAuthenticated,
     name,
     setName,
+    presetColors,
     brandColor,
     setBrandColor,
     showCustomColor,
@@ -199,8 +216,7 @@ export function useLeadProjectWizard({
     nextStep,
     prevStep,
     handleSubmit,
-    setSingleAnswer,
-    toggleMultiAnswer,
+    selectSingleAnswerAndContinue,
     setTextAnswer,
     handleAuthenticated,
     isNextHidden,
@@ -209,5 +225,6 @@ export function useLeadProjectWizard({
     dir,
     language,
     setLanguage,
+    clearDraft: clearLeadProjectDraft,
   };
 }

@@ -8,16 +8,6 @@ export function answersToPayload(
   Object.entries(answersByQuestionId).forEach(([questionId, answer]) => {
     const formQuestionId = Number(questionId);
 
-    if (Array.isArray(answer)) {
-      answer.forEach((optionId) => {
-        payload.push({
-          form_question_id: formQuestionId,
-          form_question_option_id: optionId,
-        });
-      });
-      return;
-    }
-
     if (typeof answer === 'string') {
       payload.push({
         form_question_id: formQuestionId,

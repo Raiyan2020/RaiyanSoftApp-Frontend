@@ -4,9 +4,11 @@ import { Menu } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
 import { authService, User } from '@/lib/auth-service';
 import { guestStore } from '@/lib/guestStore';
+import { logoutUser } from '@/features/auth/api/user-auth-api';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { sectionLinks, pageLinks } from './NavbarLinks';
 import Avatar from '@/components/ui/avatar';
+import { getUserDisplayName } from '@/lib/user-display';
 
 
 interface NavbarMobileProps {
@@ -30,7 +32,8 @@ export default function NavbarMobile({
   onOpenBooking,
   onOpenLead,
 }: NavbarMobileProps) {
-  const { t, dir } = useTranslation();
+  const { t, dir, language, setLanguage } = useTranslation();
+  const userDisplayName = getUserDisplayName(user, t('home.guest'));
 
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -48,6 +51,25 @@ export default function NavbarMobile({
         <SheetDescription className="sr-only">Mobile Menu Options</SheetDescription>
         
         <div className="space-y-6 pt-4 text-right">
+          <div className="flex items-center justify-between gap-3 px-2">
+            <p className="text-xs font-black text-slate-400">{t('landing.nav.language')}</p>
+            <div className="flex items-center rounded-2xl border border-white/10 bg-white/5 p-1">
+              <button
+                type="button"
+                onClick={() => setLanguage('ar')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold ${language === 'ar' ? 'bg-primary text-white' : 'text-slate-300'}`}
+              >
+                AR
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage('en')}
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold ${language === 'en' ? 'bg-primary text-white' : 'text-slate-300'}`}
+              >
+                EN
+              </button>
+            </div>
+          </div>
           <div>
             <p className="mb-2 px-2 text-xs font-black text-slate-400">{t('landing.nav.sections_title')}</p>
             <div className="grid grid-cols-2 gap-2">
@@ -109,22 +131,15 @@ export default function NavbarMobile({
 
           <div className="grid gap-2 grid-cols-2 pt-2">
             {user ? (
-              <div className="col-span-2 space-y-2 text-right">
-                <div className="flex items-center gap-3 bg-white/5 p-3 rounded-2xl border border-white/10 mb-2 justify-end">
-                  <div className="min-w-0 text-right flex-1">
+              <div className="col-span-2 space-y-2 text-start">
+                <div className="flex items-center justify-start gap-3 bg-white/5 p-3 rounded-2xl border border-white/10 mb-2">
+                  <Avatar name={userDisplayName} size="md" />
+                  <div className="min-w-0 text-start flex-1">
                     <p className="text-xs text-slate-400">{t('home.greeting')}</p>
-                    <p className="text-sm font-bold text-white truncate">{`${user.first_name} ${user.last_name}`}</p>
+                    <p className="text-sm font-bold text-white truncate">{userDisplayName}</p>
                   </div>
-                  <Avatar name={`${user.first_name} ${user.last_name}`} size="md" />
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <Link
-                    href="/home"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary"
-                  >
-                    <span>{t('home.my_apps')}</span>
-                  </Link>
                   <Link
                     href="/appointments"
                     onClick={() => setMenuOpen(false)}
@@ -154,11 +169,19 @@ export default function NavbarMobile({
                     <span>{t('more.view_profile')}</span>
                   </Link>
                   <button
-                    onClick={() => {
+                    onClick={async () => {
                       setMenuOpen(false);
-                      authService.clearUserSession();
-                      guestStore.setGuest(false);
-                      window.location.href = '/login';
+                      try {
+                        if (authService.getUserToken()) {
+                          await logoutUser();
+                        }
+                      } catch (error) {
+                        console.error('Backend sign out failed', error);
+                      } finally {
+                        authService.clearUserSession();
+                        guestStore.setGuest(false);
+                        window.location.href = '/';
+                      }
                     }}
                     className="flex items-center justify-center gap-2 rounded-2xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm font-bold text-red-400 transition-colors hover:bg-red-500/20 col-span-2"
                   >

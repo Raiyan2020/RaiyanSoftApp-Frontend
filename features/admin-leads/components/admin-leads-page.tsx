@@ -1,11 +1,13 @@
 import React from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { useTranslation } from '@/lib/i18nContext';
 import { useAdminLeads } from '../hooks/use-admin-leads';
 import LeadsFilterBar from './leads-filter-bar';
 import LeadsTable from './leads-table';
 import LeadDetailDrawer from './lead-detail-drawer';
 
 export default function AdminLeadsPage() {
+  const { t } = useTranslation();
   const {
     leads,
     pagination,
@@ -17,6 +19,7 @@ export default function AdminLeadsPage() {
     detailError,
     statusLoading,
     statusError,
+    updatingLeadId,
     actionMessage,
     statusFilter,
     setStatusFilter,
@@ -27,6 +30,7 @@ export default function AdminLeadsPage() {
     closeLead,
     handleApprove,
     handleReject,
+    handleStatusChange,
     toWhatsAppDigits,
     goToPage,
   } = useAdminLeads();
@@ -35,11 +39,11 @@ export default function AdminLeadsPage() {
     <div className="space-y-8 pb-20">
       <div className="flex justify-between items-end">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text)]">Leads</h1>
-          <p className="text-[var(--text-muted)] text-sm">Manage incoming project requests.</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">{t('admin.leads.title')}</h1>
+          <p className="text-[var(--text-muted)] text-sm">{t('admin.leads.subtitle')}</p>
         </div>
         {pagination ? (
-          <p className="text-sm text-[var(--text-muted)]">{pagination.total} total leads</p>
+          <p className="text-sm text-[var(--text-muted)]">{pagination.total} {t('admin.leads.total')}</p>
         ) : null}
       </div>
 
@@ -50,6 +54,16 @@ export default function AdminLeadsPage() {
         setStatusFilter={setStatusFilter}
       />
 
+      {statusError ? (
+        <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-400">
+          {statusError}
+        </div>
+      ) : actionMessage ? (
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-400">
+          {actionMessage}
+        </div>
+      ) : null}
+
       <LeadsTable
         leads={leads}
         loading={listLoading}
@@ -58,6 +72,8 @@ export default function AdminLeadsPage() {
         onSelectLead={openLead}
         toWhatsAppDigits={toWhatsAppDigits}
         onPageChange={goToPage}
+        updatingLeadId={updatingLeadId}
+        onChangeStatus={handleStatusChange}
       />
 
       <AnimatePresence>

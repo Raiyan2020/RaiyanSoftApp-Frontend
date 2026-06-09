@@ -19,7 +19,8 @@ export function useAppointmentsList() {
   const [showCancel, setShowCancel] = useState(false);
   const [meetingToCancel, setMeetingToCancel] = useState<number | null>(null);
 
-  const { meetings, loading, error, reload } = useUserMeetings({}, isAuthenticated);
+  const meetingFilters = useMemo(() => ({}), []);
+  const { meetings, loading, error, reload } = useUserMeetings(meetingFilters, isAuthenticated);
   const { cancelMeeting, loading: cancelLoading } = useCancelMeeting();
 
   const formatDate = (meeting: UserMeeting) => {

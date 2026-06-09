@@ -1,7 +1,6 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { usePathname } from 'next/navigation';
 import { translations } from './translations';
 
 import { DirectionProvider } from '@radix-ui/react-direction';
@@ -19,8 +18,6 @@ interface I18nContextProps {
 const I18nContext = createContext<I18nContextProps | undefined>(undefined);
 
 export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const pathname = usePathname();
-  
   // Match the server-rendered default first, then apply the saved preference
   // after mount to avoid hydration mismatches between Arabic and English text.
   const [language, setLanguageState] = useState<Language>('ar');
@@ -43,9 +40,7 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Force English if in Admin Dashboard
-  const isAdmin = pathname?.startsWith('/admin');
-  const effectiveLanguage = isAdmin ? 'en' : language;
+  const effectiveLanguage = language;
   const dir = effectiveLanguage === 'ar' ? 'rtl' : 'ltr';
 
   // Apply direction to HTML element immediately

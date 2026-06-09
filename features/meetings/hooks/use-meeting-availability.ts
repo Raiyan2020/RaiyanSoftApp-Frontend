@@ -15,9 +15,21 @@ export function useMeetingAvailability(referenceDate: Date | null, enabled = tru
     setError(null);
 
     try {
-      const data = await fetchMeetingAvailability(formatDateKey(date));
-      setAvailableDays(data.available_days || []);
-      setAvailableSlots(data.available_slots || []);
+      const primaryKey = formatDateKey(date);
+      const data = await fetchMeetingAvailability(primaryKey);
+      const availableDays = data.available_days || [];
+      const availableSlots = data.available_slots || [];
+
+      if (availableDays.length > 0 && !availableDays.includes(primaryKey)) {
+        const fallbackDate = new Date(availableDays[0]);
+        const fallbackData = await fetchMeetingAvailability(formatDateKey(fallbackDate));
+        setAvailableDays(fallbackData.available_days || []);
+        setAvailableSlots(fallbackData.available_slots || []);
+        return;
+      }
+
+      setAvailableDays(availableDays);
+      setAvailableSlots(availableSlots);
     } catch (err: any) {
       setError(err.message || 'Failed to load availability.');
       setAvailableDays([]);

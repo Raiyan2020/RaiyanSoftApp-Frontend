@@ -32,11 +32,11 @@ export default function LandingPage() {
       <motion.main id="main-content" variants={pageVariants} initial={shouldReduceMotion ? false : 'hidden'} animate="visible">
         <motion.div variants={sectionVariants}><HeroBanner /></motion.div>
         <motion.div variants={sectionVariants}><Services /></motion.div>
-        <motion.div variants={sectionVariants}><Sectors /></motion.div>
+        {/* <motion.div variants={sectionVariants}><Sectors /></motion.div> */}
         <motion.div variants={sectionVariants}><Works /></motion.div>
         <motion.div variants={sectionVariants}><Packages /></motion.div>
         <motion.div variants={sectionVariants}><Partners /></motion.div>
-        <motion.div variants={sectionVariants}><Insights /></motion.div>
+        {/* <motion.div variants={sectionVariants}><Insights /></motion.div> */}
         <motion.div variants={sectionVariants}><FAQ /></motion.div>
         <motion.div variants={sectionVariants}><FinalCta /></motion.div>
         <motion.div variants={sectionVariants}><Contact /></motion.div>

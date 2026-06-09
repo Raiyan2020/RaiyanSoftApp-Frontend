@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Cairo } from 'next/font/google';
 import Script from 'next/script';
+import { Suspense } from 'react';
 import Providers from './providers';
 import './globals.css';
 import MetaPixelTracker from '@/components/MetaPixelTracker';
@@ -17,20 +18,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const jsonLd = createOrganizationJsonLd();
 
   return (
-    <html lang={siteConfig.language} dir={siteConfig.direction}>
+    <html lang={siteConfig.language} dir={siteConfig.direction} className="dark" suppressHydrationWarning>
       <body className={cairo.className}>
-        <Script id="theme-bootstrap" strategy="beforeInteractive">
-          {`
-            try {
-              var theme = localStorage.getItem('theme') || 'dark';
-              document.documentElement.classList.toggle('dark', theme === 'dark');
-            } catch (_) {
-              document.documentElement.classList.add('dark');
-            }
-          `}
-        </Script>
         <Providers>
-          <MetaPixelTracker />
+          <Suspense fallback={null}>
+            <MetaPixelTracker />
+          </Suspense>
           {children}
         </Providers>
         <Script id="landing-schema" type="application/ld+json" strategy="beforeInteractive">
@@ -54,4 +47,3 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     </html>
   );
 }
-

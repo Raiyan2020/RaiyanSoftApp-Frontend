@@ -113,6 +113,7 @@ export default function AppointmentsPage() {
               setShowWizard(false);
               reload();
             }}
+            onBooked={reload}
           />
         ) : null}
       </AnimatePresence>

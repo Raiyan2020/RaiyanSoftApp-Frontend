@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { Home, MessageCircle, Calendar, Bell, MoreHorizontal } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { useNotifications } from '@/lib/notificationStore';
+import { useNotificationBadgeCount } from '@/features/notifications/hooks/use-notifications';
 import { useUserMetadata } from '@/lib/userMetadataStore';
 import { useTranslation } from '@/lib/i18nContext';
 import { useAuthGuard } from '@/lib/authGuardContext';
@@ -13,7 +13,7 @@ import SafeImage from '../ui/safe-image';
 export default function DesktopHeader() {
   const router = useRouter();
   const pathname = usePathname();
-  const { unreadCount } = useNotifications();
+  const { unreadCount } = useNotificationBadgeCount();
   const { chatUnreadCount } = useUserMetadata();
   const { t, language, setLanguage } = useTranslation();
   const { requireAuth } = useAuthGuard();

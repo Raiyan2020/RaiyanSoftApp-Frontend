@@ -2,18 +2,104 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { BadgePercent, Bell, Calendar, FileText, FolderKanban, Info, LayoutDashboard, MessageCircle } from 'lucide-react';
+import { BadgePercent, Bell, Calendar, Eye, FileText, FolderKanban, Info, Loader2, LogOut, MessageCircle, Pencil } from 'lucide-react';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
-import { User } from '@/lib/auth-service';
+import { authService, User } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
 import ProfileTable from '@/components/profile/profile-table';
 import ProfileBookingsPanel from '@/components/profile/profile-bookings-panel';
 import ProfileChatPanel from '@/components/profile/profile-chat-panel';
 import { ProfileRecordType } from '@/components/profile/profile-records-data';
+import { useUserStoredProjects } from '@/features/lead-project/hooks/use-user-stored-projects';
+import { UserProjectView } from '@/features/lead-project/utils/map-stored-project';
 import { QuickBookingDialog, QuickLeadDialog } from '@/features/quick-actions/components/quick-action-dialogs';
+import Button from '@/components/ui/button';
+import ConfirmModal from '@/components/ui/confirm-modal';
+import ProfileEditDialog from '@/features/profile/components/profile-edit-dialog';
+import { useUserProfile } from '@/features/profile/hooks/use-user-profile';
+import { logoutUser } from '@/features/auth/api/user-auth-api';
+import { guestStore } from '@/lib/guestStore';
 
 type ProfileTab = 'all' | ProfileRecordType | 'chat';
+
+function ProfileProjectsPanel({
+  projects,
+  loading,
+  error,
+  onOpenProjectDetails,
+}: {
+  projects: UserProjectView[];
+  loading: boolean;
+  error: string | null;
+  onOpenProjectDetails: (projectId: string) => void;
+}) {
+  const { t, dir } = useTranslation();
+
+  const getStatusTone = (status: string) => {
+    const lower = status.toLowerCase();
+    if (lower.includes('رفض') || lower.includes('reject')) return 'bg-red-500/10 text-red-400 border-red-500/20';
+    if (lower.includes('قبول') || lower.includes('approv')) return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+    return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+  };
+
+  if (loading) {
+    return (
+      <div className="flex min-h-[320px] items-center justify-center text-[var(--text-muted)]">
+        <Loader2 size={28} className="animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-sm text-red-400">
+        {error}
+      </div>
+    );
+  }
+
+  if (projects.length === 0) {
+    return (
+      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-6 text-center text-[var(--text-muted)]">
+        {dir === 'rtl' ? 'لا توجد مشاريع بعد.' : 'No projects yet.'}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {projects.map((project) => (
+        <div key={project.id} className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <h3 className="text-lg font-bold text-[var(--text)]">{project.name}</h3>
+                <span className={`inline-flex rounded-full border px-2.5 py-0.5 text-xs font-bold ${getStatusTone(project.status)}`}>
+                  {project.statusLabel}
+                </span>
+              </div>
+              <p className="mt-1 text-xs text-[var(--text-muted)]">{project.version}</p>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => onOpenProjectDetails(project.id)}
+              className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:border-primary/40 hover:text-primary"
+              aria-label={dir === 'rtl' ? 'عرض تفاصيل المشروع' : 'View project details'}
+            >
+              <Eye size={18} />
+            </button>
+          </div>
+
+          <p className="mt-4 line-clamp-3 whitespace-pre-wrap text-sm leading-6 text-[var(--text-muted)]">
+            {project.description || (dir === 'rtl' ? 'لا يوجد وصف متاح.' : 'No description available.')}
+          </p>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 const staticProfileUser: User = {
   id: 101,
@@ -30,11 +116,28 @@ export default function ProfilePage() {
   const searchParams = useSearchParams();
   const { t, dir } = useTranslation();
 
-  const [currentUser] = useState<User>(staticProfileUser);
+  const {
+    user: profileUser,
+    isFetching,
+    errorMessage,
+    updateProfile,
+    isUpdating,
+    updateError,
+    updateSuccess,
+  } = useUserProfile();
+  const currentUser = profileUser ?? staticProfileUser;
   const [dark, setDark] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>('all');
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
   const [leadDialogOpen, setLeadDialogOpen] = useState(false);
+  const [profileDialogOpen, setProfileDialogOpen] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const {
+    projects: storedProjects,
+    loading: projectsLoading,
+    error: projectsError,
+  } = useUserStoredProjects(Boolean(authService.getUserToken()));
 
   // Initialize theme
   useEffect(() => {
@@ -63,20 +166,35 @@ export default function ProfilePage() {
   // Route detection from query params. Auth is intentionally bypassed for now.
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && ['all', 'booking', 'deal', 'project', 'notification', 'info', 'chat'].includes(tabParam)) {
+    if (tabParam && ['booking', 'project', 'notification', 'info', 'chat'].includes(tabParam)) {
       setActiveTab(tabParam as ProfileTab);
     }
   }, [searchParams]);
 
   const tabs = [
-    { id: 'all', label: dir === 'rtl' ? 'كل السجلات' : 'All Records', icon: LayoutDashboard },
     { id: 'booking', label: dir === 'rtl' ? 'الحجوزات' : 'Bookings', icon: Calendar },
-    { id: 'deal', label: dir === 'rtl' ? 'العروض' : 'Deals', icon: BadgePercent },
     { id: 'chat', label: dir === 'rtl' ? 'المحادثة' : 'Chat', icon: MessageCircle },
     { id: 'project', label: dir === 'rtl' ? 'المشاريع' : 'Projects', icon: FolderKanban },
     { id: 'notification', label: dir === 'rtl' ? 'الإشعارات' : 'Notifications', icon: Bell },
     { id: 'info', label: dir === 'rtl' ? 'معلومات أكثر' : 'More Info', icon: Info },
   ] as const;
+
+  const handleSignOut = async () => {
+    setIsLoggingOut(true);
+
+    try {
+      if (authService.getUserToken()) {
+        await logoutUser();
+      }
+    } catch (error) {
+      console.error('Backend sign out failed', error);
+    } finally {
+      authService.clearUserSession();
+      guestStore.setGuest(false);
+      setLogoutDialogOpen(false);
+      router.push('/');
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex flex-col" dir={dir}>
@@ -93,6 +211,23 @@ export default function ProfilePage() {
               <p className="mt-2 break-words text-sm text-[var(--text-muted)]">
                 {currentUser.first_name} {currentUser.last_name} &bull; {currentUser.email}
               </p>
+              {errorMessage ? (
+                <p className="mt-2 text-xs font-bold text-amber-400">
+                  {dir === 'rtl' ? 'تعذر تحديث بيانات الملف الشخصي من الخادم.' : 'Could not refresh profile data from the server.'}
+                </p>
+              ) : null}
+            </div>
+            <div className="flex shrink-0 items-center gap-3">
+              {isFetching ? (
+                <div className="hidden items-center gap-2 text-xs font-bold text-[var(--text-muted)] sm:flex">
+                  <Loader2 size={14} className="animate-spin" />
+                  {dir === 'rtl' ? 'تحديث البيانات' : 'Refreshing'}
+                </div>
+              ) : null}
+              <Button type="button" onClick={() => setProfileDialogOpen(true)} className="gap-2">
+                <Pencil size={17} />
+                {dir === 'rtl' ? 'تعديل الملف' : 'Edit profile'}
+              </Button>
             </div>
           </div>
 
@@ -110,7 +245,18 @@ export default function ProfilePage() {
                     <p className="truncate text-sm font-black text-[var(--text)]">
                       {currentUser.first_name} {currentUser.last_name}
                     </p>
+                    <p className="truncate text-xs text-[var(--text-muted)]" dir="ltr">
+                      {[currentUser.country_code, currentUser.phone].filter(Boolean).join(' ')}
+                    </p>
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => setProfileDialogOpen(true)}
+                    className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:border-primary/40 hover:text-primary"
+                    aria-label={dir === 'rtl' ? 'تعديل الملف الشخصي' : 'Edit profile'}
+                  >
+                    <Pencil size={15} />
+                  </button>
                 </div>
               </div>
 
@@ -141,11 +287,32 @@ export default function ProfilePage() {
                   );
                 })}
               </nav>
+
+              <button
+                type="button"
+                onClick={() => setLogoutDialogOpen(true)}
+                disabled={isLoggingOut}
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-black text-red-500 transition-colors hover:border-red-500/35 hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isLoggingOut ? (
+                  <Loader2 size={17} className="animate-spin" />
+                ) : (
+                  <LogOut size={17} />
+                )}
+                <span>{dir === 'rtl' ? 'تسجيل الخروج' : 'Logout'}</span>
+              </button>
             </aside>
 
             <div className="min-w-0 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-xl sm:rounded-3xl sm:p-6">
               {activeTab === 'booking' ? (
                 <ProfileBookingsPanel />
+              ) : activeTab === 'project' ? (
+                <ProfileProjectsPanel
+                  projects={storedProjects}
+                  loading={projectsLoading}
+                  error={projectsError}
+                  onOpenProjectDetails={(projectId) => router.push(`/profile/projects/${projectId}`)}
+                />
               ) : activeTab === 'chat' ? (
                 <ProfileChatPanel />
               ) : (
@@ -172,6 +339,29 @@ export default function ProfilePage() {
         isOpen={leadDialogOpen}
         onClose={() => setLeadDialogOpen(false)}
         user={currentUser}
+      />
+      <ProfileEditDialog
+        isOpen={profileDialogOpen}
+        user={currentUser}
+        isSaving={isUpdating}
+        error={updateError}
+        success={updateSuccess}
+        onClose={() => setProfileDialogOpen(false)}
+        onSubmit={async (values) => {
+          await updateProfile(values);
+        }}
+      />
+      <ConfirmModal
+        isOpen={logoutDialogOpen}
+        title={t('more.modal_signout_title')}
+        message={t('more.modal_signout_msg')}
+        confirmText={isLoggingOut ? (dir === 'rtl' ? 'جاري الخروج...' : 'Logging out...') : t('more.signout')}
+        onConfirm={handleSignOut}
+        onCancel={() => {
+          if (!isLoggingOut) {
+            setLogoutDialogOpen(false);
+          }
+        }}
       />
     </div>
   );

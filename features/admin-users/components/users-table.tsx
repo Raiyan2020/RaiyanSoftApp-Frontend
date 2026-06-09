@@ -1,12 +1,12 @@
 import React from 'react';
-import { User } from '@/lib/userStore';
+import { AdminUser } from '../types/admin-user.types';
 import UsersTableRow from './users-table-row';
 
 interface UsersTableProps {
-  filteredUsers: User[];
+  filteredUsers: AdminUser[];
   formatDate: (ts: number) => string;
-  onSelectUser: (user: User) => void;
-  onToggleStatus: (user: User) => void;
+  onSelectUser: (user: AdminUser) => void;
+  onToggleStatus: (user: AdminUser) => void;
   onDeleteUser: (id: string) => void;
 }
 

@@ -43,10 +43,21 @@ export default function WizardShell({
   customFooterLabel,
   showFooter = true,
 }: WizardShellProps) {
+  const shellSizeClass = isLeadMode
+    ? 'md:h-[min(82dvh,38rem)] md:max-w-xl lg:max-w-[44rem]'
+    : 'md:h-[min(84dvh,42rem)] md:max-w-3xl lg:max-w-[50rem]';
+
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-start md:items-center bg-black/60 backdrop-blur-sm p-0 md:p-6" dir={dir}>
-      <div className="w-full h-full md:h-[min(92dvh,54rem)] md:max-w-5xl bg-[var(--surface)] text-[var(--text)] flex flex-col relative shadow-2xl overflow-hidden md:rounded-3xl border border-[var(--border)]">
-        <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]">
+    <div
+      className="fixed inset-0 z-50 flex justify-center items-start md:items-center bg-black/60 backdrop-blur-sm p-0 md:p-6"
+      dir={dir}
+      onClick={onClose}
+    >
+      <div
+        className={`w-full h-full ${shellSizeClass} bg-[var(--surface)] text-[var(--text)] flex flex-col relative shadow-2xl overflow-hidden md:rounded-3xl border border-[var(--border)]`}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className="px-4 py-3 flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]">
           <button
             type="button"
             onClick={step === 0 ? onClose : onPrev}
@@ -65,17 +76,27 @@ export default function WizardShell({
             ))}
           </div>
           <div className="min-w-[40px] flex justify-end">
-            {isLeadMode ? (
+            <div className="flex items-center gap-2">
+              {isLeadMode ? (
+                <button
+                  type="button"
+                  onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
+                  className="text-xs font-bold text-primary hover:text-[var(--text)] transition-colors border border-primary/30 rounded-lg px-3 py-1.5 bg-primary/10"
+                >
+                  {language === 'en' ? 'عربي' : 'English'}
+                </button>
+              ) : (
+                <div className="w-10" />
+              )}
               <button
                 type="button"
-                onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-                className="text-xs font-bold text-primary hover:text-[var(--text)] transition-colors border border-primary/30 rounded-lg px-3 py-1.5 bg-primary/10"
+                onClick={onClose}
+                className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+                aria-label="Close dialog"
               >
-                {language === 'en' ? 'عربي' : 'English'}
+                <X size={18} />
               </button>
-            ) : (
-              <div className="w-10" />
-            )}
+            </div>
           </div>
         </div>
 
@@ -83,7 +104,7 @@ export default function WizardShell({
 
         {step !== 0 && showFooter ? (
           <div
-            className={`p-6 border-t border-[var(--border)] bg-[var(--surface)] z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.08)] transition-all duration-300 ${
+            className={`p-3.5 sm:p-4 border-t border-[var(--border)] bg-[var(--surface)] z-20 shadow-[0_-5px_20px_rgba(0,0,0,0.08)] transition-all duration-300 ${
               nextButtonHidden ? 'opacity-0 pointer-events-none absolute bottom-0 w-full' : 'opacity-100'
             }`}
           >
@@ -101,7 +122,7 @@ export default function WizardShell({
               type="button"
               onClick={onNext}
               disabled={isLoading}
-              className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(29,183,240,0.3)] hover:shadow-[0_0_25px_rgba(29,183,240,0.5)] transition-all flex items-center justify-center space-x-2 rtl:space-x-reverse disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-[0_0_20px_rgba(29,183,240,0.3)] hover:shadow-[0_0_25px_rgba(29,183,240,0.5)] transition-all flex items-center justify-center space-x-2 rtl:space-x-reverse disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <Loader2 size={24} className="animate-spin" />

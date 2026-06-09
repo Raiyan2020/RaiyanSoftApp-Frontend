@@ -4,6 +4,8 @@ import * as React from 'react';
 import { Check, ChevronsUpDown, Search } from 'lucide-react';
 import * as RPNInput from 'react-phone-number-input';
 import flags from 'react-phone-number-input/flags';
+import metadata from 'libphonenumber-js/metadata.min.json';
+import { useManagedCountriesQuery } from '@/features/settings';
 
 type PhoneInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -12,6 +14,7 @@ type PhoneInputProps = Omit<
   value: string;
   onChange: (value: string) => void;
   defaultCountry?: RPNInput.Country;
+  useManagedCountries?: boolean;
 };
 
 type CountryEntry = {
@@ -19,22 +22,111 @@ type CountryEntry = {
   value: RPNInput.Country | undefined;
 };
 
+type CountryCallingCodes = Partial<Record<RPNInput.Country, string>>;
+type CountryMetadata = [
+  string,
+  string,
+  string,
+  number[]?,
+  unknown?,
+  string?,
+];
+
+const phoneMetadata = metadata as {
+  countries: Partial<Record<RPNInput.Country, CountryMetadata>>;
+};
+
 export default function PhoneInput({
   value,
   onChange,
   className = '',
   defaultCountry = 'KW',
+  useManagedCountries = true,
   style,
   ...props
 }: PhoneInputProps) {
+  const { data: managedCountries } = useManagedCountriesQuery({ enabled: useManagedCountries });
+  const [selectedCountry, setSelectedCountry] = React.useState<RPNInput.Country | undefined>(
+    defaultCountry
+  );
+
+  const countryConfig = React.useMemo(() => {
+    if (!managedCountries?.length) {
+      return {
+        countries: undefined,
+        labels: undefined,
+        callingCodes: {},
+        defaultCountry,
+      };
+    }
+
+    const countries: RPNInput.Country[] = [];
+    const labels: RPNInput.Labels = {
+      country: 'Country',
+      phone: 'Phone number',
+    };
+    const callingCodes: CountryCallingCodes = {};
+
+    managedCountries.forEach((country) => {
+      const countryCode = country.country_code?.trim().toUpperCase() as RPNInput.Country;
+      if (!countryCode || countries.includes(countryCode)) return;
+
+      countries.push(countryCode);
+      labels[countryCode] = country.name;
+      callingCodes[countryCode] = country.phone_code?.trim() || '';
+    });
+
+    return {
+      countries,
+      labels,
+      callingCodes,
+      defaultCountry: countries.includes(defaultCountry) ? defaultCountry : countries[0] ?? defaultCountry,
+    };
+  }, [defaultCountry, managedCountries]);
+
+  React.useEffect(() => {
+    setSelectedCountry((currentCountry) => currentCountry ?? countryConfig.defaultCountry);
+  }, [countryConfig.defaultCountry]);
+
+  const handlePhoneChange = React.useCallback(
+    (nextValue?: string) => {
+      const limitedValue = limitPhoneValueByCountry(
+        nextValue || '',
+        selectedCountry ?? countryConfig.defaultCountry
+      );
+
+      onChange(limitedValue);
+    },
+    [countryConfig.defaultCountry, onChange, selectedCountry]
+  );
+
+  const handleCountryChange = React.useCallback(
+    (country?: RPNInput.Country) => {
+      setSelectedCountry(country);
+
+      if (country && value) {
+        const limitedValue = limitPhoneValueByCountry(value, country);
+        if (limitedValue !== value) {
+          onChange(limitedValue);
+        }
+      }
+    },
+    [onChange, value]
+  );
+
   return (
     <RPNInput.default
       className={`flex w-full ${className}`}
       value={value || undefined}
-      onChange={(nextValue) => onChange(nextValue || '')}
-      defaultCountry={defaultCountry}
+      onChange={handlePhoneChange}
+      onCountryChange={handleCountryChange}
+      defaultCountry={countryConfig.defaultCountry}
+      countries={countryConfig.countries}
+      countryOptionsOrder={countryConfig.countries}
+      labels={countryConfig.labels}
       flagComponent={FlagComponent}
       countrySelectComponent={CountrySelect}
+      countrySelectProps={{ callingCodes: countryConfig.callingCodes }}
       inputComponent={InputComponent}
       smartCaret={false}
       {...props}
@@ -42,6 +134,35 @@ export default function PhoneInput({
       style={{ direction: 'ltr', unicodeBidi: 'isolate', ...style }}
     />
   );
+}
+
+function limitPhoneValueByCountry(value: string, country?: RPNInput.Country) {
+  if (!value || !country) return value;
+
+  const maxNationalLength = getMaxNationalLength(country);
+  if (!maxNationalLength) return value;
+
+  const callingCode = RPNInput.getCountryCallingCode(country);
+  const digits = value.replace(/\D/g, '');
+  const nationalDigits = digits.startsWith(callingCode)
+    ? digits.slice(callingCode.length)
+    : digits;
+
+  if (nationalDigits.length <= maxNationalLength) return value;
+
+  return `+${callingCode}${nationalDigits.slice(0, maxNationalLength)}`;
+}
+
+function getMaxNationalLength(country: RPNInput.Country) {
+  const countryMetadata = phoneMetadata.countries[country];
+  const possibleLengths = countryMetadata?.[3];
+
+  if (!possibleLengths?.length) return undefined;
+
+  const maxLength = Math.max(...possibleLengths);
+  const nationalPrefix = countryMetadata?.[5];
+
+  return nationalPrefix === '0' ? maxLength + 1 : maxLength;
 }
 
 const InputComponent = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
@@ -67,11 +188,13 @@ function CountrySelect({
   value: selectedCountry,
   options,
   onChange,
+  callingCodes = {},
 }: {
   disabled?: boolean;
   value: RPNInput.Country;
   options: CountryEntry[];
   onChange: (country: RPNInput.Country) => void;
+  callingCodes?: CountryCallingCodes;
 }) {
   const [isOpen, setIsOpen] = React.useState(false);
   const [searchQuery, setSearchQuery] = React.useState('');
@@ -96,18 +219,18 @@ function CountrySelect({
 
   const filteredCountries = options.filter((option) => {
     if (!option.value) return false;
-    const callingCode = RPNInput.getCountryCallingCode(option.value);
+    const callingCode = getDisplayCallingCode(option.value, callingCodes);
     const query = searchQuery.toLowerCase();
 
     return (
       option.label.toLowerCase().includes(query) ||
       option.value.toLowerCase().includes(query) ||
-      callingCode.includes(searchQuery.replace('+', ''))
+      callingCode.replace('+', '').includes(searchQuery.replace('+', ''))
     );
   });
 
   const selectedCallingCode = selectedCountry
-    ? RPNInput.getCountryCallingCode(selectedCountry)
+    ? getDisplayCallingCode(selectedCountry, callingCodes)
     : '';
 
   return (
@@ -124,7 +247,7 @@ function CountrySelect({
         className="flex h-full items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-l-xl border-r-0 px-3 py-3 text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <FlagComponent country={selectedCountry} countryName={selectedCountry} />
-        <span className="text-xs font-mono text-[var(--text-muted)]">+{selectedCallingCode}</span>
+        <span className="text-xs font-mono text-[var(--text-muted)]">{selectedCallingCode}</span>
         <ChevronsUpDown size={14} className="text-[var(--text-muted)]" />
       </button>
 
@@ -166,7 +289,7 @@ function CountrySelect({
                     <div className="flex-1 min-w-0">
                       <div className="text-xs text-[var(--text)] font-medium truncate">{country.label}</div>
                       <div className="text-[10px] text-[var(--text-muted)] text-left">
-                        +{RPNInput.getCountryCallingCode(country.value)}
+                        {getDisplayCallingCode(country.value, callingCodes)}
                       </div>
                     </div>
                     {isSelected ? <Check size={14} className="text-primary" /> : null}
@@ -183,6 +306,15 @@ function CountrySelect({
       ) : null}
     </div>
   );
+}
+
+function getDisplayCallingCode(country: RPNInput.Country, callingCodes: CountryCallingCodes) {
+  const managedCallingCode = callingCodes[country];
+  if (managedCallingCode) {
+    return managedCallingCode.startsWith('+') ? managedCallingCode : `+${managedCallingCode}`;
+  }
+
+  return `+${RPNInput.getCountryCallingCode(country)}`;
 }
 
 function FlagComponent({ country, countryName }: RPNInput.FlagProps) {

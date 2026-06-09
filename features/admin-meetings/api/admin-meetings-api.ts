@@ -88,7 +88,7 @@ export async function saveAdminTimeSlots(config: TimeSlotsConfig) {
     throw new Error(getApiErrorMessage(response));
   }
 
-  return response.data;
+  return response;
 }
 
 export async function updateAdminMeetingSettings(payload: MeetingSettingsPayload) {

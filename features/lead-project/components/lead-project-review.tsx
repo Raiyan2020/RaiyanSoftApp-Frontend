@@ -5,8 +5,8 @@ interface LeadProjectReviewProps {
   questions: FormQuestion[];
   name: string;
   brandColor: string;
-  answersByQuestionId: Record<number, number | number[] | string>;
-  getAnswerLabel: (question: FormQuestion, answer: number | number[] | string) => string;
+  answersByQuestionId: Record<number, number | string>;
+  getAnswerLabel: (question: FormQuestion, answer: number | string) => string;
   t: (key: string) => string;
 }
 

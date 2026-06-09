@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18nContext';
 import { authService } from '@/lib/auth-service';
+import { globalToast } from '@/lib/toast-context';
 import { useMeetingAvailability } from './use-meeting-availability';
 import { useBookMeeting } from './use-book-meeting';
 import {
@@ -11,7 +12,7 @@ import {
   meetingTypeFromUi,
 } from '../utils/meeting-helpers';
 
-export function useMeetingBookingFlow() {
+export function useMeetingBookingFlow(options?: { onBooked?: () => void | Promise<void>; onClose?: () => void }) {
   const { t, dir } = useTranslation();
   const isAuthenticated = Boolean(authService.getUserToken());
   const [step, setStep] = useState(1);
@@ -26,7 +27,20 @@ export function useMeetingBookingFlow() {
     notes: '',
   });
 
-  const availabilityDate = useMemo(() => selectedDate || viewDate, [selectedDate, viewDate]);
+  const detailsStep = 2;
+  const authStep = isAuthenticated ? null : 3;
+  const successStep = isAuthenticated ? 3 : 4;
+
+  const availabilityDate = useMemo(() => viewDate, [viewDate]);
+  const currentMonth = useMemo(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  }, []);
+  const viewMonth = useMemo(
+    () => new Date(viewDate.getFullYear(), viewDate.getMonth(), 1),
+    [viewDate]
+  );
+  const canGoToPrevMonth = viewMonth > currentMonth;
 
   const {
     availableDays,
@@ -34,37 +48,64 @@ export function useMeetingBookingFlow() {
     loading: loadingSlots,
     error: availabilityError,
     reloadForDate,
-  } = useMeetingAvailability(availabilityDate, isAuthenticated);
+  } = useMeetingAvailability(availabilityDate, true);
 
   const { submitBooking, loading: isSubmitting, error: bookingError } = useBookMeeting();
 
   useEffect(() => {
-    if (!selectedDate || !isAuthenticated) return;
-    reloadForDate(selectedDate);
-  }, [isAuthenticated, reloadForDate, selectedDate]);
+    if (!selectedDate) return;
+    setSelectedTime(null);
+  }, [selectedDate]);
 
   useEffect(() => {
     setErrorMsg(availabilityError || bookingError);
   }, [availabilityError, bookingError]);
 
   const handleBook = async () => {
-    if (!selectedDate || !selectedTime || !isAuthenticated) return;
+    if (!selectedDate || !selectedTime) return false;
 
     setErrorMsg(null);
 
     try {
-      await submitBooking({
+      const response = await submitBooking({
         date_time: buildDateTimeValue(selectedDate, selectedTime),
         subject: formData.topic.trim(),
         notes: formData.notes.trim() || undefined,
         type: meetingTypeFromUi(formData.meetingType),
       });
-      setStep(3);
+      globalToast.success(response.message || (dir === 'rtl' ? 'تم إنشاء الحجز بنجاح.' : 'Booking created successfully.'));
+      await options?.onBooked?.();
+      options?.onClose?.();
       return true;
     } catch (err: any) {
       setErrorMsg(err.message || 'Booking failed. Please try again.');
       return false;
     }
+  };
+
+  const handlePrimaryAction = async () => {
+    if (step === 1) {
+      if (!selectedDate || !selectedTime) return;
+      setStep(detailsStep);
+      return;
+    }
+
+    if (step === detailsStep) {
+      if (!formData.topic.trim()) return;
+
+      if (!isAuthenticated && authStep) {
+        setStep(authStep);
+        return;
+      }
+
+      await handleBook();
+    }
+  };
+
+  const selectDate = async (date: Date) => {
+    setSelectedDate(date);
+    setSelectedTime(null);
+    await reloadForDate(date);
   };
 
   const resetFlow = () => {
@@ -77,6 +118,8 @@ export function useMeetingBookingFlow() {
   };
 
   const handlePrevMonth = () => {
+    if (!canGoToPrevMonth) return;
+
     const newDate = new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1);
     setViewDate(newDate);
     setSelectedDate(null);
@@ -107,9 +150,8 @@ export function useMeetingBookingFlow() {
         current.setDate(current.getDate() + 1);
       }
 
-      const workDays = week.slice(0, 5);
-      if (workDays[0].getMonth() !== month && workDays[0] > firstDayOfMonth) break;
-      rows.push(workDays);
+      if (week[0].getMonth() !== month && week[0] > firstDayOfMonth) break;
+      rows.push(week);
     }
 
     return rows;
@@ -123,8 +165,12 @@ export function useMeetingBookingFlow() {
     dir,
     step,
     setStep,
+    detailsStep,
+    authStep,
+    successStep,
     selectedDate,
     setSelectedDate,
+    selectDate,
     availableSlots,
     selectedTime,
     setSelectedTime,
@@ -136,8 +182,10 @@ export function useMeetingBookingFlow() {
     setFormData,
     isAuthenticated,
     handleBook,
+    handlePrimaryAction,
     handlePrevMonth,
     handleNextMonth,
+    canGoToPrevMonth,
     getCalendarRows,
     isDateAvailable,
     resetFlow,

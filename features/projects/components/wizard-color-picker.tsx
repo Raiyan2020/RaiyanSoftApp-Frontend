@@ -22,10 +22,10 @@ export default function WizardColorPicker({
   onChangeCustom,
 }: WizardColorPickerProps) {
   return (
-    <div className="flex flex-col h-full p-6 pt-10">
+    <div className="flex h-full flex-col overflow-y-auto p-6 pt-10 pb-32 no-scrollbar">
       <h2 className="text-2xl font-bold text-[var(--text)] mb-6">{t('wizard.step_color')}</h2>
 
-      <div className="grid grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 gap-4 mb-6 sm:grid-cols-3">
         {presetColors.map((color) => {
           const isSelected = brandColor.toLowerCase() === color.hex.toLowerCase();
           return (

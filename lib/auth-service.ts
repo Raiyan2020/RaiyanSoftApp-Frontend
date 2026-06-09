@@ -2,11 +2,13 @@
 
 export interface User {
   id: number;
-  first_name: string;
-  last_name: string;
-  country_code: string;
-  phone: string;
-  email: string;
+  first_name?: string;
+  last_name?: string;
+  full_name?: string;
+  name?: string;
+  country_code?: string;
+  phone?: string;
+  email?: string;
   unread_notifications_count?: number;
 }
 
@@ -61,6 +63,14 @@ class AuthService {
       localStorage.setItem('user_token', token);
       localStorage.setItem('user_profile', JSON.stringify(user));
       document.cookie = `user_token=${token}; path=/; max-age=604800; SameSite=Lax`;
+    }
+    this.notify();
+  }
+
+  setUserProfile(user: User) {
+    this.user = user;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user_profile', JSON.stringify(user));
     }
     this.notify();
   }

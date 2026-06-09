@@ -20,9 +20,11 @@ import {
 import { useTranslation } from '@/lib/i18nContext';
 import { authService, User } from '@/lib/auth-service';
 import { guestStore } from '@/lib/guestStore';
+import { logoutUser } from '@/features/auth/api/user-auth-api';
 import { sectionLinks, pageLinks, headerPageLinks } from './NavbarLinks';
 import Avatar from '@/components/ui/avatar';
 import { profileRecords } from '@/components/profile/profile-records-data';
+import { getUserDisplayName } from '@/lib/user-display';
 
 interface NavbarDesktopProps {
   dark: boolean;
@@ -49,7 +51,7 @@ export default function NavbarDesktop({
   onOpenBooking,
   onOpenLead,
 }: NavbarDesktopProps) {
-  const { t, dir } = useTranslation();
+  const { t, dir, language, setLanguage } = useTranslation();
   const router = useRouter();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notificationsOpen, setNotificationsOpen] = useState(false);
@@ -62,6 +64,7 @@ export default function NavbarDesktop({
   const unreadNotificationCount = headerNotifications.filter(
     (record) => !completedNotifications.includes(record.id) && record.status !== 'completed'
   ).length;
+  const userDisplayName = getUserDisplayName(user, t('home.guest'));
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -76,11 +79,19 @@ export default function NavbarDesktop({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleSignOut = () => {
-    authService.clearUserSession();
-    guestStore.setGuest(false);
-    setDropdownOpen(false);
-    router.push('/login');
+  const handleSignOut = async () => {
+    try {
+      if (authService.getUserToken()) {
+        await logoutUser();
+      }
+    } catch (error) {
+      console.error('Backend sign out failed', error);
+    } finally {
+      authService.clearUserSession();
+      guestStore.setGuest(false);
+      setDropdownOpen(false);
+      router.push('/');
+    }
   };
 
   const markNotificationComplete = (recordId: string) => {
@@ -177,6 +188,22 @@ export default function NavbarDesktop({
       </div>
 
       <div className="flex shrink-0 items-center gap-2">
+        <div className="hidden items-center rounded-2xl border border-cyan-950/10 bg-white/70 p-1 dark:border-white/10 dark:bg-white/5 sm:flex">
+          <button
+            type="button"
+            onClick={() => setLanguage('ar')}
+            className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition-colors ${language === 'ar' ? 'bg-primary text-white' : 'text-slate-600 dark:text-slate-300'}`}
+          >
+            AR
+          </button>
+          <button
+            type="button"
+            onClick={() => setLanguage('en')}
+            className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition-colors ${language === 'en' ? 'bg-primary text-white' : 'text-slate-600 dark:text-slate-300'}`}
+          >
+            EN
+          </button>
+        </div>
         <button
           id="dark-mode-toggle"
           onClick={onToggleDark}
@@ -268,62 +295,55 @@ export default function NavbarDesktop({
               className="flex items-center gap-2 focus:outline-none"
               aria-label="User menu"
             >
-              <Avatar name={`${user.first_name} ${user.last_name}`} size="md" className="cursor-pointer" />
+              <Avatar name={userDisplayName} size="md" className="cursor-pointer" />
             </button>
             {dropdownOpen && (
               <div 
                 className={`absolute ${dir === 'rtl' ? 'left-0' : 'right-0'} mt-3 w-56 rounded-2xl border border-cyan-950/10 bg-white p-2 shadow-2xl dark:border-white/10 dark:bg-navy-950 z-50`}
+                dir={dir}
               >
-                <div className="px-4 py-2 border-b border-cyan-950/5 dark:border-white/5 mb-1 text-right">
+                <div className="px-4 py-2 border-b border-cyan-950/5 dark:border-white/5 mb-1 text-start">
                   <p className="text-xs text-[var(--text-muted)]">{t('home.greeting')}</p>
-                  <p className="text-sm font-bold text-[var(--text)] truncate">{`${user.first_name} ${user.last_name}`}</p>
+                  <p className="text-sm font-bold text-[var(--text)] truncate">{userDisplayName}</p>
                 </div>
-                <Link
-                  href="/home"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors justify-end"
-                >
-                  <span>{t('home.my_apps')}</span>
-                  <Home size={16} />
-                </Link>
                 <Link
                   href="/appointments"
                   onClick={() => setDropdownOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors justify-end"
+                  className="flex items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors"
                 >
-                  <span>{t('appt.title')}</span>
                   <Calendar size={16} />
+                  <span>{t('appt.title')}</span>
                 </Link>
                 <Link
                   href="/support"
                   onClick={() => setDropdownOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors justify-end"
+                  className="flex items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors"
                 >
-                  <span>{t('status.support')}</span>
                   <MessageCircle size={16} />
+                  <span>{t('status.support')}</span>
                 </Link>
                 <Link
                   href="/notifications"
                   onClick={() => setDropdownOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors justify-end"
+                  className="flex items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors"
                 >
-                  <span>{t('notif.title')}</span>
                   <Bell size={16} />
+                  <span>{t('notif.title')}</span>
                 </Link>
                 <Link
                   href="/profile"
                   onClick={() => setDropdownOpen(false)}
-                  className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors border-t border-cyan-950/5 dark:border-white/5 mt-1 pt-2 justify-end"
+                  className="flex items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors border-t border-cyan-950/5 dark:border-white/5 mt-1 pt-2"
                 >
-                  <span>{t('more.view_profile')}</span>
                   <UserIcon size={16} />
+                  <span>{t('more.view_profile')}</span>
                 </Link>
                 <button
                   onClick={handleSignOut}
-                  className="w-full text-right flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-red-500 hover:bg-red-500/10 transition-colors justify-end"
+                  className="flex w-full items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-red-500 hover:bg-red-500/10 transition-colors"
                 >
-                  <span>{t('more.signout')}</span>
                   <LogOut size={16} />
+                  <span>{t('more.signout')}</span>
                 </button>
               </div>
             )}
