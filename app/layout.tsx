@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Cairo } from 'next/font/google';
 import Script from 'next/script';
+import { Suspense } from 'react';
 import Providers from './providers';
 import './globals.css';
 import MetaPixelTracker from '@/components/MetaPixelTracker';
@@ -20,7 +21,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang={siteConfig.language} dir={siteConfig.direction} className="dark" suppressHydrationWarning>
       <body className={cairo.className}>
         <Providers>
-          <MetaPixelTracker />
+          <Suspense fallback={null}>
+            <MetaPixelTracker />
+          </Suspense>
           {children}
         </Providers>
         <Script id="landing-schema" type="application/ld+json" strategy="beforeInteractive">
