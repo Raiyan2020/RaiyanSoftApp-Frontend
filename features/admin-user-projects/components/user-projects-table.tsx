@@ -23,7 +23,7 @@ export default function UserProjectsTable({
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
           <Loader2 size={32} className="animate-spin mb-4 text-primary" />
-          <p>Loading projects from Firestore...</p>
+          <p>Loading projects...</p>
         </div>
       ) : filteredProjects.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
@@ -48,7 +48,7 @@ export default function UserProjectsTable({
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-sm">
                 {filteredProjects.map((p) => (
-                  <UserProjectsRow key={p.id} project={p} onEdit={onEdit} formatDate={formatDate} />
+                  <UserProjectsRow key={p.id} project={p} onEdit={onEdit} formatDate={formatDate} variant="desktop" />
                 ))}
               </tbody>
             </table>
@@ -56,7 +56,7 @@ export default function UserProjectsTable({
 
           <div className="md:hidden divide-y divide-[var(--border)]">
             {filteredProjects.map((p) => (
-              <UserProjectsRow key={p.id} project={p} onEdit={onEdit} formatDate={formatDate} />
+              <UserProjectsRow key={p.id} project={p} onEdit={onEdit} formatDate={formatDate} variant="mobile" />
             ))}
           </div>
         </>

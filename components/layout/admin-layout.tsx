@@ -80,8 +80,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const unsubscribeAuth = authService.subscribe(({ admin }) => {
       if (admin) {
         setCurrentUser({
-          displayName: admin.name,
-          email: admin.email,
+          displayName: admin.full_name || admin.name || admin.admin_code || 'Admin',
+          email: admin.email || admin.phone || '',
         });
         setCurrentPermissions(['*']);
       } else {

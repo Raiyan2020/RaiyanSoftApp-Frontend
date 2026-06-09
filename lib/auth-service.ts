@@ -14,8 +14,13 @@ export interface User {
 
 export interface Admin {
   id: number;
-  name: string;
-  email: string;
+  name?: string;
+  full_name?: string;
+  email?: string;
+  phone?: string;
+  role?: string;
+  admin_code?: string;
+  is_block?: boolean;
 }
 
 type AuthListener = (state: { user: User | null; admin: Admin | null }) => void;
@@ -81,6 +86,14 @@ class AuthService {
       localStorage.setItem('admin_token', token);
       localStorage.setItem('admin_profile', JSON.stringify(admin));
       document.cookie = `admin_token=${token}; path=/; max-age=604800; SameSite=Lax`;
+    }
+    this.notify();
+  }
+
+  setAdminProfile(admin: Admin) {
+    this.admin = admin;
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('admin_profile', JSON.stringify(admin));
     }
     this.notify();
   }

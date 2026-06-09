@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react';
-import { updateProfile, onAuthStateChanged } from 'firebase/auth';
-import { doc, getDoc, updateDoc } from 'firebase/firestore';
-import { auth, db } from '@/lib/firebase-client';
+import { authService, type Admin } from '@/lib/auth-service';
+import { updateAdminEmployee } from '@/features/admin-employees/api/admin-employees-api';
 import { AdminProfileValues } from '../schemas/profile.schema';
 
+const splitAdminName = (admin: Admin | null) => {
+  const fullName = admin?.full_name || admin?.name || '';
+  const nameParts = fullName.trim().split(/\s+/).filter(Boolean);
+  return {
+    firstName: nameParts[0] || '',
+    lastName: nameParts.slice(1).join(' '),
+  };
+};
+
 export function useAdminAccount() {
-  const [user, setUser] = useState(auth.currentUser);
+  const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -19,79 +27,71 @@ export function useAdminAccount() {
   });
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      if (!currentUser) {
-        setIsLoading(false);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+    const hydrateAdminData = () => {
+      const profile = authService.getAdmin();
+      const { firstName, lastName } = splitAdminName(profile);
 
-  useEffect(() => {
-    const fetchAdminData = async () => {
-      if (!user) return;
-
-      try {
-        const docRef = doc(db, 'admins', user.uid);
-        const snap = await getDoc(docRef);
-
-        if (snap.exists()) {
-          const data = snap.data();
-          const nameParts = (data.name || '').split(' ');
-          const firstName = nameParts[0] || '';
-          const lastName = nameParts.slice(1).join(' ') || '';
-
-          setFormData({
-            firstName,
-            lastName,
-            phone: data.phone || '',
-            role: data.role || 'Admin',
-            email: data.email || user.email || '',
-          });
-        } else {
-          const nameParts = (user.displayName || '').split(' ');
-          setFormData({
-            firstName: nameParts[0] || '',
-            lastName: nameParts.slice(1).join(' ') || '',
-            phone: '',
-            role: 'Admin',
-            email: user.email || '',
-          });
-        }
-      } catch (err) {
-        console.error('Error loading profile', err);
-      } finally {
-        setIsLoading(false);
-      }
+      setUser(profile);
+      setFormData({
+        firstName,
+        lastName,
+        phone: profile?.phone || '',
+        role: profile?.role || 'Admin',
+        email: profile?.email || '',
+      });
+      setIsLoading(false);
     };
 
-    fetchAdminData();
-  }, [user]);
+    hydrateAdminData();
+  }, []);
 
   const handleSave = async (data: AdminProfileValues) => {
-    if (!user) return;
     setIsSaving(true);
     setSuccess(false);
 
     try {
-      const fullName = `${data.firstName} ${data.lastName}`.trim();
-
-      await updateProfile(user, {
-        displayName: fullName,
-      });
-
-      const docRef = doc(db, 'admins', user.uid);
-      await updateDoc(docRef, {
+      const currentAdmin = authService.getAdmin();
+      const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
+      let nextAdmin: Admin = {
+        ...(currentAdmin || { id: user?.id }),
+        id: Number(currentAdmin?.id || user?.id),
         name: fullName,
+        full_name: fullName,
         phone: data.phone || '',
-      });
+        email: data.email || formData.email || currentAdmin?.email,
+        role: currentAdmin?.role || formData.role,
+      };
+
+      if (currentAdmin?.id) {
+        const payload = {
+          first_name: data.firstName,
+          last_name: data.lastName,
+          phone: data.phone || '',
+          role: currentAdmin.role || formData.role || undefined,
+          ...(data.email || formData.email ? { email: data.email || formData.email } : {}),
+        };
+        const updated = await updateAdminEmployee(currentAdmin.id, payload);
+        if (updated) {
+          nextAdmin = {
+            ...nextAdmin,
+            name: [updated.first_name, updated.last_name].filter(Boolean).join(' ') || nextAdmin.name,
+            full_name: [updated.first_name, updated.last_name].filter(Boolean).join(' ') || nextAdmin.full_name,
+            email: updated.email || nextAdmin.email,
+            phone: updated.phone || nextAdmin.phone,
+            role: updated.role || nextAdmin.role,
+          };
+        }
+      }
+
+      authService.setAdminProfile(nextAdmin);
+      setUser(nextAdmin);
 
       setFormData((prev) => ({
         ...prev,
         firstName: data.firstName,
         lastName: data.lastName,
         phone: data.phone || '',
+        email: data.email || prev.email,
       }));
 
       setSuccess(true);

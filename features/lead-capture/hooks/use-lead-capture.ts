@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18nContext';
 
 export function useLeadCapture() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const source = searchParams?.get('source') || 'direct';
   const [isCompleted, setIsCompleted] = useState(false);
@@ -11,7 +13,7 @@ export function useLeadCapture() {
 
   const handleComplete = (id?: string) => {
     if (id) setRequestId(id);
-    setIsCompleted(true);
+    router.push('/profile?tab=project');
   };
 
   const getWhatsAppLink = () => {

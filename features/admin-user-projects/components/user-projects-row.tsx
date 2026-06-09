@@ -8,16 +8,65 @@ interface UserProjectsRowProps {
   project: UserProject;
   onEdit: (project: UserProject) => void;
   formatDate: (ts: number) => string;
+  variant?: 'desktop' | 'mobile';
 }
 
-export default function UserProjectsRow({ project, onEdit, formatDate }: UserProjectsRowProps) {
+export default function UserProjectsRow({ project, onEdit, formatDate, variant = 'desktop' }: UserProjectsRowProps) {
   const detailHref = project.ownerId
     ? `/admin/user-projects/${encodeURIComponent(project.ownerId)}/${encodeURIComponent(project.id)}`
     : '/admin/user-projects';
+  const canEditProject = true;
+
+  if (variant === 'mobile') {
+    return (
+      <div className="p-4 flex flex-col gap-3 border-b border-[var(--border)]">
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-10 h-10 ${
+                project.iconBg || 'bg-[var(--surface-3)]'
+              } rounded-lg flex items-center justify-center text-[var(--text)] border border-[var(--border)] shadow-inner`}
+            >
+              <LayoutGrid size={18} className="opacity-80" />
+            </div>
+            <div>
+              <Link href={detailHref} className="text-sm font-bold text-[var(--text)] hover:text-primary transition-colors">
+                {project.name}
+              </Link>
+              <div className="text-[var(--text-muted)] text-xs flex items-center gap-2 mt-1">
+                <span className="capitalize text-primary font-medium">{project.status}</span>
+                <span>•</span>
+                <span>{project.estimatedPrice ? `${project.estimatedPrice} KWD` : '—'}</span>
+              </div>
+              {project.industry ? (
+                <div className="text-xs text-[var(--text-muted)] mt-1">
+                  {project.industry === 'Other' ? project.industryOther : project.industry}
+                </div>
+              ) : null}
+              <div className="text-xs text-[var(--text-muted)] mt-1">Owner: {project.ownerName}</div>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <Link href={detailHref} className="p-2 text-[var(--text-muted)] hover:text-primary bg-[var(--surface-3)] rounded-lg">
+              <Eye size={16} />
+            </Link>
+            {canEditProject ? (
+              <button
+                type="button"
+                onClick={() => onEdit(project)}
+                className="p-2 text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-3)] rounded-lg"
+              >
+                <Edit2 size={16} />
+              </button>
+            ) : null}
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <>
-      <tr className="hidden md:table-row hover:bg-white/[0.02] transition-colors group">
+      <tr className="hover:bg-white/[0.02] transition-colors group">
         <td className="p-5">
           <Link href={detailHref} className="flex items-center gap-3 group/project">
             <div
@@ -81,59 +130,18 @@ export default function UserProjectsRow({ project, onEdit, formatDate }: UserPro
             >
               <Eye size={16} />
             </Link>
-            <button
-              type="button"
-              onClick={() => onEdit(project)}
-              className="p-2 bg-[var(--surface-3)] hover:bg-white/5 rounded-lg text-[var(--text-muted)] hover:text-primary transition-colors border border-[var(--border)] hover:border-primary/30"
-              title="Edit project"
-            >
-              <Edit2 size={16} />
-            </button>
+            {canEditProject ? (
+              <button
+                type="button"
+                onClick={() => onEdit(project)}
+                className="p-2 bg-[var(--surface-3)] hover:bg-white/5 rounded-lg text-[var(--text-muted)] hover:text-primary transition-colors border border-[var(--border)] hover:border-primary/30"
+                title="Edit project"
+              >
+                <Edit2 size={16} />
+              </button>
+            ) : null}
           </div>
         </td>
       </tr>
-
-      <div className="md:hidden p-4 flex flex-col gap-3 border-b border-[var(--border)]">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div
-              className={`w-10 h-10 ${
-                project.iconBg || 'bg-[var(--surface-3)]'
-              } rounded-lg flex items-center justify-center text-[var(--text)] border border-[var(--border)] shadow-inner`}
-            >
-              <LayoutGrid size={18} className="opacity-80" />
-            </div>
-            <div>
-              <Link href={detailHref} className="text-sm font-bold text-[var(--text)] hover:text-primary transition-colors">
-                {project.name}
-              </Link>
-              <div className="text-[var(--text-muted)] text-xs flex items-center gap-2 mt-1">
-                <span className="capitalize text-primary font-medium">{project.status}</span>
-                <span>•</span>
-                <span>{project.estimatedPrice ? `${project.estimatedPrice} KWD` : '—'}</span>
-              </div>
-              {project.industry ? (
-                <div className="text-xs text-[var(--text-muted)] mt-1">
-                  {project.industry === 'Other' ? project.industryOther : project.industry}
-                </div>
-              ) : null}
-              <div className="text-xs text-[var(--text-muted)] mt-1">Owner: {project.ownerName}</div>
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <Link href={detailHref} className="p-2 text-[var(--text-muted)] hover:text-primary bg-[var(--surface-3)] rounded-lg">
-              <Eye size={16} />
-            </Link>
-            <button
-              type="button"
-              onClick={() => onEdit(project)}
-              className="p-2 text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-3)] rounded-lg"
-            >
-              <Edit2 size={16} />
-            </button>
-          </div>
-        </div>
-      </div>
-    </>
   );
 }

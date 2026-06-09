@@ -141,7 +141,7 @@ export default function HomePage() {
         {isWizardOpen ? (
           <ProjectWizard
             onClose={() => setIsWizardOpen(false)}
-            onComplete={() => setIsWizardOpen(false)}
+            onComplete={() => router.push('/profile?tab=project')}
           />
         ) : null}
       </AnimatePresence>

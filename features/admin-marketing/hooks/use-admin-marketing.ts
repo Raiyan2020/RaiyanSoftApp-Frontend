@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { marketingStore, useMarketingHistory } from '@/lib/marketingNotifications';
 import { useUsers, User } from '@/lib/userStore';
 import { NotificationValues } from '../schemas/notification.schema';
+import { sendAdminNotification } from '../api/admin-notifications-api';
 
 export function useAdminMarketing() {
   const { history } = useMarketingHistory();
@@ -60,6 +61,15 @@ export function useAdminMarketing() {
     setIsSending(true);
 
     try {
+      await sendAdminNotification({
+        audience: targetType === 'all' ? 'all_users' : 'users',
+        userIds: targetType === 'single' && selectedUser ? [selectedUser.id] : undefined,
+        titleAr: data.title,
+        titleEn: data.title,
+        descriptionAr: data.message,
+        descriptionEn: data.message,
+      });
+
       await marketingStore.sendNotification({
         target: {
           type: targetType,
