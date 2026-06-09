@@ -9,16 +9,15 @@ import PhoneInput from '@/components/ui/phone-input';
 import { useTranslation } from '@/lib/i18nContext';
 import { usePhoneAuth } from '@/features/auth/hooks/use-phone-auth';
 
-interface LeadProjectAuthGateProps {
+interface BookingAuthGateProps {
   onAuthenticated: () => void | Promise<void>;
   submitError?: string | null;
 }
 
-export default function LeadProjectAuthGate({ onAuthenticated, submitError }: LeadProjectAuthGateProps) {
+export default function BookingAuthGate({ onAuthenticated, submitError }: BookingAuthGateProps) {
   const { t, dir } = useTranslation();
-  const { step, phone, isNewUser, newUserOtpSent, loading, error, message, checkPhone, submitRegistrationDetails, submitOtp } = usePhoneAuth({
-    onSuccess: onAuthenticated,
-  });
+  const { step, phone, isNewUser, newUserOtpSent, loading, error, message, checkPhone, submitRegistrationDetails, submitOtp } =
+    usePhoneAuth({ onSuccess: onAuthenticated });
   const [phoneValue, setPhoneValue] = useState('');
   const [name, setName] = useState('');
   const [otp, setOtp] = useState('');
@@ -63,18 +62,19 @@ export default function LeadProjectAuthGate({ onAuthenticated, submitError }: Le
       setLocalError(t('auth.otp_invalid'));
       return;
     }
+
     submitOtp({ phone, otp: otp.trim() });
   };
 
   return (
-    <div className="flex h-full flex-col p-6 pt-10" dir={dir}>
+    <div className="flex h-full flex-col p-5 sm:p-6 pt-8" dir={dir}>
       <h2 className="mb-2 text-2xl font-bold text-[var(--text)]">
-        {dir === 'rtl' ? 'سجّل للمتابعة' : 'Sign in to continue'}
+        {dir === 'rtl' ? 'سجّل للحجز' : 'Sign in to finish booking'}
       </h2>
-      <p className="mb-6 text-sm text-[var(--text-muted)]">
+      <p className="mb-5 text-sm text-[var(--text-muted)]">
         {dir === 'rtl'
-          ? 'أدخل رقم هاتفك لإرسال طلبك عبر النظام.'
-          : 'Enter your phone number to submit your project request.'}
+          ? 'أدخل رقم هاتفك لإكمال الحجز أو إنشاء حساب جديد.'
+          : 'Enter your phone number to complete the booking or create a new account.'}
       </p>
 
       {activeError ? (
@@ -93,10 +93,12 @@ export default function LeadProjectAuthGate({ onAuthenticated, submitError }: Le
       {step === 'phone' ? (
         <div className="space-y-4">
           <div>
-            <label className="mb-2 block text-xs font-medium text-[var(--text-muted)]">
-              {t('auth.phone')}
-            </label>
-            <PhoneInput value={phoneValue} onChange={(value) => setPhoneValue(value || '')} />
+            <label className="mb-2 block text-xs font-medium text-[var(--text-muted)]">{t('auth.phone')}</label>
+            <PhoneInput
+              value={phoneValue}
+              onChange={(value) => setPhoneValue(value || '')}
+              useManagedCountries={false}
+            />
           </div>
           <Button type="button" onClick={handlePhoneSubmit} disabled={loading} className="w-full gap-2">
             <Phone size={16} />

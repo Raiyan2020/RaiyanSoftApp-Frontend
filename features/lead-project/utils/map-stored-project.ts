@@ -17,6 +17,13 @@ export type UserProjectView = {
   markets: string[];
   languages: string[];
   platforms: string[];
+  answers: Array<{
+    id: number;
+    question: string;
+    answer: string;
+    form_question_id: number;
+    form_question_option_id: number | null;
+  }>;
 };
 
 function buildDescription(project: StoredProject) {
@@ -52,5 +59,12 @@ export function mapStoredProject(project: StoredProject): UserProjectView {
     markets: [],
     languages: [],
     platforms: [],
+    answers: (project.answers || []).map((answer) => ({
+      id: answer.id,
+      question: answer.question,
+      answer: answer.answer,
+      form_question_id: answer.form_question_id,
+      form_question_option_id: answer.form_question_option_id ?? null,
+    })),
   };
 }

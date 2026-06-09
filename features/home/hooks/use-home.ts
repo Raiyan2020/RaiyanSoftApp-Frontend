@@ -32,7 +32,7 @@ export function useHome() {
   const userCreatedProjects = currentUser ? projects : [];
 
   const handleCreateClick = () => {
-    requireAuth(() => setIsWizardOpen(true));
+    setIsWizardOpen(true);
   };
 
   const handleNotificationsClick = () => {

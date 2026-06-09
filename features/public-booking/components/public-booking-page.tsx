@@ -31,6 +31,7 @@ export default function PublicBookingPage() {
     handleBook,
     handlePrevMonth,
     handleNextMonth,
+    canGoToPrevMonth,
     getCalendarRows,
     isDateAvailable,
     resetFlow,
@@ -82,6 +83,7 @@ export default function PublicBookingPage() {
             selectedTime={selectedTime}
             availableSlots={availableSlots}
             loadingSlots={loadingSlots}
+            canGoToPrevMonth={canGoToPrevMonth}
             dir={dir}
             onPrevMonth={handlePrevMonth}
             onNextMonth={handleNextMonth}

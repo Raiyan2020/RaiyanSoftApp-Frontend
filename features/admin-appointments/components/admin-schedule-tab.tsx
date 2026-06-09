@@ -1,6 +1,7 @@
 import React from 'react';
 import { Save, Plus, Trash2 } from 'lucide-react';
 import { WeeklyAvailability } from '@/features/meetings/types/meeting.types';
+import { useTranslation } from '@/lib/i18nContext';
 
 interface AdminScheduleTabProps {
   weeklyAvailability: WeeklyAvailability;
@@ -25,6 +26,8 @@ export default function AdminScheduleTab({
   onChangeRange,
   days,
 }: AdminScheduleTabProps) {
+  const { dir } = useTranslation();
+
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
@@ -55,18 +58,22 @@ export default function AdminScheduleTab({
                 isEnabled ? 'bg-[var(--surface-2)] border-[var(--border)]' : 'bg-[var(--surface-2)] border-[var(--border)] opacity-70'
               }`}
             >
-              <div className="w-32 flex items-center gap-3">
+              <div className={`w-32 flex items-center gap-3 ${dir === 'rtl' ? 'md:flex-row-reverse md:justify-end' : ''}`}>
                 <button
                   type="button"
                   onClick={() => onUpdateAvailability(idx, !isEnabled)}
-                  className={`w-12 h-6 rounded-full p-1 transition-colors relative cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/50 ${
+                  className={`relative h-6 w-12 cursor-pointer rounded-full p-1 transition-colors focus:outline-none focus:ring-2 focus:ring-primary/50 ${
                     isEnabled ? 'bg-primary' : 'bg-[var(--surface-3)]'
                   }`}
                   aria-pressed={isEnabled}
                 >
                   <div
-                    className={`w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm ${
-                      isEnabled ? 'translate-x-6' : 'translate-x-0'
+                    className={`h-4 w-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
+                      isEnabled
+                        ? dir === 'rtl'
+                          ? '-translate-x-6'
+                          : 'translate-x-6'
+                        : 'translate-x-0'
                     }`}
                   />
                 </button>
@@ -74,11 +81,11 @@ export default function AdminScheduleTab({
                 <span className={`font-bold ${isEnabled ? 'text-[var(--text)]' : 'text-[var(--text-muted)]'}`}>{dayName}</span>
               </div>
 
-              <div className="flex-1 space-y-2">
+              <div className={`flex-1 space-y-2 ${dir === 'rtl' ? 'md:text-right' : ''}`}>
                 {isEnabled ? (
                   <>
                     {dayConfig.ranges?.map((range, rangeIdx) => (
-                      <div key={rangeIdx} className="flex items-center gap-2">
+                      <div key={rangeIdx} className={`flex items-center gap-2 ${dir === 'rtl' ? 'flex-row-reverse justify-end' : ''}`}>
                         <input
                           type="time"
                           value={range.start_time}
@@ -104,7 +111,7 @@ export default function AdminScheduleTab({
                     <button
                       type="button"
                       onClick={() => onAddRange(idx)}
-                      className="text-xs text-primary flex items-center gap-1 hover:underline"
+                      className={`text-xs text-primary flex items-center gap-1 hover:underline ${dir === 'rtl' ? 'justify-end' : ''}`}
                     >
                       <Plus size={14} /> Add Time Range
                     </button>

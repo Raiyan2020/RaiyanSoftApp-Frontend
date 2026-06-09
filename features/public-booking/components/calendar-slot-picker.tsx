@@ -8,6 +8,7 @@ interface CalendarSlotPickerProps {
   selectedTime: string | null;
   availableSlots: string[];
   loadingSlots: boolean;
+  canGoToPrevMonth: boolean;
   dir: string;
   onPrevMonth: () => void;
   onNextMonth: () => void;
@@ -23,6 +24,7 @@ export default function CalendarSlotPicker({
   selectedTime,
   availableSlots,
   loadingSlots,
+  canGoToPrevMonth,
   dir,
   onPrevMonth,
   onNextMonth,
@@ -41,7 +43,13 @@ export default function CalendarSlotPicker({
     <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-2">
-          <button type="button" onClick={onPrevMonth} className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] border border-[var(--border)]">
+          <button
+            type="button"
+            onClick={onPrevMonth}
+            disabled={!canGoToPrevMonth}
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] border border-[var(--border)] disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:text-[var(--text-muted)]"
+            aria-label={dir === 'rtl' ? 'الشهر السابق' : 'Previous month'}
+          >
             <ChevronLeft size={20} className={dir === 'rtl' ? 'rotate-180' : ''} />
           </button>
           <h3 className="text-lg font-bold uppercase tracking-wide">{monthLabel}</h3>

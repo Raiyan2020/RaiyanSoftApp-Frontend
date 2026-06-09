@@ -92,6 +92,8 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
   };
 
   const activeError = localError || error;
+  const needsNameBeforeOtp = Boolean(isNewUser && !newUserOtpSent);
+  const sendOtpLabel = dir === 'rtl' ? 'إنشاء الحساب وإرسال رمز التحقق' : 'Create account and send OTP';
 
   return (
     <AnimatePresence>
@@ -233,35 +235,37 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
                   />
                 ) : null}
 
-                <Input
-                  label={t('auth.otp')}
-                  value={otp}
-                  onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))}
-                  placeholder="123456"
-                  inputMode="numeric"
-                  autoComplete="one-time-code"
-                  dir="ltr"
-                  disabled={Boolean(isNewUser && !newUserOtpSent)}
-                />
-                {isNewUser && !newUserOtpSent ? (
-                  <p className="text-start text-xs leading-5 text-[var(--text-muted)]">
-                    {t('auth.otp_waiting_for_name')}
-                  </p>
-                ) : null}
+                {needsNameBeforeOtp ? (
+                  <div className="rounded-xl border border-primary/20 bg-primary/10 p-3 text-start text-xs font-medium leading-5 text-primary">
+                    {dir === 'rtl'
+                      ? 'بعد إدخال الاسم اضغط الزر بالأسفل وسنرسل رمز التحقق إلى هاتفك.'
+                      : 'After entering your name, press the button below and we will send the OTP to your phone.'}
+                  </div>
+                ) : (
+                  <Input
+                    label={t('auth.otp')}
+                    value={otp}
+                    onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))}
+                    placeholder="123456"
+                    inputMode="numeric"
+                    autoComplete="one-time-code"
+                    dir="ltr"
+                    autoFocus
+                  />
+                )}
 
                 <Button
-                  type="button"
-                  onClick={handleOtpSubmit}
+                  type="submit"
                   isLoading={loading}
-                  disabled={loading}
+                  disabled={loading || (needsNameBeforeOtp && !name.trim())}
                   className="w-full"
                 >
                   {loading
-                    ? isNewUser && !newUserOtpSent
+                    ? needsNameBeforeOtp
                       ? t('auth.signup_loading')
                       : t('auth.verify_loading')
-                    : isNewUser && !newUserOtpSent
-                      ? t('auth.send_otp')
+                    : needsNameBeforeOtp
+                      ? sendOtpLabel
                       : t('auth.verify_and_enter')}
                 </Button>
               </form>

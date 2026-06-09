@@ -294,6 +294,39 @@ export function useAdminProjectQuestions() {
     }
   }, [loadQuestions, questions]);
 
+  const reorderQuestions = useCallback(async (activeId: string, overId: string) => {
+    if (activeId === overId) return;
+
+    const activeIndex = questions.findIndex((question) => question.id === activeId);
+    const overIndex = questions.findIndex((question) => question.id === overId);
+    if (activeIndex < 0 || overIndex < 0) return;
+
+    const nextQuestions = [...questions];
+    const [movedQuestion] = nextQuestions.splice(activeIndex, 1);
+    nextQuestions.splice(overIndex, 0, movedQuestion);
+    const reordered = nextQuestions.map((question, order) => ({ ...question, order: order + 1 }));
+
+    setQuestions(reordered);
+    setSaving(true);
+    setError(null);
+
+    try {
+      await updateAdminFormQuestionSortOrder(
+        reordered.map((question) => ({
+          id: question.id,
+          sort_order: question.order,
+        }))
+      );
+      await loadQuestions();
+    } catch (err: any) {
+      console.error('Failed to reorder project questions:', err);
+      setError(err.message || 'Failed to reorder project questions.');
+      await loadQuestions();
+    } finally {
+      setSaving(false);
+    }
+  }, [loadQuestions, questions]);
+
   const deleteQuestion = useCallback(async () => {
     if (!deleteId) return;
     const question = questions.find((item) => item.id === deleteId);
@@ -360,6 +393,7 @@ export function useAdminProjectQuestions() {
     startEdit,
     saveQuestion,
     moveQuestion,
+    reorderQuestions,
     deleteQuestion,
     toggleQuestionActive,
   };

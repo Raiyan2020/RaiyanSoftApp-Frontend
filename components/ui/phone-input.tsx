@@ -4,6 +4,7 @@ import * as React from 'react';
 import { Check, ChevronsUpDown, Search } from 'lucide-react';
 import * as RPNInput from 'react-phone-number-input';
 import flags from 'react-phone-number-input/flags';
+import metadata from 'libphonenumber-js/metadata.min.json';
 import { useManagedCountriesQuery } from '@/features/settings';
 
 type PhoneInputProps = Omit<
@@ -13,6 +14,7 @@ type PhoneInputProps = Omit<
   value: string;
   onChange: (value: string) => void;
   defaultCountry?: RPNInput.Country;
+  useManagedCountries?: boolean;
 };
 
 type CountryEntry = {
@@ -21,16 +23,32 @@ type CountryEntry = {
 };
 
 type CountryCallingCodes = Partial<Record<RPNInput.Country, string>>;
+type CountryMetadata = [
+  string,
+  string,
+  string,
+  number[]?,
+  unknown?,
+  string?,
+];
+
+const phoneMetadata = metadata as {
+  countries: Partial<Record<RPNInput.Country, CountryMetadata>>;
+};
 
 export default function PhoneInput({
   value,
   onChange,
   className = '',
   defaultCountry = 'KW',
+  useManagedCountries = true,
   style,
   ...props
 }: PhoneInputProps) {
-  const { data: managedCountries } = useManagedCountriesQuery();
+  const { data: managedCountries } = useManagedCountriesQuery({ enabled: useManagedCountries });
+  const [selectedCountry, setSelectedCountry] = React.useState<RPNInput.Country | undefined>(
+    defaultCountry
+  );
 
   const countryConfig = React.useMemo(() => {
     if (!managedCountries?.length) {
@@ -66,11 +84,42 @@ export default function PhoneInput({
     };
   }, [defaultCountry, managedCountries]);
 
+  React.useEffect(() => {
+    setSelectedCountry((currentCountry) => currentCountry ?? countryConfig.defaultCountry);
+  }, [countryConfig.defaultCountry]);
+
+  const handlePhoneChange = React.useCallback(
+    (nextValue?: string) => {
+      const limitedValue = limitPhoneValueByCountry(
+        nextValue || '',
+        selectedCountry ?? countryConfig.defaultCountry
+      );
+
+      onChange(limitedValue);
+    },
+    [countryConfig.defaultCountry, onChange, selectedCountry]
+  );
+
+  const handleCountryChange = React.useCallback(
+    (country?: RPNInput.Country) => {
+      setSelectedCountry(country);
+
+      if (country && value) {
+        const limitedValue = limitPhoneValueByCountry(value, country);
+        if (limitedValue !== value) {
+          onChange(limitedValue);
+        }
+      }
+    },
+    [onChange, value]
+  );
+
   return (
     <RPNInput.default
       className={`flex w-full ${className}`}
       value={value || undefined}
-      onChange={(nextValue) => onChange(nextValue || '')}
+      onChange={handlePhoneChange}
+      onCountryChange={handleCountryChange}
       defaultCountry={countryConfig.defaultCountry}
       countries={countryConfig.countries}
       countryOptionsOrder={countryConfig.countries}
@@ -85,6 +134,35 @@ export default function PhoneInput({
       style={{ direction: 'ltr', unicodeBidi: 'isolate', ...style }}
     />
   );
+}
+
+function limitPhoneValueByCountry(value: string, country?: RPNInput.Country) {
+  if (!value || !country) return value;
+
+  const maxNationalLength = getMaxNationalLength(country);
+  if (!maxNationalLength) return value;
+
+  const callingCode = RPNInput.getCountryCallingCode(country);
+  const digits = value.replace(/\D/g, '');
+  const nationalDigits = digits.startsWith(callingCode)
+    ? digits.slice(callingCode.length)
+    : digits;
+
+  if (nationalDigits.length <= maxNationalLength) return value;
+
+  return `+${callingCode}${nationalDigits.slice(0, maxNationalLength)}`;
+}
+
+function getMaxNationalLength(country: RPNInput.Country) {
+  const countryMetadata = phoneMetadata.countries[country];
+  const possibleLengths = countryMetadata?.[3];
+
+  if (!possibleLengths?.length) return undefined;
+
+  const maxLength = Math.max(...possibleLengths);
+  const nationalPrefix = countryMetadata?.[5];
+
+  return nationalPrefix === '0' ? maxLength + 1 : maxLength;
 }
 
 const InputComponent = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(

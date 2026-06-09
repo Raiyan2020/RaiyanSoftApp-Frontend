@@ -94,6 +94,13 @@ export type TimeSlotsConfig = {
   days: Record<string, TimeSlotDayConfig>;
 };
 
+export type TimeSlotDayApiItem = {
+  id: number;
+  name: string;
+  is_active: boolean;
+  time_slots: TimeSlotRange[];
+};
+
 export type MeetingSettingsPayload = {
   duration_minutes: number;
   buffer_after_minutes: number;

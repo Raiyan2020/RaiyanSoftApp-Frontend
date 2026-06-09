@@ -2,7 +2,7 @@ import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-
+output: 'standalone',
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -16,6 +16,7 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'raiyansoft.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
+    unoptimized: true,
   },
 
   experimental: {

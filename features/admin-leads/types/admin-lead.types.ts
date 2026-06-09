@@ -45,7 +45,7 @@ export type AdminLeadDetail = {
   status: LeadStatusCode;
   request_id: string;
   description: string;
-  answers: AdminLeadAnswer[];
+  answers?: AdminLeadAnswer[];
 };
 
 export type AdminLeadsPagination = {

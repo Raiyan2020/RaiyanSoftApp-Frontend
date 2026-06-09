@@ -4,19 +4,25 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Clock, ChevronRight, ChevronLeft, Loader2, CheckCircle, X, AlertTriangle, Video, MapPin } from 'lucide-react';
 import { useBookingWizard } from '../hooks/use-booking-wizard';
+import BookingAuthGate from './booking-auth-gate';
 
 interface BookingWizardProps {
   onClose: () => void;
+  onBooked?: () => void;
 }
 
-export default function BookingWizard({ onClose }: BookingWizardProps) {
+export default function BookingWizard({ onClose, onBooked }: BookingWizardProps) {
   const {
     t,
     dir,
     step,
     setStep,
+    detailsStep,
+    authStep,
+    successStep,
     selectedDate,
     setSelectedDate,
+    selectDate,
     availableSlots,
     selectedTime,
     setSelectedTime,
@@ -28,43 +34,24 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
     setFormData,
     isAuthenticated,
     handleBook,
+    handlePrimaryAction,
     handlePrevMonth,
     handleNextMonth,
+    canGoToPrevMonth,
     getCalendarRows,
     isDateAvailable,
-  } = useBookingWizard(onClose);
+  } = useBookingWizard(onClose, onBooked);
 
   const calendarRows = getCalendarRows();
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const monthLabel = viewDate.toLocaleDateString(dir === 'rtl' ? 'ar-KW' : 'en-US', { month: 'long', year: 'numeric' });
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  if (!isAuthenticated) {
-    return (
-      <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div className="w-full max-w-md rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 text-center shadow-2xl">
-          <AlertTriangle className="mx-auto mb-3 text-amber-400" size={32} />
-          <h2 className="text-xl font-bold text-[var(--text)]">{t('auth.phone_dialog_title')}</h2>
-          <p className="mt-2 text-sm text-[var(--text-muted)]">
-            {dir === 'rtl' ? 'يجب تسجيل الدخول لحجز موعد.' : 'You need to sign in to book a meeting.'}
-          </p>
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-5 w-full rounded-xl bg-primary py-3 font-bold text-white"
-          >
-            {dir === 'rtl' ? 'إغلاق' : 'Close'}
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-0 sm:p-6">
-      <div className="w-full h-full sm:h-[min(90dvh,52rem)] sm:max-w-5xl bg-[var(--surface)] text-[var(--text)] flex flex-col sm:rounded-3xl border border-[var(--border)] shadow-2xl overflow-hidden">
-        <div className="flex items-center justify-between p-4 border-b border-[var(--border)] bg-[var(--surface)] backdrop-blur-md shrink-0">
+      <div className="w-full h-full sm:h-[min(84dvh,44rem)] sm:max-w-4xl bg-[var(--surface)] text-[var(--text)] flex flex-col sm:rounded-3xl border border-[var(--border)] shadow-2xl overflow-hidden">
+        <div className="flex items-center justify-between p-3.5 border-b border-[var(--border)] bg-[var(--surface)] backdrop-blur-md shrink-0">
           <button type="button" onClick={onClose} className="p-2 -ms-2 text-[var(--text-muted)] hover:text-[var(--text)]">
             <X size={24} />
           </button>
@@ -72,9 +59,9 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
           <div className="w-8" />
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6">
-          <div className="flex justify-center gap-2 mb-8 shrink-0">
-            {[1, 2].map((i) => (
+        <div className="flex-1 overflow-y-auto p-4 sm:p-5">
+          <div className="flex justify-center gap-2 mb-6 shrink-0">
+            {Array.from({ length: isAuthenticated ? 3 : 4 }, (_, index) => index + 1).map((i) => (
               <div
                 key={i}
                 className={`h-1.5 w-8 rounded-full transition-colors ${step >= i ? 'bg-primary' : 'bg-[var(--surface-2)]'}`}
@@ -94,17 +81,19 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
           ) : null}
 
           {step === 1 ? (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
-              <div className="space-y-4">
-                <div className="flex items-center justify-between mb-2">
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between mb-1">
                   <button
                     type="button"
                     onClick={handlePrevMonth}
-                    className="p-2 bg-[var(--surface-2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] transition-colors border border-[var(--border)]"
+                    disabled={!canGoToPrevMonth}
+                    className="p-2 bg-[var(--surface-2)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] transition-colors border border-[var(--border)] disabled:cursor-not-allowed disabled:opacity-35 disabled:hover:text-[var(--text-muted)]"
+                    aria-label={dir === 'rtl' ? 'الشهر السابق' : 'Previous month'}
                   >
                     <ChevronLeft size={20} className={dir === 'rtl' ? 'rotate-180' : ''} />
                   </button>
-                  <h3 className="text-lg font-bold text-[var(--text)] uppercase tracking-wide">{monthLabel}</h3>
+                  <h3 className="text-base sm:text-lg font-bold text-[var(--text)] uppercase tracking-wide">{monthLabel}</h3>
                   <button
                     type="button"
                     onClick={handleNextMonth}
@@ -114,7 +103,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                   </button>
                 </div>
 
-                <div className="grid grid-cols-5 gap-2 mb-2">
+                <div className="grid grid-cols-7 gap-2 mb-1">
                   {weekDays.map((day) => (
                     <div key={day} className="text-center text-xs font-bold text-[var(--text-muted)] uppercase py-2">
                       {day}
@@ -124,7 +113,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
 
                 <div className="space-y-2">
                   {calendarRows.map((row, rIdx) => (
-                    <div key={rIdx} className="grid grid-cols-5 gap-2">
+                    <div key={rIdx} className="grid grid-cols-7 gap-2">
                       {row.map((date, cIdx) => {
                         const isCurrentMonth = date.getMonth() === viewDate.getMonth();
                         const isSelected = selectedDate?.toDateString() === date.toDateString();
@@ -136,7 +125,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                           <button
                             type="button"
                             key={cIdx}
-                            onClick={() => isClickable && setSelectedDate(date)}
+                            onClick={() => isClickable && selectDate(date)}
                             disabled={!isClickable}
                             className={`h-9 rounded-xl flex flex-col items-center justify-center border transition-all relative overflow-hidden ${
                               !isCurrentMonth
@@ -170,8 +159,8 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                     className="space-y-4"
                   >
                     <div className="border-t border-[var(--border)] pt-6">
-                      <h3 className="text-xl font-bold text-[var(--text)] mb-2">{t('appt.step_time')}</h3>
-                      <p className="text-[var(--text-muted)] text-sm mb-4">
+                      <h3 className="text-lg font-bold text-[var(--text)] mb-2">{t('appt.step_time')}</h3>
+                      <p className="text-[var(--text-muted)] text-sm mb-3">
                         {selectedDate.toLocaleDateString(dir === 'rtl' ? 'ar-KW' : 'en-US', {
                           weekday: 'long',
                           month: 'long',
@@ -184,18 +173,18 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                           <Loader2 className="animate-spin text-primary" size={24} />
                         </div>
                       ) : availableSlots.length === 0 ? (
-                        <div className="text-center py-8 text-[var(--text-muted)] bg-[var(--surface-3)] rounded-xl border border-[var(--border)]">
+                        <div className="text-center py-6 text-[var(--text-muted)] bg-[var(--surface-3)] rounded-xl border border-[var(--border)]">
                           <Clock size={24} className="mx-auto mb-2 opacity-50" />
                           <p className="text-sm">No slots available on this date.</p>
                         </div>
                       ) : (
-                        <div className="grid grid-cols-3 gap-3">
+                        <div className="grid grid-cols-3 gap-2.5">
                           {availableSlots.map((time) => (
                             <button
                               type="button"
                               key={time}
                               onClick={() => setSelectedTime(time)}
-                              className={`py-3 rounded-xl border font-medium text-sm transition-all ${
+                              className={`py-2.5 rounded-xl border font-medium text-sm transition-all ${
                                 selectedTime === time
                                   ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
                                   : 'bg-[var(--surface-3)] text-[var(--text)] border-[var(--border)] hover:bg-[var(--surface-3)]'
@@ -214,10 +203,10 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
           ) : null}
 
           {step === 2 ? (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
-              <h3 className="text-xl font-bold text-[var(--text)] mb-2">{t('appt.step_details')}</h3>
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-5">
+              <h3 className="text-lg font-bold text-[var(--text)] mb-2">{t('appt.step_details')}</h3>
 
-              <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center justify-between">
+              <div className="bg-primary/10 border border-primary/20 rounded-xl p-3.5 flex items-center justify-between">
                 <div>
                   <p className="text-primary font-bold text-sm">
                     {selectedDate?.toLocaleDateString(dir === 'rtl' ? 'ar-KW' : 'en-US', {
@@ -237,7 +226,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                 <label className="text-xs text-[var(--text-muted)]">{t('appt.topic_label')}</label>
                 <input
                   type="text"
-                  className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none"
+                  className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-[var(--text)] focus:border-primary focus:outline-none"
                   placeholder="e.g. Project Consultation"
                   value={formData.topic}
                   onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
@@ -250,7 +239,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
                   <button
                     type="button"
                     onClick={() => setFormData({ ...formData, meetingType: 'online' })}
-                    className={`flex flex-col items-center gap-2 p-3 rounded-xl border transition-all ${
+                    className={`flex flex-col items-center gap-2 p-2.5 rounded-xl border transition-all ${
                       formData.meetingType === 'online'
                         ? 'bg-primary/20 border-primary text-primary'
                         : 'bg-[var(--surface-3)] border-[var(--border)] text-[var(--text-muted)]'
@@ -277,7 +266,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
               <div className="space-y-1">
                 <label className="text-xs text-[var(--text-muted)]">{t('appt.notes_label')}</label>
                 <textarea
-                  className="w-full h-24 bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none resize-none"
+                  className="w-full h-20 bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-[var(--text)] focus:border-primary focus:outline-none resize-none"
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
                 />
@@ -285,7 +274,13 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
             </motion.div>
           ) : null}
 
-          {step === 3 ? (
+          {step === authStep && !isAuthenticated ? (
+            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="h-full">
+              <BookingAuthGate onAuthenticated={async () => { await handleBook(); }} submitError={errorMsg} />
+            </motion.div>
+          ) : null}
+
+          {step === successStep ? (
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-10 space-y-6">
               <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/30">
                 <CheckCircle size={48} />
@@ -298,8 +293,8 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
           ) : null}
         </div>
 
-        {step < 3 ? (
-          <div className="p-4 sm:p-6 border-t border-[var(--border)] bg-[var(--surface)] flex justify-between gap-4">
+        {step < successStep && !(step === authStep && !isAuthenticated) ? (
+            <div className="p-3.5 sm:p-4 border-t border-[var(--border)] bg-[var(--surface)] flex justify-between gap-4">
             <button
               type="button"
               onClick={() => setStep(step - 1)}
@@ -312,7 +307,7 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
             </button>
             <button
               type="button"
-              onClick={step === 2 ? handleBook : () => setStep(step + 1)}
+              onClick={handlePrimaryAction}
               disabled={
                 (step === 1 && (!selectedDate || !selectedTime)) ||
                 (step === 2 && !formData.topic.trim()) ||
@@ -320,8 +315,14 @@ export default function BookingWizard({ onClose }: BookingWizardProps) {
               }
               className="flex-1 bg-primary text-white font-bold py-3 rounded-xl shadow-[0_0_20px_rgba(29,183,240,0.3)] hover:shadow-[0_0_25px_rgba(29,183,240,0.5)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? <Loader2 className="animate-spin" /> : step === 2 ? t('appt.confirm_btn') : t('wizard.next')}
-              {step < 2 && !isSubmitting ? dir === 'rtl' ? <ChevronLeft size={18} /> : <ChevronRight size={18} /> : null}
+              {isSubmitting
+                ? <Loader2 className="animate-spin" />
+                : step === 2 && !isAuthenticated
+                  ? (dir === 'rtl' ? 'متابعة' : 'Continue')
+                  : step === 2
+                    ? t('appt.confirm_btn')
+                    : t('wizard.next')}
+              {step === 1 && !isSubmitting ? dir === 'rtl' ? <ChevronLeft size={18} /> : <ChevronRight size={18} /> : null}
             </button>
           </div>
         ) : null}

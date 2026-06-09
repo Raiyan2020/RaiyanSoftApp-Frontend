@@ -1,4 +1,5 @@
 import { globalToast } from './toast-context';
+import { authService } from './auth-service';
 
 export function getApiBaseUrl() {
   const url = process.env.NEXT_PUBLIC_API_URL || 'https://portal.raiyan.cc/api';
@@ -18,6 +19,27 @@ interface RequestOptions extends RequestInit {
   skipGlobalToast?: boolean;
 }
 
+function isAdminApiPath(path: string) {
+  return path.startsWith('/admin') || path.startsWith('admin');
+}
+
+function handleUnauthorized(path: string) {
+  if (typeof window === 'undefined') return;
+
+  if (isAdminApiPath(path)) {
+    authService.clearAdminSession();
+    if (!window.location.pathname.startsWith('/')) {
+      window.location.replace('/');
+    } else {
+      window.location.replace('/');
+    }
+    return;
+  }
+
+  authService.clearUserSession();
+  window.location.replace('/');
+}
+
 class ApiService {
   private getHeaders(isFormattedData: boolean, path: string): HeadersInit {
     const headers: Record<string, string> = {
@@ -29,8 +51,7 @@ class ApiService {
     }
 
     // Determine token to use based on the path
-    const isAdminRoute = path.startsWith('/admin') || path.startsWith('admin');
-    const tokenKey = isAdminRoute ? 'admin_token' : 'user_token';
+    const tokenKey = isAdminApiPath(path) ? 'admin_token' : 'user_token';
     const token = typeof window !== 'undefined' ? localStorage.getItem(tokenKey) : null;
 
     if (token) {
@@ -71,6 +92,10 @@ class ApiService {
     try {
       const response = await fetch(url, config);
       const data = (await response.json()) as ApiResponse<T>;
+
+      if (response.status === 401) {
+        handleUnauthorized(path);
+      }
 
       if (data && data.status === false && !skipGlobalToast) {
         let errorMsg = data.message || 'An error occurred.';

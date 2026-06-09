@@ -45,6 +45,7 @@ interface ProfileTableProps {
   selectedRecordId?: string | null;
   onOpenBookingDialog?: () => void;
   onOpenLeadDialog?: () => void;
+  onOpenProjectDetails?: (projectId: string) => void;
 }
 
 type RecordFormValues = Pick<ProfileRecord, 'title' | 'type' | 'owner' | 'date' | 'amount' | 'status' | 'description'>;
@@ -132,6 +133,7 @@ export default function ProfileTable({
   selectedRecordId,
   onOpenBookingDialog,
   onOpenLeadDialog,
+  onOpenProjectDetails,
 }: ProfileTableProps) {
   const { dir } = useTranslation();
   const [records, setRecords] = useState<ProfileRecord[]>(profileRecords);

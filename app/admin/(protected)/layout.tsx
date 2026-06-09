@@ -10,7 +10,8 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
 
   useEffect(() => {
     const unsubscribe = authService.subscribe(({ admin }) => {
-      if (!admin) {
+      if (!admin || !authService.getAdminToken()) {
+        authService.clearAdminSession();
         router.replace('/admin/login');
         return;
       }

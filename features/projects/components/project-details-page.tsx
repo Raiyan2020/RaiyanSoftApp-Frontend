@@ -48,6 +48,15 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
     );
   }
 
+  const answerGroups = project.answers.reduce<Record<string, string[]>>((acc, answer) => {
+    const key = answer.question || `Q${answer.form_question_id}`;
+    if (!acc[key]) acc[key] = [];
+    if (answer.answer && !acc[key].includes(answer.answer)) {
+      acc[key].push(answer.answer);
+    }
+    return acc;
+  }, {});
+
   return (
     <div className="app-page app-page-wide">
       <header className="app-header">
@@ -131,6 +140,30 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
             <ExternalLink size={18} className="text-[var(--text-muted)] group-hover:text-[var(--text)] transition-colors" />
           </a>
         ) : null}
+
+        <div className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-[var(--text)] font-bold text-base">{dir === 'rtl' ? 'الإجابات' : 'Answers'}</h3>
+          </div>
+
+          <div className="space-y-3">
+            {Object.entries(answerGroups).map(([question, answers]) => (
+              <div key={question} className="app-card rounded-2xl p-4">
+                <p className="text-sm font-bold text-[var(--text)]">{question}</p>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {answers.map((answer) => (
+                    <span
+                      key={`${question}-${answer}`}
+                      className="rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-3 py-1 text-xs font-medium text-[var(--text-muted)]"
+                    >
+                      {answer}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
         </div>
       </div>
     </div>

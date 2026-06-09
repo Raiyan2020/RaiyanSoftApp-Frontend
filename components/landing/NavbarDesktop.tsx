@@ -90,7 +90,7 @@ export default function NavbarDesktop({
       authService.clearUserSession();
       guestStore.setGuest(false);
       setDropdownOpen(false);
-      router.push('/login');
+      router.push('/');
     }
   };
 
@@ -306,14 +306,6 @@ export default function NavbarDesktop({
                   <p className="text-xs text-[var(--text-muted)]">{t('home.greeting')}</p>
                   <p className="text-sm font-bold text-[var(--text)] truncate">{userDisplayName}</p>
                 </div>
-                <Link
-                  href="/home"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors"
-                >
-                  <Home size={16} />
-                  <span>{t('home.my_apps')}</span>
-                </Link>
                 <Link
                   href="/appointments"
                   onClick={() => setDropdownOpen(false)}

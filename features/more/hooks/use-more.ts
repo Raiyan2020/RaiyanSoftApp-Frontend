@@ -36,13 +36,13 @@ export function useMore() {
     } finally {
       authService.clearUserSession();
       guestStore.setGuest(false);
-      router.push('/login');
+      router.push('/');
     }
   };
 
   const handleGuestExit = () => {
     guestStore.setGuest(false);
-    router.push('/login');
+    router.push('/');
   };
 
   const handleDeleteAccount = async () => {

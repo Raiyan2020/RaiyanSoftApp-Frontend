@@ -141,13 +141,6 @@ export default function NavbarMobile({
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <Link
-                    href="/home"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary"
-                  >
-                    <span>{t('home.my_apps')}</span>
-                  </Link>
-                  <Link
                     href="/appointments"
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary"
@@ -187,7 +180,7 @@ export default function NavbarMobile({
                       } finally {
                         authService.clearUserSession();
                         guestStore.setGuest(false);
-                        window.location.href = '/login';
+                        window.location.href = '/';
                       }
                     }}
                     className="flex items-center justify-center gap-2 rounded-2xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm font-bold text-red-400 transition-colors hover:bg-red-500/20 col-span-2"

@@ -3,7 +3,7 @@ export type FormQuestionOption = {
   value: string;
 };
 
-export type FormQuestionType = 'single_select' | 'multi_select' | 'text';
+export type FormQuestionType = 'single_select' | 'text';
 
 export type FormQuestion = {
   id: number;
@@ -19,7 +19,7 @@ export type QuestionAnswerPayload =
 export type LeadProjectDraft = {
   name: string;
   color: string;
-  answersByQuestionId: Record<number, number | number[] | string>;
+  answersByQuestionId: Record<number, number | string>;
 };
 
 export type StoredProjectAnswer = {

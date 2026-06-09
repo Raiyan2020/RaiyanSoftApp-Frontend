@@ -37,30 +37,71 @@ function QuestionRow({
   index,
   total,
   isActive,
+  isDragging,
+  isDragOver,
   onEdit,
   onMove,
   onToggleActive,
   onDelete,
+  onDragStart,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+  onDragEnd,
 }: {
   question: ProjectQuestion;
   index: number;
   total: number;
   isActive: boolean;
+  isDragging: boolean;
+  isDragOver: boolean;
   onEdit: (question: ProjectQuestion) => void | Promise<void>;
   onMove: (id: string, direction: -1 | 1) => void;
   onToggleActive: (id: string) => void | Promise<void>;
   onDelete: (id: string) => void;
+  onDragStart: (id: string) => void;
+  onDragOver: (id: string) => void;
+  onDragLeave: (id: string) => void;
+  onDrop: (id: string) => void;
+  onDragEnd: () => void;
 }) {
   return (
     <div
-      className={`rounded-2xl border p-4 transition-colors ${
-        isActive ? 'bg-primary/10 border-primary/30' : 'bg-[var(--surface-2)] border-[var(--border)]'
+      onDragOver={(event) => {
+        event.preventDefault();
+        onDragOver(question.id);
+      }}
+      onDragLeave={() => onDragLeave(question.id)}
+      onDrop={(event) => {
+        event.preventDefault();
+        onDrop(question.id);
+      }}
+      className={`rounded-2xl border p-4 transition-all ${
+        isDragOver
+          ? 'border-primary bg-primary/10 shadow-[0_0_0_2px_rgba(29,183,240,0.16)]'
+          : isActive
+          ? 'bg-primary/10 border-primary/30'
+          : 'bg-[var(--surface-2)] border-[var(--border)]'
+      } ${
+        isDragging ? 'opacity-50 scale-[0.99]' : ''
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-start gap-3">
-        <div className="mt-1 text-[var(--text-muted)]">
+        <button
+          type="button"
+          draggable
+          onDragStart={(event) => {
+            event.dataTransfer.effectAllowed = 'move';
+            event.dataTransfer.setData('text/plain', question.id);
+            onDragStart(question.id);
+          }}
+          onDragEnd={onDragEnd}
+          className="mt-1 cursor-grab rounded-lg p-1 text-[var(--text-muted)] hover:bg-[var(--surface-3)] hover:text-[var(--text)] active:cursor-grabbing"
+          title="Drag to reorder"
+          aria-label="Drag to reorder"
+        >
           <GripVertical size={16} />
-        </div>
+        </button>
         <button type="button" onClick={() => onEdit(question)} className="text-left min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <h3 className="text-sm font-bold text-[var(--text)] break-words">{question.label}</h3>
@@ -194,6 +235,13 @@ function QuestionPreview({
 
 export default function AdminProjectQuestionsPage() {
   const state = useAdminProjectQuestions();
+  const [draggedQuestionId, setDraggedQuestionId] = React.useState<string | null>(null);
+  const [dragOverQuestionId, setDragOverQuestionId] = React.useState<string | null>(null);
+
+  const clearDragState = () => {
+    setDraggedQuestionId(null);
+    setDragOverQuestionId(null);
+  };
 
   if (state.loading) {
     return (
@@ -365,10 +413,31 @@ export default function AdminProjectQuestionsPage() {
                   index={index}
                   total={state.questions.length}
                   isActive={state.selectedQuestion?.id === question.id}
+                  isDragging={draggedQuestionId === question.id}
+                  isDragOver={dragOverQuestionId === question.id && draggedQuestionId !== question.id}
                   onEdit={(question) => state.startEdit(question).catch(() => undefined)}
                   onMove={state.moveQuestion}
                   onToggleActive={(id) => state.toggleQuestionActive(id).catch(() => undefined)}
                   onDelete={state.setDeleteId}
+                  onDragStart={(id) => {
+                    setDraggedQuestionId(id);
+                    setDragOverQuestionId(null);
+                  }}
+                  onDragOver={(id) => {
+                    if (draggedQuestionId && draggedQuestionId !== id) {
+                      setDragOverQuestionId(id);
+                    }
+                  }}
+                  onDragLeave={(id) => {
+                    setDragOverQuestionId((current) => (current === id ? null : current));
+                  }}
+                  onDrop={(id) => {
+                    if (draggedQuestionId && draggedQuestionId !== id) {
+                      state.reorderQuestions(draggedQuestionId, id).catch(() => undefined);
+                    }
+                    clearDragState();
+                  }}
+                  onDragEnd={clearDragState}
                 />
               ))}
             </div>

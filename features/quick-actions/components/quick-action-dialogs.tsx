@@ -66,7 +66,7 @@ export function QuickLeadDialog({ isOpen, onClose }: Omit<QuickActionDialogProps
   if (requestId !== null) {
     return (
       <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" dir={dir}>
-        <div className="w-full max-w-md rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 text-center shadow-2xl">
+        <div className="w-full max-w-sm rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 text-center shadow-2xl">
           <CheckCircle2 className="mx-auto mb-3 text-emerald-400" size={42} />
           <h3 className="text-xl font-black text-[var(--text)]">
             {language === 'ar' ? 'تم إرسال الطلب' : 'Request sent'}
@@ -177,20 +177,20 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
 
   return (
     <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" dir={dir}>
-      <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl no-scrollbar">
-        <div className={`mb-6 flex items-start justify-between gap-4 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+      <div className="max-h-[86vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5 shadow-2xl no-scrollbar">
+        <div className={`mb-4 flex items-start justify-between gap-4 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
           <div className="min-w-0 flex-1">
             <div className={`mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-black text-primary ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
               {mode === 'booking' ? <Calendar size={14} /> : <FolderPlus size={14} />}
               <span>{isLoggedIn ? copy.accountMode : dir === 'rtl' ? 'زائر' : 'Guest'}</span>
             </div>
-            <h2 className="text-2xl font-black text-[var(--text)]">{copy.title}</h2>
-            <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{copy.subtitle}</p>
+            <h2 className="text-xl font-black text-[var(--text)] sm:text-2xl">{copy.title}</h2>
+            <p className="mt-1.5 text-sm leading-6 text-[var(--text-muted)]">{copy.subtitle}</p>
           </div>
           <button
             type="button"
             onClick={closeDialog}
-            className="grid h-10 w-10 shrink-0 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
             aria-label={copy.close}
           >
             <X size={18} />
@@ -198,7 +198,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
         </div>
 
         {submittedRef ? (
-          <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-5 text-center">
+            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 sm:p-5 text-center">
             <CheckCircle2 className="mx-auto mb-3 text-emerald-400" size={42} />
             <h3 className="text-xl font-black text-[var(--text)]">{copy.successTitle}</h3>
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{copy.successBody}</p>
@@ -210,7 +210,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             {isLoggedIn ? (
-              <div className={`rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+            <div className={`rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3.5 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
                 <div className={`flex items-center gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
                   <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
                     <User size={18} />
@@ -226,7 +226,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
                 </div>
               </div>
             ) : (
-              <div className="grid gap-4 sm:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2">
                 <Input
                   label={copy.guestName}
                   value={form.name}
@@ -249,7 +249,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
               </div>
             )}
 
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2">
               <Input
                 label={copy.topic}
                 value={form.topic}
@@ -294,7 +294,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
                   label={copy.notes}
                   value={form.notes}
                   onChange={(event) => updateField('notes', event.target.value)}
-                  rows={4}
+                  rows={3}
                   required={mode === 'lead'}
                   dir={dir}
                 />

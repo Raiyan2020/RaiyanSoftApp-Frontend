@@ -69,7 +69,7 @@ function createOneTimePassword(phoneNumber: string) {
 }
 
 interface UsePhoneAuthOptions {
-  onSuccess?: () => void;
+  onSuccess?: () => void | Promise<void>;
 }
 
 export function usePhoneAuth(options?: UsePhoneAuthOptions) {
@@ -226,7 +226,7 @@ export function usePhoneAuth(options?: UsePhoneAuthOptions) {
       authService.setUserSession(user, token);
 
       if (options?.onSuccess) {
-        options.onSuccess();
+        await options.onSuccess();
         return;
       }
 
