@@ -1,7 +1,6 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { authService, type User } from '@/lib/auth-service';
 import { fetchUserProfile, updateUserProfile } from '../api/profile-api';
 import { profileKeys } from '../query-keys';
@@ -24,21 +23,6 @@ export function getUserProfilePhoneValue(user: User | null | undefined) {
   return countryCode ? `${countryCode}${user.phone}` : user.phone;
 }
 
-function splitPhoneValue(phone: string, fallbackCountryCode?: string) {
-  const parsed = parsePhoneNumberFromString(phone || '');
-  if (parsed) {
-    return {
-      countryCode: `+${parsed.countryCallingCode}`,
-      phoneNumber: parsed.nationalNumber,
-    };
-  }
-
-  return {
-    countryCode: normalizeCountryCode(fallbackCountryCode),
-    phoneNumber: phone.replace(/^\+\d{1,4}/, ''),
-  };
-}
-
 export function useUserProfile() {
   const queryClient = useQueryClient();
   const cachedUser = authService.getUser();
@@ -53,14 +37,9 @@ export function useUserProfile() {
 
   const updateMutation = useMutation({
     mutationFn: (values: UserProfileValues) => {
-      const phoneParts = splitPhoneValue(values.phone, profileQuery.data?.country_code);
-
       return updateUserProfile({
-        first_name: values.firstName,
-        last_name: values.lastName,
+        full_name: [values.firstName, values.lastName].filter(Boolean).join(' '),
         email: values.email,
-        phone: phoneParts.phoneNumber,
-        country_code: phoneParts.countryCode,
       });
     },
     onSuccess: (user) => {

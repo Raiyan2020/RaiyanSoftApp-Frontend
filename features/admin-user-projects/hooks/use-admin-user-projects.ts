@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { collectionGroup, getDocs, query, doc, updateDoc } from 'firebase/firestore';
 import { UserProject, ProjectStatus } from '@/lib/userProjectsStore';
-import { app, db } from '@/lib/firebase-client';
 import { UserProjectEditValues } from '../schemas/user-project-edit.schema';
+import { AdminProjectSummary, fetchAdminProjects, updateAdminProject } from '../api/admin-projects-api';
 
 export const statusOptions: ProjectStatus[] = [
   'pricing',
@@ -28,6 +27,88 @@ export const INDUSTRIES = [
   'Other',
 ];
 
+const apiStatusToProjectStatus = (status?: string): ProjectStatus => {
+  const normalized = (status || '').toLowerCase();
+  if (normalized.includes('completed') || normalized.includes('مكتمل')) return 'completed';
+  if (normalized.includes('cancel') || normalized.includes('رفض') || normalized.includes('ملغي')) return 'cancelled';
+  if (normalized.includes('design')) return 'design';
+  if (normalized.includes('develop')) return 'development';
+  if (normalized.includes('publish')) return 'publishing';
+  if (normalized.includes('support')) return 'support';
+  return 'pricing';
+};
+
+const enumValue = (value: unknown): string => {
+  if (value && typeof value === 'object' && 'value' in value) {
+    return String((value as { value?: string | number }).value || '');
+  }
+  return value === undefined || value === null ? '' : String(value);
+};
+
+const projectTypeToIndustry = (type?: unknown) => {
+  const normalized = enumValue(type);
+  const map: Record<string, string> = {
+    food_delivery: 'Food & Delivery',
+    fashion_clothing: 'Fashion & Clothing',
+    pharmacy_healthcare: 'Pharmacy & Healthcare',
+    pets_animals: 'Pets & Animals',
+    services: 'Services',
+    education: 'Education',
+    real_estate: 'Real Estate',
+    travel_tourism: 'Travel & Tourism',
+    finance: 'Finance',
+    logistics_shipping: 'Logistics & Shipping',
+    other: 'Other',
+  };
+  return map[normalized] || normalized;
+};
+
+const industryToProjectType = (industry?: string) => {
+  const map: Record<string, string> = {
+    'Food & Delivery': 'food_delivery',
+    'Fashion & Clothing': 'fashion_clothing',
+    'Pharmacy & Healthcare': 'pharmacy_healthcare',
+    'Pets & Animals': 'pets_animals',
+    Services: 'services',
+    Education: 'education',
+    'Real Estate': 'real_estate',
+    'Travel & Tourism': 'travel_tourism',
+    Finance: 'finance',
+    'Logistics & Shipping': 'logistics_shipping',
+    Other: 'other',
+  };
+  return industry ? map[industry] || industry : null;
+};
+
+const parseApiDate = (date?: string) => {
+  if (!date) return Date.now();
+  const normalized = date.replace(/\//g, '-');
+  const parsed = new Date(normalized);
+  return Number.isNaN(parsed.getTime()) ? Date.now() : parsed.getTime();
+};
+
+const mapAdminProjectToUserProject = (project: AdminProjectSummary): UserProject => ({
+  id: String(project.id),
+  ownerId: 'api',
+  ownerName: project.user?.full_name || 'Customer',
+  ownerEmail: project.user?.email || '',
+  name: project.project_name || `Project ${project.id}`,
+  description: project.description || '',
+  estimatedPrice: null,
+  estimatedDuration:
+    project.estimated_duration === undefined || project.estimated_duration === null
+      ? null
+      : Number(project.estimated_duration),
+  status: apiStatusToProjectStatus(enumValue(project.project_status) || project.status),
+  projectUrl: project.project_url || null,
+  createdAt: parseApiDate(project.date),
+  updatedAt: parseApiDate(project.date),
+  version: enumValue(project.project_status) || project.status || 'Backend',
+  industry: projectTypeToIndustry(project.type),
+  iconBg: '#1DB7F0',
+  brandColor: '#1DB7F0',
+});
+
 export function useAdminUserProjects() {
   const [projects, setProjects] = useState<UserProject[]>([]);
   const [loading, setLoading] = useState(true);
@@ -48,9 +129,6 @@ export function useAdminUserProjects() {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (app && app.options) {
-      console.log('Admin User Projects Page Loaded. Firebase Project ID:', app.options.projectId);
-    }
     fetchProjects();
   }, []);
 
@@ -58,32 +136,14 @@ export function useAdminUserProjects() {
     setLoading(true);
     setError(null);
     try {
-      if (!db) {
-        throw new Error('Database not initialized');
-      }
-
-      const q = query(collectionGroup(db, 'projects'));
-
-      const snapshot = await getDocs(q);
-      const results = snapshot.docs.map((d) => ({
-        id: d.id,
-        ...d.data(),
-        createdAt: d.data().createdAt?.toMillis?.() || Date.now(),
-        updatedAt: d.data().updatedAt?.toMillis?.() || Date.now(),
-      })) as UserProject[];
+      const results = (await fetchAdminProjects()).map(mapAdminProjectToUserProject);
 
       results.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
       setProjects(results);
     } catch (err: any) {
-      console.error('Failed to load projects:', err.code, err.message, err);
-      if (err.code === 'permission-denied') {
-        setError(
-          'Firestore permission denied. Admin panel must use server-side Admin SDK or rules must allow admin read.'
-        );
-      } else {
-        setError(`Error loading projects: ${err.message}`);
-      }
+      console.error('Failed to load projects:', err);
+      setError(`Error loading projects: ${err.message || 'Request failed.'}`);
     } finally {
       setLoading(false);
     }
@@ -129,16 +189,10 @@ export function useAdminUserProjects() {
   };
 
   const handleSave = async (data: UserProjectEditValues) => {
-    if (!editingProject || !db) return;
+    if (!editingProject) return;
 
     setIsSaving(true);
     try {
-      if (!editingProject.ownerId) {
-        throw new Error('Cannot update project: Missing Owner ID');
-      }
-
-      const docRef = doc(db, 'users', editingProject.ownerId, 'projects', editingProject.id);
-
       const updates = {
         name: data.name,
         description: data.description || '',
@@ -150,7 +204,18 @@ export function useAdminUserProjects() {
         industryOther: data.industryOther || null,
       };
 
-      await updateDoc(docRef, updates);
+      if (editingProject.ownerId === 'api') {
+        await updateAdminProject(editingProject.id, {
+          project_name: data.name || undefined,
+          estimated_duration: data.estimatedDuration !== '' ? Number(data.estimatedDuration) : null,
+          project_status: data.status || null,
+          project_url: data.projectUrl || null,
+          type: industryToProjectType(data.industry) || null,
+        });
+        await fetchProjects();
+        setEditingProject(null);
+        return;
+      }
 
       setProjects((prev) =>
         prev.map((p) => (p.id === editingProject.id ? { ...p, ...updates } : p))
@@ -159,7 +224,7 @@ export function useAdminUserProjects() {
       setEditingProject(null);
     } catch (err) {
       console.error('Error updating project:', err);
-      alert('Failed to update project. See console for details.');
+      alert('Project edit is local only until the backend adds an update project endpoint.');
     } finally {
       setIsSaving(false);
     }

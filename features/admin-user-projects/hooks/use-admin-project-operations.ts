@@ -15,6 +15,27 @@ import {
   ProjectWeeklyReport,
   UserProject,
 } from '@/lib/userProjectsStore';
+import {
+  AdminProjectReport,
+  AdminProjectSummary,
+  AdminStage,
+  AdminStageAttachment,
+  AdminStageProgress,
+  createAdminReport,
+  createAdminStage,
+  createAdminStageAttachment,
+  createAdminStageProgress,
+  deleteAdminReport,
+  deleteAdminStageAttachment,
+  fetchAdminProject,
+  fetchAdminReports,
+  fetchAdminStage,
+  fetchAdminStageAttachments,
+  fetchAdminStageProgress,
+  fetchAdminStages,
+  generateAdminReport,
+  updateAdminStage,
+} from '../api/admin-projects-api';
 
 export type ProjectDetailTab = 'overview' | 'plan' | 'progress' | 'reports' | 'files' | 'final';
 
@@ -71,8 +92,39 @@ const getDefaultReportRange = () => {
 
 const normalizeTimestamp = (value: any) => value?.toMillis?.() || value || Date.now();
 
+const enumValue = (value: unknown): string => {
+  if (value && typeof value === 'object' && 'value' in value) {
+    return String((value as { value?: string | number }).value || '');
+  }
+  return value === undefined || value === null ? '' : String(value);
+};
+
+const apiStageStatusToStageStatus = (status?: unknown): ProjectStageStatus => {
+  const normalized = enumValue(status).toLowerCase();
+  if (normalized === '1' || normalized === 'pending') return 'planned';
+  if (normalized === '2') return 'active';
+  if (normalized === '3') return 'completed';
+  if (normalized === '4') return 'planned';
+  if (normalized === '5') return 'blocked';
+  if (normalized === 'active' || normalized === 'completed' || normalized === 'blocked' || normalized === 'planned') {
+    return normalized;
+  }
+  if (normalized.includes('complete') || normalized.includes('مكتمل')) return 'completed';
+  if (normalized.includes('active') || normalized.includes('progress') || normalized.includes('نشط')) return 'active';
+  if (normalized.includes('block') || normalized.includes('متوقف')) return 'blocked';
+  return 'planned';
+};
+
+const stageStatusToApiStatus = (status: ProjectStageStatus) => {
+  if (status === 'active') return 2;
+  if (status === 'completed') return 3;
+  if (status === 'planned') return 4;
+  if (status === 'blocked') return 5;
+  return 1;
+};
+
 const normalizeStage = (stage: any, index: number): ProjectStage => ({
-  id: stage.id,
+  id: String(stage.id),
   title: stage.title || 'Untitled Stage',
   description: stage.description || '',
   assignedTo: stage.assignedTo || '',
@@ -85,6 +137,141 @@ const normalizeStage = (stage: any, index: number): ProjectStage => ({
   startedAt: stage.startedAt ? normalizeTimestamp(stage.startedAt) : null,
   completedAt: stage.completedAt ? normalizeTimestamp(stage.completedAt) : null,
 });
+
+const normalizeApiStage = (stage: AdminStage, index: number): ProjectStage => {
+  const createdAt = stage.created_at ? new Date(stage.created_at).getTime() : Date.now();
+  const updatedAt = stage.updated_at ? new Date(stage.updated_at).getTime() : createdAt;
+  const status = apiStageStatusToStageStatus(stage.status);
+  const assignedTo =
+    stage.admins
+      ?.map((admin) => admin.full_name || admin.name)
+      .filter(Boolean)
+      .join(', ') || '';
+
+  return {
+    id: String(stage.id),
+    title: stage.title || 'Untitled Stage',
+    description: stage.description || '',
+    assignedTo,
+    estimatedDays: stage.days === undefined || stage.days === null ? null : Number(stage.days),
+    order: index,
+    progress: status === 'completed' ? 100 : status === 'active' ? 50 : 0,
+    status,
+    createdAt: Number.isNaN(createdAt) ? Date.now() : createdAt,
+    updatedAt: Number.isNaN(updatedAt) ? Date.now() : updatedAt,
+    startedAt: status === 'active' || status === 'completed' ? updatedAt : null,
+    completedAt: status === 'completed' ? updatedAt : null,
+  };
+};
+
+const parseApiProjectDate = (date?: string) => {
+  if (!date) return Date.now();
+  const parsed = new Date(date.replace(/\//g, '-'));
+  return Number.isNaN(parsed.getTime()) ? Date.now() : parsed.getTime();
+};
+
+const apiStatusToProjectStatus = (status?: unknown): UserProject['status'] => {
+  const normalized = enumValue(status).toLowerCase();
+  if (normalized.includes('completed') || normalized.includes('مكتمل')) return 'completed';
+  if (normalized.includes('cancel') || normalized.includes('رفض') || normalized.includes('ملغي')) return 'cancelled';
+  if (normalized.includes('design')) return 'design';
+  if (normalized.includes('develop')) return 'development';
+  if (normalized.includes('publish')) return 'publishing';
+  if (normalized.includes('support')) return 'support';
+  return 'pricing';
+};
+
+const mapApiProjectToUserProject = (
+  project: AdminProjectSummary,
+  stages: ProjectStage[],
+  progressUpdates: ProjectProgressUpdate[] = [],
+  weeklyReports: ProjectWeeklyReport[] = [],
+  attachments: ProjectAttachment[] = []
+): UserProject => ({
+  id: String(project.id),
+  ownerId: 'api',
+  ownerName: project.user?.full_name || 'Customer',
+  ownerEmail: project.user?.email || '',
+  name: project.project_name || `Project ${project.id}`,
+  description: project.description || '',
+  estimatedPrice: null,
+  estimatedDuration:
+    project.estimated_duration === undefined || project.estimated_duration === null
+      ? null
+      : Number(project.estimated_duration),
+  status: apiStatusToProjectStatus(project.project_status || project.status),
+  projectUrl: project.project_url || null,
+  createdAt: parseApiProjectDate(project.date),
+  updatedAt: Date.now(),
+  version: enumValue(project.project_status || project.status) || 'Backend',
+  iconBg: '#1DB7F0',
+  brandColor: '#1DB7F0',
+  industry: enumValue(project.type) || '',
+  stages,
+  progressUpdates,
+  weeklyReports,
+  attachments,
+  internalNotes: [],
+  finalReport: null,
+});
+
+const normalizeApiProgressUpdate = (
+  update: AdminStageProgress,
+  stagesById: Map<string, ProjectStage>
+): ProjectProgressUpdate => {
+  const stageId = String(update.stage_id || '');
+  const stage = stagesById.get(stageId);
+  const nextProgress = Number(update.percentage ?? update.progress ?? stage?.progress ?? 0);
+  return {
+    id: String(update.id),
+    stageId,
+    stageTitle: stage?.title || 'Stage',
+    previousProgress: nextProgress,
+    nextProgress,
+    note: update.note || '',
+    createdAt: update.created_at ? new Date(update.created_at).getTime() : Date.now(),
+    createdByName: update.admin?.full_name || update.admin?.name || 'Admin',
+  };
+};
+
+const normalizeApiWeeklyReport = (report: AdminProjectReport): ProjectWeeklyReport => {
+  const weekStart = report.start_date ? parseDateInput(report.start_date) : Date.now();
+  const weekEnd = report.end_date ? parseDateInput(report.end_date, true) : weekStart;
+  const updatedAt = report.updated_at ? new Date(report.updated_at).getTime() : Date.now();
+  const createdAt = report.created_at ? new Date(report.created_at).getTime() : updatedAt;
+  return {
+    id: String(report.id),
+    weekStart,
+    weekEnd,
+    content: report.report_text || report.content || '',
+    status: report.status === 'sent' ? 'sent' : 'draft',
+    sourceUpdateIds: [],
+    clientVisible: report.status === 'sent',
+    createdAt: Number.isNaN(createdAt) ? Date.now() : createdAt,
+    updatedAt: Number.isNaN(updatedAt) ? Date.now() : updatedAt,
+    createdByName: 'Admin',
+    sentAt: report.status === 'sent' ? updatedAt : null,
+  };
+};
+
+const normalizeApiAttachment = (attachment: AdminStageAttachment): ProjectAttachment => {
+  const createdAt = attachment.created_at ? new Date(attachment.created_at).getTime() : Date.now();
+  const fileName = attachment.file_name || attachment.title || 'attachment';
+  return {
+    id: String(attachment.id),
+    stageId: String(attachment.stage_id || ''),
+    title: attachment.title || 'Untitled attachment',
+    description: attachment.description || '',
+    reason: attachment.reason || '',
+    fileName,
+    fileType: attachment.file_type || String(attachment.type || attachment.type_label || 'application/octet-stream'),
+    fileSize: Number(attachment.file_size || 0),
+    storagePath: '',
+    url: attachment.attachment_url || attachment.url || attachment.attachment || '',
+    createdAt: Number.isNaN(createdAt) ? Date.now() : createdAt,
+    createdByName: 'Admin',
+  };
+};
 
 const normalizeProgressUpdate = (update: any): ProjectProgressUpdate => ({
   id: update.id,
@@ -148,8 +335,23 @@ const formatReportDate = (value: number) =>
     year: 'numeric',
   });
 
+const resolveAdminIds = (assignedTo: string, admins: Array<{ id: string | number; name?: string }>) => {
+  if (!assignedTo.trim()) return [];
+  const matched = admins.find((admin) => admin.name === assignedTo);
+  return matched ? [matched.id] : [];
+};
+
+const optionalList = async <T,>(loader: () => Promise<T[]>): Promise<T[]> => {
+  try {
+    return await loader();
+  } catch {
+    return [];
+  }
+};
+
 export function useAdminProjectOperations(ownerId?: string, projectId?: string) {
   const { admins } = useAdmins();
+  const isApiProject = ownerId === 'api';
   const [project, setProject] = useState<UserProject | null>(null);
   const [activeTab, setActiveTab] = useState<ProjectDetailTab>('overview');
   const [loading, setLoading] = useState(true);
@@ -169,12 +371,12 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const [finalReportContent, setFinalReportContent] = useState('');
 
   const projectRef = useMemo(() => {
-    if (!db || !ownerId || !projectId) return null;
+    if (isApiProject || !db || !ownerId || !projectId) return null;
     return doc(db, 'users', ownerId, 'projects', projectId);
-  }, [ownerId, projectId]);
+  }, [isApiProject, ownerId, projectId]);
 
   const loadProject = useCallback(async () => {
-    if (!projectRef) {
+    if (!isApiProject && !projectRef) {
       setError('Missing project path.');
       setLoading(false);
       return;
@@ -184,6 +386,83 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setError(null);
 
     try {
+      if (isApiProject && projectId) {
+        const [apiProject, apiStages, apiProgress, apiReports, apiAttachments] = await Promise.all([
+          fetchAdminProject(projectId),
+          fetchAdminStages(),
+          optionalList(() => fetchAdminStageProgress({ project_id: projectId, per_page: 100 })),
+          optionalList(() => fetchAdminReports({ project_id: projectId })),
+          optionalList(() => fetchAdminStageAttachments({ project_id: projectId, per_page: 100 })),
+        ]);
+        const normalizedStages = apiStages
+          .filter((stage) => {
+            const stageProjectId = stage.project_id || stage.project?.id;
+            return !stageProjectId || String(stageProjectId) === String(projectId);
+          })
+          .map(normalizeApiStage);
+        const stageIds = new Set(normalizedStages.map((stage) => stage.id));
+        const stagesById = new Map(normalizedStages.map((stage) => [stage.id, stage]));
+        const normalizedProgress = apiProgress
+          .filter(
+            (update) =>
+              String(update.project_id || '') === String(projectId) ||
+              stageIds.has(String(update.stage_id || ''))
+          )
+          .map((update) => normalizeApiProgressUpdate(update, stagesById))
+          .sort((a, b) => b.createdAt - a.createdAt);
+        const latestProgressByStage = new Map<string, ProjectProgressUpdate>();
+        normalizedProgress
+          .slice()
+          .sort((a, b) => b.createdAt - a.createdAt)
+          .forEach((update) => {
+            if (!latestProgressByStage.has(update.stageId)) latestProgressByStage.set(update.stageId, update);
+          });
+        const stagesWithProgress = normalizedStages.map((stage) => {
+          const latest = latestProgressByStage.get(stage.id);
+          if (!latest) return stage;
+          const progress = Math.max(0, Math.min(100, Number(latest.nextProgress) || 0));
+          return {
+            ...stage,
+            progress,
+            status: progress >= 100 ? 'completed' : stage.status === 'planned' ? 'active' : stage.status,
+            updatedAt: latest.createdAt,
+          } satisfies ProjectStage;
+        });
+        const normalizedReports = apiReports
+          .filter((report) => String(report.project_id || '') === String(projectId))
+          .map(normalizeApiWeeklyReport)
+          .sort((a, b) => b.weekStart - a.weekStart);
+        const normalizedAttachments = apiAttachments
+          .filter((attachment) => stageIds.has(String(attachment.stage_id || '')))
+          .map(normalizeApiAttachment)
+          .sort((a, b) => b.createdAt - a.createdAt);
+        const normalizedProject = mapApiProjectToUserProject(
+          apiProject,
+          stagesWithProgress,
+          normalizedProgress,
+          normalizedReports,
+          normalizedAttachments
+        );
+
+        setProject(normalizedProject);
+        setFinalReportContent(normalizedReports[0]?.content || '');
+
+        const activeStage = stagesWithProgress.find((stage) => stage.status === 'active');
+        const firstStage = stagesWithProgress[0];
+        const defaultStage = activeStage || firstStage;
+        if (defaultStage) {
+          setSelectedStageId(defaultStage.id);
+          setProgressValue(defaultStage.progress || 0);
+          setAttachmentForm((prev) => ({ ...prev, stageId: prev.stageId || defaultStage.id }));
+          setNoteStageId((prev) => prev || defaultStage.id);
+        }
+        return;
+      }
+
+      if (!projectRef) {
+        throw new Error('Missing project path.');
+      }
+
       const snap = await getDoc(projectRef);
       if (!snap.exists()) {
         setProject(null);
@@ -225,6 +504,15 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       setProject(normalizedProject);
       setFinalReportContent(normalizedProject.finalReport?.content || '');
 
+      try {
+        if (projectId) {
+          await fetchAdminProject(projectId);
+          await fetchAdminStages();
+        }
+      } catch (apiError) {
+        console.warn('Admin project API sync unavailable, using Firestore fallback:', apiError);
+      }
+
       const activeStage = normalizedProject.stages?.find((stage) => stage.status === 'active');
       const firstStage = normalizedProject.stages?.[0];
       const defaultStage = activeStage || firstStage;
@@ -240,7 +528,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     } finally {
       setLoading(false);
     }
-  }, [projectRef]);
+  }, [isApiProject, projectId, projectRef]);
 
   useEffect(() => {
     loadProject();
@@ -277,14 +565,24 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setEditingStageId(null);
   };
 
-  const startEditStage = (stage: ProjectStage) => {
-    setEditingStageId(stage.id);
+  const startEditStage = async (stage: ProjectStage) => {
+    let selectedStage = stage;
+
+    if (isApiProject) {
+      try {
+        selectedStage = normalizeApiStage(await fetchAdminStage(stage.id), stage.order || 0);
+      } catch (err) {
+        console.warn('Failed to load stage detail, using list data:', err);
+      }
+    }
+
+    setEditingStageId(selectedStage.id);
     setStageForm({
-      title: stage.title,
-      description: stage.description || '',
-      assignedTo: stage.assignedTo || '',
-      estimatedDays: stage.estimatedDays ? String(stage.estimatedDays) : '',
-      status: stage.status,
+      title: selectedStage.title,
+      description: selectedStage.description || '',
+      assignedTo: selectedStage.assignedTo || '',
+      estimatedDays: selectedStage.estimatedDays ? String(selectedStage.estimatedDays) : '',
+      status: selectedStage.status,
     });
     setActiveTab('plan');
   };
@@ -329,6 +627,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     try {
       const now = Date.now();
       const nextStages = [...stages];
+      const resolvedAdminIds = resolveAdminIds(stageForm.assignedTo, admins);
 
       if (editingStageId) {
         const index = nextStages.findIndex((stage) => stage.id === editingStageId);
@@ -364,6 +663,34 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
         });
       }
 
+      const stagePayload = {
+        project_id: String(projectId || project?.id || ''),
+        title: stageForm.title.trim(),
+        description: stageForm.description.trim(),
+        days: stageForm.estimatedDays ? Number(stageForm.estimatedDays) : null,
+        status: stageStatusToApiStatus(stageForm.status),
+        admin_ids: resolvedAdminIds,
+      };
+
+      if (isApiProject) {
+        if (!stagePayload.days || stagePayload.days < 1) {
+          setError('Estimated days is required for backend stages.');
+          return;
+        }
+        if (stagePayload.admin_ids.length === 0) {
+          setError('Assign at least one employee before saving this stage.');
+          return;
+        }
+        if (editingStageId) {
+          await updateAdminStage(editingStageId, stagePayload);
+        } else {
+          await createAdminStage(stagePayload);
+        }
+        await loadProject();
+        resetStageForm();
+        return;
+      }
+
       await persistProjectUpdates({ stages: nextStages });
       await writeProjectAudit(editingStageId ? 'stage.updated' : 'stage.created', {
         entityType: 'stage',
@@ -389,6 +716,11 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
 
     setSaving(true);
     try {
+      if (isApiProject) {
+        setError('Deleting stages is not available in the backend routes yet.');
+        return;
+      }
+
       const nextStages = stages
         .filter((stage) => stage.id !== stageId)
         .map((stage, index) => ({ ...stage, order: index, updatedAt: Date.now() }));
@@ -482,6 +814,18 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
 
       const nextUpdates = [update, ...progressUpdates];
 
+      if (isApiProject) {
+        await createAdminStageProgress({
+          stage_id: selectedStage.id,
+          project_id: projectId || project.id,
+          percentage: nextValue,
+          note: progressNote.trim(),
+        });
+        await loadProject();
+        setProgressNote('');
+        return;
+      }
+
       await persistProjectUpdates({
         stages: nextStages,
         progressUpdates: nextUpdates,
@@ -537,6 +881,21 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
 
     try {
       const now = Date.now();
+      if (isApiProject) {
+        await createAdminStageAttachment({
+          stage_id: attachmentForm.stageId,
+          title: attachmentForm.title.trim(),
+          description: attachmentForm.description.trim(),
+          reason: attachmentForm.reason.trim(),
+          type: 2,
+          attachment: attachmentFile,
+        });
+        await loadProject();
+        setAttachmentForm({ ...emptyAttachmentForm, stageId: attachmentForm.stageId });
+        setAttachmentFile(null);
+        return;
+      }
+
       const safeFileName = attachmentFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
       const storagePath = `project-attachments/${ownerId}/${projectId}/${now}_${safeFileName}`;
       const storageRef = ref(storage, storagePath);
@@ -587,6 +946,12 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setError(null);
 
     try {
+      if (isApiProject) {
+        await deleteAdminStageAttachment(attachmentId);
+        await loadProject();
+        return;
+      }
+
       if (attachment.storagePath) {
         await deleteObject(ref(storage, attachment.storagePath)).catch((err) => {
           console.warn('Attachment file delete skipped:', err);
@@ -686,11 +1051,36 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setActiveTab('reports');
   };
 
-  const generateWeeklyDraft = () => {
+  const generateWeeklyDraft = async () => {
     if (!project) return;
 
     const weekStart = parseDateInput(reportForm.weekStart);
     const weekEnd = parseDateInput(reportForm.weekEnd, true);
+
+    if (isApiProject) {
+      setSaving(true);
+      setError(null);
+      try {
+        const generated = await generateAdminReport(projectId || project.id, reportForm.weekStart, reportForm.weekEnd);
+        const content =
+          generated && 'report_text' in generated
+            ? generated.report_text
+            : generated && 'content' in generated
+            ? generated.content
+            : '';
+        setReportForm((prev) => ({
+          ...prev,
+          content: content || prev.content,
+        }));
+      } catch (err: any) {
+        console.error('Failed to generate report draft:', err);
+        setError(err.message || 'Failed to generate report draft.');
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
+
     const updatesInRange = progressUpdates
       .filter((update) => update.createdAt >= weekStart && update.createdAt <= weekEnd)
       .sort((a, b) => a.createdAt - b.createdAt);
@@ -744,6 +1134,18 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       const sourceUpdateIds = progressUpdates
         .filter((update) => update.createdAt >= weekStart && update.createdAt <= weekEnd)
         .map((update) => update.id);
+
+      if (isApiProject) {
+        await createAdminReport({
+          project_id: projectId || project.id,
+          start_date: reportForm.weekStart,
+          end_date: reportForm.weekEnd,
+          report_text: reportForm.content.trim(),
+        });
+        await loadProject();
+        resetReportForm();
+        return;
+      }
 
       let nextReports: ProjectWeeklyReport[];
 
@@ -818,6 +1220,13 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setError(null);
 
     try {
+      if (isApiProject) {
+        await deleteAdminReport(reportId);
+        await loadProject();
+        if (editingReportId === reportId) resetReportForm();
+        return;
+      }
+
       const deletedReport = weeklyReports.find((report) => report.id === reportId);
       const nextReports = weeklyReports.filter((report) => report.id !== reportId);
       await persistProjectUpdates({ weeklyReports: nextReports });
@@ -920,6 +1329,18 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
         approvedAt: project.finalReport?.approvedAt || null,
         approvedByName: project.finalReport?.approvedByName || '',
       };
+
+      if (isApiProject) {
+        await createAdminReport({
+          project_id: projectId || project.id,
+          start_date: toDateInputValue(new Date()),
+          end_date: toDateInputValue(new Date()),
+          report_text: finalReport.content,
+        });
+        await loadProject();
+        return;
+      }
+
       await persistProjectUpdates({ finalReport });
       await writeProjectAudit('final_report.saved', {
         newValue: finalReport,
@@ -935,6 +1356,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
 
   const approveProjectCompletion = async () => {
     if (!project || !canApproveCompletion) return;
+    if (isApiProject) {
+      setError('Project completion approval endpoint is not included in the Postman collection yet.');
+      return;
+    }
     if (!finalReportContent.trim()) {
       setError('Save a final report before approving completion.');
       return;

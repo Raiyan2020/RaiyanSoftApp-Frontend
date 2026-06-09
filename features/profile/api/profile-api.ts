@@ -2,11 +2,8 @@ import { apiService, type ApiResponse } from '@/lib/api-service';
 import type { User } from '@/lib/auth-service';
 
 export interface UpdateUserProfilePayload {
-  first_name: string;
-  last_name: string;
+  full_name: string;
   email: string;
-  phone: string;
-  country_code?: string;
 }
 
 function getApiErrorMessage(response: ApiResponse<unknown>) {
@@ -40,14 +37,8 @@ export async function fetchUserProfile() {
 
 export async function updateUserProfile(payload: UpdateUserProfilePayload) {
   const formData = new FormData();
-  formData.append('first_name', payload.first_name);
-  formData.append('last_name', payload.last_name);
+  formData.append('full_name', payload.full_name);
   formData.append('email', payload.email);
-  formData.append('phone', payload.phone);
-
-  if (payload.country_code) {
-    formData.append('country_code', payload.country_code);
-  }
 
   const response = await apiService.post<User | { user?: User }>('user/profile', formData);
 

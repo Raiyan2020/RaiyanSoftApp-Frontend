@@ -44,10 +44,11 @@ export default function ProfileEditDialog({
 
   useEffect(() => {
     if (!user || !isOpen) return;
+    const nameParts = (user.full_name || user.name || '').trim().split(/\s+/).filter(Boolean);
 
     form.reset({
-      firstName: user.first_name || '',
-      lastName: user.last_name || '',
+      firstName: user.first_name || nameParts[0] || '',
+      lastName: user.last_name || nameParts.slice(1).join(' ') || '',
       email: user.email || '',
       phone: getUserProfilePhoneValue(user),
     });
