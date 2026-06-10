@@ -123,13 +123,7 @@ const mapAdminProjectToUserProject = (project: AdminProjectSummary): UserProject
   name: project.project_name || `Project ${project.id}`,
   description: project.description || '',
   estimatedPrice: (() => {
-    const raw = (project as AdminProjectSummary & {
-      estimated_price?: unknown;
-      estimatedPrice?: unknown;
-    }).estimated_price ?? (project as AdminProjectSummary & {
-      estimated_price?: unknown;
-      estimatedPrice?: unknown;
-    }).estimatedPrice;
+    const raw = project.estimated_price;
     if (raw === undefined || raw === null || raw === '') return null;
     const parsed = Number(raw);
     return Number.isFinite(parsed) ? parsed : null;
@@ -139,8 +133,7 @@ const mapAdminProjectToUserProject = (project: AdminProjectSummary): UserProject
       ? null
       : Number(project.estimated_duration),
   status: apiStatusToProjectStatus(enumValue(project.project_status) || project.status),
-  projectUrl:
-    normalizeTextValue(project.project_url || (project as AdminProjectSummary & { projectUrl?: unknown }).projectUrl) || null,
+  projectUrl: normalizeTextValue(project.project_url) || null,
   createdAt: parseApiDate(project.date),
   updatedAt: parseApiDate(project.date),
   version: enumValue(project.project_status) || project.status || 'Backend',
@@ -249,12 +242,29 @@ export function useAdminUserProjects() {
       if (editingProject.ownerId === 'api') {
         await updateAdminProject(editingProject.id, {
           project_name: data.name || undefined,
+          estimated_price: data.estimatedPrice !== '' ? Number(data.estimatedPrice) : null,
           estimated_duration: data.estimatedDuration !== '' ? Number(data.estimatedDuration) : null,
           project_status: data.status || null,
           project_url: data.projectUrl || null,
           type: industryToProjectType(data.industry) || null,
         });
-        await fetchProjects();
+        // Optimistically update local state so reopening the form shows saved values
+        // (the list endpoint may not return all fields like estimated_price / project_url)
+        setProjects((prev) =>
+          prev.map((p) => {
+            if (p.id !== editingProject.id) return p;
+            return {
+              ...p,
+              name: data.name || p.name,
+              description: data.description || p.description,
+              estimatedPrice: data.estimatedPrice !== '' ? Number(data.estimatedPrice) : null,
+              estimatedDuration: data.estimatedDuration !== '' ? Number(data.estimatedDuration) : null,
+              status: (data.status as UserProject['status']) || p.status,
+              projectUrl: data.projectUrl || null,
+              industry: normalizeIndustryValue(data.industry),
+            };
+          })
+        );
         setEditingProject(null);
         return;
       }

@@ -158,64 +158,71 @@ export interface AdminTestimonialPayload {
 }
 
 // ---------------------------------------------------------------------------
-// Admin list item types (returned by admin endpoints, strings still bilingual
-// objects because Accept-Language is not necessarily set for admin calls)
+// Admin list item types (returned by admin endpoints — bilingual objects
+// because Accept-Language header is not set for admin API calls)
 // ---------------------------------------------------------------------------
+
+/** Tag returned by admin endpoints — name is a bilingual object */
+export interface AdminLandingTag {
+  id?: number;
+  name: BilingualField;
+  url: string | null;
+}
 
 export interface AdminLandingHero {
   id: number;
-  title: string;
-  caption: string;
-  description: string;
+  title: BilingualField;
+  caption: BilingualField;
+  description: BilingualField;
   vedio_url: string | null;
-  f_button_text: string | null;
+  f_button_text: BilingualField;
   f_button_url: string | null;
-  l_button_text: string | null;
+  l_button_text: BilingualField;
   l_button_url: string | null;
   status: boolean;
-  tags: LandingTag[];
+  tags: AdminLandingTag[];
 }
 
 export interface AdminService {
   id: number;
-  title: string;
-  caption: string;
-  description: string;
-  overview: string | null;
+  title: BilingualField;
+  caption: BilingualField;
+  description: BilingualField;
+  overview: BilingualField | null;
   image: string | null;
-  tags: LandingTag[];
+  tags: AdminLandingTag[];
 }
 
 export interface AdminCapability {
   id: number;
-  title: string;
-  caption: string;
-  description: string;
+  title: BilingualField;
+  caption: BilingualField;
+  description: BilingualField;
   image: string | null;
-  tags: LandingTag[];
+  tags: AdminLandingTag[];
 }
 
 export interface AdminOffer {
   id: number;
-  title: string;
-  caption: string;
-  description: string | null;
-  button_text: string | null;
+  title: BilingualField;
+  caption: BilingualField;
+  description: BilingualField | null;
+  button_text: BilingualField | null;
   button_url: string | null;
   most_requested: boolean;
 }
 
 export interface AdminTestimonial {
   id: number;
-  title: string;
-  caption: string;
-  description: string;
+  title: BilingualField;
+  caption: BilingualField;
+  description: BilingualField;
   image: string | null;
 }
 
 export interface AdminSectionHeaderItem {
   id: number;
-  title: string;
-  caption: string;
-  description: string;
+  title: BilingualField;
+  caption: BilingualField;
+  description: BilingualField;
 }

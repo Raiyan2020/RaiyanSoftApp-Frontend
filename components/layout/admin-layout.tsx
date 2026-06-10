@@ -35,6 +35,7 @@ import {
   PanelLeftOpen,
   Languages,
   Layout,
+  Megaphone,
 } from 'lucide-react';
 import { authService } from '@/lib/auth-service';
 import { hasPermission } from '@/lib/permissions';
@@ -122,6 +123,27 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     return () => window.clearTimeout(timer);
   }, [isCommandOpen]);
 
+  // Keep CSS variables on :root so portaled sheets can stay inside the admin
+  // content area instead of sitting underneath the header/sidebar.
+  useEffect(() => {
+    const setSheetOffsets = () => {
+      const hasDesktopSidebar = window.matchMedia('(min-width: 768px)').matches;
+      const sidebarWidth = hasDesktopSidebar ? (isSidebarCollapsed ? '64px' : '240px') : '0px';
+      document.documentElement.style.setProperty('--admin-sheet-top', '64px');
+      document.documentElement.style.setProperty('--admin-sheet-left', dir === 'ltr' ? sidebarWidth : '0px');
+      document.documentElement.style.setProperty('--admin-sheet-right', dir === 'rtl' ? sidebarWidth : '0px');
+    };
+
+    setSheetOffsets();
+    window.addEventListener('resize', setSheetOffsets);
+    return () => {
+      window.removeEventListener('resize', setSheetOffsets);
+      document.documentElement.style.removeProperty('--admin-sheet-top');
+      document.documentElement.style.removeProperty('--admin-sheet-left');
+      document.documentElement.style.removeProperty('--admin-sheet-right');
+    };
+  }, [dir, isSidebarCollapsed]);
+
   const handleLogout = async () => {
     try {
       authService.clearAdminSession();
@@ -147,11 +169,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     }] : []),
     {
       id: 'appointments',
-      label: t('admin.nav.appointments'),
+      label: t('admin.nav.meetings'),
       icon: Calendar,
       path: '/admin/appointments',
       badge: 0,
       permission: 'appointments.view',
+    },
+    {
+      id: 'marketing',
+      label: t('admin.nav.marketing'),
+      icon: Megaphone,
+      path: '/admin/marketing',
+      badge: 0,
+      permission: '*',
     },
     { id: 'users', label: t('admin.nav.users'), icon: Users, path: '/admin/users', badge: 0, permission: 'users.view' },
     { id: 'employees', label: t('admin.nav.employees'), icon: Briefcase, path: '/admin/employees', badge: 0, permission: 'employees.manage' },
@@ -201,7 +231,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       id: 'operations',
       label: dir === 'rtl' ? 'العمليات' : 'Operations',
-      items: filteredNavItems.filter((item) => ['leads', 'appointments', 'live-chat'].includes(item.id)),
+      items: filteredNavItems.filter((item) => ['leads', 'appointments', 'marketing', 'live-chat'].includes(item.id)),
     },
     {
       id: 'content',
@@ -216,7 +246,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       id: 'system',
       label: dir === 'rtl' ? 'النظام' : 'System',
-      items: filteredNavItems.filter((item) => ['pages', 'colors'].includes(item.id)),
+      items: filteredNavItems.filter((item) => ['pages', 'colors', 'landing-page'].includes(item.id)),
     },
     {
       id: 'website',
@@ -373,7 +403,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   return (
     <div className="h-screen w-full bg-[var(--bg)] text-[var(--text)] flex overflow-hidden font-sans" dir={dir}>
-      <aside className={`hidden md:block ${isSidebarCollapsed ? 'w-16' : 'w-60'} bg-[var(--surface)] border-r border-[var(--border)] shadow-2xl z-20 shrink-0 transition-all duration-300`}>
+      <aside className={`hidden md:block ${isSidebarCollapsed ? 'w-16' : 'w-60'} bg-[var(--surface)] border-r border-[var(--border)] shadow-2xl z-[60] shrink-0 transition-all duration-300`}>
         <SidebarContent />
       </aside>
 

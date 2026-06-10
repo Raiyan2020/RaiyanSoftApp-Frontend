@@ -19,7 +19,13 @@ const SheetOverlay = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
-    className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+    className={`fixed z-50 bg-black/60 backdrop-blur-sm ${className || ""}`}
+    style={{
+      top: 'var(--admin-sheet-top, 0px)',
+      bottom: 0,
+      left: 'var(--admin-sheet-left, 0px)',
+      right: 'var(--admin-sheet-right, 0px)',
+    }}
     {...props}
     ref={ref}
   />
@@ -67,16 +73,43 @@ const SheetContent = React.forwardRef<
   
   // Resolve start/end styles using logical properties
   const getSideClass = (sideVal: string) => {
-    if (sideVal === "top") return "inset-x-0 top-0 border-b rounded-b-3xl"
-    if (sideVal === "bottom") return "inset-x-0 bottom-0 border-t rounded-t-3xl max-h-[90vh] overflow-y-auto no-scrollbar"
+    if (sideVal === "top") return "border-b rounded-b-3xl"
+    if (sideVal === "bottom") return "border-t rounded-t-3xl max-h-[90vh] overflow-y-auto no-scrollbar"
     
     // Resolve start vs end styling
     const isStartSide = sideVal === "start" || (isRTL ? sideVal === "right" : sideVal === "left")
     
     if (isStartSide) {
-      return "inset-y-0 start-0 h-full w-3/4 max-w-[340px] border-e rounded-e-3xl"
+      return "h-auto w-3/4 max-w-[340px] border-e rounded-e-3xl"
     } else {
-      return "inset-y-0 end-0 h-full w-3/4 max-w-[340px] border-s rounded-s-3xl"
+      return "h-auto w-3/4 max-w-[340px] border-s rounded-s-3xl"
+    }
+  }
+
+  const getSideStyle = (sideVal: string): React.CSSProperties => {
+    if (sideVal === "top") {
+      return {
+        top: 'var(--admin-sheet-top, 0px)',
+        left: 'var(--admin-sheet-left, 0px)',
+        right: 'var(--admin-sheet-right, 0px)',
+      }
+    }
+
+    if (sideVal === "bottom") {
+      return {
+        bottom: 0,
+        left: 'var(--admin-sheet-left, 0px)',
+        right: 'var(--admin-sheet-right, 0px)',
+      }
+    }
+
+    const isStartSide = sideVal === "start" || (isRTL ? sideVal === "right" : sideVal === "left")
+    return {
+      top: 'var(--admin-sheet-top, 0px)',
+      bottom: 0,
+      ...(isStartSide
+        ? { left: 'var(--admin-sheet-left, 0px)' }
+        : { right: 'var(--admin-sheet-right, 0px)' }),
     }
   }
 
@@ -94,6 +127,7 @@ const SheetContent = React.forwardRef<
           animate="visible"
           exit="exit"
           className={`${baseStyles} ${getSideClass(side)} ${className}`}
+          style={getSideStyle(side)}
         >
           {children}
           <DialogPrimitive.Close className="absolute end-4 top-4 rounded-full p-1.5 opacity-70 transition-opacity hover:opacity-100 focus:outline-none bg-[var(--surface-2)] text-[var(--text-muted)] border border-[var(--border)]">

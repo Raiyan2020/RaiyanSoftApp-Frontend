@@ -22,9 +22,9 @@ const DEFAULT_FORM: AdminOfferPayload = { title: EMPTY_BI, caption: EMPTY_BI, bu
 
 function offerToForm(o: AdminOffer): AdminOfferPayload {
   return {
-    title: { ar: o.title, en: o.title },
-    caption: { ar: o.caption || '', en: o.caption || '' },
-    button_text: { ar: o.button_text || '', en: o.button_text || '' },
+    title: o.title,
+    caption: o.caption,
+    button_text: o.button_text ?? EMPTY_BI,
     button_url: o.button_url || '',
     most_requested: o.most_requested ? 1 : 0,
   };
@@ -97,8 +97,8 @@ export default function AdminOffersTab() {
         renderItem={(offer) => (
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="font-semibold text-[var(--text)]">{offer.title}</p>
-              <p className="mt-0.5 text-sm text-[var(--text-muted)]">{offer.caption}</p>
+              <p className="font-semibold text-[var(--text)]">{offer.title.en || offer.title.ar}</p>
+              <p className="mt-0.5 text-sm text-[var(--text-muted)]">{offer.caption.en || offer.caption.ar}</p>
             </div>
             {offer.most_requested ? (
               <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-400">

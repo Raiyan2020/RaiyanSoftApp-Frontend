@@ -55,7 +55,7 @@ export default function UserProjectsTable({
             </table>
           </div>
 
-          <div className="md:hidden divide-y divide-[var(--border)]">
+          <div className="md:hidden grid gap-3 p-4">
             {filteredProjects.map((p) => (
               <UserProjectsRow key={p.id} project={p} onEdit={onEdit} formatDate={formatDate} variant="mobile" />
             ))}

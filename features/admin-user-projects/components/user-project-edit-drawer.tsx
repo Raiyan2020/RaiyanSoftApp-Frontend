@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Briefcase, Activity, Link as LinkIcon, DollarSign, Clock, Loader2, Save } from 'lucide-react';
+import { X, Briefcase, Activity, Link as LinkIcon, Loader2, Save } from 'lucide-react';
 import { UserProject, ProjectStatus } from '@/lib/userProjectsStore';
 import { INDUSTRIES, statusOptions } from '../hooks/use-admin-user-projects';
 import { useForm, Controller } from 'react-hook-form';
@@ -125,58 +125,6 @@ export default function UserProjectEditDrawer({
                 )}
               />
             ) : null}
-
-            <div className="grid grid-cols-2 gap-4">
-              <Controller
-                name="estimatedPrice"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>Estimated Price (KWD)</FieldLabel>
-                    <div className="relative">
-                      <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
-                      <input
-                        {...field}
-                        type="number"
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        aria-invalid={fieldState.invalid}
-                        className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
-                          fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
-                        }`}
-                        placeholder={translateMessage('e.g. 1500')}
-                      />
-                    </div>
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-
-              <Controller
-                name="estimatedDuration"
-                control={form.control}
-                render={({ field, fieldState }) => (
-                  <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>Est. Duration (Days)</FieldLabel>
-                    <div className="relative">
-                      <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
-                      <input
-                        {...field}
-                        type="number"
-                        value={field.value ?? ''}
-                        onChange={(e) => field.onChange(e.target.value)}
-                        aria-invalid={fieldState.invalid}
-                        className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
-                          fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
-                        }`}
-                        placeholder={translateMessage('e.g. 21')}
-                      />
-                    </div>
-                    {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-                  </Field>
-                )}
-              />
-            </div>
 
             <Controller
               name="status"

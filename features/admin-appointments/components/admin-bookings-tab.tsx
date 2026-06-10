@@ -251,14 +251,25 @@ export default function AdminBookingsTab({
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={onCloseBooking}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
+              className="fixed bg-black/60 backdrop-blur-sm z-40"
+              style={{
+                top: 'var(--admin-sheet-top, 0px)',
+                bottom: 0,
+                left: 'var(--admin-sheet-left, 0px)',
+                right: 'var(--admin-sheet-right, 0px)',
+              }}
             />
             <motion.aside
               initial={{ x: '100%' }}
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 260 }}
-              className="fixed inset-y-0 right-0 z-50 w-full max-w-2xl bg-[var(--surface)] border-l border-[var(--border)] shadow-2xl overflow-y-auto"
+              className="fixed z-50 w-full max-w-2xl bg-[var(--surface)] border-l border-[var(--border)] shadow-2xl overflow-y-auto"
+              style={{
+                top: 'var(--admin-sheet-top, 0px)',
+                bottom: 0,
+                right: 'var(--admin-sheet-right, 0px)',
+              }}
             >
               <div className="p-6 border-b border-[var(--border)] flex items-start justify-between gap-4 sticky top-0 bg-[var(--surface)] z-10">
                 <div>

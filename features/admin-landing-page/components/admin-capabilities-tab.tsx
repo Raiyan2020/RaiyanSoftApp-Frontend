@@ -22,11 +22,11 @@ const DEFAULT_FORM: AdminCapabilityPayload = { title: EMPTY_BI, caption: EMPTY_B
 
 function capabilityToForm(c: AdminCapability): AdminCapabilityPayload {
   return {
-    title: { ar: c.title, en: c.title },
-    caption: { ar: c.caption || '', en: c.caption || '' },
-    description: { ar: c.description || '', en: c.description || '' },
+    title: c.title,
+    caption: c.caption,
+    description: c.description,
     image: null,
-    tags: c.tags.map((t) => ({ name: { ar: t.name, en: t.name }, url: t.url || '' })),
+    tags: c.tags.map((t) => ({ name: t.name, url: t.url || '' })),
   };
 }
 
@@ -94,28 +94,31 @@ export default function AdminCapabilitiesTab() {
         onEdit={openEdit}
         onDelete={(id) => deleteMutation.mutateAsync(id)}
         isDeleting={deleteMutation.isPending}
-        renderItem={(cap) => (
-          <div className="flex items-start gap-3">
-            {cap.image ? (
-              <img src={cap.image} alt={cap.title} className="h-12 w-12 shrink-0 rounded-lg object-cover" />
-            ) : (
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
-                {cap.title?.[0]}
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="font-semibold text-[var(--text)]">{cap.title}</p>
-              <p className="mt-0.5 text-sm text-[var(--text-muted)] line-clamp-2">{cap.description}</p>
-              {cap.tags.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {cap.tags.map((t) => (
-                    <span key={t.id} className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">{t.name}</span>
-                  ))}
+        renderItem={(cap) => {
+          const displayTitle = cap.title.en || cap.title.ar;
+          return (
+            <div className="flex items-start gap-3">
+              {cap.image ? (
+                <img src={cap.image} alt={displayTitle} className="h-12 w-12 shrink-0 rounded-lg object-cover" />
+              ) : (
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
+                  {displayTitle?.[0]}
                 </div>
               )}
+              <div className="min-w-0">
+                <p className="font-semibold text-[var(--text)]">{displayTitle}</p>
+                <p className="mt-0.5 text-sm text-[var(--text-muted)] line-clamp-2">{cap.description.en || cap.description.ar}</p>
+                {cap.tags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {cap.tags.map((t, idx) => (
+                      <span key={t.id ?? idx} className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">{t.name.en || t.name.ar}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        }}
       />
 
       <AdminFormModal
