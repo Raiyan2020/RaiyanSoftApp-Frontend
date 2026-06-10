@@ -21,9 +21,9 @@ const DEFAULT_FORM: AdminTestimonialPayload = { title: EMPTY_BI, caption: EMPTY_
 
 function testimonialToForm(t: AdminTestimonial): AdminTestimonialPayload {
   return {
-    title: { ar: t.title, en: t.title },
-    caption: { ar: t.caption || '', en: t.caption || '' },
-    description: { ar: t.description || '', en: t.description || '' },
+    title: t.title,
+    caption: t.caption,
+    description: t.description,
     image: null,
   };
 }
@@ -92,22 +92,25 @@ export default function AdminTestimonialsTab() {
         onEdit={openEdit}
         onDelete={(id) => deleteMutation.mutateAsync(id)}
         isDeleting={deleteMutation.isPending}
-        renderItem={(t) => (
-          <div className="flex items-start gap-3">
-            {t.image ? (
-              <img src={t.image} alt={t.title} className="h-10 w-10 shrink-0 rounded-full object-cover" />
-            ) : (
-              <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                {t.title?.[0]}
+        renderItem={(t) => {
+          const displayTitle = t.title.en || t.title.ar;
+          return (
+            <div className="flex items-start gap-3">
+              {t.image ? (
+                <img src={t.image} alt={displayTitle} className="h-10 w-10 shrink-0 rounded-full object-cover" />
+              ) : (
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10 text-sm font-bold text-primary">
+                  {displayTitle?.[0]}
+                </div>
+              )}
+              <div className="min-w-0">
+                <p className="font-semibold text-[var(--text)]">{displayTitle}</p>
+                <p className="text-xs text-[var(--text-muted)]">{t.caption.en || t.caption.ar}</p>
+                <p className="mt-1 text-sm text-[var(--text-muted)] line-clamp-2">{t.description.en || t.description.ar}</p>
               </div>
-            )}
-            <div className="min-w-0">
-              <p className="font-semibold text-[var(--text)]">{t.title}</p>
-              <p className="text-xs text-[var(--text-muted)]">{t.caption}</p>
-              <p className="mt-1 text-sm text-[var(--text-muted)] line-clamp-2">{t.description}</p>
             </div>
-          </div>
-        )}
+          );
+        }}
       />
 
       <AdminFormModal

@@ -6,6 +6,7 @@ export interface AdminProjectSummary {
   description?: string;
   status?: string;
   project_status?: string | { value?: string; key?: string; name?: string } | null;
+  estimated_price?: number | string | null;
   estimated_duration?: number | string | null;
   project_url?: string | null;
   type?: string | { value?: string; key?: string; name?: string } | null;
@@ -50,6 +51,7 @@ export interface AdminStagePayload {
 
 export interface AdminProjectPayload {
   project_name?: string;
+  estimated_price?: number | null;
   estimated_duration?: number | null;
   project_status?: string | null;
   project_url?: string | null;

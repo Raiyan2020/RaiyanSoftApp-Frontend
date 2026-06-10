@@ -63,7 +63,7 @@ export default function LeadDetailDrawer({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(event) => event.stopPropagation()}
-        className="bg-[var(--surface)] w-full max-w-2xl rounded-2xl border border-[var(--border)] shadow-2xl flex flex-col max-h-[90vh]"
+        className="bg-[var(--surface)] w-full max-w-2xl lg:max-w-4xl rounded-2xl border border-[var(--border)] shadow-2xl flex flex-col max-h-[90vh]"
       >
         <div className="p-6 border-b border-[var(--border)] flex justify-between items-start">
           <div>
@@ -102,102 +102,120 @@ export default function LeadDetailDrawer({
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto custom-scrollbar space-y-6">
-          <div className="flex items-center justify-between bg-[var(--surface-2)] p-4 rounded-xl border border-[var(--border)]">
-            <div className="flex items-center gap-3">
-              <span className="text-sm text-[var(--text-muted)] uppercase font-bold tracking-wider">
-                {t('admin.leads.current_status')}
-              </span>
-              <span className={`text-sm font-bold ${statusTone.textClass}`}>{statusLabel}</span>
-            </div>
-            <span className="text-xs text-[var(--text-muted)]">{listItem.date}</span>
-          </div>
+        <div className="p-6 overflow-y-auto custom-scrollbar">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
-          <div className="flex items-center justify-between bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
-            <span className="text-[var(--text-muted)] text-xs uppercase font-bold tracking-wider">
-              {t('admin.leads.request_id')}
-            </span>
-            <div className="flex items-center gap-2">
-              <code className="text-[var(--text)] text-sm font-mono bg-[var(--surface-2)] px-2 py-1 rounded border border-[var(--border)]">
-                {requestId}
-              </code>
-              <button
-                type="button"
-                onClick={() => {
-                  navigator.clipboard.writeText(requestId);
-                  globalToast.success(t('admin.leads.copied'));
-                }}
-                className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-2)] rounded border border-[var(--border)] hover:bg-[var(--surface-3)] transition-colors"
-                title={t('admin.leads.copy_id')}
-              >
-                <Copy size={14} />
-              </button>
-            </div>
-          </div>
-
-          {detailLoading ? (
-            <div className="flex items-center justify-center py-10">
-              <Loader2 className="animate-spin text-primary" size={28} />
-            </div>
-          ) : null}
-
-          {detailError ? (
-            <ErrorAlert message={detailError} />
-          ) : null}
-
-          {lead ? (
-            <LeadProjectSummary
-              projectName={lead.project_name || listItem.project_name}
-              color={lead.color || '#3498db'}
-              description={lead.description || listItem.description}
-              answers={lead.answers}
-            />
-          ) : !detailLoading && !detailError ? (
-            <LeadProjectSummary
-              projectName={listItem.project_name}
-              color="#3498db"
-              description={listItem.description}
-              answers={[]}
-            />
-          ) : null}
-
-          {statusError ? (
-            <ErrorAlert message={statusError} />
-          ) : null}
-
-          {actionMessage ? (
-            <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">
-              {translateMessage(actionMessage)}
-            </div>
-          ) : null}
-
-          {canChangeStatus ? (
-            <div className="pt-4 border-t border-[var(--border)] space-y-3">
-              <h3 className="text-sm font-bold text-[var(--text)] uppercase tracking-wider">
-                {t('admin.leads.review_actions')}
-              </h3>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <button
-                  type="button"
-                  onClick={onApprove}
-                  disabled={statusLoading}
-                  className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 disabled:opacity-60"
-                >
-                  {statusLoading ? <Loader2 className="animate-spin" size={18} /> : <CheckCircle size={18} />}
-                  <span>{t('admin.leads.approve')}</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={onReject}
-                  disabled={statusLoading}
-                  className="flex-1 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl font-bold border border-red-500/20 flex items-center justify-center gap-2 disabled:opacity-60"
-                >
-                  {statusLoading ? <Loader2 className="animate-spin" size={18} /> : <XCircle size={18} />}
-                  <span>{t('admin.leads.reject')}</span>
-                </button>
+            {/* ── Left column: meta + actions ── */}
+            <div className="space-y-4">
+              {/* Status + date */}
+              <div className="flex items-center justify-between bg-[var(--surface-2)] p-4 rounded-xl border border-[var(--border)]">
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-[var(--text-muted)] uppercase font-bold tracking-wider">
+                    {t('admin.leads.current_status')}
+                  </span>
+                  <span className={`text-sm font-bold ${statusTone.textClass}`}>{statusLabel}</span>
+                </div>
+                <span className="text-xs text-[var(--text-muted)]">{listItem.date}</span>
               </div>
+
+              {/* Request ID */}
+              <div className="flex items-center justify-between bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
+                <span className="text-[var(--text-muted)] text-xs uppercase font-bold tracking-wider">
+                  {t('admin.leads.request_id')}
+                </span>
+                <div className="flex items-center gap-2">
+                  <code className="text-[var(--text)] text-sm font-mono bg-[var(--surface-2)] px-2 py-1 rounded border border-[var(--border)]">
+                    {requestId}
+                  </code>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      navigator.clipboard.writeText(requestId);
+                      globalToast.success(t('admin.leads.copied'));
+                    }}
+                    className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-2)] rounded border border-[var(--border)] hover:bg-[var(--surface-3)] transition-colors"
+                    title={t('admin.leads.copy_id')}
+                  >
+                    <Copy size={14} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Project name + color + description */}
+              {lead ? (
+                <LeadProjectSummary
+                  projectName={lead.project_name || listItem.project_name}
+                  color={lead.color || '#3498db'}
+                  description={lead.description || listItem.description}
+                  answersSection={false}
+                />
+              ) : !detailLoading && !detailError ? (
+                <LeadProjectSummary
+                  projectName={listItem.project_name}
+                  color="#3498db"
+                  description={listItem.description}
+                  answersSection={false}
+                />
+              ) : null}
+
+              {/* Feedback */}
+              {statusError ? <ErrorAlert message={statusError} /> : null}
+              {actionMessage ? (
+                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">
+                  {translateMessage(actionMessage)}
+                </div>
+              ) : null}
+
+              {/* Approve / Reject */}
+              {canChangeStatus ? (
+                <div className="pt-2 border-t border-[var(--border)] space-y-3">
+                  <h3 className="text-sm font-bold text-[var(--text)] uppercase tracking-wider">
+                    {t('admin.leads.review_actions')}
+                  </h3>
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <button
+                      type="button"
+                      onClick={onApprove}
+                      disabled={statusLoading}
+                      className="flex-1 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2 disabled:opacity-60"
+                    >
+                      {statusLoading ? <Loader2 className="animate-spin" size={18} /> : <CheckCircle size={18} />}
+                      <span>{t('admin.leads.approve')}</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={onReject}
+                      disabled={statusLoading}
+                      className="flex-1 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl font-bold border border-red-500/20 flex items-center justify-center gap-2 disabled:opacity-60"
+                    >
+                      {statusLoading ? <Loader2 className="animate-spin" size={18} /> : <XCircle size={18} />}
+                      <span>{t('admin.leads.reject')}</span>
+                    </button>
+                  </div>
+                </div>
+              ) : null}
             </div>
-          ) : null}
+
+            {/* ── Right column: answers / loading ── */}
+            <div>
+              {detailLoading ? (
+                <div className="flex items-center justify-center py-10">
+                  <Loader2 className="animate-spin text-primary" size={28} />
+                </div>
+              ) : detailError ? (
+                <ErrorAlert message={detailError} />
+              ) : lead ? (
+                <LeadProjectSummary
+                  projectName={lead.project_name || listItem.project_name}
+                  color={lead.color || '#3498db'}
+                  description={lead.description || listItem.description}
+                  answers={lead.answers}
+                  answersSection
+                />
+              ) : null}
+            </div>
+
+          </div>
         </div>
       </motion.div>
     </div>

@@ -35,16 +35,16 @@ export default function AdminHeroTab() {
   useEffect(() => {
     if (hero) {
       setForm({
-        title: { ar: hero.title || '', en: hero.title || '' },
-        caption: { ar: hero.caption || '', en: hero.caption || '' },
-        description: { ar: hero.description || '', en: hero.description || '' },
+        title: hero.title,
+        caption: hero.caption,
+        description: hero.description,
         vedio_url: hero.vedio_url || '',
-        f_button_text: { ar: hero.f_button_text || '', en: hero.f_button_text || '' },
+        f_button_text: hero.f_button_text,
         f_button_url: hero.f_button_url || '',
-        l_button_text: { ar: hero.l_button_text || '', en: hero.l_button_text || '' },
+        l_button_text: hero.l_button_text,
         l_button_url: hero.l_button_url || '',
         status: hero.status ? 1 : 0,
-        tags: hero.tags?.map((t) => ({ name: { ar: t.name, en: t.name }, url: t.url || '' })) ?? [],
+        tags: hero.tags?.map((t) => ({ name: t.name, url: t.url || '' })) ?? [],
       });
     }
   }, [hero]);

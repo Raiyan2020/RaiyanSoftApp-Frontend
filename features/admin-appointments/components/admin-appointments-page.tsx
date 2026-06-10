@@ -34,8 +34,8 @@ export default function AdminAppointmentsPage() {
   return (
     <div className="space-y-8 pb-20">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Appointments')}</h1>
-        <p className="text-[var(--text-muted)] text-sm">{translateMessage('Manage availability and view bookings.')}</p>
+        <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Meetings')}</h1>
+        <p className="text-[var(--text-muted)] text-sm">{translateMessage('Manage meeting availability and view bookings.')}</p>
       </div>
 
       <div className="flex bg-[var(--surface-3)] p-1 rounded-xl w-fit border border-[var(--border)]">

@@ -92,7 +92,13 @@ export default function AdminUsersPage() {
               onDeleteUser={setDeleteId}
             />
 
-            <UsersMobileList filteredUsers={filteredUsers} onSelectUser={setSelectedUser} />
+            <UsersMobileList
+              filteredUsers={filteredUsers}
+              formatDate={formatDate}
+              onSelectUser={setSelectedUser}
+              onToggleStatus={handleToggleStatus}
+              onDeleteUser={setDeleteId}
+            />
           </>
         )}
       </div>

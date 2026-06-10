@@ -30,12 +30,12 @@ const DEFAULT_FORM: AdminServicePayload = {
 
 function serviceToForm(s: AdminService): AdminServicePayload {
   return {
-    title: { ar: s.title, en: s.title },
-    caption: { ar: s.caption, en: s.caption },
-    description: { ar: s.description, en: s.description },
-    overview: { ar: s.overview || '', en: s.overview || '' },
+    title: s.title,
+    caption: s.caption,
+    description: s.description,
+    overview: s.overview ?? EMPTY_BI,
     image: null,
-    tags: s.tags.map((t) => ({ name: { ar: t.name, en: t.name }, url: t.url || '' })),
+    tags: s.tags.map((t) => ({ name: t.name, url: t.url || '' })),
   };
 }
 
@@ -105,28 +105,31 @@ export default function AdminServicesTab() {
         onEdit={openEdit}
         onDelete={(id) => deleteMutation.mutateAsync(id)}
         isDeleting={deleteMutation.isPending}
-        renderItem={(service) => (
-          <div className="flex items-start gap-3">
-            {service.image ? (
-              <img src={service.image} alt={service.title} className="h-12 w-12 rounded-lg object-cover shrink-0" />
-            ) : (
-              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
-                {service.title?.[0]}
-              </div>
-            )}
-            <div className="min-w-0">
-              <p className="font-semibold text-[var(--text)]">{service.title}</p>
-              <p className="mt-0.5 text-sm text-[var(--text-muted)] line-clamp-2">{service.description}</p>
-              {service.tags.length > 0 && (
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {service.tags.map((t) => (
-                    <span key={t.id} className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">{t.name}</span>
-                  ))}
+        renderItem={(service) => {
+          const displayTitle = service.title.en || service.title.ar;
+          return (
+            <div className="flex items-start gap-3">
+              {service.image ? (
+                <img src={service.image} alt={displayTitle} className="h-12 w-12 rounded-lg object-cover shrink-0" />
+              ) : (
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
+                  {displayTitle?.[0]}
                 </div>
               )}
+              <div className="min-w-0">
+                <p className="font-semibold text-[var(--text)]">{displayTitle}</p>
+                <p className="mt-0.5 text-sm text-[var(--text-muted)] line-clamp-2">{service.description.en || service.description.ar}</p>
+                {service.tags.length > 0 && (
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {service.tags.map((t, idx) => (
+                      <span key={t.id ?? idx} className="rounded-full bg-primary/10 px-2 py-0.5 text-xs font-bold text-primary">{t.name.en || t.name.ar}</span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        }}
       />
 
       {/* Create / Edit modal */}

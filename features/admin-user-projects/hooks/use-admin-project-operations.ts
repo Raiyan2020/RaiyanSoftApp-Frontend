@@ -39,6 +39,8 @@ export interface StageFormState {
   title: string;
   description: string;
   assignedTo: string;
+  /** Raw admin IDs from the API, used as fallback when the assignee name can't be resolved in the employees list */
+  existingAdminIds: number[];
   estimatedDays: string;
   status: ProjectStageStatus;
 }
@@ -60,6 +62,7 @@ const emptyStageForm: StageFormState = {
   title: '',
   description: '',
   assignedTo: '',
+  existingAdminIds: [],
   estimatedDays: '',
   status: 'planned',
 };
@@ -233,6 +236,28 @@ const normalizeApiWeeklyReport = (report: AdminProjectReport): ProjectWeeklyRepo
   };
 };
 
+/** Normalises a storage URL from the backend.
+ *  Laravel's APP_URL may be stale (e.g. portal.new.raiyansoft.net) while the
+ *  real server lives at the host of NEXT_PUBLIC_API_URL. We swap the origin so
+ *  the link always points to the live server. */
+const normalizeStorageUrl = (raw?: string | null): string => {
+  if (!raw) return '';
+  try {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+    if (!apiBase) return raw;
+    const apiOrigin = new URL(apiBase).origin;   // e.g. https://portal.raiyan.cc
+    const parsed = new URL(raw);
+    if (parsed.origin !== apiOrigin) {
+      parsed.host = new URL(apiBase).host;
+      parsed.protocol = new URL(apiBase).protocol;
+      return parsed.toString();
+    }
+  } catch {
+    // not a valid absolute URL — return as-is
+  }
+  return raw;
+};
+
 const normalizeApiAttachment = (attachment: AdminStageAttachment): ProjectAttachment => {
   const createdAt = attachment.created_at ? new Date(attachment.created_at).getTime() : Date.now();
   const fileName = attachment.file_name || attachment.title || 'attachment';
@@ -246,7 +271,7 @@ const normalizeApiAttachment = (attachment: AdminStageAttachment): ProjectAttach
     fileType: attachment.file_type || String(attachment.type || attachment.type_label || 'application/octet-stream'),
     fileSize: Number(attachment.file_size || 0),
     storagePath: '',
-    url: attachment.attachment_url || attachment.url || attachment.attachment || '',
+    url: normalizeStorageUrl(attachment.attachment_url || attachment.url || attachment.attachment),
     createdAt: Number.isNaN(createdAt) ? Date.now() : createdAt,
     createdByName: 'Admin',
   };
@@ -463,10 +488,13 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
 
   const startEditStage = async (stage: ProjectStage) => {
     let selectedStage = stage;
+    let rawAdminIds: number[] = [];
 
     if (isApiProject) {
       try {
-        selectedStage = normalizeApiStage(await fetchAdminStage(stage.id), stage.order || 0);
+        const apiStage = await fetchAdminStage(stage.id);
+        rawAdminIds = (apiStage.admin_ids || apiStage.admins?.map((a) => Number(a.id)).filter(Boolean) || []) as number[];
+        selectedStage = normalizeApiStage(apiStage, stage.order || 0);
       } catch (err) {
         console.warn('Failed to load stage detail, using list data:', err);
       }
@@ -477,6 +505,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       title: selectedStage.title,
       description: selectedStage.description || '',
       assignedTo: resolveAssignedToValue(selectedStage.assignedTo || '', employees),
+      existingAdminIds: rawAdminIds,
       estimatedDays: selectedStage.estimatedDays ? String(selectedStage.estimatedDays) : '',
       status: selectedStage.status,
     });
@@ -489,13 +518,16 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setSaving(true);
     try {
       const resolvedAdminIds = resolveAdminIds(stageForm.assignedTo, employees);
+      // Fall back to the IDs loaded when opening the edit form (e.g. when the assignee is
+      // a super admin not present in the employees list)
+      const finalAdminIds = resolvedAdminIds.length > 0 ? resolvedAdminIds : stageForm.existingAdminIds;
       const stagePayload = {
         project_id: String(projectId || project?.id || ''),
         title: stageForm.title.trim(),
         description: stageForm.description.trim(),
         days: stageForm.estimatedDays ? Number(stageForm.estimatedDays) : null,
         status: stageStatusToApiStatus(stageForm.status),
-        admin_ids: resolvedAdminIds,
+        admin_ids: finalAdminIds,
       };
 
       if (!isApiProject) {
@@ -504,7 +536,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
         globalToast.error(message);
         return;
       }
-      if (resolvedAdminIds.length === 0) {
+      if (finalAdminIds.length === 0) {
         const message = 'Please assign at least one employee before saving this stage.';
         setError(message);
         globalToast.error(message);
@@ -613,7 +645,12 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       return;
     }
     if (!attachmentFile) {
-      setError('Choose a file or image before saving the attachment.');
+      setError('Choose a document file before saving the attachment.');
+      return;
+    }
+    const allowedExtensions = /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|csv|zip|rar)$/i;
+    if (!allowedExtensions.test(attachmentFile.name)) {
+      setError('Only document files are allowed (PDF, Word, Excel, PowerPoint, ZIP, etc.). Photos and videos are not permitted.');
       return;
     }
 

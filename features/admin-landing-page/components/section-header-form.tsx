@@ -23,9 +23,9 @@ export default function SectionHeaderForm({ header, loading, onSave }: Props) {
 
   useEffect(() => {
     if (header) {
-      setTitle({ ar: header.title || '', en: header.title || '' });
-      setCaption({ ar: header.caption || '', en: header.caption || '' });
-      setDescription({ ar: header.description || '', en: header.description || '' });
+      setTitle(header.title);
+      setCaption(header.caption);
+      setDescription(header.description);
     }
   }, [header]);
 

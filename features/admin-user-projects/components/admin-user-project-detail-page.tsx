@@ -790,11 +790,12 @@ export default function AdminUserProjectDetailPage({
                     />
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel>{tr('File Or Image')}</FieldLabel>
+                    <FieldLabel>{tr('Document')}</FieldLabel>
                     <label className="block border border-dashed border-[var(--border)] hover:border-primary/40 bg-[var(--surface-2)] rounded-2xl p-5 cursor-pointer transition-colors">
                       <input
                         type="file"
                         className="hidden"
+                        accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.zip,.rar"
                         onChange={(e) => ops.setAttachmentFile(e.target.files?.[0] || null)}
                       />
                       <div className="flex items-center gap-3">
@@ -806,7 +807,7 @@ export default function AdminUserProjectDetailPage({
                             {ops.attachmentFile ? ops.attachmentFile.name : tr('Choose a file')}
                           </p>
                           <p className="text-xs text-[var(--text-muted)]">
-                            {ops.attachmentFile ? formatFileSize(ops.attachmentFile.size) : tr('Images, PDFs, docs, or other project files')}
+                            {ops.attachmentFile ? formatFileSize(ops.attachmentFile.size) : tr('PDF, Word, Excel, PowerPoint, ZIP...')}
                           </p>
                         </div>
                       </div>
