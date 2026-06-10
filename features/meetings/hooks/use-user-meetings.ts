@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { fetchUserMeetings } from '../api/user-meetings-api';
+import { fetchUserMeetings } from '../services/user-meetings-api';
 import { MeetingsPagination, UserMeeting, UserMeetingsFilters } from '../types/meeting.types';
 
 export function useUserMeetings(filters: UserMeetingsFilters = {}, enabled = true) {

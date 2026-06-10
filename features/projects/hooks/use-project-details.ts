@@ -1,6 +1,6 @@
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18nContext';
-import { useUserStoredProject } from '@/features/lead-project/hooks/use-user-stored-projects';
+import { useUserStoredProject } from '@/features/lead-project';
 
 export function useProjectDetails(id?: string) {
   const router = useRouter();

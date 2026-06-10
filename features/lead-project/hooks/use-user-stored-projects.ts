@@ -8,7 +8,7 @@ import {
   fetchMyProject,
   fetchMyProjects,
   getApiErrorMessage,
-} from '../api/lead-project-api';
+} from '../services/lead-project-api';
 import { leadProjectKeys } from '../query-keys';
 import { mapStoredProject } from '../utils/map-stored-project';
 

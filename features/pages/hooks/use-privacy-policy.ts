@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchPrivacyPolicy } from '../api/pages-api';
+import { fetchPrivacyPolicy } from '../services/pages-api';
 import { PrivacyPolicyPage } from '../types/page.types';
 
 export function usePrivacyPolicy(enabled = true) {

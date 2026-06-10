@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { ArrowUpRight, FileText, Globe2, ShieldCheck } from 'lucide-react';
 import { websiteContentConfigs } from '../config/website-content-config';
+import { translateMessage } from '@/lib/i18n-utils';
 
 const statCards = [
   { label: 'Managed sections', value: websiteContentConfigs.length, icon: Globe2 },
@@ -17,11 +18,11 @@ export default function AdminWebsiteOverviewPage() {
         <div className="absolute -top-24 end-10 h-56 w-56 rounded-full bg-primary/20 blur-3xl" />
         <div className="relative max-w-3xl">
           <span className="inline-flex rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-bold uppercase tracking-[0.3em] text-primary">
-            Website CMS
+            {translateMessage('Website CMS')}
           </span>
-          <h1 className="mt-5 text-3xl font-black text-[var(--text)] md:text-5xl">Control every public website section from the admin dashboard.</h1>
+          <h1 className="mt-5 text-3xl font-black text-[var(--text)] md:text-5xl">{translateMessage('Control every public website section from the admin dashboard.')}</h1>
           <p className="mt-4 text-sm leading-7 text-[var(--text)] md:text-base">
-            Manage services, apps, blog posts, process steps, FAQs, pricing, testimonials, partners, team, careers, legal copy, and global settings without code changes.
+            {translateMessage('Manage services, apps, blog posts, process steps, FAQs, pricing, testimonials, partners, team, careers, legal copy, and global settings without code changes.')}
           </p>
         </div>
       </div>
@@ -32,8 +33,8 @@ export default function AdminWebsiteOverviewPage() {
           return (
             <div key={card.label} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
               <Icon className="mb-4 text-primary" size={24} />
-              <p className="text-2xl font-black text-[var(--text)]">{card.value}</p>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">{card.label}</p>
+              <p className="text-2xl font-black text-[var(--text)]">{typeof card.value === 'string' ? translateMessage(card.value) : card.value}</p>
+              <p className="mt-1 text-sm text-[var(--text-muted)]">{translateMessage(card.label)}</p>
             </div>
           );
         })}
@@ -48,15 +49,15 @@ export default function AdminWebsiteOverviewPage() {
           >
             <div className="flex items-start justify-between gap-4">
               <div>
-                <h2 className="text-lg font-black text-[var(--text)]">{config.label}</h2>
-                <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{config.description}</p>
+                <h2 className="text-lg font-black text-[var(--text)]">{translateMessage(config.label)}</h2>
+                <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{translateMessage(config.description)}</p>
               </div>
               <ArrowUpRight className="shrink-0 text-[var(--text-muted)] transition group-hover:text-primary" size={20} />
             </div>
             <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-wider">
               <span className="rounded-full bg-[var(--surface-3)] px-3 py-1 text-[var(--text)]">{config.collection}</span>
-              {config.requiresSlug ? <span className="rounded-full bg-sky-500/10 px-3 py-1 text-sky-300">Slug</span> : null}
-              {config.requiresApproval ? <span className="rounded-full bg-amber-500/10 px-3 py-1 text-amber-300">Approval</span> : null}
+              {config.requiresSlug ? <span className="rounded-full bg-sky-500/10 px-3 py-1 text-sky-300">{translateMessage('Slug')}</span> : null}
+              {config.requiresApproval ? <span className="rounded-full bg-amber-500/10 px-3 py-1 text-amber-300">{translateMessage('Approval')}</span> : null}
             </div>
           </Link>
         ))}

@@ -6,7 +6,7 @@ This file tracks the rule-compliance cleanup from the app/rules audit.
 
 - [x] Root TypeScript check passes with `npx tsc --noEmit`.
 - [x] Root production build passes with `npm run build`.
-- [x] Firebase Functions TypeScript build passes after installing `functions` dependencies.
+- [x] Legacy backend function code has been removed in favor of Laravel-managed backend work.
 
 ## Fixed In This Pass
 
@@ -17,15 +17,13 @@ This file tracks the rule-compliance cleanup from the app/rules audit.
 
 ## Remaining Rule Debt
 
-- [ ] Replace `any` usages with `unknown`, Firebase SDK types, or feature-specific API response types.
+- [ ] Replace `any` usages with `unknown` or feature-specific API response types.
 - [ ] Reduce broad `'use client'` usage by keeping pages and static UI as Server Components where possible.
 - [ ] Migrate legacy PascalCase filenames under `components/landing` and `screens` to kebab-case.
 - [ ] Replace physical RTL-sensitive Tailwind classes (`left-*`, `right-*`, `pl-*`, `pr-*`, `text-left`, `text-right`) with logical or direction-aware alternatives.
 - [ ] Move API modules from `features/*/api` to `features/*/services` if the team wants to enforce the rule literally.
-- [ ] Decide whether generated Firebase Functions artifacts should be committed. If yes, commit `functions/package-lock.json`; if no, add `functions/lib/` to ignore rules.
 - [ ] Address dependency audit findings with explicit upgrade testing:
   - Root: `next`/bundled PostCSS moderate advisory.
-  - Functions: `nodemailer` high advisory and `firebase-admin`/`firebase-functions` transitive advisories.
 
 ## Guardrails For New Work
 

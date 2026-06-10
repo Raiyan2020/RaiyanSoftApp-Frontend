@@ -1,15 +1,11 @@
 "use client";
 
-import { collection, addDoc, serverTimestamp, query, orderBy, onSnapshot, updateDoc, doc, getDocs, where, deleteDoc } from 'firebase/firestore';
-import { db, auth } from './firebase-client';
-import { sanitizeForFirestore } from './firestoreSanitize';
-import { userProjectsStore } from './userProjectsStore';
-import { createAuditLogSafe } from './auditLogStore';
+import { apiService, type ApiResponse } from './api-service';
 
 export interface Lead {
   id: string;
   name: string;
-  phone: string; // E.164
+  phone: string;
   email?: string;
   source?: string;
   projectPayload: any;
@@ -42,198 +38,90 @@ export interface ClaimToken {
   used: boolean;
 }
 
+type SubmitLeadPayload = {
+  name: string;
+  phone: string;
+  email?: string;
+  projectPayload: any;
+  source?: string;
+};
+
+function getApiErrorMessage(response: ApiResponse<unknown>) {
+  if (response.errors && typeof response.errors === 'object') {
+    const errList = Object.values(response.errors).flat();
+    if (errList.length > 0) return errList.join(' ');
+  }
+  return response.message || 'Request failed.';
+}
+
+function buildLegacyLeadFormData(data: SubmitLeadPayload) {
+  const projectPayload = data.projectPayload || {};
+  const formData = new FormData();
+
+  formData.append('name', String(projectPayload.name || projectPayload.service || data.name || 'New project').trim());
+  formData.append('project_name', String(projectPayload.name || projectPayload.service || data.name || 'New project').trim());
+  formData.append('color', String(projectPayload.brandColor || projectPayload.color || '#1DB7F0'));
+  formData.append('description', String(projectPayload.description || projectPayload.message || ''));
+  formData.append('phone', data.phone);
+  if (data.email) formData.append('email', data.email);
+  if (data.source) formData.append('source', data.source);
+  formData.append('payload', JSON.stringify(projectPayload));
+
+  return formData;
+}
+
 class LeadStore {
   private leads: Lead[] = [];
-  private listeners: (() => void)[] = [];
-  private unsubscribe: (() => void) | null = null;
-
-  // --- ADMIN ACTIONS ---
 
   subscribeToLeads(listener: () => void) {
-    if (!db) return () => {};
-    // Ensure only admins call this (usually handled by UI guard, but firestore rules enforce data)
-    
-    const q = query(collection(db, 'leads'), orderBy('createdAt', 'desc'));
-    
-    this.unsubscribe = onSnapshot(q, (snap) => {
-      this.leads = snap.docs.map(d => ({
-        id: d.id,
-        ...d.data(),
-        createdAt: d.data().createdAt?.toMillis?.() || Date.now()
-      })) as Lead[];
-      listener();
-    }, (err) => {
-      console.error("Leads subscription error:", err);
-    });
-
-    return () => {
-      if (this.unsubscribe) {
-        this.unsubscribe();
-        this.unsubscribe = null;
-      }
-    };
+    listener();
+    return () => {};
   }
 
   getLeads() {
     return [...this.leads];
   }
 
-  async updateLeadStatus(id: string, status: Lead['status'], reason?: string) {
-    if (!db) return;
-    const user = auth.currentUser;
-    const now = Date.now();
-    const currentLead = this.leads.find((lead) => lead.id === id);
-    const timeline = [
-      ...(currentLead?.timeline || []),
-      {
-        action: `status.${status}`,
-        reason: reason || '',
-        createdAt: now,
-        createdByName: user?.displayName || user?.email || 'Admin',
-      },
-    ];
-
-    const update: any = { status, timeline, updatedAt: serverTimestamp() };
-    if (reason) update.rejectReason = reason;
-    if (status === 'approved') {
-      update.approvedAt = now;
-      update.approvedBy = user?.uid || 'admin_unknown';
-    }
-    if (status === 'rejected') {
-      update.rejectedAt = now;
-      update.rejectedBy = user?.uid || 'admin_unknown';
-    }
-    await updateDoc(doc(db, 'leads', id), update);
-    await createAuditLogSafe({
-      entityType: 'lead',
-      entityId: id,
-      action: `lead.${status}`,
-      reason,
-      oldValue: { status: currentLead?.status },
-      newValue: update,
-    });
+  async updateLeadStatus(_id: string, _status: Lead['status'], _reason?: string) {
+    throw new Error('Use the Laravel admin leads API for lead status updates.');
   }
 
-  async updateLeadReview(id: string, updates: Pick<Lead, 'assignedTo' | 'reviewNotes'>) {
-    if (!db) return;
-    await updateDoc(doc(db, 'leads', id), {
-      ...sanitizeForFirestore(updates),
-      updatedAt: serverTimestamp(),
-    });
-    await createAuditLogSafe({
-      entityType: 'lead',
-      entityId: id,
-      action: 'lead.review_updated',
-      newValue: updates,
-    });
+  async updateLeadReview(_id: string, _updates: Pick<Lead, 'assignedTo' | 'reviewNotes'>) {
+    throw new Error('Lead review notes are not available in the Laravel backend routes yet.');
   }
 
-  async generateClaimToken(leadId: string): Promise<string> {
-    if (!db) throw new Error("DB not connected");
-    
-    const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-    const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
-
-    await addDoc(collection(db, 'lead_claim_tokens'), {
-      token,
-      leadId,
-      expiresAt,
-      used: false,
-      createdAt: serverTimestamp()
-    });
-
-    await updateDoc(doc(db, 'leads', leadId), {
-      claimTokenExpiresAt: expiresAt,
-      updatedAt: serverTimestamp(),
-    });
-    await createAuditLogSafe({
-      entityType: 'lead',
-      entityId: leadId,
-      action: 'lead.claim_link_generated',
-      newValue: { expiresAt },
-    });
-
-    return token;
+  async generateClaimToken(_leadId: string): Promise<string> {
+    throw new Error('Lead claim links are not available in the Laravel backend routes yet.');
   }
 
-  // --- PUBLIC ACTIONS ---
+  async submitLead(data: SubmitLeadPayload): Promise<string> {
+    const response = await apiService.post<{ id?: string | number; request_id?: string } | []>(
+      'user/store-projects',
+      buildLegacyLeadFormData(data),
+      { skipGlobalToast: true }
+    );
 
-  async submitLead(data: { name: string; phone: string; email?: string; projectPayload: any; source?: string }): Promise<string> {
-    if (!db) throw new Error("DB not connected");
-    
-    const docRef = await addDoc(collection(db, 'leads'), {
-      ...sanitizeForFirestore(data),
-      status: 'new',
-      createdAt: serverTimestamp()
-    });
-
-    return docRef.id;
-  }
-
-  async validateToken(token: string): Promise<{ valid: boolean; leadId?: string; error?: string }> {
-    if (!db) return { valid: false, error: "System error" };
-
-    const q = query(collection(db, 'lead_claim_tokens'), where('token', '==', token), where('used', '==', false));
-    const snap = await getDocs(q);
-
-    if (snap.empty) {
-      return { valid: false, error: "Invalid or used token." };
+    if (!response.status) {
+      throw new Error(getApiErrorMessage(response));
     }
 
-    const data = snap.docs[0].data();
-    if (Date.now() > data.expiresAt) {
-      return { valid: false, error: "Token expired." };
-    }
-
-    return { valid: true, leadId: data.leadId };
+    if (Array.isArray(response.data)) return '';
+    return String(response.data?.request_id || response.data?.id || '');
   }
 
-  async claimProject(token: string, leadId: string) {
-    // Should be called AFTER user is authenticated
-    const user = auth.currentUser;
-    if (!db || !user) throw new Error("Must be logged in to claim");
-
-    // 1. Get Lead Data
-    const leadDoc = await getDocs(query(collection(db, 'leads'), where('__name__', '==', leadId)));
-    if (leadDoc.empty) throw new Error("Lead not found");
-    const leadData = leadDoc.docs[0].data() as Lead;
-
-    if (leadData.status === 'claimed') throw new Error("Project already claimed");
-
-    // 2. Create Real Project
-    await userProjectsStore.addProject({
-      ...leadData.projectPayload,
-      name: leadData.projectPayload.name || 'My New Project', // Ensure name exists
-      ownerId: user.uid,
-      ownerName: user.displayName || 'User',
-      ownerEmail: user.email || '',
-      status: 'pricing' // Default status
-    });
-
-    // 3. Mark Token Used
-    const tokenQ = query(collection(db, 'lead_claim_tokens'), where('token', '==', token));
-    const tokenSnap = await getDocs(tokenQ);
-    if (!tokenSnap.empty) {
-      await updateDoc(tokenSnap.docs[0].ref, { used: true, claimedBy: user.uid, claimedAt: serverTimestamp() });
-    }
-
-    // 4. Update Lead Status
-    await updateDoc(doc(db, 'leads', leadId), { status: 'claimed', claimedBy: user.uid });
+  async validateToken(_token: string): Promise<{ valid: boolean; leadId?: string; error?: string }> {
+    return {
+      valid: false,
+      error: 'Lead claim links are not available in the Laravel backend routes yet.',
+    };
   }
-  async deleteLead(leadId: string): Promise<void> {
-    if (!db) throw new Error("DB not connected");
-    const user = auth.currentUser;
-    await updateDoc(doc(db, 'leads', leadId), { 
-      status: 'deleted',
-      deletedAt: serverTimestamp(),
-      deletedBy: user ? user.uid : 'admin_unknown',
-      deleteReason: ''
-    });
-    await createAuditLogSafe({
-      entityType: 'lead',
-      entityId: leadId,
-      action: 'lead.deleted',
-    });
+
+  async claimProject(_token: string, _leadId: string) {
+    throw new Error('Lead claim links are not available in the Laravel backend routes yet.');
+  }
+
+  async deleteLead(_leadId: string): Promise<void> {
+    throw new Error('Use the Laravel admin leads API for lead deletion.');
   }
 }
 

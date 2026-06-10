@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { deleteAdminColor, fetchAdminColor, updateAdminColor } from '../api/admin-colors-api';
+import { deleteAdminColor, fetchAdminColor, updateAdminColor } from '../services/admin-colors-api';
 import { useAdminColorsList } from './use-admin-colors-list';
 import { useCreateColor } from './use-create-color';
 

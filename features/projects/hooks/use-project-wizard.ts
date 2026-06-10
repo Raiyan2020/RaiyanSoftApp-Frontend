@@ -1,9 +1,6 @@
-import { useEffect, useState } from 'react';
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { auth, db } from '@/lib/firebase-client';
+import { useState } from 'react';
+import { authService } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
-import { userProjectsStore } from '@/lib/userProjectsStore';
 import { leadStore } from '@/lib/leadStore';
 
 export const PLATFORMS = ['Website', 'App', 'Both'];
@@ -48,7 +45,8 @@ export function useProjectWizard({
 }) {
   const [step, setStep] = useState(0);
   const [direction, setDirection] = useState(1);
-  const isAuthenticated = !!auth.currentUser;
+  const currentUser = authService.getUser();
+  const isAuthenticated = !!currentUser;
   const { t, dir, language, setLanguage } = useTranslation();
 
   const [formData, setFormData] = useState({
@@ -77,24 +75,6 @@ export function useProjectWizard({
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [projectTypes, setProjectTypes] = useState<string[]>(INDUSTRIES);
-
-  useEffect(() => {
-    if (!db) return;
-    const q = query(collection(db, 'project_types'), orderBy('order', 'asc'));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const activeTypes = snapshot.docs
-          .map((snap) => snap.data())
-          .filter((type) => type.active !== false)
-          .map((type) => type.name)
-          .filter(Boolean);
-        setProjectTypes(activeTypes.length ? [...activeTypes, 'Other'] : INDUSTRIES);
-      },
-      () => setProjectTypes(INDUSTRIES)
-    );
-    return () => unsubscribe();
-  }, []);
 
   const generateAndSetDescription = () => {
     const parts: string[] = [];
@@ -259,41 +239,31 @@ export function useProjectWizard({
           window.fbq('track', 'Lead');
         }
       } else {
-        let user = auth.currentUser;
+        const user = authService.getUser();
 
         if (!user) {
-          const signupEmailTrimmed = formData.signupEmail.trim();
-          const userCredential = await createUserWithEmailAndPassword(
-            auth,
-            signupEmailTrimmed,
-            formData.signupPassword
-          );
-          user = userCredential.user;
-          await updateProfile(user, {
-            displayName: `${formData.signupFirstName} ${formData.signupLastName}`,
-          });
+          throw new Error('Please sign in before creating a project.');
         }
 
-        await userProjectsStore.addProject({
-          name: formData.name,
-          description: formData.description,
-          ownerName: user.displayName || 'User',
-          ownerEmail: user.email || '',
-          ownerId: user.uid,
-          estimatedPrice: null,
-          estimatedDuration: null,
-          status: 'pricing',
-          projectUrl: null,
-          platforms: formData.platforms,
-          languages: formData.languages,
-          markets: formData.markets,
-          industry: formData.industry,
-          industryOther: formData.industryOther,
-          hasPayments: formData.hasPayments || false,
-          hasExistingBusiness: formData.hasExistingBusiness || false,
-          serviceModel: formData.serviceModel,
-          closestApp: formData.closestApp,
-          brandColor: formData.brandColor,
+        requestId = await leadStore.submitLead({
+          name: user.full_name || user.name || [user.first_name, user.last_name].filter(Boolean).join(' ') || 'User',
+          phone: user.phone || '',
+          email: user.email || undefined,
+          source: source || 'project_wizard',
+          projectPayload: {
+            name: formData.name,
+            description: formData.description,
+            platforms: formData.platforms,
+            languages: formData.languages,
+            markets: formData.markets,
+            industry: formData.industry,
+            industryOther: formData.industryOther,
+            hasPayments: formData.hasPayments,
+            hasExistingBusiness: formData.hasExistingBusiness,
+            serviceModel: formData.serviceModel,
+            closestApp: formData.closestApp,
+            brandColor: formData.brandColor,
+          },
         });
       }
 

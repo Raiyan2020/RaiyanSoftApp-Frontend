@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
-import { useTermsConditions } from '@/features/pages/hooks/use-terms-conditions';
-import PageHtmlContent from '@/features/pages/components/page-html-content';
+import { useTermsConditions } from '@/features/pages';
+import { PageHtmlContent } from '@/features/pages';
 
 export default function TermsPage() {
   const router = useRouter();

@@ -3,6 +3,8 @@
 import React from 'react';
 import { Edit2, Loader2, Palette, Plus, Save, Trash2, X } from 'lucide-react';
 import { useAdminColors } from '../hooks/use-admin-colors';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminColorsPage() {
   const {
@@ -36,9 +38,9 @@ export default function AdminColorsPage() {
   return (
     <div className="space-y-8 pb-20">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--text)]">Colors</h1>
+        <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Colors')}</h1>
         <p className="text-sm text-[var(--text-muted)]">
-          Create preset colors used across the app, including project wizards and pickers.
+          {translateMessage('Create preset colors used across the app, including project wizards and pickers.')}
         </p>
       </div>
 
@@ -46,21 +48,19 @@ export default function AdminColorsPage() {
         <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-xl">
           <div className="mb-6 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-lg font-bold text-[var(--text)]">Available Colors</h2>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">{colors.length} color{colors.length === 1 ? '' : 's'} available to users</p>
+              <h2 className="text-lg font-bold text-[var(--text)]">{translateMessage('Available Colors')}</h2>
+              <p className="mt-1 text-sm text-[var(--text-muted)]">{colors.length} {translateMessage(colors.length === 1 ? 'color available to users' : 'colors available to users')}</p>
             </div>
             <button
               type="button"
               onClick={() => reload().catch(() => undefined)}
               className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2 text-sm font-medium text-[var(--text)] transition hover:bg-[var(--surface-3)]"
             >
-              Refresh
+              {translateMessage('Refresh')}
             </button>
           </div>
 
-          {listError ? (
-            <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{listError}</div>
-          ) : null}
+          {listError ? <ErrorAlert message={listError} /> : null}
 
           {listLoading && colors.length === 0 ? (
             <div className="flex justify-center py-16">
@@ -68,7 +68,7 @@ export default function AdminColorsPage() {
             </div>
           ) : colors.length === 0 ? (
             <div className="rounded-xl border border-dashed border-[var(--border)] p-10 text-center text-sm text-[var(--text-muted)]">
-              No colors yet. Create the first preset color on the right.
+              {translateMessage('No colors yet. Create the first preset color on the right.')}
             </div>
           ) : (
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5">
@@ -85,7 +85,7 @@ export default function AdminColorsPage() {
                     <div className="min-w-0">
                       <p className="truncate font-mono text-xs font-bold text-[var(--text)]">{color.hex_code}</p>
                       <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
-                        ID {color.id} · {color.is_active === false || color.is_active === 0 ? 'Inactive' : 'Active'}
+                        ID {color.id} · {translateMessage(color.is_active === false || color.is_active === 0 ? 'Inactive' : 'Active')}
                       </p>
                     </div>
                     <div className="flex shrink-0 gap-1">
@@ -93,7 +93,7 @@ export default function AdminColorsPage() {
                         type="button"
                         onClick={() => startEdit(color.id).catch(() => undefined)}
                         className="rounded-lg bg-[var(--surface-3)] p-1.5 text-[var(--text-muted)] transition hover:text-primary"
-                        title="Edit color"
+                        title={translateMessage('Edit color')}
                       >
                         <Edit2 size={13} />
                       </button>
@@ -102,7 +102,7 @@ export default function AdminColorsPage() {
                         onClick={() => handleDelete(color.id).catch(() => undefined)}
                         disabled={createLoading}
                         className="rounded-lg bg-[var(--surface-3)] p-1.5 text-[var(--text-muted)] transition hover:text-red-400 disabled:opacity-50"
-                        title="Delete color"
+                        title={translateMessage('Delete color')}
                       >
                         <Trash2 size={13} />
                       </button>
@@ -120,19 +120,17 @@ export default function AdminColorsPage() {
               <Palette size={18} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[var(--text)]">{editingId ? 'Edit Color' : 'Add Color'}</h2>
+              <h2 className="text-lg font-bold text-[var(--text)]">{translateMessage(editingId ? 'Edit Color' : 'Add Color')}</h2>
               <p className="text-sm text-[var(--text-muted)]">
-                {editingId ? `Updating color ID ${editingId}.` : 'Pick a hex value and save it.'}
+                {editingId ? `${translateMessage('Updating color ID')} ${editingId}.` : translateMessage('Pick a hex value and save it.')}
               </p>
             </div>
           </div>
 
-          {createError ? (
-            <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{createError}</div>
-          ) : null}
+          {createError ? <ErrorAlert message={createError} /> : null}
 
           {actionMessage ? (
-            <div className="mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">{actionMessage}</div>
+            <div className="mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">{translateMessage(actionMessage)}</div>
           ) : null}
 
           <form onSubmit={onSubmit} className="space-y-5">
@@ -142,7 +140,7 @@ export default function AdminColorsPage() {
             />
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-[var(--text-muted)]">Color Picker</label>
+              <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Color Picker')}</label>
               <input
                 type="color"
                 value={hexCode}
@@ -152,7 +150,7 @@ export default function AdminColorsPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-bold text-[var(--text-muted)]">Hex Code</label>
+              <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Hex Code')}</label>
               <input
                 type="text"
                 value={hexCode}
@@ -163,7 +161,7 @@ export default function AdminColorsPage() {
             </div>
 
             <label className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3">
-              <span className="text-sm font-bold text-[var(--text-muted)]">Active</span>
+              <span className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Active')}</span>
               <input
                 type="checkbox"
                 checked={isActive}
@@ -178,7 +176,7 @@ export default function AdminColorsPage() {
               className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg transition hover:shadow-primary/20 disabled:opacity-50"
             >
               {createLoading ? <Loader2 className="animate-spin" size={18} /> : editingId ? <Save size={18} /> : <Plus size={18} />}
-              {createLoading ? 'Saving...' : editingId ? 'Update Color' : 'Create Color'}
+              {translateMessage(createLoading ? 'Saving...' : editingId ? 'Update Color' : 'Create Color')}
             </button>
 
             {editingId ? (
@@ -188,7 +186,7 @@ export default function AdminColorsPage() {
                 className="flex w-full items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-sm font-bold text-[var(--text)] transition hover:bg-[var(--surface-3)]"
               >
                 <X size={18} />
-                Cancel Edit
+                {translateMessage('Cancel Edit')}
               </button>
             ) : null}
           </form>

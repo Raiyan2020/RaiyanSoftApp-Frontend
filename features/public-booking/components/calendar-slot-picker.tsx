@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface CalendarSlotPickerProps {
   viewDate: Date;
@@ -34,7 +35,7 @@ export default function CalendarSlotPicker({
   isDateAvailable,
 }: CalendarSlotPickerProps) {
   const calendarRows = getCalendarRows();
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+  const weekDays = dir === 'rtl' ? ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس'] : ['Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
   const monthLabel = viewDate.toLocaleDateString(dir === 'rtl' ? 'ar-KW' : 'en-US', { month: 'long', year: 'numeric' });
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -100,13 +101,13 @@ export default function CalendarSlotPicker({
 
       {selectedDate ? (
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 pt-4 border-t border-[var(--border)]">
-          <h3 className="text-[var(--text)] font-bold">Select Time</h3>
+          <h3 className="text-[var(--text)] font-bold">{translateMessage('Select Time')}</h3>
           {loadingSlots ? (
             <div className="flex justify-center py-4">
               <Loader2 className="animate-spin text-primary" />
             </div>
           ) : availableSlots.length === 0 ? (
-            <div className="text-center py-4 text-[var(--text-muted)] bg-[var(--surface-3)] rounded-xl">No slots available</div>
+            <div className="text-center py-4 text-[var(--text-muted)] bg-[var(--surface-3)] rounded-xl">{translateMessage('No slots available')}</div>
           ) : (
             <div className="grid grid-cols-3 gap-3">
               {availableSlots.map((time) => (

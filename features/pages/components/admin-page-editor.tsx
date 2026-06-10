@@ -4,6 +4,8 @@ import React from 'react';
 import { Loader2 } from 'lucide-react';
 import RichTextEditor from '@/components/ui/rich-text-editor';
 import { AboutUsForm, PageSlug, SimplePageForm } from '../types/page.types';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface AdminPageEditorProps {
   slug: PageSlug;
@@ -42,7 +44,7 @@ export default function AdminPageEditor({
     return (
       <div className="flex min-h-[320px] items-center justify-center text-[var(--text-muted)]">
         <Loader2 className="me-2 animate-spin" size={20} />
-        Loading page content...
+        {translateMessage('Loading page content...')}
       </div>
     );
   }
@@ -50,49 +52,47 @@ export default function AdminPageEditor({
   return (
     <div className="space-y-6 p-6">
       {error ? (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
-          {error}
+        <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4 text-sm text-[var(--text-muted)]">
+          <ErrorAlert message={error} />
           <button type="button" onClick={onReload} className="ms-3 font-bold underline">
-            Retry
+            {translateMessage('Retry')}
           </button>
         </div>
       ) : null}
 
-      {saveError ? (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{saveError}</div>
-      ) : null}
+      {saveError ? <ErrorAlert message={saveError} /> : null}
 
       {saveMessage ? (
-        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">{saveMessage}</div>
+        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">{translateMessage(saveMessage)}</div>
       ) : null}
 
       <div className="space-y-2">
-        <label className="text-sm font-bold text-[var(--text-muted)]">Title</label>
+        <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Title')}</label>
         <input
           type="text"
           value={form.title}
           onChange={(event) => updateField('title', event.target.value)}
           className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text)] outline-none focus:border-primary"
-          placeholder="Page title"
+          placeholder={translateMessage('Page title')}
         />
       </div>
 
       {slug === 'about-us' && isAboutForm(form) ? (
         <>
           <div className="space-y-2">
-            <label className="text-sm font-bold text-[var(--text-muted)]">Caption</label>
+            <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Caption')}</label>
             <input
               type="text"
               value={form.caption}
               onChange={(event) => setForm({ ...form, caption: event.target.value })}
               className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text)] outline-none focus:border-primary"
-              placeholder="Short subtitle"
+              placeholder={translateMessage('Short subtitle')}
             />
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-bold text-[var(--text-muted)]">Contact Email</label>
+              <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Contact Email')}</label>
               <input
                 type="email"
                 value={form.email}
@@ -102,7 +102,7 @@ export default function AdminPageEditor({
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-bold text-[var(--text-muted)]">Website URL</label>
+              <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Website URL')}</label>
               <input
                 type="url"
                 value={form.url}
@@ -116,11 +116,11 @@ export default function AdminPageEditor({
       ) : null}
 
       <div className="space-y-2">
-        <label className="text-sm font-bold text-[var(--text-muted)]">Description</label>
+        <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Description')}</label>
         <RichTextEditor
           value={form.description}
           onChange={(value) => updateField('description', value)}
-          placeholder="Write page content..."
+          placeholder={translateMessage('Write page content...')}
           minHeight={280}
           showToolbar
           showBubbleMenu
@@ -134,7 +134,7 @@ export default function AdminPageEditor({
           disabled={saveLoading}
           className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:shadow-primary/20 disabled:opacity-50"
         >
-          {saveLoading ? 'Saving...' : 'Save Page'}
+          {translateMessage(saveLoading ? 'Saving...' : 'Save Page')}
         </button>
         <button
           type="button"
@@ -142,7 +142,7 @@ export default function AdminPageEditor({
           disabled={loading || saveLoading}
           className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-6 py-3 text-sm font-bold text-[var(--text)] transition hover:bg-[var(--surface-3)] disabled:opacity-50"
         >
-          Reload
+          {translateMessage('Reload')}
         </button>
       </div>
     </div>

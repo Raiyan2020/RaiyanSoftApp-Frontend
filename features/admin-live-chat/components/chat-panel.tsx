@@ -4,6 +4,7 @@ import Avatar from '@/components/ui/avatar';
 import { Message, Conversation } from '../hooks/use-admin-live-chat';
 import AdminChatMessage from './admin-chat-message';
 import AdminChatInput from './admin-chat-input';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface ChatPanelProps {
   selectedId: string | null;
@@ -39,7 +40,7 @@ export default function ChatPanel({
                 </h2>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                  <span className="text-xs text-emerald-400 font-medium">Open Ticket</span>
+                  <span className="text-xs text-emerald-400 font-medium">{translateMessage('Open Ticket')}</span>
                 </div>
               </div>
             </div>
@@ -49,7 +50,7 @@ export default function ChatPanel({
               className="flex items-center gap-2 px-4 py-2 bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] hover:text-[var(--text)] rounded-xl text-xs font-medium transition-colors border border-[var(--border)]"
             >
               <CheckCircle size={14} />
-              Close Ticket
+              {translateMessage('Close Ticket')}
             </button>
           </div>
 
@@ -77,9 +78,9 @@ export default function ChatPanel({
           <div className="w-20 h-20 bg-[var(--surface-3)] rounded-full flex items-center justify-center mb-4 border border-[var(--border)]">
             <MessageCircle size={32} className="opacity-50" />
           </div>
-          <h3 className="text-[var(--text)] font-bold text-lg mb-2">Live Support Console</h3>
+          <h3 className="text-[var(--text)] font-bold text-lg mb-2">{translateMessage('Live Support Console')}</h3>
           <p className="max-w-xs text-center text-sm">
-            Select an open conversation from the list to start chatting with a customer.
+            {translateMessage('Select an open conversation from the list to start chatting with a customer.')}
           </p>
         </div>
       )}

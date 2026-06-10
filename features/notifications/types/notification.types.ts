@@ -1,4 +1,4 @@
-import type { ApiNotification } from '../api/notifications-api';
+import type { ApiNotification } from '../services/notifications-api';
 
 export type NotificationType = 'system' | 'success' | 'warning' | 'message' | 'payment';
 

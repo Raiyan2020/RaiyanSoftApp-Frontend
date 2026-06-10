@@ -5,6 +5,8 @@ import { useAdminLeads } from '../hooks/use-admin-leads';
 import LeadsFilterBar from './leads-filter-bar';
 import LeadsTable from './leads-table';
 import LeadDetailDrawer from './lead-detail-drawer';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminLeadsPage() {
   const { t } = useTranslation();
@@ -55,12 +57,10 @@ export default function AdminLeadsPage() {
       />
 
       {statusError ? (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-medium text-red-400">
-          {statusError}
-        </div>
+        <ErrorAlert message={statusError} />
       ) : actionMessage ? (
         <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-400">
-          {actionMessage}
+          {translateMessage(actionMessage)}
         </div>
       ) : null}
 

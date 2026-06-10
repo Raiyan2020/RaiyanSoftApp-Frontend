@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { updateAdminEmployee } from '../api/admin-employees-api';
+import { updateAdminEmployee } from '../services/admin-employees-api';
 import { UpdateEmployeePayload } from '../types/admin-employee.types';
 
 export function useUpdateEmployee() {

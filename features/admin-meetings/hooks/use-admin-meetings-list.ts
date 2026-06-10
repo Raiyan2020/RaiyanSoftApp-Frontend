@@ -1,8 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchAdminMeetings } from '../api/admin-meetings-api';
-import { AdminMeeting, AdminMeetingsFilters, MeetingsPagination } from '@/features/meetings/types/meeting.types';
+import { fetchAdminMeetings } from '../services/admin-meetings-api';
+import { AdminMeeting, AdminMeetingsFilters, MeetingsPagination } from '@/features/meetings';
 
 export function useAdminMeetingsList(filters: AdminMeetingsFilters) {
   const [meetings, setMeetings] = useState<AdminMeeting[]>([]);

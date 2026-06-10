@@ -13,7 +13,7 @@ import {
   updateAdminFormQuestionActiveStatus,
   updateAdminFormQuestionSortOrder,
   type AdminFormQuestionPayload,
-} from '../api/admin-form-questions-api';
+} from '../services/admin-form-questions-api';
 
 export type ProjectQuestionType =
   | 'text'

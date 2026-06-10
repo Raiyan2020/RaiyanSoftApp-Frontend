@@ -1,5 +1,9 @@
 import React from 'react';
 import { Eye, EyeOff } from 'lucide-react';
+import { translateMessage } from '@/lib/i18n-utils';
+
+const translateChildren = (children: React.ReactNode) =>
+  React.Children.map(children, (child) => (typeof child === 'string' ? translateMessage(child) : child));
 
 interface FieldProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
@@ -8,7 +12,7 @@ interface FieldProps extends React.HTMLAttributes<HTMLDivElement> {
 export const Field = React.forwardRef<HTMLDivElement, FieldProps>(
   ({ children, className = '', ...props }, ref) => (
     <div ref={ref} className={`flex flex-col gap-2 w-full ${className}`} {...props}>
-      {children}
+      {translateChildren(children)}
     </div>
   )
 );
@@ -25,7 +29,7 @@ export const FieldLabel = React.forwardRef<HTMLLabelElement, FieldLabelProps>(
       className={`text-xs text-[var(--text-muted)] font-medium ms-1 block leading-5 ${className}`}
       {...props}
     >
-      {children}
+      {translateChildren(children)}
     </label>
   )
 );
@@ -49,7 +53,7 @@ export const FieldError = React.forwardRef<HTMLParagraphElement, FieldErrorProps
         className={`text-[10px] text-red-400 ms-1 mt-0.5 font-medium ${className}`}
         {...props}
       >
-        {message}
+        {translateMessage(message)}
       </p>
     );
   }
@@ -119,7 +123,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
           type="button"
           onClick={() => setShowPassword(!showPassword)}
           className="absolute end-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors p-1"
-          aria-label={showPassword ? 'Hide password' : 'Show password'}
+          aria-label={translateMessage(showPassword ? 'Hide password' : 'Show password')}
         >
           {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
         </button>

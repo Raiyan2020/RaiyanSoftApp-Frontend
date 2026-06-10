@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import LeadProjectWizard from '@/features/lead-project/components/lead-project-wizard';
+import { LeadProjectWizard } from '@/features/lead-project';
 
 interface ProjectWizardProps {
   onClose: () => void;

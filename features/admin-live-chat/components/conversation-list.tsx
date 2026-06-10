@@ -2,6 +2,7 @@ import React from 'react';
 import { MessageCircle, Volume2, VolumeX, Search } from 'lucide-react';
 import { Conversation } from '../hooks/use-admin-live-chat';
 import ConversationListItem from './conversation-list-item';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface ConversationListProps {
   conversations: Conversation[];
@@ -32,7 +33,7 @@ export default function ConversationList({
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-[var(--text)] font-bold text-lg flex items-center gap-2">
             <MessageCircle size={20} className="text-primary" />
-            Inbox
+            {translateMessage('Inbox')}
             <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full ml-auto">
               {conversations.length}
             </span>
@@ -43,7 +44,7 @@ export default function ConversationList({
             className={`p-2 rounded-lg transition-colors ${
               isSoundEnabled ? 'text-primary bg-primary/10' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
-            title={isSoundEnabled ? 'Sound On' : 'Sound Off'}
+            title={translateMessage(isSoundEnabled ? 'Sound On' : 'Sound Off')}
           >
             {isSoundEnabled ? <Volume2 size={18} /> : <VolumeX size={18} />}
           </button>
@@ -53,7 +54,7 @@ export default function ConversationList({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={16} />
           <input
             type="text"
-            placeholder="Search customers..."
+            placeholder={translateMessage('Search customers...')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl py-2 pl-9 pr-3 text-sm text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
@@ -64,7 +65,7 @@ export default function ConversationList({
       <div className="flex-1 overflow-y-auto custom-scrollbar">
         {filteredConversations.length === 0 ? (
           <div className="p-8 text-center text-[var(--text-muted)]">
-            <p>No open conversations</p>
+            <p>{translateMessage('No open conversations')}</p>
           </div>
         ) : (
           filteredConversations.map((conv) => (

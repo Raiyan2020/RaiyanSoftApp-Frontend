@@ -12,6 +12,8 @@ import { Field, FieldError, FieldLabel } from '@/components/ui/field';
 import type { User } from '@/lib/auth-service';
 import { getUserProfilePhoneValue } from '../hooks/use-user-profile';
 import { userProfileSchema, type UserProfileValues } from '../schemas/profile.schema';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface ProfileEditDialogProps {
   isOpen: boolean;
@@ -74,14 +76,14 @@ export default function ProfileEditDialog({
           >
             <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] px-5 py-4 sm:px-6">
               <div>
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-primary">Profile</p>
-                <h2 className="mt-1 text-xl font-black text-[var(--text)]">Update profile</h2>
+                <p className="text-xs font-black uppercase tracking-[0.22em] text-primary">{translateMessage('Profile')}</p>
+                <h2 className="mt-1 text-xl font-black text-[var(--text)]">{translateMessage('Update profile')}</h2>
               </div>
               <button
                 type="button"
                 onClick={onClose}
                 className="rounded-full border border-[var(--border)] bg-[var(--surface-2)] p-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
-                aria-label="Close profile form"
+                aria-label={translateMessage('Close profile form')}
               >
                 <X size={18} />
               </button>
@@ -151,15 +153,13 @@ export default function ProfileEditDialog({
               />
 
               {error ? (
-                <div className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-400">
-                  {error}
-                </div>
+                <ErrorAlert message={error} />
               ) : null}
 
               {success ? (
                 <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm font-bold text-emerald-400">
                   <CheckCircle size={16} />
-                  Profile updated successfully.
+                  {translateMessage('Profile updated successfully.')}
                 </div>
               ) : null}
 
@@ -169,7 +169,7 @@ export default function ProfileEditDialog({
                 </Button>
                 <Button type="submit" disabled={isSaving} className="gap-2">
                   {isSaving ? <Loader2 size={17} className="animate-spin" /> : <Save size={17} />}
-                  Save profile
+                  {translateMessage('Save profile')}
                 </Button>
               </div>
             </form>

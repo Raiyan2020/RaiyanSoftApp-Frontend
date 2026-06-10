@@ -1,5 +1,6 @@
 import React from 'react';
 import { Briefcase } from 'lucide-react';
+import { translateMessage } from '@/lib/i18n-utils';
 import { AdminEmployee } from '../types/admin-employee.types';
 import EmployeeTableRow from './employee-table-row';
 
@@ -23,7 +24,7 @@ export default function EmployeesTable({
           <div className="w-16 h-16 bg-[var(--surface-3)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border)]">
             <Briefcase size={24} />
           </div>
-          <p>No employees found.</p>
+          <p>{translateMessage('No employees found.')}</p>
         </div>
       ) : (
         <>
@@ -31,12 +32,12 @@ export default function EmployeesTable({
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
-                  <th className="p-5 font-medium">Name</th>
-                  <th className="p-5 font-medium">Contact</th>
-                  <th className="p-5 font-medium">Role</th>
-                  <th className="p-5 font-medium">Status</th>
-                  <th className="p-5 font-medium">Created</th>
-                  <th className="p-5 font-medium text-right">Actions</th>
+                  <th className="p-5 font-medium">{translateMessage('Name')}</th>
+                  <th className="p-5 font-medium">{translateMessage('Contact')}</th>
+                  <th className="p-5 font-medium">{translateMessage('Role')}</th>
+                  <th className="p-5 font-medium">{translateMessage('Status')}</th>
+                  <th className="p-5 font-medium">{translateMessage('Created')}</th>
+                  <th className="p-5 font-medium text-right">{translateMessage('Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-sm">

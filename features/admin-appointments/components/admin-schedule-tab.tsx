@@ -1,7 +1,9 @@
 import React from 'react';
 import { Save, Plus, Trash2 } from 'lucide-react';
-import { WeeklyAvailability } from '@/features/meetings/types/meeting.types';
+import { WeeklyAvailability } from '@/features/meetings';
 import { useTranslation } from '@/lib/i18nContext';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface AdminScheduleTabProps {
   weeklyAvailability: WeeklyAvailability;
@@ -31,20 +33,18 @@ export default function AdminScheduleTab({
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-bold text-[var(--text)]">Weekly Availability</h3>
+        <h3 className="text-lg font-bold text-[var(--text)]">{translateMessage('Weekly Availability')}</h3>
         <button
           type="button"
           onClick={onSave}
           disabled={saving}
           className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-sky-400 transition-colors disabled:opacity-60"
         >
-          <Save size={16} /> {saving ? 'Saving...' : 'Save Changes'}
+          <Save size={16} /> {translateMessage(saving ? 'Saving...' : 'Save Changes')}
         </button>
       </div>
 
-      {error ? (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{error}</div>
-      ) : null}
+      {error ? <ErrorAlert message={error} /> : null}
 
       <div className="space-y-4">
         {days.map((dayName, idx) => {
@@ -92,7 +92,7 @@ export default function AdminScheduleTab({
                           onChange={(e) => onChangeRange(idx, rangeIdx, 'start_time', e.target.value)}
                           className="bg-[var(--surface-3)] border border-[var(--border)] rounded-lg px-3 py-2 text-[var(--text)] text-sm"
                         />
-                        <span className="text-[var(--text-muted)]">to</span>
+                        <span className="text-[var(--text-muted)]">{translateMessage('to')}</span>
                         <input
                           type="time"
                           value={range.end_time}
@@ -113,11 +113,11 @@ export default function AdminScheduleTab({
                       onClick={() => onAddRange(idx)}
                       className={`text-xs text-primary flex items-center gap-1 hover:underline ${dir === 'rtl' ? 'justify-end' : ''}`}
                     >
-                      <Plus size={14} /> Add Time Range
+                      <Plus size={14} /> {translateMessage('Add Time Range')}
                     </button>
                   </>
                 ) : (
-                  <span className="text-sm text-[var(--text-muted)]">Unavailable</span>
+                  <span className="text-sm text-[var(--text-muted)]">{translateMessage('Unavailable')}</span>
                 )}
               </div>
             </div>

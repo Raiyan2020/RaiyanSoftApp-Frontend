@@ -1,57 +1,38 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { db } from './firebase-client';
+
+import { useEffect, useState } from 'react';
 import { PERMISSIONS_LIST } from './permissions';
 
 export interface Role {
   id: string;
   name: string;
   description: string;
-  permissions: string[]; // Kept as array for UI convenience, mapped to object for AdminUser
+  permissions: string[];
   createdAt: number;
 }
 
 export { PERMISSIONS_LIST };
 
+const SUPER_ADMIN_ROLE: Role = {
+  id: 'super_admin',
+  name: 'super_admin',
+  description: 'Built-in Laravel administrator role.',
+  permissions: ['*'],
+  createdAt: 0,
+};
+
 class RoleStore {
-  private roles: Role[] = [];
+  private roles: Role[] = [SUPER_ADMIN_ROLE];
   private listeners: (() => void)[] = [];
-  private unsubscribe: (() => void) | null = null;
-
-  constructor() {
-    this.subscribeToFirestore();
-  }
-
-  private subscribeToFirestore() {
-    if (!db) return;
-
-    // Root 'roles' collection
-    const q = query(collection(db, 'roles'), orderBy('createdAt', 'desc'));
-
-    this.unsubscribe = onSnapshot(q, (snapshot) => {
-      this.roles = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          ...data,
-          id: doc.id,
-          createdAt: data.createdAt?.toMillis?.() || Date.now()
-        } as Role;
-      });
-      this.notify();
-    }, (error) => {
-      console.error("Role fetch error:", error);
-    });
-  }
 
   private notify() {
-    this.listeners.forEach(l => l());
+    this.listeners.forEach((listener) => listener());
   }
 
   subscribe(listener: () => void) {
     this.listeners.push(listener);
     return () => {
-      this.listeners = this.listeners.filter(l => l !== listener);
+      this.listeners = this.listeners.filter((current) => current !== listener);
     };
   }
 
@@ -60,25 +41,19 @@ class RoleStore {
   }
 
   getRole(id: string) {
-    return this.roles.find(r => r.id === id);
+    return this.roles.find((role) => role.id === id);
   }
 
-  async addRole(role: Omit<Role, 'id' | 'createdAt'>) {
-    if (!db) return;
-    await addDoc(collection(db, 'roles'), {
-      ...role,
-      createdAt: serverTimestamp()
-    });
+  async addRole(_role: Omit<Role, 'id' | 'createdAt'>) {
+    throw new Error('Roles are not available in the Laravel backend routes yet. Use super_admin only.');
   }
 
-  async updateRole(id: string, updates: Partial<Omit<Role, 'id' | 'createdAt'>>) {
-    if (!db) return;
-    await updateDoc(doc(db, 'roles', id), updates);
+  async updateRole(_id: string, _updates: Partial<Omit<Role, 'id' | 'createdAt'>>) {
+    throw new Error('Roles are not available in the Laravel backend routes yet. Use super_admin only.');
   }
 
-  async deleteRole(id: string) {
-    if (!db) return;
-    await deleteDoc(doc(db, 'roles', id));
+  async deleteRole(_id: string) {
+    throw new Error('Roles are not available in the Laravel backend routes yet. Use super_admin only.');
   }
 }
 

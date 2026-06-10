@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchAdminEmployees } from '../api/admin-employees-api';
+import { fetchAdminEmployees } from '../services/admin-employees-api';
 import { AdminEmployee } from '../types/admin-employee.types';
 
 export function useAdminEmployeesList() {

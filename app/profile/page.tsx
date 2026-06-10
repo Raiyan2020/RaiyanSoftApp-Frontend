@@ -18,7 +18,8 @@ import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ProfileEditDialog from '@/features/profile/components/profile-edit-dialog';
 import { useUserProfile } from '@/features/profile/hooks/use-user-profile';
-import { logoutUser } from '@/features/auth/api/user-auth-api';
+import ErrorAlert from '@/components/ui/error-alert';
+import { logoutUser } from '@/features/auth/services/user-auth-api';
 import { guestStore } from '@/lib/guestStore';
 
 type ProfileTab = 'all' | ProfileRecordType | 'chat';
@@ -52,11 +53,7 @@ function ProfileProjectsPanel({
   }
 
   if (error) {
-    return (
-      <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-5 text-sm text-red-400">
-        {error}
-      </div>
-    );
+    return <ErrorAlert message={error} />;
   }
 
   if (projects.length === 0) {

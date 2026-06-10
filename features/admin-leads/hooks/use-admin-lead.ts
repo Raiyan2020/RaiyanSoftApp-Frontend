@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchAdminLead } from '../api/admin-leads-api';
+import { fetchAdminLead } from '../services/admin-leads-api';
 import { AdminLeadDetail } from '../types/admin-lead.types';
 
 export function useAdminLead(id: number | null, language: string, enabled = true) {

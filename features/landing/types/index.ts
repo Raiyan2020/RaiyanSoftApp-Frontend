@@ -1,0 +1,1 @@
+// landing feature — TypeScript types

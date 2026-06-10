@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { toggleAdminEmployeeBlock } from '../api/admin-employees-api';
+import { toggleAdminEmployeeBlock } from '../services/admin-employees-api';
 
 export function useToggleEmployeeBlock() {
   const [loading, setLoading] = useState(false);

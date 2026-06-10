@@ -2,10 +2,14 @@ import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, CheckCircle, Copy, Lock, RefreshCw, Loader2, Save } from 'lucide-react';
 import { AdminEmployee } from '../types/admin-employee.types';
-import { EMPLOYEE_ROLES, EmployeeValues, getEmployeeSchema } from '../schemas/employee.schema';
+import { EmployeeValues, getEmployeeSchema } from '../schemas/employee.schema';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import PhoneInput from '@/components/ui/phone-input';
+import { globalToast } from '@/lib/toast-context';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface EmployeeFormModalProps {
   onClose: () => void;
@@ -49,16 +53,17 @@ export default function EmployeeFormModal({
   }, [formData.password, form]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
+        onClick={(event) => event.stopPropagation()}
         className="bg-[var(--surface)] w-full max-w-lg rounded-2xl border border-[var(--border)] shadow-2xl flex flex-col max-h-[90vh]"
       >
         <div className="p-5 border-b border-[var(--border)] flex justify-between items-center">
           <h2 className="text-xl font-bold text-[var(--text)]">
-            {editingEmployee ? 'Edit Employee' : 'Add Employee'}
+            {translateMessage(editingEmployee ? 'Edit Employee' : 'Add Employee')}
           </h2>
           <button type="button" onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text)]">
             <X size={20} />
@@ -70,9 +75,9 @@ export default function EmployeeFormModal({
             <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/20">
               <CheckCircle size={32} />
             </div>
-            <h3 className="text-xl font-bold text-[var(--text)] mb-2">Employee Created!</h3>
+            <h3 className="text-xl font-bold text-[var(--text)] mb-2">{translateMessage('Employee Created!')}</h3>
             <p className="text-[var(--text-muted)] text-sm mb-6">
-              The account is ready. Please copy the password below.
+              {translateMessage('The account is ready. Please copy the password below.')}
             </p>
 
             <div className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4 flex items-center justify-between mb-6">
@@ -81,7 +86,7 @@ export default function EmployeeFormModal({
                 type="button"
                 onClick={() => {
                   navigator.clipboard.writeText(createdPassword);
-                  alert('Copied!');
+                  globalToast.success(translateMessage('Copied!'));
                 }}
                 className="p-2 hover:bg-white/10 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
               >
@@ -90,16 +95,14 @@ export default function EmployeeFormModal({
             </div>
 
             <button type="button" onClick={onClose} className="px-6 py-2.5 bg-primary text-white rounded-xl font-medium">
-              Done
+              {translateMessage('Done')}
             </button>
           </div>
         ) : (
           <>
             <div className="p-6 overflow-y-auto custom-scrollbar">
               {errorMessage ? (
-                <div className="mb-4 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
-                  {errorMessage}
-                </div>
+                <ErrorAlert message={errorMessage} />
               ) : null}
 
               <form id="empForm" onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -170,14 +173,7 @@ export default function EmployeeFormModal({
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel>Phone</FieldLabel>
-                      <input
-                        {...field}
-                        type="tel"
-                        dir="ltr"
-                        className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
-                          fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
-                        }`}
-                      />
+                      <PhoneInput value={field.value || ''} onChange={(value) => field.onChange(value || '')} />
                       {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
                     </Field>
                   )}
@@ -201,7 +197,7 @@ export default function EmployeeFormModal({
                               className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none font-mono ${
                                 fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                               }`}
-                              placeholder="Min 8 characters"
+                              placeholder={translateMessage('Min 8 characters')}
                             />
                           </div>
                           <button
@@ -210,7 +206,7 @@ export default function EmployeeFormModal({
                             className="bg-[var(--surface-3)] border border-[var(--border)] hover:bg-[var(--surface-3)] text-[var(--text)] px-3 rounded-xl flex items-center gap-2 transition-colors"
                           >
                             <RefreshCw size={16} />
-                            <span className="text-xs hidden sm:inline">Generate</span>
+                            <span className="text-xs hidden sm:inline">{translateMessage('Generate')}</span>
                           </button>
                         </div>
                         {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
@@ -222,24 +218,19 @@ export default function EmployeeFormModal({
                 <Controller
                   name="role"
                   control={form.control}
-                  render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid}>
+                  render={({ field }) => (
+                    <Field>
                       <FieldLabel>
                         Role <span className="text-red-400">*</span>
                       </FieldLabel>
-                      <select
+                      <input
                         {...field}
-                        className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none appearance-none ${
-                          fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
-                        }`}
-                      >
-                        {EMPLOYEE_ROLES.map((role) => (
-                          <option key={role} value={role}>
-                            {role.charAt(0).toUpperCase() + role.slice(1)}
-                          </option>
-                        ))}
-                      </select>
-                      {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
+                        type="text"
+                        readOnly
+                        value="Super Admin"
+                        className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text-muted)] cursor-not-allowed"
+                      />
+                      <p className="text-xs text-[var(--text-muted)]">{translateMessage('Only this role is available for now.')}</p>
                     </Field>
                   )}
                 />
@@ -252,7 +243,7 @@ export default function EmployeeFormModal({
                 onClick={onClose}
                 className="px-5 py-2.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text)] font-medium text-sm"
               >
-                Cancel
+                {translateMessage('Cancel')}
               </button>
               <button
                 form="empForm"
@@ -261,7 +252,7 @@ export default function EmployeeFormModal({
                 className="px-5 py-2.5 rounded-xl bg-primary hover:bg-sky-400 text-white font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2 disabled:opacity-70"
               >
                 {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-                <span>{editingEmployee ? 'Update' : 'Create'} Employee</span>
+                <span>{translateMessage(editingEmployee ? 'Update Employee' : 'Create Employee')}</span>
               </button>
             </div>
           </>

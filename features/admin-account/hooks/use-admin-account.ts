@@ -1,19 +1,11 @@
 import { useState, useEffect } from 'react';
 import { authService, type Admin } from '@/lib/auth-service';
-import { updateAdminEmployee } from '@/features/admin-employees/api/admin-employees-api';
-import { AdminProfileValues } from '../schemas/profile.schema';
-
-const splitAdminName = (admin: Admin | null) => {
-  const fullName = admin?.full_name || admin?.name || '';
-  const nameParts = fullName.trim().split(/\s+/).filter(Boolean);
-  return {
-    firstName: nameParts[0] || '',
-    lastName: nameParts.slice(1).join(' '),
-  };
-};
+import { globalToast } from '@/lib/toast-context';
+import { fetchAdminProfile, updateAdminProfile } from '../services/admin-profile-api';
+import type { AdminProfileValues } from '../schemas/profile.schema';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export function useAdminAccount() {
-  const [user, setUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -27,22 +19,66 @@ export function useAdminAccount() {
   });
 
   useEffect(() => {
-    const hydrateAdminData = () => {
-      const profile = authService.getAdmin();
-      const { firstName, lastName } = splitAdminName(profile);
+    let cancelled = false;
 
-      setUser(profile);
-      setFormData({
-        firstName,
-        lastName,
-        phone: profile?.phone || '',
-        role: profile?.role || 'Admin',
-        email: profile?.email || '',
-      });
-      setIsLoading(false);
-    };
+    async function loadProfile() {
+      setIsLoading(true);
+      try {
+        const profile = await fetchAdminProfile();
+        if (cancelled) return;
 
-    hydrateAdminData();
+        if (profile) {
+          setFormData({
+            firstName: profile.first_name || '',
+            lastName: profile.last_name || '',
+            phone: profile.phone || '',
+            role: profile.role || translateMessage('Admin'),
+            email: profile.email || '',
+          });
+
+          const updatedAdmin: Admin = {
+            ...(authService.getAdmin() || {}),
+            id: profile.id,
+            name: [profile.first_name, profile.last_name].filter(Boolean).join(' '),
+            full_name: [profile.first_name, profile.last_name].filter(Boolean).join(' '),
+            email: profile.email,
+            phone: profile.phone || '',
+            role: profile.role,
+            admin_code: profile.admin_code,
+          };
+          authService.setAdminProfile(updatedAdmin);
+        } else {
+          const cached = authService.getAdmin();
+          const fullName = cached?.full_name || cached?.name || '';
+          const parts = fullName.trim().split(/\s+/).filter(Boolean);
+          setFormData({
+            firstName: parts[0] || '',
+            lastName: parts.slice(1).join(' '),
+            phone: cached?.phone || '',
+            role: cached?.role || translateMessage('Admin'),
+            email: cached?.email || '',
+          });
+        }
+      } catch {
+        const cached = authService.getAdmin();
+        const fullName = cached?.full_name || cached?.name || '';
+        const parts = fullName.trim().split(/\s+/).filter(Boolean);
+        if (!cancelled) {
+          setFormData({
+            firstName: parts[0] || '',
+            lastName: parts.slice(1).join(' '),
+            phone: cached?.phone || '',
+            role: cached?.role || translateMessage('Admin'),
+            email: cached?.email || '',
+          });
+        }
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    }
+
+    loadProfile();
+    return () => { cancelled = true; };
   }, []);
 
   const handleSave = async (data: AdminProfileValues) => {
@@ -50,62 +86,49 @@ export function useAdminAccount() {
     setSuccess(false);
 
     try {
-      const currentAdmin = authService.getAdmin();
-      const fullName = [data.firstName, data.lastName].filter(Boolean).join(' ');
-      let nextAdmin: Admin = {
-        ...(currentAdmin || { id: user?.id }),
-        id: Number(currentAdmin?.id || user?.id),
-        name: fullName,
-        full_name: fullName,
+      const payload: Parameters<typeof updateAdminProfile>[0] = {
+        first_name: data.firstName,
+        last_name: data.lastName,
+        email: data.email || formData.email,
         phone: data.phone || '',
-        email: data.email || formData.email || currentAdmin?.email,
-        role: currentAdmin?.role || formData.role,
+        ...(data.password ? { password: data.password } : {}),
       };
 
-      if (currentAdmin?.id) {
-        const payload = {
-          first_name: data.firstName,
-          last_name: data.lastName,
-          phone: data.phone || '',
-          role: currentAdmin.role || formData.role || undefined,
-          ...(data.email || formData.email ? { email: data.email || formData.email } : {}),
-        };
-        const updated = await updateAdminEmployee(currentAdmin.id, payload);
-        if (updated) {
-          nextAdmin = {
-            ...nextAdmin,
-            name: [updated.first_name, updated.last_name].filter(Boolean).join(' ') || nextAdmin.name,
-            full_name: [updated.first_name, updated.last_name].filter(Boolean).join(' ') || nextAdmin.full_name,
-            email: updated.email || nextAdmin.email,
-            phone: updated.phone || nextAdmin.phone,
-            role: updated.role || nextAdmin.role,
-          };
-        }
-      }
+      const updated = await updateAdminProfile(payload);
 
-      authService.setAdminProfile(nextAdmin);
-      setUser(nextAdmin);
+      const updatedAdmin: Admin = {
+        ...(authService.getAdmin() || {}),
+        id: updated.id,
+        name: [updated.first_name, updated.last_name].filter(Boolean).join(' '),
+        full_name: [updated.first_name, updated.last_name].filter(Boolean).join(' '),
+        email: updated.email,
+        phone: updated.phone || '',
+        role: updated.role,
+        admin_code: updated.admin_code,
+      };
 
-      setFormData((prev) => ({
-        ...prev,
-        firstName: data.firstName,
-        lastName: data.lastName,
-        phone: data.phone || '',
-        email: data.email || prev.email,
-      }));
+      authService.setAdminProfile(updatedAdmin);
+
+      setFormData({
+        firstName: updated.first_name,
+        lastName: updated.last_name,
+        phone: updated.phone || '',
+        role: updated.role,
+        email: updated.email,
+      });
 
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
-    } catch (err) {
-      console.error('Save failed', err);
-      alert('Failed to update profile.');
+    } catch (err: unknown) {
+      const msg = translateMessage(err instanceof Error ? err.message : 'Failed to update profile.');
+      globalToast.error(msg);
     } finally {
       setIsSaving(false);
     }
   };
 
   return {
-    user,
+    user: authService.getAdmin(),
     isLoading,
     isSaving,
     success,

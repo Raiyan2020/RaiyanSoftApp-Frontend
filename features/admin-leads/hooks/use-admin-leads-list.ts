@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchAdminLeads } from '../api/admin-leads-api';
+import { fetchAdminLeads } from '../services/admin-leads-api';
 import {
   AdminLeadListItem,
   AdminLeadsFilters,

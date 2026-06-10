@@ -3,6 +3,8 @@ import { AnimatePresence } from 'framer-motion';
 import { Loader2, Plus, Search } from 'lucide-react';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import { useAdminEmployees } from '../hooks/use-admin-employees';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 import EmployeesTable from './employees-table';
 import EmployeeFormModal from './employee-form-modal';
 import EmployeeDetailDrawer from './employee-detail-drawer';
@@ -42,8 +44,8 @@ export default function AdminEmployeesPage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text)]">Admins & Staff</h1>
-          <p className="text-[var(--text-muted)] text-sm">Manage dashboard access and permissions.</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Admins & Staff')}</h1>
+          <p className="text-[var(--text-muted)] text-sm">{translateMessage('Manage dashboard access and permissions.')}</p>
         </div>
         <button
           type="button"
@@ -51,7 +53,7 @@ export default function AdminEmployeesPage() {
           className="bg-primary hover:bg-sky-400 text-white px-4 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shadow-lg shadow-primary/20"
         >
           <Plus size={20} />
-          <span>Add Employee</span>
+          <span>{translateMessage('Add Employee')}</span>
         </button>
       </div>
 
@@ -62,15 +64,13 @@ export default function AdminEmployeesPage() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search by name or email..."
+            placeholder={translateMessage('Search by name or email...')}
             className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
           />
         </div>
       </div>
 
-      {listError ? (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{listError}</div>
-      ) : null}
+      {listError ? <ErrorAlert message={listError} /> : null}
 
       {listLoading && filteredEmployees.length === 0 ? (
         <div className="flex justify-center py-16">

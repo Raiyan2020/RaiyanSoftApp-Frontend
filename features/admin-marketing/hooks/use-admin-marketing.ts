@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { marketingStore, useMarketingHistory } from '@/lib/marketingNotifications';
 import { useUsers, User } from '@/lib/userStore';
 import { NotificationValues } from '../schemas/notification.schema';
-import { sendAdminNotification } from '../api/admin-notifications-api';
+import { sendAdminNotification } from '../services/admin-notifications-api';
 
 export function useAdminMarketing() {
   const { history } = useMarketingHistory();

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Calendar, Clock } from 'lucide-react';
-import { UserMeeting } from '@/features/meetings/types/meeting.types';
-import { getMeetingStatusTone } from '@/features/meetings/utils/meeting-helpers';
+import { UserMeeting } from '@/features/meetings';
+import { getMeetingStatusTone } from '@/features/meetings';
 
 interface AppointmentCardProps {
   meeting: UserMeeting;

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface UserProjectsFilterProps {
   searchTerm: string;
@@ -15,7 +16,7 @@ export default function UserProjectsFilter({ searchTerm, setSearchTerm }: UserPr
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          placeholder="Search by project, customer, or email..."
+          placeholder={translateMessage('Search by project, customer, or email...')}
           className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
         />
       </div>

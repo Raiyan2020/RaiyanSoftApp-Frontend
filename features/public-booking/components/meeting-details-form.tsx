@@ -3,6 +3,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, MapPin, Video } from 'lucide-react';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface MeetingDetailsFormProps {
   selectedDate: Date | null;
@@ -51,7 +52,7 @@ export default function MeetingDetailsForm({
           <p className="text-[var(--text)] text-lg font-bold">{selectedTime}</p>
         </div>
         <button type="button" onClick={onChangeStep} className="text-xs text-[var(--text-muted)] underline hover:text-[var(--text)]">
-          Change
+          {translateMessage('Change')}
         </button>
       </div>
 
@@ -60,14 +61,14 @@ export default function MeetingDetailsForm({
         <input
           type="text"
           className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none"
-          placeholder="e.g. Project Consultation"
+          placeholder={translateMessage('e.g. Project Consultation')}
           value={topic}
           onChange={(e) => onTopicChange(e.target.value)}
         />
       </div>
 
       <div className="space-y-2">
-        <label className="text-xs text-[var(--text-muted)]">Meeting Type</label>
+        <label className="text-xs text-[var(--text-muted)]">{translateMessage('Meeting Type')}</label>
         <div className="grid grid-cols-2 gap-3">
           <button
             type="button"

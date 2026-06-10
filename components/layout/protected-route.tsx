@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { auth } from '@/lib/firebase-client';
 import { useAuthGuard } from '@/lib/authGuardContext';
+import { authService } from '@/lib/auth-service';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -17,15 +17,14 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   useEffect(() => {
     if (hasChecked.current) return;
 
-    const user = auth.currentUser;
-    if (!user) {
+    if (!authService.getUser()) {
       hasChecked.current = true;
       requireAuth(() => {});
       router.replace('/home');
     }
   }, [requireAuth, router]);
 
-  if (auth.currentUser) {
+  if (authService.getUser()) {
     return <>{children}</>;
   }
 

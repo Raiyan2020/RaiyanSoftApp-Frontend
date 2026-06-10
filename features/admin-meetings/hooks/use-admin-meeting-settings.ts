@@ -1,9 +1,9 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { updateAdminMeetingSettings } from '../api/admin-meetings-api';
-import { MeetingSettingsForm } from '@/features/meetings/types/meeting.types';
-import { defaultMeetingSettingsForm } from '@/features/meetings/utils/meeting-helpers';
+import { updateAdminMeetingSettings } from '../services/admin-meetings-api';
+import { MeetingSettingsForm } from '@/features/meetings';
+import { defaultMeetingSettingsForm } from '@/features/meetings';
 
 export function useAdminMeetingSettings() {
   const [settings, setSettings] = useState<MeetingSettingsForm>(defaultMeetingSettingsForm());

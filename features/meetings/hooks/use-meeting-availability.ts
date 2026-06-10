@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchMeetingAvailability } from '../api/user-meetings-api';
+import { fetchMeetingAvailability } from '../services/user-meetings-api';
 import { formatDateKey } from '../utils/meeting-helpers';
 
 export function useMeetingAvailability(referenceDate: Date | null, enabled = true) {

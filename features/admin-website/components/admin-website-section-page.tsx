@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { Archive, Copy, ExternalLink, Plus, Search, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 import { getWebsiteContentConfig } from '../config/website-content-config';
 import { useAdminWebsiteContent } from '../hooks/use-admin-website-content';
 import type { WebsiteContentField, WebsiteContentItem, WebsiteContentSection, WebsiteContentStatus } from '../types/website-content';
@@ -35,7 +37,7 @@ function FieldControl({
         className={`${baseClass} min-h-28 resize-y`}
         value={field.type === 'list' ? listToTextarea(value) : value || ''}
         onChange={(event) => onChange(field.type === 'list' ? textareaToList(event.target.value) : event.target.value)}
-        placeholder={field.placeholder || (field.type === 'list' ? 'One item per line' : '')}
+        placeholder={translateMessage(field.placeholder || (field.type === 'list' ? 'One item per line' : ''))}
       />
     );
   }
@@ -44,7 +46,7 @@ function FieldControl({
     return (
       <label className="inline-flex cursor-pointer items-center gap-3 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)]">
         <input type="checkbox" checked={Boolean(value)} onChange={(event) => onChange(event.target.checked)} className="h-4 w-4 accent-primary" />
-        Enabled
+        {translateMessage('Enabled')}
       </label>
     );
   }
@@ -52,10 +54,10 @@ function FieldControl({
   if (field.type === 'select') {
     return (
       <select className={baseClass} value={value || ''} onChange={(event) => onChange(event.target.value)}>
-        <option value="">Select</option>
+        <option value="">{translateMessage('Select')}</option>
         {field.options?.map((option) => (
           <option key={option.value} value={option.value}>
-            {option.label}
+            {translateMessage(option.label)}
           </option>
         ))}
       </select>
@@ -68,7 +70,7 @@ function FieldControl({
       type={field.type === 'number' ? 'number' : field.type === 'url' ? 'url' : 'text'}
       value={value || ''}
       onChange={(event) => onChange(field.type === 'number' ? Number(event.target.value) : event.target.value)}
-      placeholder={field.placeholder}
+      placeholder={translateMessage(field.placeholder || '')}
     />
   );
 }
@@ -120,42 +122,42 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
       <div className="flex flex-col gap-4 rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-6 lg:flex-row lg:items-start lg:justify-between">
         <div>
           <Link href="/admin/website" className="text-xs font-bold uppercase tracking-[0.28em] text-primary">
-            Website CMS
+            {translateMessage('Website CMS')}
           </Link>
-          <h1 className="mt-2 text-3xl font-black text-[var(--text)]">{config.label}</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{config.description}</p>
+          <h1 className="mt-2 text-3xl font-black text-[var(--text)]">{translateMessage(config.label)}</h1>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--text-muted)]">{translateMessage(config.description)}</p>
         </div>
         <div className="flex flex-wrap gap-3">
           {!isSingleton ? (
             <Button type="button" variant="outline" onClick={manager.createNew}>
-              <Plus className="me-2" size={16} /> New {config.singularLabel}
+              <Plus className="me-2" size={16} /> {translateMessage('New')} {translateMessage(config.singularLabel)}
             </Button>
           ) : null}
           <Link href={getPreviewHref(section, manager.selected)} target="_blank" className="inline-flex items-center rounded-xl border border-[var(--border)] bg-[var(--surface-3)] px-5 py-3 text-sm font-bold text-[var(--text)] transition hover:bg-[var(--surface-3)]">
-            <ExternalLink className="me-2" size={16} /> Preview
+            <ExternalLink className="me-2" size={16} /> {translateMessage('Preview')}
           </Link>
         </div>
       </div>
 
-      {manager.error ? <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-200">{manager.error}</div> : null}
+      {manager.error ? <ErrorAlert message={manager.error} /> : null}
 
       <div className="grid gap-6">
         <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
           <div className="mb-6 flex flex-col gap-3 border-b border-[var(--border)] pb-5 md:flex-row md:items-center md:justify-between">
             <div>
-              <h2 className="text-xl font-black text-[var(--text)]">{isSingleton ? config.singularLabel : manager.selected ? `Edit ${config.singularLabel}` : `New ${config.singularLabel}`}</h2>
-              <p className="mt-1 text-sm text-[var(--text-muted)]">{isSingleton ? 'Update the global content for this section and publish when ready.' : 'Save as draft first, then publish when content and SEO are ready.'}</p>
+              <h2 className="text-xl font-black text-[var(--text)]">{isSingleton ? translateMessage(config.singularLabel) : manager.selected ? `${translateMessage('Edit')} ${translateMessage(config.singularLabel)}` : `${translateMessage('New')} ${translateMessage(config.singularLabel)}`}</h2>
+              <p className="mt-1 text-sm text-[var(--text-muted)]">{translateMessage(isSingleton ? 'Update the global content for this section and publish when ready.' : 'Save as draft first, then publish when content and SEO are ready.')}</p>
             </div>
             {manager.selected && !isSingleton ? (
               <div className="flex flex-wrap gap-2">
                 <Button type="button" variant="ghost" size="sm" onClick={() => manager.duplicateItem(manager.selected!)}>
-                  <Copy size={15} className="me-2" /> Duplicate
+                  <Copy size={15} className="me-2" /> {translateMessage('Duplicate')}
                 </Button>
                 <Button type="button" variant="ghost" size="sm" onClick={() => manager.save('archived')} isLoading={manager.isSaving}>
-                  <Archive size={15} className="me-2" /> Archive
+                  <Archive size={15} className="me-2" /> {translateMessage('Archive')}
                 </Button>
                 <Button type="button" variant="destructive" size="sm" onClick={() => setPendingDelete(manager.selected)}>
-                  <Trash2 size={15} className="me-2" /> Delete
+                  <Trash2 size={15} className="me-2" /> {translateMessage('Delete')}
                 </Button>
               </div>
             ) : null}
@@ -163,25 +165,25 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
 
           <div className="grid gap-5 md:grid-cols-2">
             <label className="space-y-2">
-              <span className="text-sm font-bold text-[var(--text)]">Title *</span>
+              <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Title')} *</span>
               <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.title} onChange={(event) => manager.updateField('title', event.target.value)} />
             </label>
 
             <label className="space-y-2">
-              <span className="text-sm font-bold text-[var(--text)]">Slug {config.requiresSlug ? '*' : ''}</span>
+              <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Slug')} {config.requiresSlug ? '*' : ''}</span>
               <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.slug} onChange={(event) => manager.updateField('slug', event.target.value)} placeholder="url-friendly-slug" />
             </label>
 
             <label className="space-y-2">
-              <span className="text-sm font-bold text-[var(--text)]">Order</span>
+              <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Order')}</span>
               <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" type="number" value={manager.form.order} onChange={(event) => manager.updateField('order', event.target.value)} />
             </label>
 
             <label className="space-y-2">
-              <span className="text-sm font-bold text-[var(--text)]">Locale</span>
+              <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Locale')}</span>
               <select className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.locale} onChange={(event) => manager.updateField('locale', event.target.value)}>
-                <option value="ar">Arabic</option>
-                <option value="en">English</option>
+                <option value="ar">{translateMessage('Arabic')}</option>
+                <option value="en">{translateMessage('English')}</option>
               </select>
             </label>
           </div>
@@ -190,37 +192,37 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
             {config.fields.map((field) => (
               <label key={field.key} className="space-y-2">
                 <span className="text-sm font-bold text-[var(--text)]">
-                  {field.label} {field.required ? '*' : ''}
+                  {translateMessage(field.label)} {field.required ? '*' : ''}
                 </span>
                 <FieldControl field={field} value={manager.form.data[field.key]} onChange={(value) => manager.updateDataField(field.key, value)} />
-                {field.description ? <span className="block text-xs text-[var(--text-muted)]">{field.description}</span> : null}
+                {field.description ? <span className="block text-xs text-[var(--text-muted)]">{translateMessage(field.description)}</span> : null}
               </label>
             ))}
           </div>
 
           <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
-            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-[var(--text)]">SEO</h3>
+            <h3 className="text-sm font-black uppercase tracking-[0.2em] text-[var(--text)]">{translateMessage('SEO')}</h3>
             <div className="mt-4 grid gap-5">
-              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.seoTitle} onChange={(event) => manager.updateField('seoTitle', event.target.value)} placeholder="SEO title" />
-              <textarea className="min-h-24 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.seoDescription} onChange={(event) => manager.updateField('seoDescription', event.target.value)} placeholder="SEO description" />
-              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.ogImage} onChange={(event) => manager.updateField('ogImage', event.target.value)} placeholder="Open Graph image URL" />
+              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.seoTitle} onChange={(event) => manager.updateField('seoTitle', event.target.value)} placeholder={translateMessage('SEO title')} />
+              <textarea className="min-h-24 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.seoDescription} onChange={(event) => manager.updateField('seoDescription', event.target.value)} placeholder={translateMessage('SEO description')} />
+              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.ogImage} onChange={(event) => manager.updateField('ogImage', event.target.value)} placeholder={translateMessage('Open Graph image URL')} />
             </div>
           </div>
 
           <div className="mt-6 flex flex-wrap items-center gap-4 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
             <label className="inline-flex items-center gap-2 text-sm font-bold text-[var(--text)]">
               <input type="checkbox" checked={manager.form.featured} onChange={(event) => manager.updateField('featured', event.target.checked)} className="h-4 w-4 accent-primary" />
-              Featured
+              {translateMessage('Featured')}
             </label>
             {config.requiresApproval ? (
               <>
                 <label className="inline-flex items-center gap-2 text-sm font-bold text-[var(--text)]">
                   <input type="checkbox" checked={manager.form.approvedForPublic} onChange={(event) => manager.updateField('approvedForPublic', event.target.checked)} className="h-4 w-4 accent-primary" />
-                  Approved for public
+                  {translateMessage('Approved for public')}
                 </label>
                 <label className="inline-flex items-center gap-2 text-sm font-bold text-[var(--text)]">
                   <input type="checkbox" checked={manager.form.clientApproved} onChange={(event) => manager.updateField('clientApproved', event.target.checked)} className="h-4 w-4 accent-primary" />
-                  Client approved
+                  {translateMessage('Client approved')}
                 </label>
               </>
             ) : null}
@@ -228,10 +230,10 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
 
           <div className="mt-6 flex flex-wrap justify-end gap-3 border-t border-[var(--border)] pt-5">
             <Button type="button" variant="outline" onClick={() => manager.save('draft')} isLoading={manager.isSaving}>
-              Save Draft
+              {translateMessage('Save Draft')}
             </Button>
             <Button type="button" onClick={() => manager.save('published')} isLoading={manager.isSaving}>
-              Publish
+              {translateMessage('Publish')}
             </Button>
           </div>
         </section>
@@ -240,15 +242,15 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
           <section className="space-y-4 rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h2 className="text-xl font-black text-[var(--text)]">Existing {config.label}</h2>
-                <p className="mt-1 text-sm text-[var(--text-muted)]">Search, filter, and select an existing item when you need to edit published or draft content.</p>
+                <h2 className="text-xl font-black text-[var(--text)]">{translateMessage('Existing')} {translateMessage(config.label)}</h2>
+                <p className="mt-1 text-sm text-[var(--text-muted)]">{translateMessage('Search, filter, and select an existing item when you need to edit published or draft content.')}</p>
               </div>
               <div className="relative w-full lg:max-w-md">
                 <Search className="absolute start-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
                 <input
                   value={manager.query}
                   onChange={(event) => manager.setQuery(event.target.value)}
-                  placeholder={`Search ${config.label.toLowerCase()}...`}
+                  placeholder={`${translateMessage('Search')} ${translateMessage(config.label).toLowerCase()}...`}
                   className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-3 pe-4 ps-11 text-sm text-[var(--text)] outline-none focus:border-primary/60"
                 />
               </div>
@@ -264,16 +266,16 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
                     manager.statusFilter === status ? 'border-primary/50 bg-primary/10 text-primary' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-[var(--text)]'
                   }`}
                 >
-                  {status}
+                  {translateMessage(status)}
                   <span className="mt-1 block text-[var(--text)]">{counts[status]}</span>
                 </button>
               ))}
             </div>
 
             <div className="grid gap-3 lg:grid-cols-2">
-              {manager.isLoading ? <p className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">Loading content...</p> : null}
+              {manager.isLoading ? <p className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">{translateMessage('Loading content...')}</p> : null}
               {!manager.isLoading && manager.filteredItems.length === 0 ? (
-                <p className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">No content found. Create the first item to start managing this section.</p>
+                <p className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 text-sm text-[var(--text-muted)]">{translateMessage('No content found. Create the first item to start managing this section.')}</p>
               ) : null}
               {manager.filteredItems.map((item) => (
                 <button
@@ -289,7 +291,7 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
                       <h3 className="font-black text-[var(--text)]">{item.title}</h3>
                       <p className="mt-1 text-xs text-[var(--text-muted)]">{item.slug || item.id}</p>
                     </div>
-                    <span className={`rounded-full border px-2.5 py-1 text-[11px] font-bold capitalize ${statusStyles[item.status]}`}>{item.status}</span>
+                    <span className={`rounded-full border px-2.5 py-1 text-[11px] font-bold capitalize ${statusStyles[item.status]}`}>{translateMessage(item.status)}</span>
                   </div>
                 </button>
               ))}
@@ -300,9 +302,9 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
 
       <ConfirmModal
         isOpen={Boolean(pendingDelete)}
-        title={`Delete ${config.singularLabel}`}
-        message={`This will permanently delete "${pendingDelete?.title || 'this item'}" from ${config.label}. This cannot be undone.`}
-        confirmText="Delete"
+        title={`${translateMessage('Delete')} ${translateMessage(config.singularLabel)}`}
+        message={`${translateMessage('This will permanently delete')} "${pendingDelete?.title || translateMessage('this item')}" ${translateMessage('from')} ${translateMessage(config.label)}. ${translateMessage('This cannot be undone.')}`}
+        confirmText={translateMessage('Delete')}
         isDestructive
         onCancel={() => setPendingDelete(null)}
         onConfirm={async () => {

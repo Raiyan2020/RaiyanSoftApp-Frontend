@@ -1,13 +1,13 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { AlertTriangle, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { usePublicBooking } from '../hooks/use-public-booking';
 import CalendarSlotPicker from './calendar-slot-picker';
 import MeetingDetailsForm from './meeting-details-form';
 import BookingSuccessStep from './booking-success-step';
+import ErrorAlert from '@/components/ui/error-alert';
 
 export default function PublicBookingPage() {
   const router = useRouter();
@@ -69,12 +69,7 @@ export default function PublicBookingPage() {
           ))}
         </div>
 
-        {errorMsg ? (
-          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl mb-6 flex items-start gap-3">
-            <AlertTriangle className="text-red-400 shrink-0" size={20} />
-            <span className="text-red-400 text-sm font-medium">{errorMsg}</span>
-          </motion.div>
-        ) : null}
+        {errorMsg ? <ErrorAlert message={errorMsg} /> : null}
 
         {step === 1 ? (
           <CalendarSlotPicker

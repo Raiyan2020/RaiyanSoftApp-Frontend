@@ -1,13 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { MEETING_STATUS, MeetingStatusCode } from '@/features/meetings/types/meeting.types';
-import { useAdminMeetingsList } from '@/features/admin-meetings/hooks/use-admin-meetings-list';
-import { useApproveMeeting } from '@/features/admin-meetings/hooks/use-approve-meeting';
-import { useRejectMeeting } from '@/features/admin-meetings/hooks/use-reject-meeting';
-import { useAdminTimeSlots } from '@/features/admin-meetings/hooks/use-admin-time-slots';
-import { useAdminMeetingSettings } from '@/features/admin-meetings/hooks/use-admin-meeting-settings';
-import { AdminMeeting } from '@/features/meetings/types/meeting.types';
+import { MEETING_STATUS, MeetingStatusCode } from '@/features/meetings';
+import { useAdminMeetingsList } from '@/features/admin-meetings';
+import { useApproveMeeting } from '@/features/admin-meetings';
+import { useRejectMeeting } from '@/features/admin-meetings';
+import { useAdminTimeSlots } from '@/features/admin-meetings';
+import { useAdminMeetingSettings } from '@/features/admin-meetings';
+import { AdminMeeting } from '@/features/meetings';
 
 export const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 

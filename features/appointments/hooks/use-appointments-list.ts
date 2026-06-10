@@ -3,14 +3,15 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from '@/lib/i18nContext';
 import { authService } from '@/lib/auth-service';
-import { useUserMeetings } from '@/features/meetings/hooks/use-user-meetings';
-import { useCancelMeeting } from '@/features/meetings/hooks/use-cancel-meeting';
+import { globalToast } from '@/lib/toast-context';
+import { useUserMeetings } from '@/features/meetings';
+import { useCancelMeeting } from '@/features/meetings';
 import {
   canCancelMeeting,
   isActiveMeetingStatus,
   parseMeetingDateTime,
-} from '@/features/meetings/utils/meeting-helpers';
-import { UserMeeting } from '@/features/meetings/types/meeting.types';
+} from '@/features/meetings';
+import { UserMeeting } from '@/features/meetings';
 
 export function useAppointmentsList() {
   const { t, dir } = useTranslation();
@@ -68,11 +69,11 @@ export function useAppointmentsList() {
 
   const handleOpenWizard = () => {
     if (!isAuthenticated) {
-      alert(t('auth.phone_dialog_title'));
+      globalToast.error(t('auth.phone_dialog_title'));
       return;
     }
     if (hasActiveBooking) {
-      alert(t('appt.limit_error'));
+      globalToast.error(t('appt.limit_error'));
       return;
     }
     setShowWizard(true);

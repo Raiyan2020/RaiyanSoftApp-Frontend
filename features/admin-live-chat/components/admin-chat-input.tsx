@@ -3,6 +3,7 @@ import { Send } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { chatInputSchema, ChatInputValues } from '../schemas/chat-input.schema';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface AdminChatInputProps {
   inputText: string;
@@ -49,7 +50,7 @@ export default function AdminChatInput({ inputText, setInputText, onSend }: Admi
             <input
               {...field}
               type="text"
-              placeholder="Type a reply..."
+              placeholder={translateMessage('Type a reply...')}
               className="flex-1 bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 transition-all"
             />
           )}

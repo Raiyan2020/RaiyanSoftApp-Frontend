@@ -5,6 +5,7 @@ import Avatar from '@/components/ui/avatar';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import { useMore } from '../hooks/use-more';
 import MoreListItem from './more-list-item';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function MorePage() {
   const {
@@ -104,7 +105,7 @@ export default function MorePage() {
               className="w-full py-4 rounded-2xl bg-[var(--surface)] border border-[var(--border)] text-[var(--text)] font-medium text-sm flex items-center justify-center gap-2 hover:bg-[var(--surface-2)] transition-colors"
             >
               <LogOut size={18} className="rtl:rotate-180" />
-              <span>Exit Guest Mode</span>
+              <span>{translateMessage('Exit Guest Mode')}</span>
             </button>
           ) : (
             <button

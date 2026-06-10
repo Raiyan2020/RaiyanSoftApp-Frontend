@@ -1,8 +1,6 @@
-import { useState, useEffect, useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { collection, addDoc, onSnapshot, query, orderBy, deleteDoc, doc, Timestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from '@/lib/firebase-client';
+import { globalConfirm } from '@/lib/confirm-dialog';
 import { useTranslation } from '@/lib/i18nContext';
 
 export interface UploadedFile {
@@ -14,76 +12,41 @@ export interface UploadedFile {
   createdAt: any;
 }
 
+const unavailableMessage = 'File manager upload routes are not available in the Laravel backend yet.';
+
 export function useFileManager() {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [files, setFiles] = useState<UploadedFile[]>([]);
+  const [files] = useState<UploadedFile[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(unavailableMessage);
   const { t, dir } = useTranslation();
 
-  useEffect(() => {
-    const q = query(collection(db, 'uploads'), orderBy('createdAt', 'desc'));
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        const fetchedFiles = snapshot.docs.map((d) => ({
-          id: d.id,
-          ...d.data(),
-        })) as UploadedFile[];
-        setFiles(fetchedFiles);
-      },
-      (err) => {
-        console.error('Firestore Error:', err);
-      }
-    );
-
-    return () => unsubscribe();
-  }, []);
-
-  const uploadFile = async (file: File) => {
+  const uploadFile = async (_file: File) => {
     setIsUploading(true);
     setUploadProgress(0);
-    setError(null);
-
-    try {
-      const storageRef = ref(storage, `uploads/${Date.now()}_${file.name}`);
-      const snapshot = await uploadBytes(storageRef, file);
-      const url = await getDownloadURL(snapshot.ref);
-
-      await addDoc(collection(db, 'uploads'), {
-        name: file.name,
-        url,
-        type: file.type,
-        size: file.size,
-        createdAt: Timestamp.now(),
-      });
-
-      setUploadProgress(100);
-    } catch (err: any) {
-      console.error('Upload failed', err);
-      setError('Failed to upload file. Check console/config.');
-    } finally {
-      setIsUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = '';
-    }
+    setError(unavailableMessage);
+    setIsUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      await uploadFile(file);
+      await uploadFile(e.target.files[0]);
     }
   };
 
-  const handleDelete = async (file: UploadedFile) => {
-    if (!window.confirm(t('files.delete_confirm'))) return;
-    try {
-      await deleteDoc(doc(db, 'uploads', file.id));
-    } catch (err) {
-      console.error('Delete failed', err);
-    }
+  const handleDelete = async (_file: UploadedFile) => {
+    const confirmed = await globalConfirm.confirm({
+      title: 'Delete file?',
+      message: t('files.delete_confirm'),
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      destructive: true,
+    });
+    if (!confirmed) return;
+    setError(unavailableMessage);
   };
 
   const formatSize = (bytes: number) => {

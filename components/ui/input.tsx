@@ -1,4 +1,5 @@
 import React from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -18,7 +19,7 @@ export default function Input({
     <div className="space-y-2 w-full">
       {label ? (
         <label className="text-xs text-[var(--text-muted)] ms-1 block font-medium">
-          {label}
+          {translateMessage(label)}
         </label>
       ) : null}
       <div className="relative">
@@ -40,7 +41,7 @@ export default function Input({
         />
       </div>
       {error ? (
-        <p className="text-[10px] text-red-400 ms-1 mt-0.5 font-medium">{error}</p>
+        <p className="text-[10px] text-red-400 ms-1 mt-0.5 font-medium">{translateMessage(error)}</p>
       ) : null}
     </div>
   );

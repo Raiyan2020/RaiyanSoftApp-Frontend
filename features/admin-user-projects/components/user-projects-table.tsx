@@ -1,6 +1,7 @@
 import React from 'react';
 import { LayoutGrid, Loader2 } from 'lucide-react';
 import { UserProject } from '@/lib/userProjectsStore';
+import { translateMessage } from '@/lib/i18n-utils';
 import UserProjectsRow from './user-projects-row';
 
 interface UserProjectsTableProps {
@@ -23,14 +24,14 @@ export default function UserProjectsTable({
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
           <Loader2 size={32} className="animate-spin mb-4 text-primary" />
-          <p>Loading projects...</p>
+          <p>{translateMessage('Loading projects...')}</p>
         </div>
       ) : filteredProjects.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
           <div className="w-16 h-16 bg-[var(--surface-3)] rounded-full flex items-center justify-center mb-4 border border-[var(--border)]">
             <LayoutGrid size={24} />
           </div>
-          <p>{error ? 'Unable to load data.' : 'No user projects found.'}</p>
+          <p>{translateMessage(error ? 'Unable to load data.' : 'No user projects found.')}</p>
         </div>
       ) : (
         <>
@@ -38,12 +39,12 @@ export default function UserProjectsTable({
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
-                  <th className="p-5 font-medium">Project</th>
-                  <th className="p-5 font-medium">Status</th>
-                  <th className="p-5 font-medium">Pricing</th>
-                  <th className="p-5 font-medium">Customer</th>
-                  <th className="p-5 font-medium">Created</th>
-                  <th className="p-5 font-medium text-right">Actions</th>
+                  <th className="p-5 font-medium">{translateMessage('Project')}</th>
+                  <th className="p-5 font-medium">{translateMessage('Status')}</th>
+                  <th className="p-5 font-medium">{translateMessage('Pricing')}</th>
+                  <th className="p-5 font-medium">{translateMessage('Customer')}</th>
+                  <th className="p-5 font-medium">{translateMessage('Created')}</th>
+                  <th className="p-5 font-medium text-right">{translateMessage('Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-sm">

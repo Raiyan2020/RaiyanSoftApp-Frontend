@@ -1,0 +1,1 @@
+// appointments feature — TypeScript types

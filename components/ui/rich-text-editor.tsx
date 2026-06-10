@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useMemo } from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 import { type AnyExtension } from '@tiptap/core';
 import { EditorContent, JSONContent, useEditor, type Editor } from '@tiptap/react';
 import { BubbleMenu, FloatingMenu } from '@tiptap/react/menus';
@@ -233,7 +234,7 @@ function RichTextToolbar({ editor, compact = false }: { editor: Editor; compact?
 
       <Divider />
 
-      <label className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent text-[var(--text-muted)] transition-all hover:border-[var(--border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]" title="Text color" aria-label="Text color">
+      <label className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent text-[var(--text-muted)] transition-all hover:border-[var(--border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]" title={translateMessage('Text color')} aria-label={translateMessage('Text color')}>
         <Palette size={17} />
         <select
           className="sr-only"
@@ -241,7 +242,7 @@ function RichTextToolbar({ editor, compact = false }: { editor: Editor; compact?
           value={editor.getAttributes('textStyle').color ?? ''}
           onChange={(event) => editor.chain().focus().setColor(event.target.value).run()}
         >
-          <option value="">Default</option>
+          <option value="">{translateMessage('Default')}</option>
           {textColors.map((color) => (
             <option key={color} value={color}>
               {color}
@@ -249,7 +250,7 @@ function RichTextToolbar({ editor, compact = false }: { editor: Editor; compact?
           ))}
         </select>
       </label>
-      <label className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent text-[var(--text-muted)] transition-all hover:border-[var(--border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]" title="Highlight" aria-label="Highlight">
+      <label className="inline-flex h-9 w-9 cursor-pointer items-center justify-center rounded-lg border border-transparent text-[var(--text-muted)] transition-all hover:border-[var(--border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]" title={translateMessage('Highlight')} aria-label={translateMessage('Highlight')}>
         <Highlighter size={17} />
         <select
           className="sr-only"
@@ -257,7 +258,7 @@ function RichTextToolbar({ editor, compact = false }: { editor: Editor; compact?
           value={editor.getAttributes('highlight').color ?? ''}
           onChange={(event) => editor.chain().focus().toggleHighlight({ color: event.target.value }).run()}
         >
-          <option value="">None</option>
+          <option value="">{translateMessage('None')}</option>
           {highlightColors.map((color) => (
             <option key={color} value={color}>
               {color}

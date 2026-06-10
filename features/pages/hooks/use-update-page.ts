@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { updateAdminPage } from '../api/admin-pages-api';
+import { updateAdminPage } from '../services/admin-pages-api';
 import { AboutUsForm, PageSlug, SimplePageForm } from '../types/page.types';
 
 export function useUpdatePage(slug: PageSlug) {

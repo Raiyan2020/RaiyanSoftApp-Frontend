@@ -20,7 +20,7 @@ import {
 import { useTranslation } from '@/lib/i18nContext';
 import { authService, User } from '@/lib/auth-service';
 import { guestStore } from '@/lib/guestStore';
-import { logoutUser } from '@/features/auth/api/user-auth-api';
+import { logoutUser } from '@/features/auth/services/user-auth-api';
 import { sectionLinks, pageLinks, headerPageLinks } from './NavbarLinks';
 import Avatar from '@/components/ui/avatar';
 import { profileRecords } from '@/components/profile/profile-records-data';

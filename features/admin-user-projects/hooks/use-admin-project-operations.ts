@@ -1,14 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { doc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
-import { deleteObject, getDownloadURL, ref, uploadBytes } from 'firebase/storage';
-import { auth, db, storage } from '@/lib/firebase-client';
-import { createAuditLogSafe } from '@/lib/auditLogStore';
-import { useAdmins } from '@/lib/adminStore';
-import { sanitizeForFirestore } from '@/lib/firestoreSanitize';
-import { createServiceNotificationSafe } from '@/lib/serviceNotifications';
+import { useCallback, useEffect, useState } from 'react';
+import { authService } from '@/lib/auth-service';
+import { globalToast } from '@/lib/toast-context';
+import { globalConfirm } from '@/lib/confirm-dialog';
+import { useAdminEmployeesList } from '@/features/admin-employees';
 import {
   ProjectAttachment,
-  ProjectInternalNote,
   ProjectProgressUpdate,
   ProjectStage,
   ProjectStageStatus,
@@ -35,7 +31,7 @@ import {
   fetchAdminStages,
   generateAdminReport,
   updateAdminStage,
-} from '../api/admin-projects-api';
+} from '../services/admin-projects-api';
 
 export type ProjectDetailTab = 'overview' | 'plan' | 'progress' | 'reports' | 'files' | 'final';
 
@@ -90,8 +86,6 @@ const getDefaultReportRange = () => {
   };
 };
 
-const normalizeTimestamp = (value: any) => value?.toMillis?.() || value || Date.now();
-
 const enumValue = (value: unknown): string => {
   if (value && typeof value === 'object' && 'value' in value) {
     return String((value as { value?: string | number }).value || '');
@@ -122,21 +116,6 @@ const stageStatusToApiStatus = (status: ProjectStageStatus) => {
   if (status === 'blocked') return 5;
   return 1;
 };
-
-const normalizeStage = (stage: any, index: number): ProjectStage => ({
-  id: String(stage.id),
-  title: stage.title || 'Untitled Stage',
-  description: stage.description || '',
-  assignedTo: stage.assignedTo || '',
-  estimatedDays: stage.estimatedDays ?? null,
-  order: typeof stage.order === 'number' ? stage.order : index,
-  progress: typeof stage.progress === 'number' ? stage.progress : 0,
-  status: stage.status || 'planned',
-  createdAt: normalizeTimestamp(stage.createdAt),
-  updatedAt: normalizeTimestamp(stage.updatedAt),
-  startedAt: stage.startedAt ? normalizeTimestamp(stage.startedAt) : null,
-  completedAt: stage.completedAt ? normalizeTimestamp(stage.completedAt) : null,
-});
 
 const normalizeApiStage = (stage: AdminStage, index: number): ProjectStage => {
   const createdAt = stage.created_at ? new Date(stage.created_at).getTime() : Date.now();
@@ -273,55 +252,6 @@ const normalizeApiAttachment = (attachment: AdminStageAttachment): ProjectAttach
   };
 };
 
-const normalizeProgressUpdate = (update: any): ProjectProgressUpdate => ({
-  id: update.id,
-  stageId: update.stageId,
-  stageTitle: update.stageTitle || 'Stage',
-  previousProgress: update.previousProgress || 0,
-  nextProgress: update.nextProgress || 0,
-  note: update.note || '',
-  createdAt: normalizeTimestamp(update.createdAt),
-  createdByName: update.createdByName || 'Admin',
-});
-
-const normalizeAttachment = (attachment: any): ProjectAttachment => ({
-  id: attachment.id,
-  stageId: attachment.stageId,
-  title: attachment.title || 'Untitled attachment',
-  description: attachment.description || '',
-  reason: attachment.reason || '',
-  fileName: attachment.fileName || 'file',
-  fileType: attachment.fileType || 'application/octet-stream',
-  fileSize: attachment.fileSize || 0,
-  storagePath: attachment.storagePath || '',
-  url: attachment.url || '',
-  createdAt: normalizeTimestamp(attachment.createdAt),
-  createdByName: attachment.createdByName || 'Admin',
-});
-
-const normalizeInternalNote = (note: any): ProjectInternalNote => ({
-  id: note.id,
-  stageId: note.stageId,
-  text: note.text || '',
-  adminOnly: true,
-  createdAt: normalizeTimestamp(note.createdAt),
-  createdByName: note.createdByName || 'Admin',
-});
-
-const normalizeWeeklyReport = (report: any): ProjectWeeklyReport => ({
-  id: report.id,
-  weekStart: normalizeTimestamp(report.weekStart),
-  weekEnd: normalizeTimestamp(report.weekEnd),
-  content: report.content || '',
-  status: report.status || 'draft',
-  sourceUpdateIds: report.sourceUpdateIds || [],
-  clientVisible: Boolean(report.clientVisible),
-  createdAt: normalizeTimestamp(report.createdAt),
-  updatedAt: normalizeTimestamp(report.updatedAt),
-  createdByName: report.createdByName || 'Admin',
-  sentAt: report.sentAt ? normalizeTimestamp(report.sentAt) : null,
-});
-
 const parseDateInput = (value: string, endOfDay = false) => {
   const date = value ? new Date(`${value}T00:00:00`) : new Date();
   if (endOfDay) date.setHours(23, 59, 59, 999);
@@ -335,10 +265,41 @@ const formatReportDate = (value: number) =>
     year: 'numeric',
   });
 
-const resolveAdminIds = (assignedTo: string, admins: Array<{ id: string | number; name?: string }>) => {
+const getCurrentActorName = () => {
+  const admin = authService.getAdmin();
+  const user = authService.getUser();
+  const actor = admin || user;
+  return actor?.full_name || actor?.name || actor?.email || 'Admin';
+};
+
+const resolveAdminIds = (
+  assignedTo: string,
+  admins: Array<{ id: string | number; name?: string; first_name?: string; last_name?: string }>
+) => {
   if (!assignedTo.trim()) return [];
-  const matched = admins.find((admin) => admin.name === assignedTo);
-  return matched ? [matched.id] : [];
+  const directId = Number(assignedTo);
+  if (Number.isInteger(directId)) return [directId];
+  const matched = admins.find((admin) => {
+    const fullName = admin.name || [admin.first_name, admin.last_name].filter(Boolean).join(' ').trim();
+    return fullName === assignedTo;
+  });
+  if (!matched) return [];
+  const numericId = Number(matched.id);
+  return Number.isInteger(numericId) ? [numericId] : [];
+};
+
+const resolveAssignedToValue = (
+  assignedTo: string,
+  admins: Array<{ id: string | number; name?: string; first_name?: string; last_name?: string }>
+) => {
+  if (!assignedTo.trim()) return '';
+  const directMatch = admins.find((admin) => String(admin.id) === assignedTo);
+  if (directMatch) return String(directMatch.id);
+  const matched = admins.find((admin) => {
+    const fullName = admin.name || [admin.first_name, admin.last_name].filter(Boolean).join(' ').trim();
+    return fullName === assignedTo;
+  });
+  return matched ? String(matched.id) : assignedTo;
 };
 
 const optionalList = async <T,>(loader: () => Promise<T[]>): Promise<T[]> => {
@@ -350,13 +311,13 @@ const optionalList = async <T,>(loader: () => Promise<T[]>): Promise<T[]> => {
 };
 
 export function useAdminProjectOperations(ownerId?: string, projectId?: string) {
-  const { admins } = useAdmins();
+  const { employees } = useAdminEmployeesList();
   const isApiProject = ownerId === 'api';
   const [project, setProject] = useState<UserProject | null>(null);
   const [activeTab, setActiveTab] = useState<ProjectDetailTab>('overview');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setErrorState] = useState<string | null>(null);
   const [stageForm, setStageForm] = useState<StageFormState>(emptyStageForm);
   const [editingStageId, setEditingStageId] = useState<string | null>(null);
   const [selectedStageId, setSelectedStageId] = useState<string>('');
@@ -370,14 +331,17 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const [editingReportId, setEditingReportId] = useState<string | null>(null);
   const [finalReportContent, setFinalReportContent] = useState('');
 
-  const projectRef = useMemo(() => {
-    if (isApiProject || !db || !ownerId || !projectId) return null;
-    return doc(db, 'users', ownerId, 'projects', projectId);
-  }, [isApiProject, ownerId, projectId]);
+  const setError = useCallback((message: string | null) => {
+    setErrorState(message);
+    if (message) {
+      globalToast.error(message);
+    }
+  }, []);
 
   const loadProject = useCallback(async () => {
-    if (!isApiProject && !projectRef) {
-      setError('Missing project path.');
+    if (!isApiProject || !projectId) {
+      setProject(null);
+      setError('This admin project page now requires a Laravel API project.');
       setLoading(false);
       return;
     }
@@ -386,135 +350,68 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setError(null);
 
     try {
-      if (isApiProject && projectId) {
-        const [apiProject, apiStages, apiProgress, apiReports, apiAttachments] = await Promise.all([
-          fetchAdminProject(projectId),
-          fetchAdminStages(),
-          optionalList(() => fetchAdminStageProgress({ project_id: projectId, per_page: 100 })),
-          optionalList(() => fetchAdminReports({ project_id: projectId })),
-          optionalList(() => fetchAdminStageAttachments({ project_id: projectId, per_page: 100 })),
-        ]);
-        const normalizedStages = apiStages
-          .filter((stage) => {
-            const stageProjectId = stage.project_id || stage.project?.id;
-            return !stageProjectId || String(stageProjectId) === String(projectId);
-          })
-          .map(normalizeApiStage);
-        const stageIds = new Set(normalizedStages.map((stage) => stage.id));
-        const stagesById = new Map(normalizedStages.map((stage) => [stage.id, stage]));
-        const normalizedProgress = apiProgress
-          .filter(
-            (update) =>
-              String(update.project_id || '') === String(projectId) ||
-              stageIds.has(String(update.stage_id || ''))
-          )
-          .map((update) => normalizeApiProgressUpdate(update, stagesById))
-          .sort((a, b) => b.createdAt - a.createdAt);
-        const latestProgressByStage = new Map<string, ProjectProgressUpdate>();
-        normalizedProgress
-          .slice()
-          .sort((a, b) => b.createdAt - a.createdAt)
-          .forEach((update) => {
-            if (!latestProgressByStage.has(update.stageId)) latestProgressByStage.set(update.stageId, update);
-          });
-        const stagesWithProgress = normalizedStages.map((stage) => {
-          const latest = latestProgressByStage.get(stage.id);
-          if (!latest) return stage;
-          const progress = Math.max(0, Math.min(100, Number(latest.nextProgress) || 0));
-          return {
-            ...stage,
-            progress,
-            status: progress >= 100 ? 'completed' : stage.status === 'planned' ? 'active' : stage.status,
-            updatedAt: latest.createdAt,
-          } satisfies ProjectStage;
+      const [apiProject, apiStages, apiProgress, apiReports, apiAttachments] = await Promise.all([
+        fetchAdminProject(projectId),
+        fetchAdminStages(),
+        optionalList(() => fetchAdminStageProgress({ project_id: projectId, per_page: 100 })),
+        optionalList(() => fetchAdminReports({ project_id: projectId })),
+        optionalList(() => fetchAdminStageAttachments({ project_id: projectId, per_page: 100 })),
+      ]);
+      const normalizedStages = apiStages
+        .filter((stage) => {
+          const stageProjectId = stage.project_id || stage.project?.id;
+          return !stageProjectId || String(stageProjectId) === String(projectId);
+        })
+        .map(normalizeApiStage);
+      const stageIds = new Set(normalizedStages.map((stage) => stage.id));
+      const stagesById = new Map(normalizedStages.map((stage) => [stage.id, stage]));
+      const normalizedProgress = apiProgress
+        .filter(
+          (update) =>
+            String(update.project_id || '') === String(projectId) ||
+            stageIds.has(String(update.stage_id || ''))
+        )
+        .map((update) => normalizeApiProgressUpdate(update, stagesById))
+        .sort((a, b) => b.createdAt - a.createdAt);
+      const latestProgressByStage = new Map<string, ProjectProgressUpdate>();
+      normalizedProgress
+        .slice()
+        .sort((a, b) => b.createdAt - a.createdAt)
+        .forEach((update) => {
+          if (!latestProgressByStage.has(update.stageId)) latestProgressByStage.set(update.stageId, update);
         });
-        const normalizedReports = apiReports
-          .filter((report) => String(report.project_id || '') === String(projectId))
-          .map(normalizeApiWeeklyReport)
-          .sort((a, b) => b.weekStart - a.weekStart);
-        const normalizedAttachments = apiAttachments
-          .filter((attachment) => stageIds.has(String(attachment.stage_id || '')))
-          .map(normalizeApiAttachment)
-          .sort((a, b) => b.createdAt - a.createdAt);
-        const normalizedProject = mapApiProjectToUserProject(
-          apiProject,
-          stagesWithProgress,
-          normalizedProgress,
-          normalizedReports,
-          normalizedAttachments
-        );
-
-        setProject(normalizedProject);
-        setFinalReportContent(normalizedReports[0]?.content || '');
-
-        const activeStage = stagesWithProgress.find((stage) => stage.status === 'active');
-        const firstStage = stagesWithProgress[0];
-        const defaultStage = activeStage || firstStage;
-        if (defaultStage) {
-          setSelectedStageId(defaultStage.id);
-          setProgressValue(defaultStage.progress || 0);
-          setAttachmentForm((prev) => ({ ...prev, stageId: prev.stageId || defaultStage.id }));
-          setNoteStageId((prev) => prev || defaultStage.id);
-        }
-        return;
-      }
-
-      if (!projectRef) {
-        throw new Error('Missing project path.');
-      }
-
-      const snap = await getDoc(projectRef);
-      if (!snap.exists()) {
-        setProject(null);
-        setError('Project not found.');
-        return;
-      }
-
-      const data = snap.data();
-      const normalizedProject = {
-        id: snap.id,
-        ...data,
-        createdAt: normalizeTimestamp(data.createdAt),
-        updatedAt: normalizeTimestamp(data.updatedAt),
-        completedAt: data.completedAt ? normalizeTimestamp(data.completedAt) : null,
-        stages: (data.stages || [])
-          .map(normalizeStage)
-          .sort((a: ProjectStage, b: ProjectStage) => a.order - b.order),
-        progressUpdates: (data.progressUpdates || [])
-          .map(normalizeProgressUpdate)
-          .sort((a: ProjectProgressUpdate, b: ProjectProgressUpdate) => b.createdAt - a.createdAt),
-        weeklyReports: (data.weeklyReports || [])
-          .map(normalizeWeeklyReport)
-          .sort((a: ProjectWeeklyReport, b: ProjectWeeklyReport) => b.weekStart - a.weekStart),
-        attachments: (data.attachments || [])
-          .map(normalizeAttachment)
-          .sort((a: ProjectAttachment, b: ProjectAttachment) => b.createdAt - a.createdAt),
-        internalNotes: (data.internalNotes || [])
-          .map(normalizeInternalNote)
-          .sort((a: ProjectInternalNote, b: ProjectInternalNote) => b.createdAt - a.createdAt),
-        finalReport: data.finalReport
-          ? {
-              ...data.finalReport,
-              generatedAt: normalizeTimestamp(data.finalReport.generatedAt),
-              approvedAt: data.finalReport.approvedAt ? normalizeTimestamp(data.finalReport.approvedAt) : null,
-            }
-          : null,
-      } as UserProject;
+      const stagesWithProgress = normalizedStages.map((stage) => {
+        const latest = latestProgressByStage.get(stage.id);
+        if (!latest) return stage;
+        const progress = Math.max(0, Math.min(100, Number(latest.nextProgress) || 0));
+        return {
+          ...stage,
+          progress,
+          status: progress >= 100 ? 'completed' : stage.status === 'planned' ? 'active' : stage.status,
+          updatedAt: latest.createdAt,
+        } satisfies ProjectStage;
+      });
+      const normalizedReports = apiReports
+        .filter((report) => String(report.project_id || '') === String(projectId))
+        .map(normalizeApiWeeklyReport)
+        .sort((a, b) => b.weekStart - a.weekStart);
+      const normalizedAttachments = apiAttachments
+        .filter((attachment) => stageIds.has(String(attachment.stage_id || '')))
+        .map(normalizeApiAttachment)
+        .sort((a, b) => b.createdAt - a.createdAt);
+      const normalizedProject = mapApiProjectToUserProject(
+        apiProject,
+        stagesWithProgress,
+        normalizedProgress,
+        normalizedReports,
+        normalizedAttachments
+      );
 
       setProject(normalizedProject);
-      setFinalReportContent(normalizedProject.finalReport?.content || '');
+      setFinalReportContent(normalizedReports[0]?.content || '');
 
-      try {
-        if (projectId) {
-          await fetchAdminProject(projectId);
-          await fetchAdminStages();
-        }
-      } catch (apiError) {
-        console.warn('Admin project API sync unavailable, using Firestore fallback:', apiError);
-      }
-
-      const activeStage = normalizedProject.stages?.find((stage) => stage.status === 'active');
-      const firstStage = normalizedProject.stages?.[0];
+      const activeStage = stagesWithProgress.find((stage) => stage.status === 'active');
+      const firstStage = stagesWithProgress[0];
       const defaultStage = activeStage || firstStage;
       if (defaultStage) {
         setSelectedStageId(defaultStage.id);
@@ -528,14 +425,13 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     } finally {
       setLoading(false);
     }
-  }, [isApiProject, projectId, projectRef]);
+  }, [isApiProject, projectId]);
 
   useEffect(() => {
     loadProject();
   }, [loadProject]);
 
   const stages = project?.stages || [];
-  const employees = admins.filter((admin) => admin.status === 'Active');
   const progressUpdates = project?.progressUpdates || [];
   const weeklyReports = project?.weeklyReports || [];
   const attachments = project?.attachments || [];
@@ -580,44 +476,11 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setStageForm({
       title: selectedStage.title,
       description: selectedStage.description || '',
-      assignedTo: selectedStage.assignedTo || '',
+      assignedTo: resolveAssignedToValue(selectedStage.assignedTo || '', employees),
       estimatedDays: selectedStage.estimatedDays ? String(selectedStage.estimatedDays) : '',
       status: selectedStage.status,
     });
     setActiveTab('plan');
-  };
-
-  const persistProjectUpdates = async (updates: Partial<UserProject>) => {
-    if (!projectRef) return;
-    const cleanUpdates = sanitizeForFirestore({
-      ...updates,
-      updatedAt: serverTimestamp(),
-    });
-    await updateDoc(projectRef, cleanUpdates);
-  };
-
-  const writeProjectAudit = (action: string, details: Record<string, unknown> = {}) => {
-    if (!project || !projectId) return Promise.resolve();
-    return createAuditLogSafe({
-      entityType: 'project',
-      entityId: projectId,
-      projectId,
-      ownerId,
-      action,
-      ...details,
-    });
-  };
-
-  const notifyProjectOwner = (title: string, message: string, type: 'system' | 'success' | 'warning' = 'system') => {
-    if (!ownerId || !projectId) return Promise.resolve();
-    return createServiceNotificationSafe({
-      userId: ownerId,
-      type,
-      title,
-      message,
-      projectId,
-      deepLink: `/projects/${projectId}`,
-    });
   };
 
   const saveStage = async () => {
@@ -625,44 +488,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
 
     setSaving(true);
     try {
-      const now = Date.now();
-      const nextStages = [...stages];
-      const resolvedAdminIds = resolveAdminIds(stageForm.assignedTo, admins);
-
-      if (editingStageId) {
-        const index = nextStages.findIndex((stage) => stage.id === editingStageId);
-        if (index >= 0) {
-          nextStages[index] = {
-            ...nextStages[index],
-            title: stageForm.title.trim(),
-            description: stageForm.description.trim(),
-            assignedTo: stageForm.assignedTo.trim(),
-            estimatedDays: stageForm.estimatedDays ? Number(stageForm.estimatedDays) : null,
-            status: stageForm.status,
-            progress: stageForm.status === 'completed' ? 100 : nextStages[index].progress,
-            updatedAt: now,
-            startedAt:
-              stageForm.status === 'active' && !nextStages[index].startedAt ? now : nextStages[index].startedAt,
-            completedAt: stageForm.status === 'completed' ? now : nextStages[index].completedAt || null,
-          };
-        }
-      } else {
-        nextStages.push({
-          id: `stage_${now}`,
-          title: stageForm.title.trim(),
-          description: stageForm.description.trim(),
-          assignedTo: stageForm.assignedTo.trim(),
-          estimatedDays: stageForm.estimatedDays ? Number(stageForm.estimatedDays) : null,
-          order: nextStages.length,
-          progress: stageForm.status === 'completed' ? 100 : 0,
-          status: stageForm.status,
-          createdAt: now,
-          updatedAt: now,
-          startedAt: stageForm.status === 'active' ? now : null,
-          completedAt: stageForm.status === 'completed' ? now : null,
-        });
-      }
-
+      const resolvedAdminIds = resolveAdminIds(stageForm.assignedTo, employees);
       const stagePayload = {
         project_id: String(projectId || project?.id || ''),
         title: stageForm.title.trim(),
@@ -672,38 +498,36 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
         admin_ids: resolvedAdminIds,
       };
 
-      if (isApiProject) {
-        if (!stagePayload.days || stagePayload.days < 1) {
-          setError('Estimated days is required for backend stages.');
-          return;
-        }
-        if (stagePayload.admin_ids.length === 0) {
-          setError('Assign at least one employee before saving this stage.');
-          return;
-        }
-        if (editingStageId) {
-          await updateAdminStage(editingStageId, stagePayload);
-        } else {
-          await createAdminStage(stagePayload);
-        }
-        await loadProject();
-        resetStageForm();
+      if (!isApiProject) {
+        const message = 'This project is not available from the Laravel API.';
+        setError(message);
+        globalToast.error(message);
         return;
       }
-
-      await persistProjectUpdates({ stages: nextStages });
-      await writeProjectAudit(editingStageId ? 'stage.updated' : 'stage.created', {
-        entityType: 'stage',
-        entityId: editingStageId || nextStages[nextStages.length - 1]?.id || projectId,
-        newValue: editingStageId
-          ? nextStages.find((stage) => stage.id === editingStageId)
-          : nextStages[nextStages.length - 1],
-      });
-      setProject({ ...project, stages: nextStages, updatedAt: now });
+      if (resolvedAdminIds.length === 0) {
+        const message = 'Please assign at least one employee before saving this stage.';
+        setError(message);
+        globalToast.error(message);
+        return;
+      }
+      if (!stagePayload.days || stagePayload.days < 1) {
+        const message = 'Estimated days is required for backend stages.';
+        setError(message);
+        globalToast.error(message);
+        return;
+      }
+      if (editingStageId) {
+        await updateAdminStage(editingStageId, stagePayload);
+      } else {
+        await createAdminStage(stagePayload);
+      }
+      await loadProject();
       resetStageForm();
     } catch (err: any) {
       console.error('Failed to save stage:', err);
-      setError(err.message || 'Failed to save stage.');
+      const message = err?.message || 'Failed to save stage.';
+      setError(message);
+      globalToast.error(message);
     } finally {
       setSaving(false);
     }
@@ -711,59 +535,25 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
 
   const deleteStage = async (stageId: string) => {
     if (!project) return;
-    const confirmed = window.confirm('Delete this stage? Progress updates will remain in history.');
+    const confirmed = await globalConfirm.confirm({
+      title: 'Delete stage?',
+      message: 'Delete this stage? Progress updates will remain in history.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      destructive: true,
+    });
     if (!confirmed) return;
 
     setSaving(true);
     try {
       if (isApiProject) {
-        setError('Deleting stages is not available in the backend routes yet.');
+        globalToast.info('Stage deletion is not available for API-backed projects yet.');
         return;
       }
-
-      const nextStages = stages
-        .filter((stage) => stage.id !== stageId)
-        .map((stage, index) => ({ ...stage, order: index, updatedAt: Date.now() }));
-      await persistProjectUpdates({ stages: nextStages });
-      await writeProjectAudit('stage.deleted', {
-        entityType: 'stage',
-        entityId: stageId,
-        oldValue: stages.find((stage) => stage.id === stageId),
-      });
-      setProject({ ...project, stages: nextStages, updatedAt: Date.now() });
-      if (selectedStageId === stageId) {
-        setSelectedStageId(nextStages[0]?.id || '');
-      }
+      globalToast.error('This project is not available from the Laravel API.');
     } catch (err: any) {
       console.error('Failed to delete stage:', err);
       setError(err.message || 'Failed to delete stage.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const moveStage = async (stageId: string, direction: -1 | 1) => {
-    if (!project) return;
-    const index = stages.findIndex((stage) => stage.id === stageId);
-    const targetIndex = index + direction;
-    if (index < 0 || targetIndex < 0 || targetIndex >= stages.length) return;
-
-    const nextStages = [...stages];
-    [nextStages[index], nextStages[targetIndex]] = [nextStages[targetIndex], nextStages[index]];
-    const orderedStages = nextStages.map((stage, order) => ({ ...stage, order, updatedAt: Date.now() }));
-
-    setSaving(true);
-    try {
-      await persistProjectUpdates({ stages: orderedStages });
-      await writeProjectAudit('stage.reordered', {
-        entityType: 'stage',
-        entityId: stageId,
-        newValue: orderedStages.map((stage) => ({ id: stage.id, order: stage.order })),
-      });
-      setProject({ ...project, stages: orderedStages, updatedAt: Date.now() });
-    } catch (err: any) {
-      console.error('Failed to reorder stages:', err);
-      setError(err.message || 'Failed to reorder stages.');
     } finally {
       setSaving(false);
     }
@@ -783,79 +573,30 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       const now = Date.now();
       const nextValue = Math.max(0, Math.min(100, Number(progressValue) || 0));
       if (nextValue >= 100 && selectedStage.progress < 100) {
-        const confirmed = window.confirm('Mark this stage complete at 100% progress?');
+        const confirmed = await globalConfirm.confirm({
+          title: 'Mark stage complete?',
+          message: 'Mark this stage complete at 100% progress?',
+          confirmText: 'Mark complete',
+          cancelText: 'Cancel',
+        });
         if (!confirmed) {
           setSaving(false);
           return;
         }
       }
-      const nextStages = stages.map((stage) => {
-        if (stage.id !== selectedStage.id) return stage;
-        return {
-          ...stage,
-          progress: nextValue,
-          status: nextValue >= 100 ? 'completed' : stage.status === 'planned' ? 'active' : stage.status,
-          startedAt: stage.startedAt || now,
-          completedAt: nextValue >= 100 ? now : stage.completedAt || null,
-          updatedAt: now,
-        } satisfies ProjectStage;
-      });
-
-      const update: ProjectProgressUpdate = {
-        id: `progress_${now}`,
-        stageId: selectedStage.id,
-        stageTitle: selectedStage.title,
-        previousProgress: selectedStage.progress || 0,
-        nextProgress: nextValue,
-        note: progressNote.trim(),
-        createdAt: now,
-        createdByName: auth.currentUser?.displayName || auth.currentUser?.email || 'Admin',
-      };
-
-      const nextUpdates = [update, ...progressUpdates];
-
-      if (isApiProject) {
-        await createAdminStageProgress({
-          stage_id: selectedStage.id,
-          project_id: projectId || project.id,
-          percentage: nextValue,
-          note: progressNote.trim(),
-        });
-        await loadProject();
-        setProgressNote('');
+      if (!isApiProject) {
+        const message = 'This project is not available from the Laravel API.';
+        setError(message);
+        globalToast.error(message);
         return;
       }
-
-      await persistProjectUpdates({
-        stages: nextStages,
-        progressUpdates: nextUpdates,
-        status: nextValue >= 100 && nextStages.every((stage) => stage.progress >= 100) ? 'completed' : project.status,
-        completedAt: nextStages.every((stage) => stage.progress >= 100) ? now : project.completedAt || null,
+      await createAdminStageProgress({
+        stage_id: selectedStage.id,
+        project_id: projectId || project.id,
+        percentage: nextValue,
+        note: progressNote.trim(),
       });
-      await writeProjectAudit('stage.progress_updated', {
-        entityType: 'stage',
-        entityId: selectedStage.id,
-        reason: progressNote.trim(),
-        oldValue: { progress: selectedStage.progress || 0, status: selectedStage.status },
-        newValue: {
-          progress: nextValue,
-          status: nextStages.find((stage) => stage.id === selectedStage.id)?.status,
-        },
-      });
-      await notifyProjectOwner(
-        'Project progress updated',
-        `${project.name}: ${selectedStage.title} moved from ${selectedStage.progress || 0}% to ${nextValue}%.`,
-        'success'
-      );
-
-      setProject({
-        ...project,
-        stages: nextStages,
-        progressUpdates: nextUpdates,
-        status: nextStages.every((stage) => stage.progress >= 100) ? 'completed' : project.status,
-        completedAt: nextStages.every((stage) => stage.progress >= 100) ? now : project.completedAt || null,
-        updatedAt: now,
-      });
+      await loadProject();
       setProgressNote('');
     } catch (err: any) {
       console.error('Failed to save progress update:', err);
@@ -880,51 +621,21 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setError(null);
 
     try {
-      const now = Date.now();
-      if (isApiProject) {
-        await createAdminStageAttachment({
-          stage_id: attachmentForm.stageId,
-          title: attachmentForm.title.trim(),
-          description: attachmentForm.description.trim(),
-          reason: attachmentForm.reason.trim(),
-          type: 2,
-          attachment: attachmentFile,
-        });
-        await loadProject();
-        setAttachmentForm({ ...emptyAttachmentForm, stageId: attachmentForm.stageId });
-        setAttachmentFile(null);
+      if (!isApiProject) {
+        const message = 'This project is not available from the Laravel API.';
+        setError(message);
+        globalToast.error(message);
         return;
       }
-
-      const safeFileName = attachmentFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      const storagePath = `project-attachments/${ownerId}/${projectId}/${now}_${safeFileName}`;
-      const storageRef = ref(storage, storagePath);
-      const upload = await uploadBytes(storageRef, attachmentFile);
-      const url = await getDownloadURL(upload.ref);
-
-      const attachment: ProjectAttachment = {
-        id: `attachment_${now}`,
-        stageId: attachmentForm.stageId,
+      await createAdminStageAttachment({
+        stage_id: attachmentForm.stageId,
         title: attachmentForm.title.trim(),
         description: attachmentForm.description.trim(),
         reason: attachmentForm.reason.trim(),
-        fileName: attachmentFile.name,
-        fileType: attachmentFile.type || 'application/octet-stream',
-        fileSize: attachmentFile.size,
-        storagePath,
-        url,
-        createdAt: now,
-        createdByName: auth.currentUser?.displayName || auth.currentUser?.email || 'Admin',
-      };
-
-      const nextAttachments = [attachment, ...attachments];
-      await persistProjectUpdates({ attachments: nextAttachments });
-      await writeProjectAudit('attachment.added', {
-        entityType: 'attachment',
-        entityId: attachment.id,
-        newValue: attachment,
+        type: 2,
+        attachment: attachmentFile,
       });
-      setProject({ ...project, attachments: nextAttachments, updatedAt: now });
+      await loadProject();
       setAttachmentForm({ ...emptyAttachmentForm, stageId: attachmentForm.stageId });
       setAttachmentFile(null);
     } catch (err: any) {
@@ -939,32 +650,27 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     if (!project) return;
     const attachment = attachments.find((item) => item.id === attachmentId);
     if (!attachment) return;
-    const confirmed = window.confirm('Delete this attachment?');
+    const confirmed = await globalConfirm.confirm({
+      title: 'Delete attachment?',
+      message: 'Delete this attachment?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      destructive: true,
+    });
     if (!confirmed) return;
 
     setSaving(true);
     setError(null);
 
     try {
-      if (isApiProject) {
-        await deleteAdminStageAttachment(attachmentId);
-        await loadProject();
+      if (!isApiProject) {
+        const message = 'This project is not available from the Laravel API.';
+        setError(message);
+        globalToast.error(message);
         return;
       }
-
-      if (attachment.storagePath) {
-        await deleteObject(ref(storage, attachment.storagePath)).catch((err) => {
-          console.warn('Attachment file delete skipped:', err);
-        });
-      }
-      const nextAttachments = attachments.filter((item) => item.id !== attachmentId);
-      await persistProjectUpdates({ attachments: nextAttachments });
-      await writeProjectAudit('attachment.deleted', {
-        entityType: 'attachment',
-        entityId: attachmentId,
-        oldValue: attachment,
-      });
-      setProject({ ...project, attachments: nextAttachments, updatedAt: Date.now() });
+      await deleteAdminStageAttachment(attachmentId);
+      await loadProject();
     } catch (err: any) {
       console.error('Failed to delete attachment:', err);
       setError(err.message || 'Failed to delete attachment.');
@@ -984,24 +690,9 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setError(null);
 
     try {
-      const now = Date.now();
-      const note: ProjectInternalNote = {
-        id: `note_${now}`,
-        stageId: noteStageId,
-        text: noteText.trim(),
-        adminOnly: true,
-        createdAt: now,
-        createdByName: auth.currentUser?.displayName || auth.currentUser?.email || 'Admin',
-      };
-      const nextNotes = [note, ...internalNotes];
-      await persistProjectUpdates({ internalNotes: nextNotes });
-      await writeProjectAudit('internal_note.added', {
-        entityType: 'note',
-        entityId: note.id,
-        newValue: note,
-      });
-      setProject({ ...project, internalNotes: nextNotes, updatedAt: now });
-      setNoteText('');
+      const message = 'Internal notes are not available in the Laravel backend routes yet.';
+      setError(message);
+      globalToast.info(message);
     } catch (err: any) {
       console.error('Failed to save internal note:', err);
       setError(err.message || 'Failed to save internal note.');
@@ -1012,22 +703,22 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
 
   const deleteInternalNote = async (noteId: string) => {
     if (!project) return;
-    const confirmed = window.confirm('Delete this internal note?');
+    const confirmed = await globalConfirm.confirm({
+      title: 'Delete note?',
+      message: 'Delete this internal note?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      destructive: true,
+    });
     if (!confirmed) return;
 
     setSaving(true);
     setError(null);
 
     try {
-      const deletedNote = internalNotes.find((note) => note.id === noteId);
-      const nextNotes = internalNotes.filter((note) => note.id !== noteId);
-      await persistProjectUpdates({ internalNotes: nextNotes });
-      await writeProjectAudit('internal_note.deleted', {
-        entityType: 'note',
-        entityId: noteId,
-        oldValue: deletedNote,
-      });
-      setProject({ ...project, internalNotes: nextNotes, updatedAt: Date.now() });
+      const message = 'Internal notes are not available in the Laravel backend routes yet.';
+      setError(message);
+      globalToast.info(message);
     } catch (err: any) {
       console.error('Failed to delete internal note:', err);
       setError(err.message || 'Failed to delete internal note.');
@@ -1117,7 +808,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     }));
   };
 
-  const saveWeeklyReport = async (markSent = false) => {
+  const saveWeeklyReport = async (_markSent = false) => {
     if (!project) return;
     if (!reportForm.weekStart || !reportForm.weekEnd || !reportForm.content.trim()) {
       setError('Choose a week range and write report content before saving.');
@@ -1128,80 +819,19 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setError(null);
 
     try {
-      const now = Date.now();
-      const weekStart = parseDateInput(reportForm.weekStart);
-      const weekEnd = parseDateInput(reportForm.weekEnd, true);
-      const sourceUpdateIds = progressUpdates
-        .filter((update) => update.createdAt >= weekStart && update.createdAt <= weekEnd)
-        .map((update) => update.id);
-
-      if (isApiProject) {
-        await createAdminReport({
-          project_id: projectId || project.id,
-          start_date: reportForm.weekStart,
-          end_date: reportForm.weekEnd,
-          report_text: reportForm.content.trim(),
-        });
-        await loadProject();
-        resetReportForm();
+      if (!isApiProject) {
+        const message = 'This project is not available from the Laravel API.';
+        setError(message);
+        globalToast.error(message);
         return;
       }
-
-      let nextReports: ProjectWeeklyReport[];
-
-      if (editingReportId) {
-        nextReports = weeklyReports.map((report) =>
-          report.id === editingReportId
-            ? {
-                ...report,
-                weekStart,
-                weekEnd,
-                content: reportForm.content.trim(),
-                sourceUpdateIds,
-                status: markSent ? 'sent' : report.status,
-                clientVisible: markSent ? true : report.clientVisible,
-                sentAt: markSent ? now : report.sentAt || null,
-                updatedAt: now,
-              }
-            : report
-        );
-      } else {
-        const report: ProjectWeeklyReport = {
-          id: `report_${now}`,
-          weekStart,
-          weekEnd,
-          content: reportForm.content.trim(),
-          status: markSent ? 'sent' : 'draft',
-          sourceUpdateIds,
-          clientVisible: markSent,
-          createdAt: now,
-          updatedAt: now,
-          createdByName: auth.currentUser?.displayName || auth.currentUser?.email || 'Admin',
-          sentAt: markSent ? now : null,
-        };
-        nextReports = [report, ...weeklyReports];
-      }
-
-      nextReports = nextReports.sort((a, b) => b.weekStart - a.weekStart);
-      await persistProjectUpdates({ weeklyReports: nextReports });
-      const savedReport = editingReportId
-        ? nextReports.find((report) => report.id === editingReportId)
-        : nextReports.find((report) => report.createdAt === now);
-      if (savedReport) {
-        await writeProjectAudit(markSent ? 'weekly_report.sent' : editingReportId ? 'weekly_report.updated' : 'weekly_report.created', {
-          entityType: 'report',
-          entityId: savedReport.id,
-          newValue: savedReport,
-        });
-      }
-      if (markSent) {
-        await notifyProjectOwner(
-          'Weekly report ready',
-          `${project.name}: a new weekly report is available for ${formatReportDate(weekStart)} - ${formatReportDate(weekEnd)}.`,
-          'success'
-        );
-      }
-      setProject({ ...project, weeklyReports: nextReports, updatedAt: now });
+      await createAdminReport({
+        project_id: projectId || project.id,
+        start_date: reportForm.weekStart,
+        end_date: reportForm.weekEnd,
+        report_text: reportForm.content.trim(),
+      });
+      await loadProject();
       resetReportForm();
     } catch (err: any) {
       console.error('Failed to save weekly report:', err);
@@ -1213,29 +843,27 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
 
   const deleteWeeklyReport = async (reportId: string) => {
     if (!project) return;
-    const confirmed = window.confirm('Delete this weekly report?');
+    const confirmed = await globalConfirm.confirm({
+      title: 'Delete report?',
+      message: 'Delete this weekly report?',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      destructive: true,
+    });
     if (!confirmed) return;
 
     setSaving(true);
     setError(null);
 
     try {
-      if (isApiProject) {
-        await deleteAdminReport(reportId);
-        await loadProject();
-        if (editingReportId === reportId) resetReportForm();
+      if (!isApiProject) {
+        const message = 'This project is not available from the Laravel API.';
+        setError(message);
+        globalToast.error(message);
         return;
       }
-
-      const deletedReport = weeklyReports.find((report) => report.id === reportId);
-      const nextReports = weeklyReports.filter((report) => report.id !== reportId);
-      await persistProjectUpdates({ weeklyReports: nextReports });
-      await writeProjectAudit('weekly_report.deleted', {
-        entityType: 'report',
-        entityId: reportId,
-        oldValue: deletedReport,
-      });
-      setProject({ ...project, weeklyReports: nextReports, updatedAt: Date.now() });
+      await deleteAdminReport(reportId);
+      await loadProject();
       if (editingReportId === reportId) resetReportForm();
     } catch (err: any) {
       console.error('Failed to delete weekly report:', err);
@@ -1322,30 +950,26 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     setError(null);
 
     try {
-      const now = Date.now();
       const finalReport = {
         content: finalReportContent.trim(),
-        generatedAt: project.finalReport?.generatedAt || now,
+        generatedAt: project.finalReport?.generatedAt || Date.now(),
         approvedAt: project.finalReport?.approvedAt || null,
         approvedByName: project.finalReport?.approvedByName || '',
       };
 
-      if (isApiProject) {
-        await createAdminReport({
-          project_id: projectId || project.id,
-          start_date: toDateInputValue(new Date()),
-          end_date: toDateInputValue(new Date()),
-          report_text: finalReport.content,
-        });
-        await loadProject();
+      if (!isApiProject) {
+        const message = 'This project is not available from the Laravel API.';
+        setError(message);
+        globalToast.error(message);
         return;
       }
-
-      await persistProjectUpdates({ finalReport });
-      await writeProjectAudit('final_report.saved', {
-        newValue: finalReport,
+      await createAdminReport({
+        project_id: projectId || project.id,
+        start_date: toDateInputValue(new Date()),
+        end_date: toDateInputValue(new Date()),
+        report_text: finalReport.content,
       });
-      setProject({ ...project, finalReport, updatedAt: now });
+      await loadProject();
     } catch (err: any) {
       console.error('Failed to save final report:', err);
       setError(err.message || 'Failed to save final report.');
@@ -1355,52 +979,20 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   };
 
   const approveProjectCompletion = async () => {
-    if (!project || !canApproveCompletion) return;
+    if (!project) return;
     if (isApiProject) {
-      setError('Project completion approval endpoint is not included in the Postman collection yet.');
+      const message = 'Project completion approval endpoint is not available in the Laravel backend routes yet.';
+      setError(message);
+      globalToast.info(message);
       return;
     }
-    if (!finalReportContent.trim()) {
-      setError('Save a final report before approving completion.');
-      return;
-    }
-    const confirmed = window.confirm('Approve final completion for this project?');
-    if (!confirmed) return;
-
-    setSaving(true);
-    setError(null);
-
-    try {
-      const now = Date.now();
-      const finalReport = {
-        content: finalReportContent.trim(),
-        generatedAt: project.finalReport?.generatedAt || now,
-        approvedAt: now,
-        approvedByName: auth.currentUser?.displayName || auth.currentUser?.email || 'Admin',
-      };
-      await persistProjectUpdates({
-        finalReport,
-        status: 'completed',
-        completedAt: now,
-      });
-      await writeProjectAudit('project.completed', {
-        newValue: { status: 'completed', completedAt: now, finalReport },
-      });
-      await notifyProjectOwner(
-        'Project completed',
-        `${project.name} has been marked complete by the Raiyansoft team.`,
-        'success'
-      );
-      setProject({ ...project, finalReport, status: 'completed', completedAt: now, updatedAt: now });
-    } catch (err: any) {
-      console.error('Failed to approve completion:', err);
-      setError(err.message || 'Failed to approve project completion.');
-    } finally {
-      setSaving(false);
-    }
+    const message = 'This project is not available from the Laravel API.';
+    setError(message);
+    globalToast.error(message);
   };
 
   return {
+    isApiProject,
     project,
     stages,
     employees,
@@ -1444,7 +1036,6 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     loadProject,
     saveStage,
     deleteStage,
-    moveStage,
     startEditStage,
     resetStageForm,
     saveProgressUpdate,

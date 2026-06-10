@@ -78,10 +78,13 @@ export function useAdminLeads() {
     setActionMessage(null);
   };
 
-  const closeLead = () => {
+  const closeLead = (options?: { clearMessage?: boolean }) => {
+    const clearMessage = options?.clearMessage ?? true;
     setSelectedLeadId(null);
     setSelectedListItem(null);
-    setActionMessage(null);
+    if (clearMessage) {
+      setActionMessage(null);
+    }
   };
 
   const handleApprove = async () => {
@@ -91,6 +94,7 @@ export function useAdminLeads() {
       await changeStatus(selectedLeadId, 'approve');
       setActionMessage('Lead approved successfully.');
       await Promise.all([reloadList(), reloadDetail()]);
+      closeLead({ clearMessage: false });
     } catch {
       // error surfaced via statusError
     }
@@ -103,6 +107,7 @@ export function useAdminLeads() {
       await changeStatus(selectedLeadId, 'reject');
       setActionMessage('Lead rejected successfully.');
       await Promise.all([reloadList(), reloadDetail()]);
+      closeLead({ clearMessage: false });
     } catch {
       // error surfaced via statusError
     }

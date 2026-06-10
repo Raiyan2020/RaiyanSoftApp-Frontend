@@ -1,16 +1,20 @@
 "use client";
 
 import React from 'react';
-import { AlertTriangle, ArrowDown, ArrowUp, Briefcase, Check, Loader2, Plus, Save, Trash2, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, Briefcase, Check, Loader2, Plus, Save, Trash2, X } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 import { ProjectType, useAdminProjectTypes } from '../hooks/use-admin-project-types';
 
 const inputClasses =
   'w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
-  <label className="text-xs text-[var(--text-muted)] font-medium ms-1">{children}</label>
+  <label className="text-xs text-[var(--text-muted)] font-medium ms-1">
+    {typeof children === 'string' ? translateMessage(children) : children}
+  </label>
 );
 
 function TypeCard({
@@ -100,7 +104,7 @@ export default function AdminProjectTypesPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[500px] text-[var(--text-muted)]">
         <Loader2 size={32} className="animate-spin mb-4 text-primary" />
-        <p>Loading project types...</p>
+        <p>{translateMessage('Loading project types...')}</p>
       </div>
     );
   }
@@ -109,8 +113,8 @@ export default function AdminProjectTypesPage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text)]">Project Types</h1>
-          <p className="text-[var(--text-muted)] text-sm">Manage service categories available to project requests.</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Project Types')}</h1>
+          <p className="text-[var(--text-muted)] text-sm">{translateMessage('Manage service categories available to project requests.')}</p>
         </div>
         <Button type="button" onClick={state.startCreate} className="gap-2">
           <Plus size={18} />
@@ -118,15 +122,7 @@ export default function AdminProjectTypesPage() {
         </Button>
       </div>
 
-      {state.error ? (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-start gap-3">
-          <AlertTriangle className="text-red-400 shrink-0" size={20} />
-          <p className="text-red-400/80 text-sm">{state.error}</p>
-          <button type="button" onClick={() => state.setError(null)} className="ms-auto text-red-300">
-            <X size={16} />
-          </button>
-        </div>
-      ) : null}
+      {state.error ? <ErrorAlert message={state.error} /> : null}
 
       <div className="space-y-6">
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
@@ -135,8 +131,8 @@ export default function AdminProjectTypesPage() {
               <Briefcase size={18} />
             </div>
             <div>
-              <h2 className="text-lg font-bold text-[var(--text)]">{state.editingId ? 'Edit Type' : 'Add Type'}</h2>
-              <p className="text-xs text-[var(--text-muted)]">Optional estimates help admins price requests faster.</p>
+              <h2 className="text-lg font-bold text-[var(--text)]">{translateMessage(state.editingId ? 'Edit Type' : 'Add Type')}</h2>
+              <p className="text-xs text-[var(--text-muted)]">{translateMessage('Optional estimates help admins price requests faster.')}</p>
             </div>
           </div>
 
@@ -148,7 +144,7 @@ export default function AdminProjectTypesPage() {
                   value={state.form.name}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, name: e.target.value }))}
                   className={inputClasses}
-                  placeholder="E-commerce app"
+                  placeholder={translateMessage('E-commerce app')}
                 />
               </div>
               <div className="space-y-2">
@@ -157,7 +153,7 @@ export default function AdminProjectTypesPage() {
                   value={state.form.nameAr}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, nameAr: e.target.value }))}
                   className={inputClasses}
-                  placeholder="Arabic name"
+                  placeholder={translateMessage('Arabic name')}
                 />
               </div>
             </div>
@@ -168,7 +164,7 @@ export default function AdminProjectTypesPage() {
                 value={state.form.description}
                 onChange={(e) => state.setForm((prev) => ({ ...prev, description: e.target.value }))}
                 className={`${inputClasses} h-24 resize-none`}
-                placeholder="What this project type includes."
+                placeholder={translateMessage('What this project type includes.')}
               />
             </div>
 
@@ -231,7 +227,7 @@ export default function AdminProjectTypesPage() {
                 }`}
               >
                 {state.form.active ? <Check size={15} /> : <X size={15} />}
-                Active
+                {translateMessage('Active')}
               </button>
             </div>
 
@@ -243,7 +239,7 @@ export default function AdminProjectTypesPage() {
               className="w-full gap-2"
             >
               <Save size={16} />
-              Save Type
+              {translateMessage('Save Type')}
             </Button>
           </div>
         </div>
@@ -252,7 +248,7 @@ export default function AdminProjectTypesPage() {
           {state.types.length === 0 ? (
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-16 text-center text-[var(--text-muted)]">
               <Briefcase size={32} className="mx-auto mb-3 text-[var(--text-muted)]" />
-              <p>No project types yet.</p>
+              <p>{translateMessage('No project types yet.')}</p>
             </div>
           ) : (
             state.types.map((type, index) => (

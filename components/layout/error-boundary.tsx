@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 
 type ErrorBoundaryProps = {
   children?: React.ReactNode;
@@ -29,8 +30,8 @@ export default class ErrorBoundary extends React.Component<ErrorBoundaryProps, E
     if (this.state.hasError) {
       return (
         <div style={{ padding: 16 }}>
-          <h3>Something went wrong.</h3>
-          <p>Please refresh the page.</p>
+          <h3>{translateMessage('Something went wrong.')}</h3>
+          <p>{translateMessage('Please refresh the page.')}</p>
         </div>
       );
     }

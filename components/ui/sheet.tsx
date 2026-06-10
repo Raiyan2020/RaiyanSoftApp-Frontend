@@ -4,6 +4,7 @@ import * as React from "react"
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 import { X } from "lucide-react"
 import { motion, type Variants } from "framer-motion"
+import { translateMessage } from "@/lib/i18n-utils"
 
 const Sheet = DialogPrimitive.Root
 
@@ -97,7 +98,7 @@ const SheetContent = React.forwardRef<
           {children}
           <DialogPrimitive.Close className="absolute end-4 top-4 rounded-full p-1.5 opacity-70 transition-opacity hover:opacity-100 focus:outline-none bg-[var(--surface-2)] text-[var(--text-muted)] border border-[var(--border)]">
             <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
+            <span className="sr-only">{translateMessage('Close')}</span>
           </DialogPrimitive.Close>
         </motion.div>
       </DialogPrimitive.Content>

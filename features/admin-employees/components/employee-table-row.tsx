@@ -9,6 +9,7 @@ import {
   getEmployeeStatusLabel,
   isEmployeeBlocked,
 } from '../utils/employee-helpers';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface EmployeeTableRowProps {
   employee: AdminEmployee;
@@ -35,7 +36,7 @@ export default function EmployeeTableRow({
             <Avatar name={fullName} className="w-10 h-10 border border-[var(--border)] text-sm" />
             <div>
               <div className="font-medium text-[var(--text)]">{fullName}</div>
-              <div className="text-[var(--text-muted)] text-xs">ID: {employee.id}</div>
+              <div className="text-[var(--text-muted)] text-xs">{translateMessage('ID')}: {employee.id}</div>
             </div>
           </div>
         </td>
@@ -73,7 +74,7 @@ export default function EmployeeTableRow({
               type="button"
               onClick={() => onSelectEmployee(employee)}
               className="p-2 hover:bg-white/5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)]"
-              title="View"
+              title={translateMessage('View')}
             >
               <Eye size={16} />
             </button>
@@ -81,7 +82,7 @@ export default function EmployeeTableRow({
               type="button"
               onClick={() => onOpenModal(employee)}
               className="p-2 hover:bg-white/5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)]"
-              title="Edit"
+              title={translateMessage('Edit')}
             >
               <Edit2 size={16} />
             </button>
@@ -89,7 +90,7 @@ export default function EmployeeTableRow({
               type="button"
               onClick={() => onDeleteEmployee(employee.id)}
               className="p-2 hover:bg-red-500/10 rounded-lg text-[var(--text-muted)] hover:text-red-400"
-              title="Delete"
+              title={translateMessage('Delete')}
             >
               <Trash2 size={16} />
             </button>
