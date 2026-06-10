@@ -6,6 +6,7 @@ import { AlertTriangle, Calendar, Loader2, Plus } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import EmptyState from '@/components/ui/empty-state';
+import ErrorAlert from '@/components/ui/error-alert';
 import AppointmentCard from '@/features/appointments/components/appointment-card';
 import BookingWizard from '@/features/appointments/components/booking-wizard';
 import { useAppointmentsList } from '@/features/appointments/hooks/use-appointments-list';
@@ -53,7 +54,7 @@ export default function ProfileBookingsPanel() {
           <Loader2 className="animate-spin text-primary" size={28} />
         </div>
       ) : error ? (
-        <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 text-center text-red-400">{error}</div>
+        <ErrorAlert message={error} />
       ) : upcomingAppointments.length > 0 ? (
         <div className="grid gap-4 md:grid-cols-2">
           {upcomingAppointments.map((meeting) => (

@@ -6,8 +6,10 @@ import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Globe, Loader2, Mail } from 'lucide-react';
 import SafeImage from '@/components/ui/safe-image';
 import { useTranslation } from '@/lib/i18nContext';
-import { useAboutUs } from '@/features/pages/hooks/use-about-us';
-import PageHtmlContent from '@/features/pages/components/page-html-content';
+import { useAboutUs } from '@/features/pages';
+import { PageHtmlContent } from '@/features/pages';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AboutPage() {
   const router = useRouter();
@@ -41,10 +43,10 @@ export default function AboutPage() {
       {loading ? (
         <div className="flex items-center justify-center py-16 text-[var(--text-muted)]">
           <Loader2 className="me-2 animate-spin" size={18} />
-          Loading...
+          {translateMessage('Loading...')}
         </div>
       ) : error ? (
-        <p className="text-red-400 px-2">{error}</p>
+        <ErrorAlert message={error} />
       ) : (
         <div className="space-y-8">
           <div className="flex flex-col items-center justify-center pt-6">
@@ -68,7 +70,7 @@ export default function AboutPage() {
 
           {contact?.email || contact?.url ? (
             <div>
-              <h3 className="text-sm font-bold text-[var(--text)] mb-3 uppercase tracking-wider">Contact Us</h3>
+              <h3 className="text-sm font-bold text-[var(--text)] mb-3 uppercase tracking-wider">{translateMessage('Contact Us')}</h3>
               <div className="space-y-3">
                 {contact.email ? (
                   <a
@@ -95,7 +97,7 @@ export default function AboutPage() {
           ) : null}
 
           <div className="text-center pt-8 opacity-50">
-            <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest">Designed and developed in Kuwait</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest">{translateMessage('Designed and developed in Kuwait')}</p>
           </div>
         </div>
       )}

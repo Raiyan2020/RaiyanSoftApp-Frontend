@@ -2,6 +2,7 @@
 import { I18nProvider } from '@/lib/i18nContext';
 import { AuthGuardProvider } from '@/lib/authGuardContext';
 import { ToastProvider, ToastInitializer } from '@/lib/toast-context';
+import { ConfirmProvider } from '@/lib/confirm-dialog';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '@/lib/query-client';
 import { ThemeProvider } from '@/lib/themeContext';
@@ -14,19 +15,18 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <ThemeProvider>
         <ToastProvider>
           <ToastInitializer />
-          <UserSettingsProvider>
-            <UserColorsProvider>
-              <I18nProvider>
-                <AuthGuardProvider>
-                  {children}
-                </AuthGuardProvider>
-              </I18nProvider>
-            </UserColorsProvider>
-          </UserSettingsProvider>
+          <ConfirmProvider>
+            <UserSettingsProvider>
+              <UserColorsProvider>
+                <I18nProvider>
+                  <AuthGuardProvider>{children}</AuthGuardProvider>
+                </I18nProvider>
+              </UserColorsProvider>
+            </UserSettingsProvider>
+          </ConfirmProvider>
         </ToastProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
 }
-
 

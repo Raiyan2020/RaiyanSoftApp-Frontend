@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { translateMessage } from '@/lib/i18n-utils';
 
 type HeroAction = {
   label: string;
@@ -28,15 +29,15 @@ export default function PageHero({ eyebrow, title, description, actions = [], br
             {breadcrumbs.map((item, index) => (
               <span key={item.href} className="flex items-center gap-2">
                 {index > 0 ? <span aria-hidden="true">/</span> : null}
-                <Link className="transition hover:text-primary" href={item.href}>{item.label}</Link>
+                <Link className="transition hover:text-primary" href={item.href}>{translateMessage(item.label)}</Link>
               </span>
             ))}
           </nav>
         ) : null}
-        {eyebrow ? <p className="mb-4 text-sm font-black text-primary">{eyebrow}</p> : null}
+        {eyebrow ? <p className="mb-4 text-sm font-black text-primary">{translateMessage(eyebrow)}</p> : null}
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-black text-slate-950 dark:text-white sm:text-4xl lg:text-5xl">{title}</h1>
-          <p className="mt-5 text-base leading-8 text-slate-600 dark:text-slate-300 sm:text-lg">{description}</p>
+          <h1 className="text-3xl font-black text-slate-950 dark:text-white sm:text-4xl lg:text-5xl">{translateMessage(title)}</h1>
+          <p className="mt-5 text-base leading-8 text-slate-600 dark:text-slate-300 sm:text-lg">{translateMessage(description)}</p>
         </div>
         {actions.length > 0 ? (
           <div className="mt-8 flex flex-wrap gap-3">
@@ -50,7 +51,7 @@ export default function PageHero({ eyebrow, title, description, actions = [], br
                     : 'rounded-lg bg-primary px-5 py-3 text-sm font-black text-white transition hover:bg-primary-dark'
                 }
               >
-                {action.label}
+                {translateMessage(action.label)}
               </Link>
             ))}
           </div>
@@ -59,4 +60,3 @@ export default function PageHero({ eyebrow, title, description, actions = [], br
     </section>
   );
 }
-

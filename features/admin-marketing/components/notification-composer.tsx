@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { notificationSchema, NotificationValues } from '../schemas/notification.schema';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface NotificationComposerProps {
   targetType: 'all' | 'single';
@@ -69,7 +70,7 @@ export default function NotificationComposer({
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-xl">
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <div className="space-y-3">
-            <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">Recipients</label>
+            <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{translateMessage('Recipients')}</label>
             <div className="flex bg-[var(--surface-2)] p-1 rounded-xl border border-[var(--border)] w-full sm:w-fit">
               <button
                 type="button"
@@ -80,7 +81,7 @@ export default function NotificationComposer({
                     : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
               >
-                All Users
+                {translateMessage('All Users')}
               </button>
               <button
                 type="button"
@@ -91,7 +92,7 @@ export default function NotificationComposer({
                     : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
               >
-                Single User
+                {translateMessage('Single User')}
               </button>
             </div>
 
@@ -114,7 +115,7 @@ export default function NotificationComposer({
                           setShowUserDropdown(true);
                         }}
                         onFocus={() => setShowUserDropdown(true)}
-                        placeholder="Search user by name, email, or phone..."
+                        placeholder={translateMessage('Search user by name, email, or phone...')}
                         className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
                       />
 
@@ -148,12 +149,12 @@ export default function NotificationComposer({
                                         : 'bg-red-500/10 text-red-400'
                                     }`}
                                   >
-                                    {user.status}
+                                    {translateMessage(user.status)}
                                   </span>
                                 </button>
                               ))
                             ) : (
-                              <div className="p-4 text-center text-[var(--text-muted)] text-sm">No users found</div>
+                              <div className="p-4 text-center text-[var(--text-muted)] text-sm">{translateMessage('No users found')}</div>
                             )}
                           </motion.div>
                         ) : null}
@@ -288,7 +289,7 @@ export default function NotificationComposer({
                     className="w-4 h-4 rounded border-[var(--border)] text-primary focus:ring-primary bg-[var(--surface-2)]"
                   />
                   <label htmlFor="schedule" className="text-sm font-medium text-[var(--text)]">
-                    Schedule for later
+                    {translateMessage('Schedule for later')}
                   </label>
                 </div>
               )}
@@ -323,10 +324,10 @@ export default function NotificationComposer({
               className="w-full mt-4 bg-primary hover:bg-sky-400 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 disabled:opacity-50"
             >
               {isSending ? <CheckCircle className="animate-spin" size={20} /> : <Send size={20} />}
-              <span>{isSending ? 'Sending...' : 'Send Notification'}</span>
+              <span>{translateMessage(isSending ? 'Sending...' : 'Send Notification')}</span>
             </button>
             {successMessage ? (
-              <div className="text-emerald-400 text-center text-sm font-medium mt-2">{successMessage}</div>
+              <div className="text-emerald-400 text-center text-sm font-medium mt-2">{translateMessage(successMessage)}</div>
             ) : null}
           </div>
         </form>

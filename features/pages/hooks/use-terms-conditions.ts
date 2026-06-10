@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchTermsConditions } from '../api/pages-api';
+import { fetchTermsConditions } from '../services/pages-api';
 import { TermsConditionsPage } from '../types/page.types';
 
 export function useTermsConditions(enabled = true) {

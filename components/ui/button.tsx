@@ -1,5 +1,6 @@
 import React from 'react';
 import { Loader2 } from 'lucide-react';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'ghost' | 'destructive' | 'outline';
@@ -31,6 +32,9 @@ export default function Button({
     outline: 'bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--surface-2)]',
   };
 
+  const renderChildren = (node: React.ReactNode): React.ReactNode =>
+    React.Children.map(node, (child) => (typeof child === 'string' ? translateMessage(child) : child));
+
   return (
     <button
       className={`${baseClasses} ${sizeClasses[size]} ${variantClasses[variant]} ${className}`}
@@ -39,7 +43,7 @@ export default function Button({
       {...props}
     >
       {isLoading ? <Loader2 className="animate-spin me-2" size={18} /> : null}
-      {children}
+      {renderChildren(children)}
     </button>
   );
 }

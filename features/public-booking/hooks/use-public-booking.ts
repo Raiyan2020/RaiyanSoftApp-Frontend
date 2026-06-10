@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useMeetingBookingFlow } from '@/features/meetings/hooks/use-meeting-booking-flow';
+import { useMeetingBookingFlow } from '@/features/meetings';
 
 export function usePublicBooking() {
   const router = useRouter();

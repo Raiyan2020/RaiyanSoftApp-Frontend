@@ -1,9 +1,5 @@
 "use client";
 
-import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
-import { auth, db } from './firebase-client';
-import { sanitizeForFirestore } from './firestoreSanitize';
-
 export type AuditEntityType =
   | 'lead'
   | 'appointment'
@@ -27,18 +23,8 @@ export interface AuditLogPayload {
   ownerId?: string;
 }
 
-export async function createAuditLog(payload: AuditLogPayload) {
-  if (!db) return;
-
-  const user = auth.currentUser;
-  const log = sanitizeForFirestore({
-    ...payload,
-    createdBy: user?.uid || null,
-    createdByName: user?.displayName || user?.email || 'Admin',
-    createdAt: serverTimestamp(),
-  });
-
-  await addDoc(collection(db, 'audit_logs'), log);
+export async function createAuditLog(_payload: AuditLogPayload) {
+  throw new Error('Client-side audit logging is disabled. Create audit logs through Laravel.');
 }
 
 export async function createAuditLogSafe(payload: AuditLogPayload) {

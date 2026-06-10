@@ -7,7 +7,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "tsc --noEmit"
+    "lint": "npm run check:firebase-freeze && tsc --noEmit",
+    "check:firebase-freeze": "node scripts/check-no-new-firebase-backend.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
@@ -40,7 +41,6 @@
     "@tiptap/react": "^3.26.0",
     "@tiptap/starter-kit": "^3.26.0",
     "autoprefixer": "^10.5.0",
-    "firebase": "^12.7.0",
     "framer-motion": "^12.23.26",
     "lowlight": "^3.3.0",
     "lucide-react": "^0.562.0",
@@ -50,6 +50,7 @@
     "react-dom": "^19.2.3",
     "react-hook-form": "^7.76.0",
     "react-phone-number-input": "^3.4.17",
+    "sonner": "^2.0.7",
     "zod": "^4.4.3"
   },
   "devDependencies": {

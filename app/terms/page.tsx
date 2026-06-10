@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import PublicSimplePage from '@/components/public/public-page-section';
 import PageHtmlContent from '@/features/pages/components/page-html-content';
-import { fetchTermsConditionsServer } from '@/features/pages/api/pages-api';
+import { fetchTermsConditionsServer } from '@/features/pages/services/pages-api';
 import type { TermsConditionsPage } from '@/features/pages/types/page.types';
 import { createPublicMetadata } from '@/lib/site';
 

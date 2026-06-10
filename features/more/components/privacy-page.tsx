@@ -5,8 +5,8 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
-import { usePrivacyPolicy } from '@/features/pages/hooks/use-privacy-policy';
-import PageHtmlContent from '@/features/pages/components/page-html-content';
+import { usePrivacyPolicy } from '@/features/pages';
+import { PageHtmlContent } from '@/features/pages';
 
 export default function PrivacyPage() {
   const router = useRouter();

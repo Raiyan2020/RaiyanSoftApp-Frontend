@@ -1,6 +1,7 @@
 import React from 'react';
 import { LayoutGrid, ExternalLink } from 'lucide-react';
 import { UserProject } from '@/lib/userProjectsStore';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface UserProjectCardProps {
   project: UserProject;
@@ -21,7 +22,7 @@ export default function UserProjectCard({ project, formatDate }: UserProjectCard
           </div>
           <div>
             <h4 className="font-bold text-[var(--text)] text-sm">{project.name}</h4>
-            <p className="text-[var(--text-muted)] text-xs">{project.industry || 'General App'}</p>
+            <p className="text-[var(--text-muted)] text-xs">{project.industry || translateMessage('General App')}</p>
           </div>
         </div>
         <span
@@ -31,17 +32,17 @@ export default function UserProjectCard({ project, formatDate }: UserProjectCard
               : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
           }`}
         >
-          {project.status || 'Draft'}
+          {translateMessage(project.status || 'Draft')}
         </span>
       </div>
 
       <div className="grid grid-cols-2 gap-2 mt-1">
         <div className="bg-[var(--surface-2)] p-2 rounded-lg border border-[var(--border)]">
-          <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wide">Platform</span>
-          <span className="text-xs text-[var(--text)] truncate block">{project.platforms?.join(', ') || 'Web & Mobile'}</span>
+          <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wide">{translateMessage('Platform')}</span>
+          <span className="text-xs text-[var(--text)] truncate block">{project.platforms?.join(', ') || translateMessage('Web & Mobile')}</span>
         </div>
         <div className="bg-[var(--surface-2)] p-2 rounded-lg border border-[var(--border)]">
-          <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wide">Updated</span>
+          <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wide">{translateMessage('Updated')}</span>
           <span className="text-xs text-[var(--text)] truncate block">{formatDate(project.updatedAt)}</span>
         </div>
       </div>
@@ -54,10 +55,10 @@ export default function UserProjectCard({ project, formatDate }: UserProjectCard
             rel="noopener noreferrer"
             className="text-xs font-medium text-primary hover:text-[var(--text)] flex items-center gap-1 transition-colors"
           >
-            Open Project <ExternalLink size={12} />
+            {translateMessage('Open Project')} <ExternalLink size={12} />
           </a>
         ) : (
-          <span className="text-xs text-[var(--text-muted)] cursor-not-allowed">No URL</span>
+          <span className="text-xs text-[var(--text-muted)] cursor-not-allowed">{translateMessage('No URL')}</span>
         )}
       </div>
     </div>

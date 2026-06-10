@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchFormQuestions } from '../api/lead-project-api';
+import { fetchFormQuestions } from '../services/lead-project-api';
 import { FormQuestion } from '../types/form-question.types';
 
 export function useFormQuestions(language: string, enabled = true) {

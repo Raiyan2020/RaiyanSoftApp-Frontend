@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { changeAdminLeadStatus } from '../api/admin-leads-api';
+import { changeAdminLeadStatus } from '../services/admin-leads-api';
 import { AdminLeadDetail, LeadStatusAction } from '../types/admin-lead.types';
 
 export function useChangeLeadStatus() {

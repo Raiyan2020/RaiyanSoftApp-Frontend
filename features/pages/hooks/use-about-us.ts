@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchAboutUs } from '../api/pages-api';
+import { fetchAboutUs } from '../services/pages-api';
 import { AboutUsPage } from '../types/page.types';
 
 export function useAboutUs(enabled = true) {

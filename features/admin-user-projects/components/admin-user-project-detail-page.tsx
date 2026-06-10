@@ -4,9 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import {
   AlertTriangle,
-  ArrowDown,
   ArrowLeft,
-  ArrowUp,
   CalendarDays,
   CheckCircle2,
   ClipboardCheck,
@@ -31,7 +29,11 @@ import {
   UserRound,
 } from 'lucide-react';
 import Button from '@/components/ui/button';
+import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
+import { getEmployeeFullName } from '@/features/admin-employees';
 import { ProjectStage, ProjectStageStatus } from '@/lib/userProjectsStore';
+import { FEATURES } from '@/lib/feature-flags';
 import {
   ProjectDetailTab,
   useAdminProjectOperations,
@@ -42,14 +44,16 @@ interface AdminUserProjectDetailPageProps {
   projectId?: string;
 }
 
-const tabs: { id: ProjectDetailTab; label: string; icon: React.ElementType }[] = [
+const allTabs: { id: ProjectDetailTab; label: string; icon: React.ElementType; enabled?: boolean }[] = [
   { id: 'overview', label: 'Overview', icon: LayoutGrid },
   { id: 'plan', label: 'Plan', icon: ClipboardCheck },
   { id: 'progress', label: 'Progress', icon: CheckCircle2 },
   { id: 'reports', label: 'Reports', icon: FileText },
   { id: 'files', label: 'Files & Notes', icon: Paperclip },
-  { id: 'final', label: 'Final Report', icon: FolderKanban },
+  { id: 'final', label: 'Final Report', icon: FolderKanban, enabled: FEATURES.projectCompletionApproval },
 ];
+
+const tabs = allTabs.filter((tab) => tab.enabled !== false);
 
 const stageStatusClasses: Record<ProjectStageStatus, string> = {
   planned: 'bg-slate-500/10 text-[var(--text)] border-slate-500/20',
@@ -58,9 +62,9 @@ const stageStatusClasses: Record<ProjectStageStatus, string> = {
   blocked: 'bg-red-500/10 text-red-400 border-red-500/20',
 };
 
-const formatDate = (value?: number | null) => {
-  if (!value) return 'Not set';
-  return new Date(value).toLocaleDateString('en-UK', {
+const formatDate = (value?: number | null, language: 'ar' | 'en' = 'en') => {
+  if (!value) return translateMessage('Not set', language);
+  return new Date(value).toLocaleDateString(language === 'ar' ? 'ar-EG' : 'en-UK', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -81,7 +85,7 @@ const FieldLabel = ({ children }: { children: React.ReactNode }) => (
 const inputClasses =
   'w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
 
-function StatusPill({ status }: { status: string }) {
+function StatusPill({ status, tr }: { status: string; tr: (message: string) => string }) {
   const color =
     status === 'completed'
       ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
@@ -93,7 +97,7 @@ function StatusPill({ status }: { status: string }) {
 
   return (
     <span className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold capitalize border ${color}`}>
-      {status}
+      {tr(status.charAt(0).toUpperCase() + status.slice(1))}
     </span>
   );
 }
@@ -101,17 +105,19 @@ function StatusPill({ status }: { status: string }) {
 function StageCard({
   stage,
   index,
-  total,
   onEdit,
   onDelete,
-  onMove,
+  canDelete,
+  tr,
+  language,
 }: {
   stage: ProjectStage;
   index: number;
-  total: number;
   onEdit: (stage: ProjectStage) => void;
   onDelete: (stageId: string) => void;
-  onMove: (stageId: string, direction: -1 | 1) => void;
+  canDelete: boolean;
+  tr: (message: string) => string;
+  language: 'ar' | 'en';
 }) {
   return (
     <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
@@ -128,23 +134,23 @@ function StageCard({
                   stageStatusClasses[stage.status]
                 }`}
               >
-                {stage.status}
+                {tr(stage.status.charAt(0).toUpperCase() + stage.status.slice(1))}
               </span>
             </div>
             {stage.description ? (
               <p className="text-sm text-[var(--text-muted)] leading-relaxed">{stage.description}</p>
             ) : (
-              <p className="text-sm text-[var(--text-muted)]">No description added.</p>
+              <p className="text-sm text-[var(--text-muted)]">{tr('No description added.')}</p>
             )}
             <div className="flex flex-wrap gap-3 mt-3 text-xs text-[var(--text-muted)]">
               <span className="flex items-center gap-1">
-                <UserRound size={13} /> {stage.assignedTo || 'Unassigned'}
+                <UserRound size={13} /> {stage.assignedTo || tr('Unassigned')}
               </span>
               <span className="flex items-center gap-1">
-                <Clock size={13} /> {stage.estimatedDays ? `${stage.estimatedDays} days` : 'No estimate'}
+                <Clock size={13} /> {stage.estimatedDays ? `${stage.estimatedDays} ${tr('days')}` : tr('No estimate')}
               </span>
               <span className="flex items-center gap-1">
-                <CalendarDays size={13} /> Updated {formatDate(stage.updatedAt)}
+                <CalendarDays size={13} /> {tr('Updated')} {formatDate(stage.updatedAt, language)}
               </span>
             </div>
           </div>
@@ -153,35 +159,18 @@ function StageCard({
         <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
-            onClick={() => onMove(stage.id, -1)}
-            disabled={index === 0}
-            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40 transition-colors"
-            title="Move up"
-          >
-            <ArrowUp size={15} />
-          </button>
-          <button
-            type="button"
-            onClick={() => onMove(stage.id, 1)}
-            disabled={index === total - 1}
-            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40 transition-colors"
-            title="Move down"
-          >
-            <ArrowDown size={15} />
-          </button>
-          <button
-            type="button"
             onClick={() => onEdit(stage)}
             className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
-            title="Edit stage"
+            title={tr('Edit stage')}
           >
             <Edit2 size={15} />
           </button>
           <button
             type="button"
             onClick={() => onDelete(stage.id)}
-            className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
-            title="Delete stage"
+            disabled={!canDelete}
+            className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors disabled:opacity-40 disabled:hover:bg-[var(--surface-3)] disabled:hover:text-[var(--text-muted)]"
+            title={canDelete ? tr('Delete stage') : tr('Delete stage is unavailable for API-backed projects')}
           >
             <Trash2 size={15} />
           </button>
@@ -190,7 +179,7 @@ function StageCard({
 
       <div className="mt-4">
         <div className="flex justify-between text-xs text-[var(--text-muted)] mb-2">
-          <span>Progress</span>
+          <span>{tr('Progress')}</span>
           <span className="text-[var(--text)] font-bold">{stage.progress}%</span>
         </div>
         <div className="h-2 bg-[var(--surface-3)] rounded-full overflow-hidden">
@@ -206,13 +195,15 @@ export default function AdminUserProjectDetailPage({
   projectId,
 }: AdminUserProjectDetailPageProps) {
   const router = useRouter();
+  const { language } = useTranslation();
+  const tr = (message: string) => translateMessage(message, language);
   const ops = useAdminProjectOperations(ownerId, projectId);
 
   if (ops.loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[500px] text-[var(--text-muted)]">
         <Loader2 size={32} className="animate-spin mb-4 text-primary" />
-        <p>Loading project operations...</p>
+        <p>{tr('Loading project operations...')}</p>
       </div>
     );
   }
@@ -221,10 +212,10 @@ export default function AdminUserProjectDetailPage({
     return (
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 text-center">
         <AlertTriangle className="mx-auto text-red-400 mb-4" size={32} />
-        <h1 className="text-xl font-bold text-[var(--text)] mb-2">Project not found</h1>
-        <p className="text-[var(--text-muted)] text-sm mb-6">{ops.error || 'Unable to load this project.'}</p>
+        <h1 className="text-xl font-bold text-[var(--text)] mb-2">{tr('Project not found')}</h1>
+        <p className="text-[var(--text-muted)] text-sm mb-6">{ops.error ? tr(ops.error) : tr('Unable to load this project.')}</p>
         <Button type="button" variant="outline" onClick={() => router.push('/admin/user-projects')}>
-          Back to User Projects
+          {tr('Back to User Projects')}
         </Button>
       </div>
     );
@@ -241,7 +232,7 @@ export default function AdminUserProjectDetailPage({
           className="text-[var(--text-muted)] hover:text-[var(--text)] text-sm font-medium flex items-center gap-2 w-fit transition-colors"
         >
           <ArrowLeft size={16} />
-          Back to User Projects
+          {tr('Back to User Projects')}
         </button>
 
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 shadow-xl">
@@ -256,64 +247,51 @@ export default function AdminUserProjectDetailPage({
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <h1 className="text-2xl font-bold text-[var(--text)] break-words">{project.name}</h1>
-                  <StatusPill status={project.status || 'pricing'} />
+                  <StatusPill status={project.status || 'pricing'} tr={tr} />
                 </div>
                 <p className="text-[var(--text-muted)] text-sm leading-relaxed max-w-3xl">
-                  {project.description || 'No project description has been added yet.'}
+                  {project.description || tr('No project description has been added yet.')}
                 </p>
                 <div className="flex flex-wrap gap-3 mt-3 text-xs text-[var(--text-muted)]">
                   <span>{project.ownerName}</span>
                   <span>{project.ownerEmail}</span>
-                  <span>Created {formatDate(project.createdAt)}</span>
+                  <span>{tr('Created')} {formatDate(project.createdAt, language)}</span>
                 </div>
               </div>
             </div>
 
             <Button type="button" variant="outline" size="sm" onClick={ops.loadProject}>
               <RefreshCw size={16} className="me-2" />
-              Refresh
+              {tr('Refresh')}
             </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3 mt-6">
             <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
-              <p className="text-xs text-[var(--text-muted)] mb-1">Overall Progress</p>
+              <p className="text-xs text-[var(--text-muted)] mb-1">{tr('Overall Progress')}</p>
               <p className="text-2xl font-bold text-[var(--text)]">{ops.overallProgress}%</p>
             </div>
             <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
-              <p className="text-xs text-[var(--text-muted)] mb-1">Stages</p>
+              <p className="text-xs text-[var(--text-muted)] mb-1">{tr('Stages')}</p>
               <p className="text-2xl font-bold text-[var(--text)]">
                 {ops.completedStages}/{ops.stages.length}
               </p>
             </div>
             <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
-              <p className="text-xs text-[var(--text-muted)] mb-1">Estimated Price</p>
+              <p className="text-xs text-[var(--text-muted)] mb-1">{tr('Estimated Price')}</p>
               <p className="text-lg font-bold text-[var(--text)]">
-                {project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : 'Not set'}
+                {project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : tr('Not set')}
               </p>
             </div>
             <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
-              <p className="text-xs text-[var(--text-muted)] mb-1">Estimated Duration</p>
+              <p className="text-xs text-[var(--text-muted)] mb-1">{tr('Estimated Duration')}</p>
               <p className="text-lg font-bold text-[var(--text)]">
-                {project.estimatedDuration ? `${project.estimatedDuration} days` : 'Not set'}
+                {project.estimatedDuration ? `${project.estimatedDuration} ${tr('days')}` : tr('Not set')}
               </p>
             </div>
           </div>
         </div>
       </div>
-
-      {ops.error ? (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-start gap-3">
-          <AlertTriangle className="text-red-400 shrink-0" size={20} />
-          <div className="min-w-0">
-            <h3 className="text-red-400 font-bold text-sm">Action needed</h3>
-            <p className="text-red-400/80 text-xs mt-1">{ops.error}</p>
-          </div>
-          <button type="button" onClick={() => ops.setError(null)} className="ms-auto text-red-300 text-xs">
-            Dismiss
-          </button>
-        </div>
-      ) : null}
 
       <div className="flex overflow-x-auto no-scrollbar bg-[var(--surface-3)] p-1 rounded-xl w-fit max-w-full border border-[var(--border)]">
         {tabs.map((tab) => (
@@ -326,7 +304,7 @@ export default function AdminUserProjectDetailPage({
             }`}
           >
             <tab.icon size={16} />
-            {tab.label}
+            {tr(tab.label)}
           </button>
         ))}
       </div>
@@ -334,7 +312,7 @@ export default function AdminUserProjectDetailPage({
       {ops.activeTab === 'overview' ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
-            <h2 className="text-lg font-bold text-[var(--text)] mb-4">Project Snapshot</h2>
+            <h2 className="text-lg font-bold text-[var(--text)] mb-4">{tr('Project Snapshot')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {[
                 ['Industry', project.industry === 'Other' ? project.industryOther || 'Other' : project.industry || 'Not set'],
@@ -345,24 +323,24 @@ export default function AdminUserProjectDetailPage({
                 ['Closest App', project.closestApp || 'Not set'],
               ].map(([label, value]) => (
                 <div key={label} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
-                  <p className="text-xs text-[var(--text-muted)] mb-1">{label}</p>
-                  <p className="text-sm text-[var(--text)]">{value}</p>
+                  <p className="text-xs text-[var(--text-muted)] mb-1">{tr(label)}</p>
+                  <p className="text-sm text-[var(--text)]">{tr(String(value))}</p>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
-            <h2 className="text-lg font-bold text-[var(--text)] mb-4">Recent Updates</h2>
+            <h2 className="text-lg font-bold text-[var(--text)] mb-4">{tr('Recent Updates')}</h2>
             {ops.progressUpdates.length === 0 ? (
-              <p className="text-sm text-[var(--text-muted)]">No progress updates have been logged yet.</p>
+              <p className="text-sm text-[var(--text-muted)]">{tr('No progress updates have been logged yet.')}</p>
             ) : (
               <div className="space-y-4">
                 {ops.progressUpdates.slice(0, 4).map((update) => (
                   <div key={update.id} className="border-l border-primary/30 ps-3">
                     <p className="text-sm font-medium text-[var(--text)]">{update.stageTitle}</p>
                     <p className="text-xs text-[var(--text-muted)]">
-                      {update.previousProgress}% to {update.nextProgress}% on {formatDate(update.createdAt)}
+                      {update.previousProgress}% {tr('to')} {update.nextProgress}% {tr('on')} {formatDate(update.createdAt, language)}
                     </p>
                     <p className="text-xs text-[var(--text-muted)] mt-1 line-clamp-2">{update.note}</p>
                   </div>
@@ -379,74 +357,75 @@ export default function AdminUserProjectDetailPage({
             {ops.stages.length === 0 ? (
               <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-10 text-center text-[var(--text-muted)]">
                 <ClipboardCheck size={32} className="mx-auto mb-4 text-[var(--text-muted)]" />
-                <p>No stages have been planned yet.</p>
+                <p>{tr('No stages have been planned yet.')}</p>
               </div>
             ) : (
               ops.stages.map((stage, index) => (
-                <StageCard
-                  key={stage.id}
-                  stage={stage}
-                  index={index}
-                  total={ops.stages.length}
-                  onEdit={ops.startEditStage}
-                  onDelete={ops.deleteStage}
-                  onMove={ops.moveStage}
-                />
+    <StageCard
+      key={stage.id}
+      stage={stage}
+      index={index}
+      onEdit={ops.startEditStage}
+      onDelete={ops.deleteStage}
+      canDelete={!ops.isApiProject}
+      tr={tr}
+      language={language}
+    />
               ))
             )}
           </div>
 
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 h-fit sticky top-4">
             <div className="flex items-center justify-between mb-5">
-              <h2 className="text-lg font-bold text-[var(--text)]">{ops.editingStageId ? 'Edit Stage' : 'Add Stage'}</h2>
+              <h2 className="text-lg font-bold text-[var(--text)]">{ops.editingStageId ? tr('Edit Stage') : tr('Add Stage')}</h2>
               {ops.editingStageId ? (
                 <button type="button" onClick={ops.resetStageForm} className="text-xs text-[var(--text-muted)] hover:text-[var(--text)]">
-                  Clear
+                  {tr('Clear')}
                 </button>
               ) : null}
             </div>
 
             <div className="space-y-4">
               <div className="space-y-2">
-                <FieldLabel>Stage Title</FieldLabel>
+                <FieldLabel>{tr('Stage Title')}</FieldLabel>
                 <input
                   value={ops.stageForm.title}
                   onChange={(e) => ops.setStageForm((prev) => ({ ...prev, title: e.target.value }))}
                   className={inputClasses}
-                  placeholder="Design approval"
+                  placeholder={tr('Design approval')}
                 />
               </div>
               <div className="space-y-2">
-                <FieldLabel>Description</FieldLabel>
+                <FieldLabel>{tr('Description')}</FieldLabel>
                 <textarea
                   value={ops.stageForm.description}
                   onChange={(e) => ops.setStageForm((prev) => ({ ...prev, description: e.target.value }))}
                   className={`${inputClasses} h-24 resize-none`}
-                  placeholder="What must happen in this stage?"
+                  placeholder={tr('What must happen in this stage?')}
                 />
               </div>
               <div className="space-y-2">
-                <FieldLabel>Responsible Person</FieldLabel>
+                <FieldLabel>{tr('Responsible Person')}</FieldLabel>
                 <select
                   value={ops.stageForm.assignedTo}
                   onChange={(e) => ops.setStageForm((prev) => ({ ...prev, assignedTo: e.target.value }))}
                   className={inputClasses}
                 >
-                  <option value="">Unassigned</option>
+                  <option value="">{tr('Unassigned')}</option>
                   {ops.employees.map((employee) => (
-                    <option key={employee.id} value={employee.name}>
-                      {employee.name}
+                    <option key={employee.id} value={String(employee.id)}>
+                      {getEmployeeFullName(employee)}
                     </option>
                   ))}
                   {ops.stageForm.assignedTo &&
-                  !ops.employees.some((employee) => employee.name === ops.stageForm.assignedTo) ? (
+                  !ops.employees.some((employee) => String(employee.id) === ops.stageForm.assignedTo) ? (
                     <option value={ops.stageForm.assignedTo}>{ops.stageForm.assignedTo}</option>
                   ) : null}
                 </select>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <FieldLabel>Days</FieldLabel>
+                  <FieldLabel>{tr('Days')}</FieldLabel>
                   <input
                     type="number"
                     min="0"
@@ -457,7 +436,7 @@ export default function AdminUserProjectDetailPage({
                   />
                 </div>
                 <div className="space-y-2">
-                  <FieldLabel>Status</FieldLabel>
+                  <FieldLabel>{tr('Status')}</FieldLabel>
                   <select
                     value={ops.stageForm.status}
                     onChange={(e) =>
@@ -465,10 +444,10 @@ export default function AdminUserProjectDetailPage({
                     }
                     className={inputClasses}
                   >
-                    <option value="planned">Planned</option>
-                    <option value="active">Active</option>
-                    <option value="blocked">Blocked</option>
-                    <option value="completed">Completed</option>
+                    <option value="planned">{tr('Planned')}</option>
+                    <option value="active">{tr('Active')}</option>
+                    <option value="blocked">{tr('Blocked')}</option>
+                    <option value="completed">{tr('Completed')}</option>
                   </select>
                 </div>
               </div>
@@ -480,7 +459,7 @@ export default function AdminUserProjectDetailPage({
                 className="w-full gap-2"
               >
                 {ops.editingStageId ? <Save size={16} /> : <Plus size={16} />}
-                {ops.editingStageId ? 'Save Stage' : 'Add Stage'}
+                {ops.editingStageId ? tr('Save Stage') : tr('Add Stage')}
               </Button>
             </div>
           </div>
@@ -490,13 +469,13 @@ export default function AdminUserProjectDetailPage({
       {ops.activeTab === 'progress' ? (
         <div className="grid grid-cols-1 xl:grid-cols-[420px_1fr] gap-6">
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 h-fit">
-            <h2 className="text-lg font-bold text-[var(--text)] mb-5">Update Stage Progress</h2>
+            <h2 className="text-lg font-bold text-[var(--text)] mb-5">{tr('Update Stage Progress')}</h2>
             {ops.stages.length === 0 ? (
-              <p className="text-sm text-[var(--text-muted)]">Add stages in the Plan tab before logging progress.</p>
+              <p className="text-sm text-[var(--text-muted)]">{tr('Add stages in the Plan tab before logging progress.')}</p>
             ) : (
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <FieldLabel>Stage</FieldLabel>
+                  <FieldLabel>{tr('Stage')}</FieldLabel>
                   <select
                     value={ops.selectedStageId}
                     onChange={(e) => ops.setSelectedStageId(e.target.value)}
@@ -511,7 +490,7 @@ export default function AdminUserProjectDetailPage({
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <FieldLabel>Progress</FieldLabel>
+                    <FieldLabel>{tr('Progress')}</FieldLabel>
                     <span className="text-[var(--text)] font-bold text-sm">{ops.progressValue}%</span>
                   </div>
                   <input
@@ -533,12 +512,12 @@ export default function AdminUserProjectDetailPage({
                   />
                 </div>
                 <div className="space-y-2">
-                  <FieldLabel>Progress Note</FieldLabel>
+                  <FieldLabel>{tr('Progress Note')}</FieldLabel>
                   <textarea
                     value={ops.progressNote}
                     onChange={(e) => ops.setProgressNote(e.target.value)}
                     className={`${inputClasses} h-28 resize-none`}
-                    placeholder="Summarize what changed before saving."
+                    placeholder={tr('Summarize what changed before saving.')}
                   />
                 </div>
                 <Button
@@ -549,18 +528,18 @@ export default function AdminUserProjectDetailPage({
                   className="w-full gap-2"
                 >
                   <Save size={16} />
-                  Save Progress Update
+                  {tr('Save Progress Update')}
                 </Button>
               </div>
             )}
           </div>
 
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
-            <h2 className="text-lg font-bold text-[var(--text)] mb-5">Progress History</h2>
+            <h2 className="text-lg font-bold text-[var(--text)] mb-5">{tr('Progress History')}</h2>
             {ops.progressUpdates.length === 0 ? (
               <div className="text-center py-16 text-[var(--text-muted)]">
                 <Clock size={28} className="mx-auto mb-3 text-[var(--text-muted)]" />
-                <p>No progress history yet.</p>
+                <p>{tr('No progress history yet.')}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -570,11 +549,11 @@ export default function AdminUserProjectDetailPage({
                       <div>
                         <p className="text-[var(--text)] font-bold text-sm">{update.stageTitle}</p>
                         <p className="text-xs text-[var(--text-muted)]">
-                          {formatDate(update.createdAt)} by {update.createdByName || 'Admin'}
+                          {formatDate(update.createdAt, language)} {tr('by')} {update.createdByName || tr('Admin')}
                         </p>
                       </div>
                       <span className="text-xs text-primary font-bold">
-                        {update.previousProgress}% to {update.nextProgress}%
+                        {update.previousProgress}% {tr('to')} {update.nextProgress}%
                       </span>
                     </div>
                     <p className="text-sm text-[var(--text)] leading-relaxed">{update.note}</p>
@@ -592,13 +571,13 @@ export default function AdminUserProjectDetailPage({
             <div className="flex items-center justify-between gap-3 mb-5">
               <div>
                 <h2 className="text-lg font-bold text-[var(--text)]">
-                  {ops.editingReportId ? 'Edit Weekly Report' : 'Draft Weekly Report'}
+                  {ops.editingReportId ? tr('Edit Weekly Report') : tr('Draft Weekly Report')}
                 </h2>
-                <p className="text-xs text-[var(--text-muted)] mt-1">Text-only client report for the selected week.</p>
+                <p className="text-xs text-[var(--text-muted)] mt-1">{tr('Text-only client report for the selected week.')}</p>
               </div>
               {ops.editingReportId ? (
                 <button type="button" onClick={ops.resetReportForm} className="text-xs text-[var(--text-muted)] hover:text-[var(--text)]">
-                  Clear
+                  {tr('Clear')}
                 </button>
               ) : null}
             </div>
@@ -606,7 +585,7 @@ export default function AdminUserProjectDetailPage({
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
-                  <FieldLabel>Week Start</FieldLabel>
+                  <FieldLabel>{tr('Week Start')}</FieldLabel>
                   <input
                     type="date"
                     value={ops.reportForm.weekStart}
@@ -615,7 +594,7 @@ export default function AdminUserProjectDetailPage({
                   />
                 </div>
                 <div className="space-y-2">
-                  <FieldLabel>Week End</FieldLabel>
+                  <FieldLabel>{tr('Week End')}</FieldLabel>
                   <input
                     type="date"
                     value={ops.reportForm.weekEnd}
@@ -627,16 +606,16 @@ export default function AdminUserProjectDetailPage({
 
               <Button type="button" variant="outline" onClick={ops.generateWeeklyDraft} className="w-full gap-2">
                 <RefreshCw size={16} />
-                Generate From Updates
+                {tr('Generate From Updates')}
               </Button>
 
               <div className="space-y-2">
-                <FieldLabel>Report Content</FieldLabel>
+                <FieldLabel>{tr('Report Content')}</FieldLabel>
                 <textarea
                   value={ops.reportForm.content}
                   onChange={(e) => ops.setReportForm((prev) => ({ ...prev, content: e.target.value }))}
                   className={`${inputClasses} h-72 resize-none font-mono text-xs leading-relaxed`}
-                  placeholder="Write the weekly report text shown to the client."
+                  placeholder={tr('Write the weekly report text shown to the client.')}
                 />
               </div>
 
@@ -650,7 +629,7 @@ export default function AdminUserProjectDetailPage({
                   className="gap-2"
                 >
                   <Save size={16} />
-                  Save Draft
+                  {tr('Save Draft')}
                 </Button>
                 <Button
                   type="button"
@@ -660,7 +639,7 @@ export default function AdminUserProjectDetailPage({
                   className="gap-2"
                 >
                   <Send size={16} />
-                  Send Report
+                  {tr('Send Report')}
                 </Button>
               </div>
             </div>
@@ -669,18 +648,18 @@ export default function AdminUserProjectDetailPage({
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
               <div>
-                <h2 className="text-lg font-bold text-[var(--text)]">Report History</h2>
-                <p className="text-xs text-[var(--text-muted)]">Drafts and sent weekly reports for this project.</p>
+                <h2 className="text-lg font-bold text-[var(--text)]">{tr('Report History')}</h2>
+                <p className="text-xs text-[var(--text-muted)]">{tr('Drafts and sent weekly reports for this project.')}</p>
               </div>
               <span className="text-xs text-[var(--text-muted)] bg-[var(--surface-2)] border border-[var(--border)] rounded-full px-3 py-1">
-                {ops.weeklyReports.length} total
+                {ops.weeklyReports.length} {tr('total')}
               </span>
             </div>
 
             {ops.weeklyReports.length === 0 ? (
               <div className="text-center py-16 text-[var(--text-muted)]">
                 <FileText size={28} className="mx-auto mb-3 text-[var(--text-muted)]" />
-                <p>No weekly reports have been created yet.</p>
+                <p>{tr('No weekly reports have been created yet.')}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -690,7 +669,7 @@ export default function AdminUserProjectDetailPage({
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2 mb-2">
                           <h3 className="text-[var(--text)] font-bold">
-                            {formatDate(report.weekStart)} - {formatDate(report.weekEnd)}
+                            {formatDate(report.weekStart, language)} - {formatDate(report.weekEnd, language)}
                           </h3>
                           <span
                             className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold capitalize border ${
@@ -699,16 +678,16 @@ export default function AdminUserProjectDetailPage({
                                 : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
                             }`}
                           >
-                            {report.status}
+                            {tr(report.status.charAt(0).toUpperCase() + report.status.slice(1))}
                           </span>
                           {report.clientVisible ? (
                             <span className="text-[10px] text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5">
-                              Client visible
+                              {tr('Client visible')}
                             </span>
                           ) : null}
                         </div>
                         <p className="text-xs text-[var(--text-muted)]">
-                          Updated {formatDate(report.updatedAt)} by {report.createdByName || 'Admin'}
+                          {tr('Updated')} {formatDate(report.updatedAt, language)} {tr('by')} {report.createdByName || tr('Admin')}
                         </p>
                       </div>
 
@@ -717,7 +696,7 @@ export default function AdminUserProjectDetailPage({
                           type="button"
                           onClick={() => navigator.clipboard?.writeText(report.content)}
                           className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
-                          title="Copy report"
+                          title={tr('Copy report')}
                         >
                           <Copy size={15} />
                         </button>
@@ -725,7 +704,7 @@ export default function AdminUserProjectDetailPage({
                           type="button"
                           onClick={() => ops.startEditReport(report)}
                           className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
-                          title="Edit report"
+                          title={tr('Edit report')}
                         >
                           <Edit2 size={15} />
                         </button>
@@ -733,7 +712,7 @@ export default function AdminUserProjectDetailPage({
                           type="button"
                           onClick={() => ops.deleteWeeklyReport(report.id)}
                           className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
-                          title="Delete report"
+                          title={tr('Delete report')}
                         >
                           <Trash2 size={15} />
                         </button>
@@ -759,23 +738,23 @@ export default function AdminUserProjectDetailPage({
                   <Upload size={18} />
                 </div>
                 <div>
-                  <h2 className="text-lg font-bold text-[var(--text)]">Add Stage Attachment</h2>
-                  <p className="text-xs text-[var(--text-muted)]">Visible only inside the dashboard.</p>
+                  <h2 className="text-lg font-bold text-[var(--text)]">{tr('Add Stage Attachment')}</h2>
+                  <p className="text-xs text-[var(--text-muted)]">{tr('Visible only inside the dashboard.')}</p>
                 </div>
               </div>
 
               {ops.stages.length === 0 ? (
-                <p className="text-sm text-[var(--text-muted)]">Add stages in the Plan tab before attaching files.</p>
+                <p className="text-sm text-[var(--text-muted)]">{tr('Add stages in the Plan tab before attaching files.')}</p>
               ) : (
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <FieldLabel>Stage</FieldLabel>
+                    <FieldLabel>{tr('Stage')}</FieldLabel>
                     <select
                       value={ops.attachmentForm.stageId}
                       onChange={(e) => ops.setAttachmentForm((prev) => ({ ...prev, stageId: e.target.value }))}
                       className={inputClasses}
                     >
-                      <option value="">Select stage</option>
+                      <option value="">{tr('Select stage')}</option>
                       {ops.stages.map((stage) => (
                         <option key={stage.id} value={stage.id}>
                           {stage.title}
@@ -784,34 +763,34 @@ export default function AdminUserProjectDetailPage({
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel>Title</FieldLabel>
+                    <FieldLabel>{tr('Title')}</FieldLabel>
                     <input
                       value={ops.attachmentForm.title}
                       onChange={(e) => ops.setAttachmentForm((prev) => ({ ...prev, title: e.target.value }))}
                       className={inputClasses}
-                      placeholder="Client brief"
+                      placeholder={tr('Client brief')}
                     />
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel>Description</FieldLabel>
+                    <FieldLabel>{tr('Description')}</FieldLabel>
                     <textarea
                       value={ops.attachmentForm.description}
                       onChange={(e) => ops.setAttachmentForm((prev) => ({ ...prev, description: e.target.value }))}
                       className={`${inputClasses} h-24 resize-none`}
-                      placeholder="Describe what this file contains."
+                      placeholder={tr('Describe what this file contains.')}
                     />
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel>Reason For Adding</FieldLabel>
+                    <FieldLabel>{tr('Reason For Adding')}</FieldLabel>
                     <textarea
                       value={ops.attachmentForm.reason}
                       onChange={(e) => ops.setAttachmentForm((prev) => ({ ...prev, reason: e.target.value }))}
                       className={`${inputClasses} h-20 resize-none`}
-                      placeholder="Why is this attachment needed?"
+                      placeholder={tr('Why is this attachment needed?')}
                     />
                   </div>
                   <div className="space-y-2">
-                    <FieldLabel>File Or Image</FieldLabel>
+                    <FieldLabel>{tr('File Or Image')}</FieldLabel>
                     <label className="block border border-dashed border-[var(--border)] hover:border-primary/40 bg-[var(--surface-2)] rounded-2xl p-5 cursor-pointer transition-colors">
                       <input
                         type="file"
@@ -824,10 +803,10 @@ export default function AdminUserProjectDetailPage({
                         </div>
                         <div className="min-w-0">
                           <p className="text-sm font-medium text-[var(--text)] truncate">
-                            {ops.attachmentFile ? ops.attachmentFile.name : 'Choose a file'}
+                            {ops.attachmentFile ? ops.attachmentFile.name : tr('Choose a file')}
                           </p>
                           <p className="text-xs text-[var(--text-muted)]">
-                            {ops.attachmentFile ? formatFileSize(ops.attachmentFile.size) : 'Images, PDFs, docs, or other project files'}
+                            {ops.attachmentFile ? formatFileSize(ops.attachmentFile.size) : tr('Images, PDFs, docs, or other project files')}
                           </p>
                         </div>
                       </div>
@@ -847,82 +826,84 @@ export default function AdminUserProjectDetailPage({
                     className="w-full gap-2"
                   >
                     <Upload size={16} />
-                    Save Attachment
+                    {tr('Save Attachment')}
                   </Button>
                 </div>
               )}
             </div>
 
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
-              <div className="flex items-center gap-3 mb-5">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
-                  <StickyNote size={18} />
+            {FEATURES.projectInternalNotes ? (
+              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
+                <div className="flex items-center gap-3 mb-5">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                    <StickyNote size={18} />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-[var(--text)]">{tr('Add Internal Note')}</h2>
+                    <p className="text-xs text-[var(--text-muted)]">{tr('Admin-only, never shown to the client.')}</p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-lg font-bold text-[var(--text)]">Add Internal Note</h2>
-                  <p className="text-xs text-[var(--text-muted)]">Admin-only, never shown to the client.</p>
-                </div>
-              </div>
 
-              {ops.stages.length === 0 ? (
-                <p className="text-sm text-[var(--text-muted)]">Add stages in the Plan tab before adding notes.</p>
-              ) : (
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <FieldLabel>Stage</FieldLabel>
-                    <select
-                      value={ops.noteStageId}
-                      onChange={(e) => ops.setNoteStageId(e.target.value)}
-                      className={inputClasses}
+                {ops.stages.length === 0 ? (
+                  <p className="text-sm text-[var(--text-muted)]">{tr('Add stages in the Plan tab before adding notes.')}</p>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <FieldLabel>{tr('Stage')}</FieldLabel>
+                      <select
+                        value={ops.noteStageId}
+                        onChange={(e) => ops.setNoteStageId(e.target.value)}
+                        className={inputClasses}
+                      >
+                        <option value="">{tr('Select stage')}</option>
+                        {ops.stages.map((stage) => (
+                          <option key={stage.id} value={stage.id}>
+                            {stage.title}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="space-y-2">
+                      <FieldLabel>{tr('Note')}</FieldLabel>
+                      <textarea
+                        value={ops.noteText}
+                        onChange={(e) => ops.setNoteText(e.target.value)}
+                        className={`${inputClasses} h-32 resize-none`}
+                        placeholder={tr('Write an internal admin note for this stage.')}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={ops.saveInternalNote}
+                      isLoading={ops.saving}
+                      disabled={!ops.noteStageId || !ops.noteText.trim()}
+                      className="w-full gap-2"
                     >
-                      <option value="">Select stage</option>
-                      {ops.stages.map((stage) => (
-                        <option key={stage.id} value={stage.id}>
-                          {stage.title}
-                        </option>
-                      ))}
-                    </select>
+                      <Save size={16} />
+                      {tr('Save Internal Note')}
+                    </Button>
                   </div>
-                  <div className="space-y-2">
-                    <FieldLabel>Note</FieldLabel>
-                    <textarea
-                      value={ops.noteText}
-                      onChange={(e) => ops.setNoteText(e.target.value)}
-                      className={`${inputClasses} h-32 resize-none`}
-                      placeholder="Write an internal admin note for this stage."
-                    />
-                  </div>
-                  <Button
-                    type="button"
-                    onClick={ops.saveInternalNote}
-                    isLoading={ops.saving}
-                    disabled={!ops.noteStageId || !ops.noteText.trim()}
-                    className="w-full gap-2"
-                  >
-                    <Save size={16} />
-                    Save Internal Note
-                  </Button>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            ) : null}
           </div>
 
           <div className="space-y-6">
             <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
                 <div>
-                  <h2 className="text-lg font-bold text-[var(--text)]">Stage Attachments</h2>
-                  <p className="text-xs text-[var(--text-muted)]">Dashboard-only files grouped by project stage.</p>
+                  <h2 className="text-lg font-bold text-[var(--text)]">{tr('Stage Attachments')}</h2>
+                  <p className="text-xs text-[var(--text-muted)]">{tr('Dashboard-only files grouped by project stage.')}</p>
                 </div>
                 <span className="text-xs text-[var(--text-muted)] bg-[var(--surface-2)] border border-[var(--border)] rounded-full px-3 py-1">
-                  {ops.attachments.length} total
+                  {ops.attachments.length} {tr('total')}
                 </span>
               </div>
 
               {ops.attachments.length === 0 ? (
                 <div className="text-center py-14 text-[var(--text-muted)]">
                   <Paperclip size={28} className="mx-auto mb-3 text-[var(--text-muted)]" />
-                  <p>No attachments added yet.</p>
+                  <p>{tr('No attachments added yet.')}</p>
                 </div>
               ) : (
                 <div className="space-y-3">
@@ -941,16 +922,16 @@ export default function AdminUserProjectDetailPage({
                               <div className="flex flex-wrap items-center gap-2">
                                 <h3 className="text-[var(--text)] font-bold break-words">{attachment.title}</h3>
                                 <span className="text-[10px] text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5">
-                                  {stage?.title || 'Unknown stage'}
+                                  {stage?.title || tr('Unknown stage')}
                                 </span>
                               </div>
                               <p className="text-sm text-[var(--text-muted)] mt-1 leading-relaxed">{attachment.description}</p>
-                              <p className="text-xs text-[var(--text-muted)] mt-2">Reason: {attachment.reason}</p>
+                              <p className="text-xs text-[var(--text-muted)] mt-2">{tr('Reason')}: {attachment.reason}</p>
                               <div className="flex flex-wrap gap-3 mt-3 text-xs text-[var(--text-muted)]">
                                 <span>{attachment.fileName}</span>
                                 <span>{formatFileSize(attachment.fileSize)}</span>
-                                <span>{formatDate(attachment.createdAt)}</span>
-                                <span>{attachment.createdByName || 'Admin'}</span>
+                                <span>{formatDate(attachment.createdAt, language)}</span>
+                                <span>{attachment.createdByName || tr('Admin')}</span>
                               </div>
                             </div>
                           </div>
@@ -961,7 +942,7 @@ export default function AdminUserProjectDetailPage({
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
-                              title="Open file"
+                              title={tr('Open file')}
                             >
                               <ExternalLink size={15} />
                             </a>
@@ -969,7 +950,7 @@ export default function AdminUserProjectDetailPage({
                               type="button"
                               onClick={() => ops.deleteAttachment(attachment.id)}
                               className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
-                              title="Delete attachment"
+                              title={tr('Delete attachment')}
                             >
                               <Trash2 size={15} />
                             </button>
@@ -982,55 +963,57 @@ export default function AdminUserProjectDetailPage({
               )}
             </div>
 
-            <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
-                <div>
-                  <h2 className="text-lg font-bold text-[var(--text)]">Admin-Only Notes</h2>
-                  <p className="text-xs text-[var(--text-muted)]">Internal notes are hidden from clients and non-admin views.</p>
+            {FEATURES.projectInternalNotes ? (
+              <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
+                  <div>
+                    <h2 className="text-lg font-bold text-[var(--text)]">{tr('Admin-Only Notes')}</h2>
+                    <p className="text-xs text-[var(--text-muted)]">{tr('Internal notes are hidden from clients and non-admin views.')}</p>
+                  </div>
+                  <span className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1">
+                    {tr('Admin only')}
+                  </span>
                 </div>
-                <span className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1">
-                  Admin only
-                </span>
-              </div>
 
-              {ops.internalNotes.length === 0 ? (
-                <div className="text-center py-14 text-[var(--text-muted)]">
-                  <StickyNote size={28} className="mx-auto mb-3 text-[var(--text-muted)]" />
-                  <p>No internal notes added yet.</p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {ops.internalNotes.map((note) => {
-                    const stage = ops.stages.find((item) => item.id === note.stageId);
+                {ops.internalNotes.length === 0 ? (
+                  <div className="text-center py-14 text-[var(--text-muted)]">
+                    <StickyNote size={28} className="mx-auto mb-3 text-[var(--text-muted)]" />
+                    <p>{tr('No internal notes added yet.')}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {ops.internalNotes.map((note) => {
+                      const stage = ops.stages.find((item) => item.id === note.stageId);
 
-                    return (
-                      <div key={note.id} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="min-w-0">
-                            <div className="flex flex-wrap items-center gap-2 mb-2">
-                              <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
-                                {stage?.title || 'Unknown stage'}
-                              </span>
-                              <span className="text-xs text-[var(--text-muted)]">{formatDate(note.createdAt)}</span>
-                              <span className="text-xs text-[var(--text-muted)]">{note.createdByName || 'Admin'}</span>
+                      return (
+                        <div key={note.id} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
+                          <div className="flex items-start justify-between gap-4">
+                            <div className="min-w-0">
+                              <div className="flex flex-wrap items-center gap-2 mb-2">
+                                <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
+                                  {stage?.title || tr('Unknown stage')}
+                                </span>
+                                <span className="text-xs text-[var(--text-muted)]">{formatDate(note.createdAt, language)}</span>
+                                <span className="text-xs text-[var(--text-muted)]">{note.createdByName || tr('Admin')}</span>
+                              </div>
+                              <p className="text-sm text-[var(--text)] leading-relaxed whitespace-pre-wrap">{note.text}</p>
                             </div>
-                            <p className="text-sm text-[var(--text)] leading-relaxed whitespace-pre-wrap">{note.text}</p>
+                            <button
+                              type="button"
+                              onClick={() => ops.deleteInternalNote(note.id)}
+                              className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors shrink-0"
+                              title={tr('Delete note')}
+                            >
+                              <Trash2 size={15} />
+                            </button>
                           </div>
-                          <button
-                            type="button"
-                            onClick={() => ops.deleteInternalNote(note.id)}
-                            className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors shrink-0"
-                            title="Delete note"
-                          >
-                            <Trash2 size={15} />
-                          </button>
                         </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            ) : null}
           </div>
         </div>
       ) : null}
@@ -1043,8 +1026,8 @@ export default function AdminUserProjectDetailPage({
                 <ClipboardCheck size={18} />
               </div>
               <div>
-                <h2 className="text-lg font-bold text-[var(--text)]">Completion Checklist</h2>
-                <p className="text-xs text-[var(--text-muted)]">All required items must pass before approval.</p>
+                <h2 className="text-lg font-bold text-[var(--text)]">{tr('Completion Checklist')}</h2>
+                <p className="text-xs text-[var(--text-muted)]">{tr('All required items must pass before approval.')}</p>
               </div>
             </div>
 
@@ -1063,7 +1046,7 @@ export default function AdminUserProjectDetailPage({
                   >
                     {passed ? <CheckCircle2 size={15} /> : <Lock size={15} />}
                   </div>
-                  <span className="text-sm text-[var(--text)]">{label}</span>
+                  <span className="text-sm text-[var(--text)]">{tr(String(label))}</span>
                 </div>
               ))}
             </div>
@@ -1071,7 +1054,7 @@ export default function AdminUserProjectDetailPage({
             <div className="grid grid-cols-1 gap-3 mt-5">
               <Button type="button" variant="outline" onClick={ops.generateFinalReport} className="gap-2">
                 <RefreshCw size={16} />
-                Generate Final Report
+                {tr('Generate Final Report')}
               </Button>
               <Button
                 type="button"
@@ -1081,7 +1064,7 @@ export default function AdminUserProjectDetailPage({
                 className="gap-2"
               >
                 <CheckCircle2 size={16} />
-                Approve Completion
+                {tr('Approve Completion')}
               </Button>
             </div>
           </div>
@@ -1089,12 +1072,12 @@ export default function AdminUserProjectDetailPage({
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-5">
               <div>
-                <h2 className="text-lg font-bold text-[var(--text)]">Final Report</h2>
-                <p className="text-xs text-[var(--text-muted)]">Review and edit before approving project completion.</p>
+                <h2 className="text-lg font-bold text-[var(--text)]">{tr('Final Report')}</h2>
+                <p className="text-xs text-[var(--text-muted)]">{tr('Review and edit before approving project completion.')}</p>
               </div>
               {project.finalReport?.approvedAt ? (
                 <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1">
-                  Approved {formatDate(project.finalReport.approvedAt)}
+                  {tr('Approved')} {formatDate(project.finalReport.approvedAt, language)}
                 </span>
               ) : null}
             </div>
@@ -1103,7 +1086,7 @@ export default function AdminUserProjectDetailPage({
               value={ops.finalReportContent}
               onChange={(event) => ops.setFinalReportContent(event.target.value)}
               className={`${inputClasses} h-[520px] resize-none font-mono text-xs leading-relaxed`}
-              placeholder="Generate or write the final project report."
+              placeholder={tr('Generate or write the final project report.')}
             />
 
             <div className="flex flex-wrap gap-3 mt-4">
@@ -1116,7 +1099,7 @@ export default function AdminUserProjectDetailPage({
                 className="gap-2"
               >
                 <Save size={16} />
-                Save Final Report
+                {tr('Save Final Report')}
               </Button>
               <button
                 type="button"
@@ -1125,7 +1108,7 @@ export default function AdminUserProjectDetailPage({
                 className="inline-flex items-center gap-2 bg-[var(--surface-3)] text-[var(--text)] border border-[var(--border)] hover:bg-[var(--surface-3)] hover:text-[var(--text)] disabled:opacity-50 rounded-xl px-4 py-2 text-sm font-bold transition-colors"
               >
                 <Copy size={16} />
-                Copy
+                {tr('Copy')}
               </button>
             </div>
           </div>

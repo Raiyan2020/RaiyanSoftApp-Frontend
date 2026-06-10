@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
-import ProjectWizard from '@/features/projects/components/project-wizard';
+import { ProjectWizard } from '@/features/projects';
 import { useLeadCapture } from '../hooks/use-lead-capture';
 
 export default function LeadCapturePage() {

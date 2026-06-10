@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { adminLoginSchema, AdminLoginValues } from '../schemas/admin-login.schema';
 import { Field, FieldLabel, FieldError, PasswordInput } from '@/components/ui/field';
 import AdminLoginRedirect from './admin-login-redirect';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminLoginPage() {
   const {
@@ -48,8 +49,8 @@ export default function AdminLoginPage() {
                 alt="Raiyansoft Logo"
               />
             </div>
-            <h1 className="text-2xl font-bold text-[var(--text)]">Admin Access</h1>
-            <p className="text-[var(--text-muted)] text-sm mt-1">Sign in to dashboard</p>
+            <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Admin Access')}</h1>
+            <p className="text-[var(--text-muted)] text-sm mt-1">{translateMessage('Sign in to dashboard')}</p>
           </div>
 
           <form onSubmit={form.handleSubmit(handleLogin)} className="space-y-6">
@@ -103,7 +104,7 @@ export default function AdminLoginPage() {
                 className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-center gap-2 text-red-400 text-xs"
               >
                 <ShieldCheck size={14} />
-                {error}
+                {translateMessage(error)}
               </motion.div>
             ) : null}
 
@@ -113,7 +114,7 @@ export default function AdminLoginPage() {
                 animate={{ opacity: 1, height: 'auto' }}
                 className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-emerald-400 text-xs text-center"
               >
-                {bootstrapMessage}
+                {translateMessage(bootstrapMessage)}
               </motion.div>
             ) : null}
 
@@ -126,7 +127,7 @@ export default function AdminLoginPage() {
                 <Loader2 size={20} className="animate-spin" />
               ) : (
                 <>
-                  <span>Sign In</span>
+                  <span>{translateMessage('Sign In')}</span>
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </>
               )}
@@ -134,7 +135,7 @@ export default function AdminLoginPage() {
           </form>
 
           <div className="mt-8 text-center space-y-4">
-            <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest">Secured Area • Raiyansoft® Admin</p>
+            <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest">{translateMessage('Secured Area • Raiyansoft® Admin')}</p>
 
             <button
               type="button"
@@ -149,7 +150,7 @@ export default function AdminLoginPage() {
               className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-muted)] transition-colors flex items-center justify-center gap-1 mx-auto"
             >
               {isBootstrapping ? <Loader2 size={10} className="animate-spin" /> : <Zap size={10} />}
-              Initialize / Recover Super Admin
+              {translateMessage('Initialize / Recover Super Admin')}
             </button>
           </div>
         </div>

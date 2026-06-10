@@ -5,6 +5,7 @@ import ConfirmModal from '@/components/ui/confirm-modal';
 import { useAdminRoles } from '../hooks/use-admin-roles';
 import RoleCard from './role-card';
 import RoleFormModal from './role-form-modal';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminRolesPage() {
   const {
@@ -26,8 +27,8 @@ export default function AdminRolesPage() {
     <div className="space-y-8 pb-20">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text)]">Roles & Permissions</h1>
-          <p className="text-[var(--text-muted)] text-sm">Define access levels for employees.</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Roles & Permissions')}</h1>
+          <p className="text-[var(--text-muted)] text-sm">{translateMessage('Define access levels for employees.')}</p>
         </div>
         <button
           type="button"
@@ -35,7 +36,7 @@ export default function AdminRolesPage() {
           className="bg-primary hover:bg-sky-400 text-white px-4 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shadow-lg shadow-primary/20"
         >
           <Plus size={20} />
-          <span>Add Role</span>
+          <span>{translateMessage('Add Role')}</span>
         </button>
       </div>
 

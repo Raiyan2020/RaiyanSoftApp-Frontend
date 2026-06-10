@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchAdminColors } from '../api/admin-colors-api';
+import { fetchAdminColors } from '../services/admin-colors-api';
 import { AdminColor } from '../types/admin-color.types';
 
 export function useAdminColorsList() {

@@ -16,7 +16,7 @@ const emptyForm: EmployeeValues = {
   lastName: '',
   email: '',
   phone: '',
-  role: 'staff',
+  role: 'super_admin',
   password: '',
 };
 
@@ -75,7 +75,7 @@ export function useAdminEmployees() {
         lastName: employee.last_name,
         email: employee.email,
         phone: employee.phone || '',
-        role: (employee.role === 'admin' ? 'admin' : 'staff') as EmployeeValues['role'],
+        role: 'super_admin',
         password: '',
       });
     } else {

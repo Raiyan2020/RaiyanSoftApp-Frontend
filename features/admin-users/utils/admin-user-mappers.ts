@@ -1,4 +1,4 @@
-import { AdminApiUser } from '../api/admin-users-api';
+import { AdminApiUser } from '../services/admin-users-api';
 import { AdminUser } from '../types/admin-user.types';
 
 function parseRegisteredDate(value?: string) {

@@ -2,9 +2,11 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { X, Ban, CheckCircle, Trash2 } from 'lucide-react';
 import { UserProject } from '@/lib/userProjectsStore';
+import { FEATURES } from '@/lib/feature-flags';
 import { AdminUser } from '../types/admin-user.types';
 import UserProfileTab from './user-profile-tab';
 import UserProjectsTab from './user-projects-tab';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface UserDetailDrawerProps {
   selectedUser: AdminUser;
@@ -46,10 +48,11 @@ export default function UserDetailDrawer({
         animate={{ x: 0 }}
         exit={{ x: '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+        onClick={(event) => event.stopPropagation()}
         className="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-[var(--surface)] border-l border-[var(--border)] shadow-2xl flex flex-col"
       >
         <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
-          <h2 className="text-xl font-bold text-[var(--text)]">User Details</h2>
+          <h2 className="text-xl font-bold text-[var(--text)]">{translateMessage('User Details')}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -69,7 +72,7 @@ export default function UserDetailDrawer({
                 : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
           >
-            Profile Info
+            {translateMessage('Profile Info')}
           </button>
           <button
             type="button"
@@ -80,7 +83,7 @@ export default function UserDetailDrawer({
                 : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
           >
-            Projects ({selectedUser.projectsCount || 0})
+            {translateMessage('Projects')} ({selectedUser.projectsCount || 0})
           </button>
         </div>
 
@@ -113,16 +116,18 @@ export default function UserDetailDrawer({
                 }`}
               >
                 {selectedUser.status === 'Active' ? <Ban size={18} /> : <CheckCircle size={18} />}
-                {selectedUser.status === 'Active' ? 'Disable Account' : 'Activate Account'}
+                {translateMessage(selectedUser.status === 'Active' ? 'Disable Account' : 'Activate Account')}
               </button>
-              <button
-                type="button"
-                onClick={() => onDeleteUser(selectedUser.id)}
-                className="flex-1 py-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 font-medium text-sm transition-colors flex items-center justify-center gap-2"
-              >
-                <Trash2 size={18} />
-                Delete
-              </button>
+              {FEATURES.userDeletion ? (
+                <button
+                  type="button"
+                  onClick={() => onDeleteUser(selectedUser.id)}
+                  className="flex-1 py-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                >
+                  <Trash2 size={18} />
+                  {translateMessage('Delete')}
+                </button>
+              ) : null}
             </div>
           </div>
         ) : null}

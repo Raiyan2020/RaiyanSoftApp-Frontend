@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const EMPLOYEE_ROLES = ['staff', 'admin'] as const;
+export const EMPLOYEE_ROLES = ['super_admin'] as const;
 
 export const getEmployeeSchema = (isEditing: boolean) =>
   z.object({

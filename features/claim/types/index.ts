@@ -1,0 +1,1 @@
+// claim feature — TypeScript types

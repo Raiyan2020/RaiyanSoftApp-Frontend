@@ -2,7 +2,6 @@
 
 import React from 'react';
 import {
-  AlertTriangle,
   ArrowDown,
   ArrowUp,
   Check,
@@ -17,6 +16,8 @@ import {
 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 import {
   ProjectQuestion,
   ProjectQuestionType,
@@ -29,7 +30,9 @@ const inputClasses =
 const optionTypes: ProjectQuestionType[] = ['single_select', 'multi_select'];
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
-  <label className="text-xs text-[var(--text-muted)] font-medium ms-1">{children}</label>
+  <label className="text-xs text-[var(--text-muted)] font-medium ms-1">
+    {typeof children === 'string' ? translateMessage(children) : children}
+  </label>
 );
 
 function QuestionRow({
@@ -247,7 +250,7 @@ export default function AdminProjectQuestionsPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-[500px] text-[var(--text-muted)]">
         <Loader2 size={32} className="animate-spin mb-4 text-primary" />
-        <p>Loading project questions...</p>
+        <p>{translateMessage('Loading project questions...')}</p>
       </div>
     );
   }
@@ -256,8 +259,8 @@ export default function AdminProjectQuestionsPage() {
     <div className="space-y-8 pb-20">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-[var(--text)]">Project Questions</h1>
-          <p className="text-[var(--text-muted)] text-sm">Manage the client project request wizard questions and options.</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Project Questions')}</h1>
+          <p className="text-[var(--text-muted)] text-sm">{translateMessage('Manage the client project request wizard questions and options.')}</p>
         </div>
         <Button type="button" onClick={state.startCreate} className="gap-2">
           <Plus size={18} />
@@ -265,15 +268,7 @@ export default function AdminProjectQuestionsPage() {
         </Button>
       </div>
 
-      {state.error ? (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-start gap-3">
-          <AlertTriangle className="text-red-400 shrink-0" size={20} />
-          <p className="text-red-400/80 text-sm">{state.error}</p>
-          <button type="button" onClick={() => state.setError(null)} className="ms-auto text-red-300">
-            <X size={16} />
-          </button>
-        </div>
-      ) : null}
+      {state.error ? <ErrorAlert message={state.error} /> : null}
 
       <div className="space-y-6">
         <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
@@ -284,9 +279,9 @@ export default function AdminProjectQuestionsPage() {
               </div>
               <div>
                 <h2 className="text-lg font-bold text-[var(--text)]">
-                  {state.selectedQuestion ? 'Edit Question' : 'Add Question'}
+                  {translateMessage(state.selectedQuestion ? 'Edit Question' : 'Add Question')}
                 </h2>
-                <p className="text-xs text-[var(--text-muted)]">Use one option per line. Add Arabic after a pipe character.</p>
+                <p className="text-xs text-[var(--text-muted)]">{translateMessage('Use one option per line. Add Arabic after a pipe character.')}</p>
               </div>
             </div>
 
@@ -298,7 +293,7 @@ export default function AdminProjectQuestionsPage() {
                     value={state.form.label}
                     onChange={(e) => state.setForm((prev) => ({ ...prev, label: e.target.value }))}
                     className={inputClasses}
-                    placeholder="What platforms do you need?"
+                    placeholder={translateMessage('What platforms do you need?')}
                   />
                 </div>
                 <div className="space-y-2">
@@ -307,7 +302,7 @@ export default function AdminProjectQuestionsPage() {
                     value={state.form.labelAr}
                     onChange={(e) => state.setForm((prev) => ({ ...prev, labelAr: e.target.value }))}
                     className={inputClasses}
-                    placeholder="Arabic label"
+                    placeholder={translateMessage('Arabic label')}
                   />
                 </div>
               </div>
@@ -351,7 +346,7 @@ export default function AdminProjectQuestionsPage() {
                         }`}
                       >
                         {checked ? <Check size={13} /> : <X size={13} />}
-                        {label}
+                        {translateMessage(label)}
                       </button>
                     );
                   })}
@@ -378,7 +373,7 @@ export default function AdminProjectQuestionsPage() {
                 className="gap-2"
               >
                 <Save size={16} />
-                Save Question
+                {translateMessage('Save Question')}
               </Button>
             </div>
           </div>
@@ -393,16 +388,16 @@ export default function AdminProjectQuestionsPage() {
 
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-lg font-bold text-[var(--text)]">Question Order</h2>
+            <h2 className="text-lg font-bold text-[var(--text)]">{translateMessage('Question Order')}</h2>
             <span className="text-xs text-[var(--text-muted)] bg-[var(--surface-2)] border border-[var(--border)] rounded-full px-3 py-1">
-              {state.questions.length} total
+              {state.questions.length} {translateMessage('total')}
             </span>
           </div>
 
           {state.questions.length === 0 ? (
             <div className="text-center py-16 text-[var(--text-muted)]">
               <ListChecks size={30} className="mx-auto mb-3 text-[var(--text-muted)]" />
-              <p>No project questions yet.</p>
+              <p>{translateMessage('No project questions yet.')}</p>
             </div>
           ) : (
             <div className="space-y-3">

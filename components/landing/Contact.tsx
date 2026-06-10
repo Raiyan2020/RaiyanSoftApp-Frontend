@@ -2,6 +2,7 @@
 import { useRef, useState } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
+import PhoneInput from '@/components/ui/phone-input';
 
 export default function Contact() {
   const ref = useRef<HTMLDivElement>(null);
@@ -9,7 +10,8 @@ export default function Contact() {
   const { content, contactMethods, textAlign } = useLandingContent();
   const { contact } = content;
 
-  const [form, setForm] = useState({ name: '', email: '', phone: '', service: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', service: '', message: '' });
+  const [phone, setPhone] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
 
@@ -82,9 +84,10 @@ export default function Contact() {
                   <p className="mx-auto mt-3 max-w-md text-slate-600 dark:text-slate-300">{contact.form.successDescription}</p>
                   <button
                     type="button"
-                    onClick={() => {
+                      onClick={() => {
                       setSubmitted(false);
-                      setForm({ name: '', email: '', phone: '', service: '', message: '' });
+                      setForm({ name: '', email: '', service: '', message: '' });
+                      setPhone('');
                     }}
                     className="premium-button touch-lift mt-7 rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3 font-bold text-white shadow-lg shadow-primary/25"
                   >
@@ -128,14 +131,7 @@ export default function Contact() {
                       <label htmlFor="contact-phone" className="text-sm font-bold text-slate-700 dark:text-slate-200">
                         {contact.form.phone}
                       </label>
-                      <input
-                        id="contact-phone"
-                        type="tel"
-                        value={form.phone}
-                        onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                        className={inputClass}
-                        dir="ltr"
-                      />
+                      <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} required />
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="contact-service" className="text-sm font-bold text-slate-700 dark:text-slate-200">

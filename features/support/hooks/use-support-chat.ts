@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { chatStore, useMessages as useStoreMessages, Message } from '@/lib/chatStore';
 import { useTranslation } from '@/lib/i18nContext';
-import { auth, db } from '@/lib/firebase-client';
-import { doc, updateDoc, setDoc } from 'firebase/firestore';
+import { globalToast } from '@/lib/toast-context';
 
 export const TAB_BAR_HEIGHT = 80;
 export const BOTTOM_SAFE_AREA = 20;
@@ -47,40 +46,17 @@ export function useSupportChat(options?: { embedded?: boolean }) {
     scrollToBottom('smooth');
   }, [messages.length]);
 
-  useEffect(() => {
-    const clearUnread = async () => {
-      if (!auth.currentUser || !db) return;
-      try {
-        await setDoc(
-          doc(db, 'conversations', auth.currentUser.uid),
-          {
-            unreadForUser: 0,
-          },
-          { merge: true }
-        );
-
-        await updateDoc(doc(db, 'users', auth.currentUser.uid), {
-          chatUnreadCount: 0,
-        }).catch(() => {});
-      } catch (e) {
-        console.warn('Failed to clear unread count', e);
-      }
-    };
-
-    clearUnread();
-
-    if (messages.length > 0) {
-      clearUnread();
-    }
-  }, [messages.length]);
-
-  const handleSend = (e?: React.FormEvent) => {
+  const handleSend = async (e?: React.FormEvent) => {
     e?.preventDefault();
     if (!inputText.trim()) return;
 
-    chatStore.sendMessage(inputText.trim());
-    setInputText('');
-    setTimeout(() => scrollToBottom('auto'), 50);
+    try {
+      await chatStore.sendMessage(inputText.trim());
+      setInputText('');
+      setTimeout(() => scrollToBottom('auto'), 50);
+    } catch (err: any) {
+      globalToast.info(err?.message || 'Support chat is not available yet.');
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {

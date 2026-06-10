@@ -1,6 +1,7 @@
 import React from 'react';
 import { Mail, Phone, Eye, Ban, CheckCircle, Trash2 } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
+import { FEATURES } from '@/lib/feature-flags';
 import { AdminUser } from '../types/admin-user.types';
 
 interface UsersTableRowProps {
@@ -83,14 +84,16 @@ export default function UsersTableRow({
           >
             {user.status === 'Active' ? <Ban size={16} /> : <CheckCircle size={16} />}
           </button>
-          <button
-            type="button"
-            onClick={() => onDeleteUser(user.id)}
-            className="p-2 hover:bg-red-500/10 rounded-lg text-[var(--text-muted)] hover:text-red-400 transition-colors"
-            title="Delete User"
-          >
-            <Trash2 size={16} />
-          </button>
+          {FEATURES.userDeletion ? (
+            <button
+              type="button"
+              onClick={() => onDeleteUser(user.id)}
+              className="p-2 hover:bg-red-500/10 rounded-lg text-[var(--text-muted)] hover:text-red-400 transition-colors"
+              title="Delete User"
+            >
+              <Trash2 size={16} />
+            </button>
+          ) : null}
         </div>
       </td>
     </tr>

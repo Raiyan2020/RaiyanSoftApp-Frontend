@@ -1,7 +1,9 @@
 import React from 'react';
 import { AnimatePresence } from 'framer-motion';
-import { Download, AlertTriangle, User as UserIcon } from 'lucide-react';
+import { Download, User as UserIcon } from 'lucide-react';
 import ConfirmModal from '@/components/ui/confirm-modal';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 import { useAdminUsers } from '../hooks/use-admin-users';
 import UsersFilterBar from './users-filter-bar';
 import UsersTable from './users-table';
@@ -39,12 +41,12 @@ export default function AdminUsersPage() {
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold text-[var(--text)] flex items-center gap-2">
-            Users
+            {translateMessage('Users')}
             <span className="text-sm font-normal text-[var(--text-muted)] bg-[var(--surface-3)] px-2 py-1 rounded-full border border-[var(--border)]">
               {users.length}
             </span>
           </h1>
-          <p className="text-[var(--text-muted)] text-sm">Registered accounts management.</p>
+          <p className="text-[var(--text-muted)] text-sm">{translateMessage('Registered accounts management.')}</p>
         </div>
         <button
           type="button"
@@ -52,19 +54,11 @@ export default function AdminUsersPage() {
           className="bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] px-4 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors border border-[var(--border)]"
         >
           <Download size={18} />
-          <span>Export CSV</span>
+          <span>{translateMessage('Export CSV')}</span>
         </button>
       </div>
 
-      {error || actionError ? (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-4 flex items-start gap-3">
-          <AlertTriangle className="text-red-400 shrink-0" size={20} />
-          <div>
-            <h3 className="text-red-400 font-bold text-sm">{error ? 'Error Loading Users' : 'Action Unavailable'}</h3>
-            <p className="text-red-400/80 text-xs mt-1">{error || actionError}</p>
-          </div>
-        </div>
-      ) : null}
+      {error || actionError ? <ErrorAlert message={error || actionError} /> : null}
 
       <UsersFilterBar
         searchTerm={searchTerm}
@@ -79,14 +73,14 @@ export default function AdminUsersPage() {
             <div className="w-16 h-16 bg-[var(--surface-3)] rounded-full flex items-center justify-center mb-4 border border-[var(--border)]">
               <UserIcon size={24} />
             </div>
-            <p>Loading users...</p>
+            <p>{translateMessage('Loading users...')}</p>
           </div>
         ) : filteredUsers.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-[var(--text-muted)]">
             <div className="w-16 h-16 bg-[var(--surface-3)] rounded-full flex items-center justify-center mb-4 border border-[var(--border)]">
               <UserIcon size={24} />
             </div>
-            <p>{error ? 'Unable to load users.' : 'No users found matching your criteria.'}</p>
+            <p>{translateMessage(error ? 'Unable to load users.' : 'No users found matching your criteria.')}</p>
           </div>
         ) : (
           <>

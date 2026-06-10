@@ -1,4 +1,4 @@
-import type { NotificationQueryParams } from './api/notifications-api';
+import type { NotificationQueryParams } from './services/notifications-api';
 
 export const notificationKeys = {
   all: ['notifications'] as const,

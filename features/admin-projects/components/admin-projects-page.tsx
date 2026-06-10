@@ -5,6 +5,7 @@ import ConfirmModal from '@/components/ui/confirm-modal';
 import { useAdminProjects } from '../hooks/use-admin-projects';
 import AdminProjectCard from './admin-project-card';
 import ProjectFormModal from './project-form-modal';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminProjectsPage() {
   const {
@@ -29,9 +30,9 @@ export default function AdminProjectsPage() {
       <div>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-[var(--text)]">Client Projects</h1>
+            <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Client Projects')}</h1>
             <p className="text-[var(--text-muted)] text-sm">
-              Manage the projects displayed on the mobile app home screen.
+              {translateMessage('Manage the projects displayed on the mobile app home screen.')}
             </p>
           </div>
           <button
@@ -40,7 +41,7 @@ export default function AdminProjectsPage() {
             className="bg-primary hover:bg-sky-400 text-white px-4 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shadow-lg shadow-primary/20"
           >
             <Plus size={20} />
-            <span>Add Project</span>
+            <span>{translateMessage('Add Project')}</span>
           </button>
         </div>
 
@@ -50,7 +51,7 @@ export default function AdminProjectsPage() {
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search projects..."
+            placeholder={translateMessage('Search projects...')}
             className="w-full md:max-w-md bg-[var(--surface)] border border-[var(--border)] rounded-xl py-2.5 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
           />
         </div>
@@ -73,7 +74,7 @@ export default function AdminProjectsPage() {
             <div className="w-16 h-16 bg-[var(--surface)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border)]">
               <Search size={24} />
             </div>
-            <p>No projects found matching your search.</p>
+            <p>{translateMessage('No projects found matching your search.')}</p>
           </div>
         ) : null}
       </div>

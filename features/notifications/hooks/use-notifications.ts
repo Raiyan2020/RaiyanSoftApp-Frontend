@@ -2,6 +2,7 @@ import type React from 'react';
 import { useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authService } from '@/lib/auth-service';
+import { globalConfirm } from '@/lib/confirm-dialog';
 import { useTranslation } from '@/lib/i18nContext';
 import {
   deleteAllNotifications,
@@ -10,7 +11,7 @@ import {
   fetchUnreadNotifications,
   markAllNotificationsRead,
   markNotificationRead,
-} from '../api/notifications-api';
+} from '../services/notifications-api';
 import { notificationKeys } from '../query-keys';
 import { mapApiNotification, type Notification } from '../types/notification.types';
 
@@ -114,13 +115,17 @@ export function useNotifications() {
     }
   };
 
-  const handleDeleteAll = () => {
-    const confirmed = window.confirm(t('notif.confirm_delete_all'));
-    if (!confirmed) return;
+  const handleDeleteAll = async () => {
+    const confirmed = await globalConfirm.confirm({
+      title: 'Delete all notifications?',
+      message: t('notif.confirm_delete_all'),
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      destructive: true,
+    });
+    if (!confirmed || notifications.length === 0) return;
 
-    if (notifications.length > 0) {
-      deleteAllMutation.mutate();
-    }
+    deleteAllMutation.mutate();
   };
 
   return {

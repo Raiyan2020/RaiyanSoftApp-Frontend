@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
+import { globalToast } from '@/lib/toast-context';
 import { UserProject, ProjectStatus } from '@/lib/userProjectsStore';
 import { UserProjectEditValues } from '../schemas/user-project-edit.schema';
-import { AdminProjectSummary, fetchAdminProjects, updateAdminProject } from '../api/admin-projects-api';
+import { AdminProjectSummary, fetchAdminProjects, updateAdminProject } from '../services/admin-projects-api';
 
 export const statusOptions: ProjectStatus[] = [
   'pricing',
@@ -63,6 +64,22 @@ const projectTypeToIndustry = (type?: unknown) => {
   return map[normalized] || normalized;
 };
 
+const normalizeIndustryValue = (value?: unknown) => {
+  const normalized = projectTypeToIndustry(value);
+  if (!normalized) return '';
+
+  const knownIndustries = new Set(INDUSTRIES);
+  if (knownIndustries.has(normalized)) return normalized;
+
+  const compact = normalized.trim();
+  if (knownIndustries.has(compact)) return compact;
+
+  const matched = INDUSTRIES.find(
+    (industry) => industry.toLowerCase() === compact.toLowerCase()
+  );
+  return matched || compact;
+};
+
 const industryToProjectType = (industry?: string) => {
   const map: Record<string, string> = {
     'Food & Delivery': 'food_delivery',
@@ -80,6 +97,17 @@ const industryToProjectType = (industry?: string) => {
   return industry ? map[industry] || industry : null;
 };
 
+const normalizeTextValue = (value?: unknown) => {
+  if (value === undefined || value === null) return '';
+  return String(value);
+};
+
+const normalizeNumberValue = (value?: unknown) => {
+  if (value === undefined || value === null || value === '') return '';
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? String(parsed) : '';
+};
+
 const parseApiDate = (date?: string) => {
   if (!date) return Date.now();
   const normalized = date.replace(/\//g, '-');
@@ -94,17 +122,31 @@ const mapAdminProjectToUserProject = (project: AdminProjectSummary): UserProject
   ownerEmail: project.user?.email || '',
   name: project.project_name || `Project ${project.id}`,
   description: project.description || '',
-  estimatedPrice: null,
+  estimatedPrice: (() => {
+    const raw = (project as AdminProjectSummary & {
+      estimated_price?: unknown;
+      estimatedPrice?: unknown;
+    }).estimated_price ?? (project as AdminProjectSummary & {
+      estimated_price?: unknown;
+      estimatedPrice?: unknown;
+    }).estimatedPrice;
+    if (raw === undefined || raw === null || raw === '') return null;
+    const parsed = Number(raw);
+    return Number.isFinite(parsed) ? parsed : null;
+  })(),
   estimatedDuration:
     project.estimated_duration === undefined || project.estimated_duration === null
       ? null
       : Number(project.estimated_duration),
   status: apiStatusToProjectStatus(enumValue(project.project_status) || project.status),
-  projectUrl: project.project_url || null,
+  projectUrl:
+    normalizeTextValue(project.project_url || (project as AdminProjectSummary & { projectUrl?: unknown }).projectUrl) || null,
   createdAt: parseApiDate(project.date),
   updatedAt: parseApiDate(project.date),
   version: enumValue(project.project_status) || project.status || 'Backend',
-  industry: projectTypeToIndustry(project.type),
+  industry: normalizeIndustryValue(
+    project.type || (project as AdminProjectSummary & { project_type?: unknown }).project_type || (project as AdminProjectSummary & { industry?: unknown }).industry
+  ),
   iconBg: '#1DB7F0',
   brandColor: '#1DB7F0',
 });
@@ -154,12 +196,12 @@ export function useAdminUserProjects() {
       setFormData({
         name: editingProject.name || '',
         description: editingProject.description || '',
-        estimatedPrice: editingProject.estimatedPrice ?? '',
-        estimatedDuration: editingProject.estimatedDuration ?? '',
+        estimatedPrice: normalizeNumberValue(editingProject.estimatedPrice),
+        estimatedDuration: normalizeNumberValue(editingProject.estimatedDuration),
         status: editingProject.status || 'pricing',
-        projectUrl: editingProject.projectUrl || '',
-        industry: editingProject.industry || '',
-        industryOther: editingProject.industryOther || '',
+        projectUrl: normalizeTextValue(editingProject.projectUrl),
+        industry: normalizeIndustryValue(editingProject.industry),
+        industryOther: normalizeTextValue(editingProject.industryOther),
       });
     } else {
       setFormData({
@@ -224,7 +266,7 @@ export function useAdminUserProjects() {
       setEditingProject(null);
     } catch (err) {
       console.error('Error updating project:', err);
-      alert('Project edit is local only until the backend adds an update project endpoint.');
+      globalToast.error('Project edit is local only until the backend adds an update project endpoint.');
     } finally {
       setIsSaving(false);
     }

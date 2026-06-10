@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { leadStore } from '@/lib/leadStore';
-import { auth, db } from '@/lib/firebase-client';
+import { authService } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
+import { globalToast } from '@/lib/toast-context';
 import { ClaimValues } from '../schemas/claim.schema';
 
 export type ClaimStatus = 'validating' | 'valid' | 'invalid' | 'claiming' | 'success';
@@ -42,24 +41,8 @@ export function useClaim() {
 
     setStatus('claiming');
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, data.email.trim(), data.password);
-      const user = userCredential.user;
-      await updateProfile(user, { displayName: `${data.firstName} ${data.lastName}` });
-
-      if (db) {
-        await setDoc(doc(db, 'users', user.uid), {
-          id: user.uid,
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email.trim(),
-          phone: data.phone,
-          role: 'Customer',
-          status: 'Active',
-          createdAt: serverTimestamp(),
-          registeredAt: serverTimestamp(),
-          lastLoginAt: serverTimestamp(),
-          migrationDone: true,
-        });
+      if (!authService.getUser()) {
+        throw new Error('Please sign in before claiming this project.');
       }
 
       await leadStore.claimProject(token, leadId);
@@ -70,7 +53,7 @@ export function useClaim() {
       }, 2000);
     } catch (err: any) {
       console.error(err);
-      alert(`Error: ${err.message}`);
+      globalToast.error(err.message || 'Unable to claim this project.');
       setStatus('valid');
     }
   };

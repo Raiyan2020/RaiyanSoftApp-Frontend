@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { bookMeeting } from '../api/user-meetings-api';
+import { bookMeeting } from '../services/user-meetings-api';
 import { BookMeetingPayload } from '../types/meeting.types';
 
 export function useBookMeeting() {

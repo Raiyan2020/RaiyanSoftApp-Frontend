@@ -1,3 +1,5 @@
+import { translateMessage } from '@/lib/i18n-utils';
+
 type FieldProps = {
   id: string;
   label: string;
@@ -10,13 +12,13 @@ export function PublicField({ id, label, error, required, children }: FieldProps
   return (
     <div className="space-y-2">
       <label htmlFor={id} className="block text-sm font-black text-slate-800 dark:text-slate-100">
-        {label}
+        {translateMessage(label)}
         {required ? <span className="text-primary"> *</span> : null}
       </label>
       {children}
       {error ? (
         <p id={`${id}-error`} className="text-sm font-bold text-red-600 dark:text-red-300">
-          {error}
+          {translateMessage(error)}
         </p>
       ) : null}
     </div>
@@ -35,8 +37,7 @@ export function PublicFormStatus({ type, message }: { type: 'success' | 'error' 
 
   return (
     <div role={type === 'error' ? 'alert' : 'status'} className={`rounded-lg border px-4 py-3 text-sm font-bold ${styles[type]}`}>
-      {message}
+      {translateMessage(message)}
     </div>
   );
 }
-

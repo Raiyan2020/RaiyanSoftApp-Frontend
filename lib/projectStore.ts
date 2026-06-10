@@ -1,7 +1,6 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy, addDoc, updateDoc, deleteDoc, doc, serverTimestamp } from 'firebase/firestore';
-import { db } from './firebase-client';
+
+import { useEffect, useState } from 'react';
 
 export interface Project {
   id: string;
@@ -15,41 +14,15 @@ export interface Project {
 class ProjectStore {
   private projects: Project[] = [];
   private listeners: (() => void)[] = [];
-  private unsubscribe: (() => void) | null = null;
-
-  constructor() {
-    this.subscribeToFirestore();
-  }
-
-  private subscribeToFirestore() {
-    if (!db) return;
-
-    // Root 'projects' collection
-    const q = query(collection(db, 'projects'), orderBy('createdAt', 'desc'));
-
-    this.unsubscribe = onSnapshot(q, (snapshot) => {
-      this.projects = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          ...data,
-          id: doc.id,
-          createdAt: data.createdAt?.toMillis?.() || Date.now(),
-        } as Project;
-      });
-      this.notify();
-    }, (error) => {
-      console.error("Portfolio projects error:", error);
-    });
-  }
 
   private notify() {
-    this.listeners.forEach(l => l());
+    this.listeners.forEach((listener) => listener());
   }
 
   subscribe(listener: () => void) {
     this.listeners.push(listener);
     return () => {
-      this.listeners = this.listeners.filter(l => l !== listener);
+      this.listeners = this.listeners.filter((current) => current !== listener);
     };
   }
 
@@ -57,22 +30,21 @@ class ProjectStore {
     return [...this.projects];
   }
 
-  async addProject(project: Omit<Project, 'id' | 'createdAt'>) {
-    if (!db) return;
-    await addDoc(collection(db, 'projects'), {
-      ...project,
-      createdAt: serverTimestamp()
-    });
+  async addProject(_project: Omit<Project, 'id' | 'createdAt'>) {
+    throw new Error('Portfolio project management is not available in the Laravel backend routes yet.');
   }
 
-  async updateProject(id: string, updates: Partial<Omit<Project, 'id' | 'createdAt'>>) {
-    if (!db) return;
-    await updateDoc(doc(db, 'projects', id), updates);
+  async updateProject(_id: string, _updates: Partial<Omit<Project, 'id' | 'createdAt'>>) {
+    throw new Error('Portfolio project management is not available in the Laravel backend routes yet.');
   }
 
-  async deleteProject(id: string) {
-    if (!db) return;
-    await deleteDoc(doc(db, 'projects', id));
+  async deleteProject(_id: string) {
+    throw new Error('Portfolio project management is not available in the Laravel backend routes yet.');
+  }
+
+  reset() {
+    this.projects = [];
+    this.notify();
   }
 }
 

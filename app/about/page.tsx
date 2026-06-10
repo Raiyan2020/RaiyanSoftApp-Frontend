@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import PublicSimplePage from '@/components/public/public-page-section';
 import PageHtmlContent from '@/features/pages/components/page-html-content';
-import { fetchAboutUsServer } from '@/features/pages/api/pages-api';
+import { fetchAboutUsServer } from '@/features/pages/services/pages-api';
 import type { AboutUsPage } from '@/features/pages/types/page.types';
 import { createPublicMetadata } from '@/lib/site';
 

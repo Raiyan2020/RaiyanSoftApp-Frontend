@@ -1,14 +1,14 @@
 "use client";
-import { useState, useEffect } from 'react';
-import { collection, onSnapshot, query, orderBy, addDoc, updateDoc, deleteDoc, doc, serverTimestamp, getDoc } from 'firebase/firestore';
-import { db, auth } from './firebase-client';
+
+import { useEffect, useState } from 'react';
+import { authService } from './auth-service';
 
 export interface AdminUser {
-  id: string; // matches uid
+  id: string;
   name: string;
   email: string;
-  role: 'super_admin' | 'admin' | string; // Role slug or ID
-  permissions: Record<string, boolean>; // Map of permissions e.g. { employees: true }
+  role: 'super_admin' | 'admin' | string;
+  permissions: Record<string, boolean>;
   status: 'Active' | 'Disabled';
   phone?: string;
   createdAt: number;
@@ -18,42 +18,15 @@ export interface AdminUser {
 class AdminStore {
   private admins: AdminUser[] = [];
   private listeners: (() => void)[] = [];
-  private unsubscribe: (() => void) | null = null;
-
-  constructor() {
-    this.subscribeToFirestore();
-  }
-
-  private subscribeToFirestore() {
-    if (!db) return;
-
-    // Root 'admins' collection
-    const q = query(collection(db, 'admins'), orderBy('createdAt', 'desc'));
-
-    this.unsubscribe = onSnapshot(q, (snapshot) => {
-      this.admins = snapshot.docs.map(doc => {
-        const data = doc.data();
-        return {
-          ...data,
-          id: doc.id,
-          createdAt: data.createdAt?.toMillis?.() || Date.now(),
-          lastLoginAt: data.lastLoginAt?.toMillis?.() || 0
-        } as AdminUser;
-      });
-      this.notify();
-    }, (error) => {
-      console.error("Admin fetch error:", error);
-    });
-  }
 
   private notify() {
-    this.listeners.forEach(l => l());
+    this.listeners.forEach((listener) => listener());
   }
 
   subscribe(listener: () => void) {
     this.listeners.push(listener);
     return () => {
-      this.listeners = this.listeners.filter(l => l !== listener);
+      this.listeners = this.listeners.filter((current) => current !== listener);
     };
   }
 
@@ -61,59 +34,25 @@ class AdminStore {
     return [...this.admins];
   }
 
-  // Check if a UID exists in the admins collection
   async checkIsAdmin(uid: string): Promise<boolean> {
-    if (!db) return false;
-    try {
-      const docRef = doc(db, 'admins', uid);
-      const snap = await getDoc(docRef);
-      if (snap.exists() && snap.data().status === 'Active') {
-        return true;
-      }
-      return false;
-    } catch (e) {
-      console.error("Error checking admin status", e);
-      return false;
-    }
+    const admin = authService.getAdmin();
+    return Boolean(admin && String(admin.id) === String(uid));
   }
 
-  async addAdmin(adminData: Omit<AdminUser, 'createdAt' | 'lastLoginAt'>) {
-    if (!db) return;
-    // We use setDoc with the auth UID usually, but for the store helper we might be creating
-    // the Firestore record after Auth creation. 
-    // Here we assume ID is passed or we let firestore generate (if not strictly tied to Auth UID yet, though it should be).
-    // In AdminEmployees, we handle the Auth creation then setDoc. 
-    // This method is a fallback helper.
-    
-    if (adminData.id) {
-        await this.updateAdmin(adminData.id, adminData);
-    } else {
-       // Should rarely happen if we follow Auth-first creation
-       await addDoc(collection(db, 'admins'), {
-        ...adminData,
-        createdAt: serverTimestamp(),
-        lastLoginAt: null
-      });
-    }
+  async addAdmin(_adminData: Omit<AdminUser, 'createdAt' | 'lastLoginAt'>) {
+    throw new Error('Use the Laravel employees API for admin creation.');
   }
 
-  async updateAdmin(id: string, updates: Partial<Omit<AdminUser, 'createdAt'>>) {
-    if (!db) return;
-    await updateDoc(doc(db, 'admins', id), updates);
+  async updateAdmin(_id: string, _updates: Partial<Omit<AdminUser, 'createdAt'>>) {
+    throw new Error('Use the Laravel employees API for admin updates.');
   }
 
-  async toggleStatus(id: string) {
-    if (!db) return;
-    const admin = this.admins.find(a => a.id === id);
-    if (admin) {
-      const newStatus = admin.status === 'Active' ? 'Disabled' : 'Active';
-      await updateDoc(doc(db, 'admins', id), { status: newStatus });
-    }
+  async toggleStatus(_id: string) {
+    throw new Error('Use the Laravel employees API for admin status updates.');
   }
 
-  async deleteAdmin(id: string) {
-    if (!db) return;
-    await deleteDoc(doc(db, 'admins', id));
+  async deleteAdmin(_id: string) {
+    throw new Error('Use the Laravel employees API for admin deletion.');
   }
 }
 

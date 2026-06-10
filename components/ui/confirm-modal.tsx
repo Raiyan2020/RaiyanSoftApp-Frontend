@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface ConfirmModalProps {
   isOpen: boolean;
@@ -45,15 +46,15 @@ export default function ConfirmModal({
               } opacity-80`}
             />
 
-            <h3 className="text-xl font-bold text-[var(--text)] mb-2">{title}</h3>
-            <p className="text-[var(--text-muted)] text-sm mb-6 leading-relaxed">{message}</p>
+            <h3 className="text-xl font-bold text-[var(--text)] mb-2">{translateMessage(title)}</h3>
+            <p className="text-[var(--text-muted)] text-sm mb-6 leading-relaxed">{translateMessage(message)}</p>
 
             <div className="flex space-x-3 rtl:space-x-reverse">
               <button
                 onClick={onCancel}
                 className="flex-1 py-3 rounded-xl bg-[var(--surface-2)] text-[var(--text)] font-medium text-sm hover:opacity-90 transition-colors border border-[var(--border)]"
               >
-                {cancelText}
+                {translateMessage(cancelText)}
               </button>
               <button
                 onClick={onConfirm}
@@ -63,7 +64,7 @@ export default function ConfirmModal({
                     : 'bg-primary hover:bg-sky-500 shadow-primary/20'
                 }`}
               >
-                {confirmText}
+                {translateMessage(confirmText)}
               </button>
             </div>
           </motion.div>

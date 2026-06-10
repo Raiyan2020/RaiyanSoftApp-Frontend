@@ -11,7 +11,7 @@ import {
 import { useTranslation } from '@/lib/i18nContext';
 import { globalToast } from '@/lib/toast-context';
 import { useUserColors, mapUserColorsToPresetOptions, FALLBACK_PRESET_COLORS } from '@/features/colors';
-import { getApiErrorMessage, storeProject } from '../api/lead-project-api';
+import { getApiErrorMessage, storeProject } from '../services/lead-project-api';
 import { leadProjectKeys } from '../query-keys';
 import { FormQuestion } from '../types/form-question.types';
 import { isQuestionAnswered, resolveQuestionType } from '../utils/question-helpers';

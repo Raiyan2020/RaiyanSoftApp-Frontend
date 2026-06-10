@@ -9,8 +9,6 @@ output: 'standalone',
 
   images: {
     remotePatterns: [
-      { protocol: 'https', hostname: 'firebasestorage.googleapis.com' },
-
       { protocol: 'https', hostname: '*.googleusercontent.com' },
 
       { protocol: 'https', hostname: 'raiyansoft.com' },

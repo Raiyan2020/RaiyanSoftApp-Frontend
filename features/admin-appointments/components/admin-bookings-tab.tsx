@@ -2,12 +2,14 @@ import React from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Calendar, CheckCircle, ChevronLeft, ChevronRight, Clock, Loader2, Search, X, XCircle } from 'lucide-react';
 import Button from '@/components/ui/button';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 import {
   AdminMeeting,
   MEETING_STATUS,
   MeetingsPagination,
-} from '@/features/meetings/types/meeting.types';
-import { getMeetingStatusTone, parseMeetingDateTime } from '@/features/meetings/utils/meeting-helpers';
+} from '@/features/meetings';
+import { getMeetingStatusTone, parseMeetingDateTime } from '@/features/meetings';
 import { AdminMeetingStatusFilter } from '../hooks/use-admin-appointments';
 
 interface AdminBookingsTabProps {
@@ -79,7 +81,7 @@ export default function AdminBookingsTab({
           <input
             value={searchQuery}
             onChange={(event) => onSearchQueryChange(event.target.value)}
-            placeholder="Search by name..."
+            placeholder={translateMessage('Search by name...')}
             className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary"
           />
         </div>
@@ -102,7 +104,7 @@ export default function AdminBookingsTab({
       </div>
 
       {error ? (
-        <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 mb-4 text-sm text-red-400">{error}</div>
+        <ErrorAlert message={error} />
       ) : null}
 
       {loading && bookings.length === 0 ? (
@@ -123,15 +125,15 @@ export default function AdminBookingsTab({
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button type="button" variant="outline" size="sm" onClick={() => onOpenBooking(meeting)}>
-                  Details
+                  {translateMessage('Details')}
                 </Button>
                 {meeting.status === MEETING_STATUS.PENDING ? (
                   <>
                     <Button type="button" size="sm" onClick={() => onApproveBooking(meeting.id)} disabled={actionLoading}>
-                      Approve
+                      {translateMessage('Approve')}
                     </Button>
                     <Button type="button" variant="destructive" size="sm" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading}>
-                      Reject
+                      {translateMessage('Reject')}
                     </Button>
                   </>
                 ) : null}
@@ -139,7 +141,7 @@ export default function AdminBookingsTab({
             </div>
           ))}
           {bookings.length === 0 ? (
-            <div className="text-center py-10 text-[var(--text-muted)]">No bookings found.</div>
+            <div className="text-center py-10 text-[var(--text-muted)]">{translateMessage('No bookings found.')}</div>
           ) : null}
         </div>
 
@@ -147,11 +149,11 @@ export default function AdminBookingsTab({
           <table className="w-full text-left">
             <thead>
               <tr className="text-xs text-[var(--text-muted)] uppercase border-b border-[var(--border)]">
-                <th className="pb-3 pl-2">Date/Time</th>
-                <th className="pb-3">Subject</th>
-                <th className="pb-3">Type</th>
-                <th className="pb-3">Status</th>
-                <th className="pb-3 text-right">Actions</th>
+                <th className="pb-3 pl-2">{translateMessage('Date/Time')}</th>
+                <th className="pb-3">{translateMessage('Subject')}</th>
+                <th className="pb-3">{translateMessage('Type')}</th>
+                <th className="pb-3">{translateMessage('Status')}</th>
+                <th className="pb-3 text-right">{translateMessage('Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)] text-sm">
@@ -174,7 +176,7 @@ export default function AdminBookingsTab({
                   <td className="py-4 text-right">
                     <div className="flex justify-end gap-2">
                       <Button type="button" variant="outline" size="sm" onClick={() => onOpenBooking(meeting)}>
-                        Details
+                        {translateMessage('Details')}
                       </Button>
                       {meeting.status === MEETING_STATUS.PENDING ? (
                         <>
@@ -183,7 +185,7 @@ export default function AdminBookingsTab({
                             onClick={() => onApproveBooking(meeting.id)}
                             disabled={actionLoading}
                             className="p-2 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors"
-                            title="Approve"
+                            title={translateMessage('Approve')}
                           >
                             <CheckCircle size={16} />
                           </button>
@@ -192,7 +194,7 @@ export default function AdminBookingsTab({
                             onClick={() => onRejectBooking(meeting.id)}
                             disabled={actionLoading}
                             className="p-2 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
-                            title="Reject"
+                            title={translateMessage('Reject')}
                           >
                             <XCircle size={16} />
                           </button>
@@ -205,7 +207,7 @@ export default function AdminBookingsTab({
               {bookings.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="text-center py-10 text-[var(--text-muted)]">
-                    No bookings found.
+                    {translateMessage('No bookings found.')}
                   </td>
                 </tr>
               ) : null}
@@ -218,7 +220,7 @@ export default function AdminBookingsTab({
       {pagination && pagination.last_page > 1 ? (
         <div className="mt-4 flex items-center justify-between text-sm text-[var(--text-muted)]">
           <span>
-            Page {pagination.current_page} of {pagination.last_page} ({pagination.total} total)
+            {translateMessage('Page')} {pagination.current_page} {translateMessage('of')} {pagination.last_page} ({pagination.total} {translateMessage('total')})
           </span>
           <div className="flex items-center gap-2">
             <button
@@ -261,10 +263,10 @@ export default function AdminBookingsTab({
               <div className="p-6 border-b border-[var(--border)] flex items-start justify-between gap-4 sticky top-0 bg-[var(--surface)] z-10">
                 <div>
                   <div className="flex items-center gap-2 mb-2">
-                    <h2 className="text-xl font-bold text-[var(--text)]">Meeting Details</h2>
+                    <h2 className="text-xl font-bold text-[var(--text)]">{translateMessage('Meeting Details')}</h2>
                     <StatusPill label={selectedBooking.status_label} status={selectedBooking.status} />
                   </div>
-                  <p className="text-sm text-[var(--text-muted)]">{selectedBooking.subject || 'No subject'}</p>
+                  <p className="text-sm text-[var(--text-muted)]">{selectedBooking.subject || translateMessage('No subject')}</p>
                 </div>
                 <button type="button" onClick={onCloseBooking} className="p-2 text-[var(--text-muted)] hover:text-[var(--text)]">
                   <X size={20} />
@@ -274,30 +276,28 @@ export default function AdminBookingsTab({
               <div className="p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
-                    <p className="text-xs text-[var(--text-muted)] mb-1">Schedule</p>
+                    <p className="text-xs text-[var(--text-muted)] mb-1">{translateMessage('Schedule')}</p>
                     <p className="font-bold text-[var(--text)] flex items-center gap-2">
                       <Calendar size={15} /> {formatDateTime(selectedBooking.date_time)}
                     </p>
                   </div>
                   <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
-                    <p className="text-xs text-[var(--text-muted)] mb-1">Meeting Type</p>
+                    <p className="text-xs text-[var(--text-muted)] mb-1">{translateMessage('Meeting Type')}</p>
                     <p className="font-bold text-[var(--text)]">{selectedBooking.type_label || '—'}</p>
                   </div>
                 </div>
 
                 <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
-                  <p className="text-xs text-[var(--text-muted)] mb-2">Notes</p>
+                  <p className="text-xs text-[var(--text-muted)] mb-2">{translateMessage('Notes')}</p>
                   <p className="text-sm text-[var(--text)] whitespace-pre-wrap">
-                    {selectedBooking.notes || 'No notes were added.'}
+                    {selectedBooking.notes || translateMessage('No notes were added.')}
                   </p>
                 </div>
 
-                {actionError ? (
-                  <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">{actionError}</div>
-                ) : null}
+                {actionError ? <ErrorAlert message={actionError} /> : null}
                 {actionMessage ? (
                   <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">
-                    {actionMessage}
+                    {translateMessage(actionMessage)}
                   </div>
                 ) : null}
 
@@ -310,7 +310,7 @@ export default function AdminBookingsTab({
                       className="gap-2"
                     >
                       {actionLoading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle size={16} />}
-                      Approve
+                      {translateMessage('Approve')}
                     </Button>
                     <Button
                       type="button"
@@ -320,19 +320,19 @@ export default function AdminBookingsTab({
                       className="gap-2"
                     >
                       {actionLoading ? <Loader2 className="animate-spin" size={16} /> : <XCircle size={16} />}
-                      Reject
+                      {translateMessage('Reject')}
                     </Button>
                   </div>
                 ) : null}
 
                 <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
                   <h3 className="font-bold text-[var(--text)] mb-2 flex items-center gap-2">
-                    <Clock size={16} /> Created
+                    <Clock size={16} /> {translateMessage('Created')}
                   </h3>
                   <p className="text-sm text-[var(--text-muted)]">{selectedBooking.created_at}</p>
                   {selectedBooking.cancel_by_name ? (
                     <p className="text-sm text-[var(--text-muted)] mt-2">
-                      Canceled by: {selectedBooking.cancel_by_name}
+                      {translateMessage('Canceled by')}: {selectedBooking.cancel_by_name}
                     </p>
                   ) : null}
                 </div>

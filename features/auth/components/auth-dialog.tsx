@@ -7,7 +7,9 @@ import { isValidPhoneNumber } from 'react-phone-number-input';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import PhoneInput from '@/components/ui/phone-input';
+import ErrorAlert from '@/components/ui/error-alert';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 import { usePhoneAuth } from '../hooks/use-phone-auth';
 
 interface AuthDialogProps {
@@ -146,14 +148,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
             </div>
 
             {activeError ? (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-start gap-2 mb-5"
-              >
-                <AlertCircle size={16} className="text-red-400 shrink-0 mt-0.5" />
-                <span className="text-red-400 text-xs font-bold">{activeError}</span>
-              </motion.div>
+              <ErrorAlert message={activeError} />
             ) : null}
 
             {message ? (
@@ -163,7 +158,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
                 className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-start gap-2 mb-5"
               >
                 <CheckCircle size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                <span className="text-emerald-400 text-xs font-bold">{message}</span>
+                <span className="text-emerald-400 text-xs font-bold">{translateMessage(message)}</span>
               </motion.div>
             ) : null}
 

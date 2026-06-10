@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { createAdminEmployee } from '../api/admin-employees-api';
+import { createAdminEmployee } from '../services/admin-employees-api';
 import { CreateEmployeePayload } from '../types/admin-employee.types';
 
 export function useCreateEmployee() {

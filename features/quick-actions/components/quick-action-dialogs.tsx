@@ -65,8 +65,15 @@ export function QuickLeadDialog({ isOpen, onClose }: Omit<QuickActionDialogProps
 
   if (requestId !== null) {
     return (
-      <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" dir={dir}>
-        <div className="w-full max-w-sm rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 text-center shadow-2xl">
+      <div
+        className="fixed inset-0 z-[160] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+        dir={dir}
+        onClick={closeDialog}
+      >
+        <div
+          className="w-full max-w-sm rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 text-center shadow-2xl"
+          onClick={(event) => event.stopPropagation()}
+        >
           <CheckCircle2 className="mx-auto mb-3 text-emerald-400" size={42} />
           <h3 className="text-xl font-black text-[var(--text)]">
             {language === 'ar' ? 'تم إرسال الطلب' : 'Request sent'}
@@ -176,8 +183,15 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
   };
 
   return (
-    <div className="fixed inset-0 z-[160] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm" dir={dir}>
-      <div className="max-h-[86vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5 shadow-2xl no-scrollbar">
+    <div
+      className="fixed inset-0 z-[160] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+      dir={dir}
+      onClick={closeDialog}
+    >
+      <div
+        className="max-h-[86vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5 shadow-2xl no-scrollbar"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className={`mb-4 flex items-start justify-between gap-4 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
           <div className="min-w-0 flex-1">
             <div className={`mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-black text-primary ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>

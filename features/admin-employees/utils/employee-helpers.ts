@@ -1,7 +1,27 @@
 import { AdminEmployee } from '../types/admin-employee.types';
 
-export function getEmployeeFullName(employee: Pick<AdminEmployee, 'first_name' | 'last_name'>) {
-  return [employee.first_name, employee.last_name].filter(Boolean).join(' ').trim();
+type EmployeeNameLike = Pick<AdminEmployee, 'first_name' | 'last_name'> & {
+  full_name?: string;
+  name?: string;
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+  id?: number | string;
+};
+
+export function getEmployeeFullName(employee: EmployeeNameLike) {
+  const directName = [employee.full_name, employee.name].find((value) => value && value.trim());
+  if (directName) return directName.trim();
+
+  const splitName = [employee.first_name || employee.firstName, employee.last_name || employee.lastName]
+    .filter(Boolean)
+    .join(' ')
+    .trim();
+  if (splitName) return splitName;
+
+  if (employee.email) return employee.email;
+  if (employee.id !== undefined && employee.id !== null) return `Employee ${employee.id}`;
+  return 'Unassigned';
 }
 
 export function isEmployeeBlocked(employee: AdminEmployee) {
@@ -21,5 +41,9 @@ export function formatEmployeeDate(value?: string) {
 
 export function formatRoleLabel(role: string) {
   if (!role) return '—';
-  return role.charAt(0).toUpperCase() + role.slice(1);
+  return role
+    .replace(/_/g, ' ')
+    .split(' ')
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(' ');
 }

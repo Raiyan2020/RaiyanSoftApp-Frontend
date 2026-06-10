@@ -2,6 +2,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { MessageCircle, X, Copy, CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
+import { globalToast } from '@/lib/toast-context';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 import { AdminLeadDetail, AdminLeadListItem } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
 import LeadProjectSummary from './lead-project-summary';
@@ -54,11 +57,12 @@ export default function LeadDetailDrawer({
   const requestId = lead?.request_id || String(listItem.id);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
+        onClick={(event) => event.stopPropagation()}
         className="bg-[var(--surface)] w-full max-w-2xl rounded-2xl border border-[var(--border)] shadow-2xl flex flex-col max-h-[90vh]"
       >
         <div className="p-6 border-b border-[var(--border)] flex justify-between items-start">
@@ -121,7 +125,7 @@ export default function LeadDetailDrawer({
                 type="button"
                 onClick={() => {
                   navigator.clipboard.writeText(requestId);
-                  alert(t('admin.leads.copied'));
+                  globalToast.success(t('admin.leads.copied'));
                 }}
                 className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text)] bg-[var(--surface-2)] rounded border border-[var(--border)] hover:bg-[var(--surface-3)] transition-colors"
                 title={t('admin.leads.copy_id')}
@@ -138,9 +142,7 @@ export default function LeadDetailDrawer({
           ) : null}
 
           {detailError ? (
-            <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
-              {detailError}
-            </div>
+            <ErrorAlert message={detailError} />
           ) : null}
 
           {lead ? (
@@ -160,14 +162,12 @@ export default function LeadDetailDrawer({
           ) : null}
 
           {statusError ? (
-            <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-4 text-sm text-red-400">
-              {statusError}
-            </div>
+            <ErrorAlert message={statusError} />
           ) : null}
 
           {actionMessage ? (
             <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">
-              {actionMessage}
+              {translateMessage(actionMessage)}
             </div>
           ) : null}
 

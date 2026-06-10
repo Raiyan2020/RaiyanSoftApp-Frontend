@@ -2,6 +2,7 @@ import React from 'react';
 import { Loader2, LayoutGrid } from 'lucide-react';
 import { UserProject } from '@/lib/userProjectsStore';
 import UserProjectCard from './user-project-card';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface UserProjectsTabProps {
   loadingProjects: boolean;
@@ -14,7 +15,7 @@ export default function UserProjectsTab({ loadingProjects, userProjects, formatD
     return (
       <div className="flex flex-col items-center justify-center py-10 text-[var(--text-muted)]">
         <Loader2 size={32} className="animate-spin mb-2" />
-        <p>Loading projects...</p>
+        <p>{translateMessage('Loading projects...')}</p>
       </div>
     );
   }
@@ -23,7 +24,7 @@ export default function UserProjectsTab({ loadingProjects, userProjects, formatD
     return (
       <div className="flex flex-col items-center justify-center py-10 text-[var(--text-muted)] bg-[var(--surface-3)] rounded-2xl border border-[var(--border)]">
         <LayoutGrid size={32} className="mb-2 opacity-50" />
-        <p>No projects for this user yet.</p>
+        <p>{translateMessage('No projects for this user yet.')}</p>
       </div>
     );
   }

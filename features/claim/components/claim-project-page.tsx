@@ -2,6 +2,7 @@ import React from 'react';
 import { Loader2, AlertTriangle, CheckCircle } from 'lucide-react';
 import { useClaim } from '../hooks/use-claim';
 import ClaimForm from './claim-form';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function ClaimProjectPage() {
   const {
@@ -28,10 +29,10 @@ export default function ClaimProjectPage() {
       <div className="h-screen flex items-center justify-center bg-[var(--bg)] text-[var(--text)] p-6 text-center">
         <div className="bg-red-500/10 border border-red-500/20 p-8 rounded-3xl max-w-sm">
           <AlertTriangle size={40} className="text-red-500 mx-auto mb-4" />
-          <h1 className="text-xl font-bold mb-2">Invalid Link</h1>
-          <p className="text-[var(--text-muted)] text-sm">{errorMsg}</p>
+          <h1 className="text-xl font-bold mb-2">{translateMessage('Invalid Link')}</h1>
+          <p className="text-[var(--text-muted)] text-sm">{translateMessage(errorMsg)}</p>
           <button type="button" onClick={() => router.push('/')} className="mt-6 text-sm text-[var(--text)] underline">
-            Go Home
+            {translateMessage('Go Home')}
           </button>
         </div>
       </div>
@@ -43,8 +44,8 @@ export default function ClaimProjectPage() {
       <div className="h-screen flex items-center justify-center bg-[var(--bg)] text-[var(--text)] p-6 text-center">
         <div className="bg-emerald-500/10 border border-emerald-500/20 p-8 rounded-3xl max-w-sm">
           <CheckCircle size={40} className="text-emerald-500 mx-auto mb-4" />
-          <h1 className="text-xl font-bold mb-2">Welcome Aboard!</h1>
-          <p className="text-[var(--text-muted)] text-sm">Your project is ready. Redirecting you to your dashboard...</p>
+          <h1 className="text-xl font-bold mb-2">{translateMessage('Welcome Aboard!')}</h1>
+          <p className="text-[var(--text-muted)] text-sm">{translateMessage('Your project is ready. Redirecting you to your dashboard...')}</p>
         </div>
       </div>
     );
@@ -67,8 +68,8 @@ export default function ClaimProjectPage() {
           <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4 text-primary animate-pulse">
             <CheckCircle size={32} />
           </div>
-          <h1 className="text-2xl font-bold mb-2">Claim Your Project</h1>
-          <p className="text-[var(--text-muted)] text-sm">Create your account to access your approved project dashboard.</p>
+          <h1 className="text-2xl font-bold mb-2">{translateMessage('Claim Your Project')}</h1>
+          <p className="text-[var(--text-muted)] text-sm">{translateMessage('Create your account to access your approved project dashboard.')}</p>
         </div>
 
         <ClaimForm

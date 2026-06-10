@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { cancelUserMeeting } from '../api/user-meetings-api';
+import { cancelUserMeeting } from '../services/user-meetings-api';
 
 export function useCancelMeeting() {
   const [loading, setLoading] = useState(false);

@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { translations } from './translations';
+import { translateMessage } from './i18n-utils';
 
 import { DirectionProvider } from '@radix-ui/react-direction';
 
@@ -51,7 +52,7 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const t = (key: string): string => {
     // @ts-ignore
-    return translations[effectiveLanguage][key] || key;
+    return translations[effectiveLanguage][key] || translateMessage(key, effectiveLanguage);
   };
 
   return (

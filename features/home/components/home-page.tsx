@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Box, Plus, ChevronRight, ChevronLeft } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
 import EmptyState from '@/components/ui/empty-state';
-import ProjectWizard from '@/features/projects/components/project-wizard';
+import { ProjectWizard } from '@/features/projects';
 import { useTranslation } from '@/lib/i18nContext';
 import { useHome } from '../hooks/use-home';
 import AppCard from './app-card';

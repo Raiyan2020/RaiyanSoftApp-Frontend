@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
+import ErrorAlert from '@/components/ui/error-alert';
 import { AdminLeadListItem, AdminLeadsPagination, LeadStatusCode } from '../types/admin-lead.types';
 import LeadsTableRow from './leads-table-row';
 
@@ -39,8 +40,9 @@ export default function LeadsTable({
 
   if (error) {
     return (
-      <div className="bg-[var(--surface)] border border-red-500/20 rounded-2xl shadow-xl p-12 text-center text-red-400">
-        {error}
+      <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl shadow-xl p-12 text-center text-[var(--text-muted)]">
+        <ErrorAlert message={error} />
+        {t('admin.leads.no_results')}
       </div>
     );
   }

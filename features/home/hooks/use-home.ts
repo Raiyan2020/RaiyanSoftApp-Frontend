@@ -5,7 +5,7 @@ import { useTranslation } from '@/lib/i18nContext';
 import { useAuthGuard } from '@/lib/authGuardContext';
 import { guestStore } from '@/lib/guestStore';
 import { getUserDisplayName } from '@/lib/user-display';
-import { useUserStoredProjects } from '@/features/lead-project/hooks/use-user-stored-projects';
+import { useUserStoredProjects } from '@/features/lead-project';
 
 export function useHome() {
   const router = useRouter();

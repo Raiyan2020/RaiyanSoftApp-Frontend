@@ -6,6 +6,7 @@ import * as RPNInput from 'react-phone-number-input';
 import flags from 'react-phone-number-input/flags';
 import metadata from 'libphonenumber-js/metadata.min.json';
 import { useManagedCountriesQuery } from '@/features/settings';
+import { translateMessage } from '@/lib/i18n-utils';
 
 type PhoneInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -259,7 +260,7 @@ function CountrySelect({
               type="text"
               value={searchQuery}
               onChange={(event) => setSearchQuery(event.target.value)}
-              placeholder="Search country..."
+              placeholder={translateMessage('Search country...')}
               className="w-full bg-transparent text-xs text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none py-1"
               dir="ltr"
               style={{ direction: 'ltr', textAlign: 'left' }}

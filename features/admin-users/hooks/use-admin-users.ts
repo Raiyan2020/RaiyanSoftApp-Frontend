@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { collection, getDocs, query, where, doc, getDoc, orderBy } from 'firebase/firestore';
-import { app, db } from '@/lib/firebase-client';
+import { globalToast } from '@/lib/toast-context';
 import { UserProject } from '@/lib/userProjectsStore';
-import { fetchAdminUsers, toggleAdminUserBlock } from '../api/admin-users-api';
+import { fetchAdminUsers, toggleAdminUserBlock } from '../services/admin-users-api';
+import { fetchAdminProjects } from '@/features/admin-user-projects';
 import { AdminUser } from '../types/admin-user.types';
 import { mapAdminApiUser } from '../utils/admin-user-mappers';
 
@@ -19,12 +19,6 @@ export function useAdminUsers() {
   const [activeTab, setActiveTab] = useState<'profile' | 'projects'>('profile');
   const [userProjects, setUserProjects] = useState<UserProject[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
-
-  useEffect(() => {
-    if (app && app.options) {
-      console.log('Admin Dashboard Loaded. Firebase Project ID:', app.options.projectId);
-    }
-  }, []);
 
   const loadUsers = useCallback(async () => {
     setLoading(true);
@@ -60,68 +54,40 @@ export function useAdminUsers() {
 
   const fetchUserProjects = async (uid: string) => {
     setLoadingProjects(true);
-    const results: UserProject[] = [];
-    const seenIds = new Set<string>();
 
     try {
-      if (db) {
-        try {
-          const subColRef = collection(db, 'users', uid, 'projects');
-          const subColQ = query(subColRef, orderBy('createdAt', 'desc'));
-          const subColSnap = await getDocs(subColQ);
-          subColSnap.forEach((d) => {
-            if (!seenIds.has(d.id)) {
-              results.push({ id: d.id, ...d.data() } as UserProject);
-              seenIds.add(d.id);
-            }
-          });
-        } catch (e) {
-          console.warn('Subcollection fetch failed', e);
-        }
-
-        try {
-          const rootColRef = collection(db, 'user-projects');
-          const qUserId = query(rootColRef, where('userId', '==', uid));
-          const snapUserId = await getDocs(qUserId);
-          snapUserId.forEach((d) => {
-            if (!seenIds.has(d.id)) {
-              results.push({ id: d.id, ...d.data() } as UserProject);
-              seenIds.add(d.id);
-            }
-          });
-        } catch (e) {
-          console.warn('Root collection fetch failed', e);
-        }
-
-        try {
-          const legacyDocRef = doc(db, 'user-projects', uid);
-          const legacySnap = await getDoc(legacyDocRef);
-          if (legacySnap.exists()) {
-            const data = legacySnap.data();
-            if (data.projects && Array.isArray(data.projects)) {
-              data.projects.forEach((p: any, idx: number) => {
-                const pseudoId = `legacy_${uid}_${idx}`;
-                if (!seenIds.has(pseudoId)) {
-                  results.push({ ...p, id: pseudoId } as UserProject);
-                  seenIds.add(pseudoId);
-                }
-              });
-            }
-          }
-        } catch (e) {
-          console.warn('Legacy doc fetch failed', e);
-        }
-      }
-
-      results.sort((a, b) => {
-        const dateA = a.createdAt || 0;
-        const dateB = b.createdAt || 0;
-        return dateB - dateA;
-      });
-
+      const apiProjects = await fetchAdminProjects();
+      const results: UserProject[] = apiProjects
+        .filter((project) => String(project.user?.id || '') === String(uid))
+        .map((project) => ({
+          id: String(project.id),
+          ownerId: String(project.user?.id || uid),
+          ownerName: project.user?.full_name || '',
+          ownerEmail: project.user?.email || '',
+          name: project.project_name || `Project ${project.id}`,
+          description: project.description || '',
+          estimatedPrice: null,
+          estimatedDuration:
+            project.estimated_duration === undefined || project.estimated_duration === null
+              ? null
+              : Number(project.estimated_duration),
+          status: 'pricing',
+          projectUrl: project.project_url || null,
+          createdAt: project.date ? new Date(project.date.replace(/\//g, '-')).getTime() : Date.now(),
+          updatedAt: Date.now(),
+          stages: [],
+          progressUpdates: [],
+          weeklyReports: [],
+          attachments: [],
+          internalNotes: [],
+          finalReport: null,
+        } as UserProject))
+        .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       setUserProjects(results);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error fetching user projects:', err);
+      setActionError(err.message || 'Failed to load user projects.');
+      setUserProjects([]);
     } finally {
       setLoadingProjects(false);
     }
@@ -169,7 +135,7 @@ export function useAdminUsers() {
   };
 
   const handleExport = () => {
-    alert(`Exporting ${filteredUsers.length} users to CSV...`);
+    globalToast.info(`Exporting ${filteredUsers.length} users to CSV...`);
   };
 
   const handleToggleStatus = async (user: AdminUser) => {

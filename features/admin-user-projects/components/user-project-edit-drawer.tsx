@@ -7,6 +7,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userProjectEditSchema, UserProjectEditValues } from '../schemas/user-project-edit.schema';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface UserProjectEditDrawerProps {
   editingProject: UserProject | null;
@@ -41,15 +42,16 @@ export default function UserProjectEditDrawer({
   if (!editingProject) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
         initial={{ scale: 0.95, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
+        onClick={(event) => event.stopPropagation()}
         className="bg-[var(--surface)] w-full max-w-lg rounded-2xl border border-[var(--border)] shadow-2xl flex flex-col max-h-[90vh]"
       >
         <div className="p-5 border-b border-[var(--border)] flex justify-between items-center">
-          <h2 className="text-xl font-bold text-[var(--text)]">Edit User Project</h2>
+          <h2 className="text-xl font-bold text-[var(--text)]">{translateMessage('Edit User Project')}</h2>
           <button type="button" onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text)] transition-colors">
             <X size={20} />
           </button>
@@ -91,9 +93,9 @@ export default function UserProjectEditDrawer({
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     >
-                      <option value="">Select Industry</option>
+                      <option value="">{translateMessage('Select Industry')}</option>
                       {INDUSTRIES.map((ind) => (
-                        <option key={ind} value={ind}>{ind}</option>
+                        <option key={ind} value={ind}>{translateMessage(ind)}</option>
                       ))}
                     </select>
                   </div>
@@ -116,7 +118,7 @@ export default function UserProjectEditDrawer({
                       className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
-                      placeholder="e.g. Automotive"
+                      placeholder={translateMessage('e.g. Automotive')}
                     />
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                   </Field>
@@ -142,7 +144,7 @@ export default function UserProjectEditDrawer({
                         className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                           fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                         }`}
-                        placeholder="e.g. 1500"
+                        placeholder={translateMessage('e.g. 1500')}
                       />
                     </div>
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -167,7 +169,7 @@ export default function UserProjectEditDrawer({
                         className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                           fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                         }`}
-                        placeholder="e.g. 21"
+                        placeholder={translateMessage('e.g. 21')}
                       />
                     </div>
                     {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -192,7 +194,7 @@ export default function UserProjectEditDrawer({
                       }`}
                     >
                       {statusOptions.map((s) => (
-                        <option key={s} value={s}>{s}</option>
+                        <option key={s} value={s}>{translateMessage(s.charAt(0).toUpperCase() + s.slice(1))}</option>
                       ))}
                     </select>
                   </div>
@@ -252,7 +254,7 @@ export default function UserProjectEditDrawer({
             onClick={onClose}
             className="px-5 py-2.5 rounded-xl text-[var(--text-muted)] hover:text-[var(--text)] font-medium text-sm transition-colors"
           >
-            Cancel
+            {translateMessage('Cancel')}
           </button>
           <button
             form="editForm"
@@ -261,7 +263,7 @@ export default function UserProjectEditDrawer({
             className="px-5 py-2.5 rounded-xl bg-primary hover:bg-sky-400 text-white font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2 transition-colors disabled:opacity-70"
           >
             {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
-            <span>Save Changes</span>
+            <span>{translateMessage('Save Changes')}</span>
           </button>
         </div>
       </motion.div>

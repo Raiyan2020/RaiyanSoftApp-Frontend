@@ -6,6 +6,7 @@ import { FileText, Info, Shield } from 'lucide-react';
 import { PageSlug } from '../types/page.types';
 import { useAdminPages } from '../hooks/use-admin-pages';
 import AdminPageEditor from './admin-page-editor';
+import { translateMessage } from '@/lib/i18n-utils';
 
 const tabs: { id: PageSlug; label: string; icon: typeof FileText }[] = [
   { id: 'privacy-policy', label: 'Privacy Policy', icon: Shield },
@@ -25,9 +26,9 @@ export default function AdminPagesPage() {
   return (
     <div className="space-y-8 pb-20">
       <div>
-        <h1 className="text-2xl font-bold text-[var(--text)]">Pages</h1>
+        <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Pages')}</h1>
         <p className="text-sm text-[var(--text-muted)]">
-          Manage privacy policy, terms & conditions, and about us content shown in the app and website.
+          {translateMessage('Manage privacy policy, terms & conditions, and about us content shown in the app and website.')}
         </p>
       </div>
 
@@ -42,7 +43,7 @@ export default function AdminPagesPage() {
             }`}
           >
             <tab.icon size={16} />
-            {tab.label}
+            {translateMessage(tab.label)}
           </button>
         ))}
       </div>

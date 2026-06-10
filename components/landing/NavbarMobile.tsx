@@ -4,7 +4,7 @@ import { Menu } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
 import { authService, User } from '@/lib/auth-service';
 import { guestStore } from '@/lib/guestStore';
-import { logoutUser } from '@/features/auth/api/user-auth-api';
+import { logoutUser } from '@/features/auth/services/user-auth-api';
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { sectionLinks, pageLinks } from './NavbarLinks';
 import Avatar from '@/components/ui/avatar';

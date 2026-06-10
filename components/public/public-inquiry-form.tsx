@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { PublicField, PublicFormStatus, publicInputClass } from './public-form-fields';
 import { trackPublicEvent } from '@/lib/analytics';
 import { leadStore } from '@/lib/leadStore';
+import PhoneInput from '@/components/ui/phone-input';
 
 type PublicInquiryFormProps = {
   mode: 'contact' | 'quote';
@@ -15,12 +16,13 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
   const [started, setStarted] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitError, setSubmitError] = useState('');
+  const [phone, setPhone] = useState('');
 
   const validate = (formData: FormData) => {
     const nextErrors: Record<string, string> = {};
     if (!String(formData.get('name') || '').trim()) nextErrors.name = 'اكتب الاسم الكامل.';
     if (!String(formData.get('email') || '').includes('@')) nextErrors.email = 'اكتب بريد إلكتروني صحيح.';
-    if (!String(formData.get('phone') || '').trim()) nextErrors.phone = 'اكتب رقم الجوال.';
+    if (!phone.trim()) nextErrors.phone = 'اكتب رقم الجوال.';
     if (!String(formData.get('message') || '').trim()) nextErrors.message = 'اكتب تفاصيل الطلب.';
     if (mode === 'quote' && !String(formData.get('service') || '').trim()) nextErrors.service = 'اختر نوع الخدمة.';
     return nextErrors;
@@ -49,7 +51,7 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
       await leadStore.submitLead({
         name: String(formData.get('name') || '').trim(),
         email: String(formData.get('email') || '').trim(),
-        phone: String(formData.get('phone') || '').trim(),
+        phone: phone.trim(),
         source: mode === 'quote' ? 'public_quote_form' : 'public_contact_form',
         projectPayload: {
           type: mode,
@@ -92,15 +94,7 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
         <PublicField id="phone" label="رقم الجوال" required error={errors.phone}>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            dir="ltr"
-            className={publicInputClass}
-            aria-invalid={Boolean(errors.phone)}
-            aria-describedby={errors.phone ? 'phone-error' : undefined}
-          />
+          <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} required />
         </PublicField>
         {mode === 'quote' ? (
           <PublicField id="service" label="نوع الخدمة" required error={errors.service}>

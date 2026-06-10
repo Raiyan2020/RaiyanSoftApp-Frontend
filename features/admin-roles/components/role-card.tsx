@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { ShieldCheck, Edit2, Trash2 } from 'lucide-react';
 import { Role } from '@/lib/roleStore';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface RoleCardProps {
   role: Role;
@@ -44,7 +45,7 @@ export default function RoleCard({ role, onOpenModal, onDeleteRole }: RoleCardPr
       <p className="text-[var(--text-muted)] text-sm mb-4 h-10 line-clamp-2">{role.description}</p>
 
       <div className="mt-auto">
-        <h4 className="text-[10px] uppercase text-[var(--text-muted)] font-bold mb-2">Permissions</h4>
+        <h4 className="text-[10px] uppercase text-[var(--text-muted)] font-bold mb-2">{translateMessage('Permissions')}</h4>
         <div className="flex flex-wrap gap-2">
           {role.permissions.slice(0, 3).map((perm) => (
             <span
@@ -56,11 +57,11 @@ export default function RoleCard({ role, onOpenModal, onDeleteRole }: RoleCardPr
           ))}
           {role.permissions.length > 3 ? (
             <span className="text-[10px] bg-[var(--surface-3)] border border-[var(--border)] text-[var(--text-muted)] px-2 py-1 rounded-md">
-              +{role.permissions.length - 3} more
+              +{role.permissions.length - 3} {translateMessage('more')}
             </span>
           ) : null}
           {role.permissions.length === 0 ? (
-            <span className="text-[10px] text-[var(--text-muted)] italic">No specific permissions</span>
+            <span className="text-[10px] text-[var(--text-muted)] italic">{translateMessage('No specific permissions')}</span>
           ) : null}
         </div>
       </div>

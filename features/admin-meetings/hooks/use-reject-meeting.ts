@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { rejectAdminMeeting } from '../api/admin-meetings-api';
+import { rejectAdminMeeting } from '../services/admin-meetings-api';
 
 export function useRejectMeeting() {
   const [loading, setLoading] = useState(false);

@@ -1,4 +1,5 @@
 import React from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 import { AdminUser } from '../types/admin-user.types';
 import UsersTableRow from './users-table-row';
 
@@ -22,12 +23,12 @@ export default function UsersTable({
       <table className="w-full text-left border-collapse">
         <thead>
           <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
-            <th className="p-5 font-medium">User</th>
-            <th className="p-5 font-medium">Contact</th>
-            <th className="p-5 font-medium">Role</th>
-            <th className="p-5 font-medium">Status</th>
-            <th className="p-5 font-medium">Registered</th>
-            <th className="p-5 font-medium text-right">Actions</th>
+            <th className="p-5 font-medium">{translateMessage('User')}</th>
+            <th className="p-5 font-medium">{translateMessage('Contact')}</th>
+            <th className="p-5 font-medium">{translateMessage('Role')}</th>
+            <th className="p-5 font-medium">{translateMessage('Status')}</th>
+            <th className="p-5 font-medium">{translateMessage('Registered')}</th>
+            <th className="p-5 font-medium text-right">{translateMessage('Actions')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--border)] text-sm">

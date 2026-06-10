@@ -6,6 +6,7 @@ import { Calendar, Plus, AlertTriangle, Loader2 } from 'lucide-react';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import EmptyState from '@/components/ui/empty-state';
 import Button from '@/components/ui/button';
+import ErrorAlert from '@/components/ui/error-alert';
 import { useAppointmentsList } from '../hooks/use-appointments-list';
 import AppointmentCard from './appointment-card';
 import BookingWizard from './booking-wizard';
@@ -57,7 +58,7 @@ export default function AppointmentsPage() {
             <Loader2 className="animate-spin text-primary" size={28} />
           </div>
         ) : error ? (
-          <div className="rounded-2xl border border-red-500/20 bg-red-500/10 p-6 text-center text-red-400">{error}</div>
+          <ErrorAlert message={error} />
         ) : upcomingAppointments.length > 0 ? (
           <div className="space-y-6">
             <h2 className="text-sm font-bold text-[var(--text-muted)] uppercase tracking-wider">{t('appt.active_title')}</h2>

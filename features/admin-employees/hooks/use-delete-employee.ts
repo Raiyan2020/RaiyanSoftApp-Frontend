@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
-import { deleteAdminEmployee } from '../api/admin-employees-api';
+import { deleteAdminEmployee } from '../services/admin-employees-api';
 
 export function useDeleteEmployee() {
   const [loading, setLoading] = useState(false);

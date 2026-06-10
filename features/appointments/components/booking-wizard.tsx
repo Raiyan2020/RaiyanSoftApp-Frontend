@@ -2,9 +2,11 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Clock, ChevronRight, ChevronLeft, Loader2, CheckCircle, X, AlertTriangle, Video, MapPin } from 'lucide-react';
+import { Clock, ChevronRight, ChevronLeft, Loader2, CheckCircle, X, Video, MapPin } from 'lucide-react';
+import ErrorAlert from '@/components/ui/error-alert';
 import { useBookingWizard } from '../hooks/use-booking-wizard';
 import BookingAuthGate from './booking-auth-gate';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface BookingWizardProps {
   onClose: () => void;
@@ -49,8 +51,14 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
   today.setHours(0, 0, 0, 0);
 
   return (
-    <div className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-0 sm:p-6">
-      <div className="w-full h-full sm:h-[min(84dvh,44rem)] sm:max-w-4xl bg-[var(--surface)] text-[var(--text)] flex flex-col sm:rounded-3xl border border-[var(--border)] shadow-2xl overflow-hidden">
+    <div
+      className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-sm flex items-center justify-center p-0 sm:p-6"
+      onClick={onClose}
+    >
+      <div
+        className="w-full h-full sm:h-[min(84dvh,44rem)] sm:max-w-4xl bg-[var(--surface)] text-[var(--text)] flex flex-col sm:rounded-3xl border border-[var(--border)] shadow-2xl overflow-hidden"
+        onClick={(event) => event.stopPropagation()}
+      >
         <div className="flex items-center justify-between p-3.5 border-b border-[var(--border)] bg-[var(--surface)] backdrop-blur-md shrink-0">
           <button type="button" onClick={onClose} className="p-2 -ms-2 text-[var(--text-muted)] hover:text-[var(--text)]">
             <X size={24} />
@@ -69,16 +77,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
             ))}
           </div>
 
-          {errorMsg ? (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-red-500/10 border border-red-500/20 p-4 rounded-xl mb-6 flex items-start gap-3"
-            >
-              <AlertTriangle className="text-red-400 shrink-0" size={20} />
-              <span className="text-red-400 text-sm font-medium">{errorMsg}</span>
-            </motion.div>
-          ) : null}
+          {errorMsg ? <ErrorAlert message={errorMsg} /> : null}
 
           {step === 1 ? (
             <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
@@ -175,7 +174,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
                       ) : availableSlots.length === 0 ? (
                         <div className="text-center py-6 text-[var(--text-muted)] bg-[var(--surface-3)] rounded-xl border border-[var(--border)]">
                           <Clock size={24} className="mx-auto mb-2 opacity-50" />
-                          <p className="text-sm">No slots available on this date.</p>
+                          <p className="text-sm">{translateMessage('No slots available on this date.')}</p>
                         </div>
                       ) : (
                         <div className="grid grid-cols-3 gap-2.5">
@@ -227,14 +226,14 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
                 <input
                   type="text"
                   className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-2.5 text-[var(--text)] focus:border-primary focus:outline-none"
-                  placeholder="e.g. Project Consultation"
+                  placeholder={translateMessage('e.g. Project Consultation')}
                   value={formData.topic}
                   onChange={(e) => setFormData({ ...formData, topic: e.target.value })}
                 />
               </div>
 
               <div className="space-y-2">
-                <label className="text-xs text-[var(--text-muted)]">Meeting Type</label>
+                <label className="text-xs text-[var(--text-muted)]">{translateMessage('Meeting Type')}</label>
                 <div className="grid grid-cols-2 gap-3">
                   <button
                     type="button"

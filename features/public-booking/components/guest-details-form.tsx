@@ -6,6 +6,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { guestDetailsSchema, GuestDetailsValues } from '../schemas/guest-details.schema';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface GuestDetailsFormProps {
   selectedDate: Date | null;
@@ -43,7 +44,7 @@ export default function GuestDetailsForm({
           <p className="text-[var(--text)] text-lg font-bold">{selectedTime}</p>
         </div>
         <button type="button" onClick={onChangeStep} className="text-xs text-[var(--text-muted)] underline hover:text-[var(--text)]">
-          Change
+          {translateMessage('Change')}
         </button>
       </div>
 
@@ -117,7 +118,7 @@ export default function GuestDetailsForm({
                 className={`w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none transition-all ${
                   fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'focus:border-primary'
                 }`}
-                placeholder="e.g. Project Consultation"
+                placeholder={translateMessage('e.g. Project Consultation')}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -147,7 +148,7 @@ export default function GuestDetailsForm({
           disabled={isSubmitting}
           className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          {isSubmitting ? <Loader2 className="animate-spin" /> : 'Confirm Booking'}
+          {isSubmitting ? <Loader2 className="animate-spin" /> : translateMessage('Confirm Booking')}
         </button>
       </form>
     </motion.div>

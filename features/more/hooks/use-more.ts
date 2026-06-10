@@ -4,7 +4,7 @@ import { authService, User } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
 import { guestStore } from '@/lib/guestStore';
 import { useAuthGuard } from '@/lib/authGuardContext';
-import { deleteUserAccount, logoutUser } from '@/features/auth/api/user-auth-api';
+import { deleteUserAccount, logoutUser } from '@/features/auth';
 import { getUserDisplayName } from '@/lib/user-display';
 
 export function useMore() {

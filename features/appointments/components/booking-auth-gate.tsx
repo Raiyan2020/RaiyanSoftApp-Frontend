@@ -6,8 +6,10 @@ import { AlertCircle, Phone, ShieldCheck, User } from 'lucide-react';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import PhoneInput from '@/components/ui/phone-input';
+import ErrorAlert from '@/components/ui/error-alert';
 import { useTranslation } from '@/lib/i18nContext';
-import { usePhoneAuth } from '@/features/auth/hooks/use-phone-auth';
+import { translateMessage } from '@/lib/i18n-utils';
+import { usePhoneAuth } from '@/features/auth';
 
 interface BookingAuthGateProps {
   onAuthenticated: () => void | Promise<void>;
@@ -78,15 +80,12 @@ export default function BookingAuthGate({ onAuthenticated, submitError }: Bookin
       </p>
 
       {activeError ? (
-        <div className="mb-4 flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-400">
-          <AlertCircle size={16} />
-          <span>{activeError}</span>
-        </div>
+        <ErrorAlert message={activeError} />
       ) : null}
 
       {message ? (
         <div className="mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-400">
-          {message}
+          {translateMessage(message)}
         </div>
       ) : null}
 

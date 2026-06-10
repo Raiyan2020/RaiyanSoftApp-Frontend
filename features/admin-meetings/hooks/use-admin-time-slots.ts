@@ -1,15 +1,15 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchAdminTimeSlots, saveAdminTimeSlots } from '../api/admin-meetings-api';
-import { WeeklyAvailability } from '@/features/meetings/types/meeting.types';
+import { fetchAdminTimeSlots, saveAdminTimeSlots } from '../services/admin-meetings-api';
+import { WeeklyAvailability } from '@/features/meetings';
 import {
   defaultWeeklyAvailability,
   normalizeWeeklyAvailabilityPayload,
   timeSlotsToWeeklyAvailability,
-} from '@/features/meetings/utils/meeting-helpers';
+} from '@/features/meetings';
 import { globalToast } from '@/lib/toast-context';
-import { TimeSlotDayApiItem } from '@/features/meetings/types/meeting.types';
+import { TimeSlotDayApiItem } from '@/features/meetings';
 
 export function useAdminTimeSlots() {
   const [weeklyAvailability, setWeeklyAvailability] = useState<WeeklyAvailability>(
