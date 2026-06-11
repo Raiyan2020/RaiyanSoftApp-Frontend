@@ -36,7 +36,7 @@ export function PublicFormStatus({ type, message }: { type: 'success' | 'error' 
   };
 
   return (
-    <div role={type === 'error' ? 'alert' : 'status'} className={`rounded-lg border px-4 py-3 text-sm font-bold ${styles[type]}`}>
+    <div role="status" className={`rounded-lg border px-4 py-3 text-sm font-bold ${styles[type]}`}>
       {translateMessage(message)}
     </div>
   );

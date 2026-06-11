@@ -4,7 +4,7 @@
  * AdminFormModal — shared overlay modal shell for admin create/edit forms.
  *
  * Handles: backdrop, scrollable container, title bar, close button,
- * error message, and Save / Cancel footer.
+ * backend error toast, and Save / Cancel footer.
  *
  * Usage:
  *   <AdminFormModal
@@ -22,6 +22,7 @@
 
 import React from 'react';
 import { Loader2, Save, X } from 'lucide-react';
+import ErrorAlert from './error-alert';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface AdminFormModalProps {
@@ -69,10 +70,7 @@ export default function AdminFormModal({
         {/* Form fields */}
         <div className="space-y-4">{children}</div>
 
-        {/* Error */}
-        {error ? (
-          <p className="mt-4 rounded-xl bg-red-500/10 p-3 text-sm text-red-400">{error}</p>
-        ) : null}
+        <ErrorAlert message={error} />
 
         {/* Footer */}
         <div className="mt-6 flex justify-end gap-3">

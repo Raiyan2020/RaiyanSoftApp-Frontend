@@ -9,9 +9,10 @@ interface Props {
   onChange: (val: BilingualField) => void;
   multiline?: boolean;
   required?: boolean;
+  errors?: Partial<Record<keyof BilingualField, string>>;
 }
 
-export default function BilingualFieldInputs({ label, value, onChange, multiline = false, required }: Props) {
+export default function BilingualFieldInputs({ label, value, onChange, multiline = false, required, errors }: Props) {
   return (
     <div className="space-y-2">
       <p className="text-sm font-semibold text-[var(--text)]">{label}</p>
@@ -28,7 +29,12 @@ export default function BilingualFieldInputs({ label, value, onChange, multiline
                 onChange={(e) => onChange({ ...value, [lang]: e.target.value })}
                 dir={lang === 'ar' ? 'rtl' : 'ltr'}
                 required={required}
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                aria-invalid={Boolean(errors?.[lang])}
+                className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 ${
+                  errors?.[lang]
+                    ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/15'
+                    : 'border-[var(--border)] focus:border-primary focus:ring-primary/20'
+                }`}
               />
             ) : (
               <input
@@ -37,9 +43,17 @@ export default function BilingualFieldInputs({ label, value, onChange, multiline
                 onChange={(e) => onChange({ ...value, [lang]: e.target.value })}
                 dir={lang === 'ar' ? 'rtl' : 'ltr'}
                 required={required}
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                aria-invalid={Boolean(errors?.[lang])}
+                className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 ${
+                  errors?.[lang]
+                    ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/15'
+                    : 'border-[var(--border)] focus:border-primary focus:ring-primary/20'
+                }`}
               />
             )}
+            {errors?.[lang] ? (
+              <p className="mt-1 text-xs font-medium text-red-400">{errors[lang]}</p>
+            ) : null}
           </div>
         ))}
       </div>

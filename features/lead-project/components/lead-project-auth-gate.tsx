@@ -7,8 +7,8 @@ import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import PhoneInput from '@/components/ui/phone-input';
 import ErrorAlert from '@/components/ui/error-alert';
+import SuccessToast from '@/components/ui/success-toast';
 import { useTranslation } from '@/lib/i18nContext';
-import { translateMessage } from '@/lib/i18n-utils';
 import { usePhoneAuth } from '@/features/auth';
 
 interface LeadProjectAuthGateProps {
@@ -82,12 +82,7 @@ export default function LeadProjectAuthGate({ onAuthenticated, submitError }: Le
       {activeError ? (
         <ErrorAlert message={activeError} />
       ) : null}
-
-      {message ? (
-        <div className="mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-400">
-          {translateMessage(message)}
-        </div>
-      ) : null}
+      <SuccessToast message={message} />
 
       {step === 'phone' ? (
         <div className="space-y-4">

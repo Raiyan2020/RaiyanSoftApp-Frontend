@@ -33,6 +33,26 @@ export const websiteContentFallbacks: Record<WebsiteContentSection, WebsiteConte
       },
     },
   ],
+  blogCategories: [
+    {
+      ...base('blogCategories', 0),
+      title: 'Product Strategy',
+      slug: 'product-strategy',
+      data: {
+        description: 'Articles about planning, scope, and product direction.',
+        featured: true,
+      },
+    },
+    {
+      ...base('blogCategories', 1),
+      title: 'UX & Content',
+      slug: 'ux-content',
+      data: {
+        description: 'Writing, structure, and user experience notes.',
+        featured: false,
+      },
+    },
+  ],
   services: publicServices.map((service, index) => ({
     ...base('services', index),
     title: service.title,
@@ -86,4 +106,3 @@ export const websiteContentFallbacks: Record<WebsiteContentSection, WebsiteConte
   legal: [],
   settings: [],
 };
-

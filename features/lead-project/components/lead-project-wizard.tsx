@@ -7,6 +7,8 @@ import WizardShell from '@/features/projects/components/wizard-shell';
 import WizardIntro from '@/features/projects/components/wizard-intro';
 import WizardNameStep from '@/features/projects/components/wizard-name-step';
 import WizardColorPicker from '@/features/projects/components/wizard-color-picker';
+import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 import { useLeadProjectWizard } from '../hooks/use-lead-project-wizard';
 import ApiQuestionStep from './api-question-step';
 import LeadProjectAuthGate from './lead-project-auth-gate';
@@ -79,7 +81,8 @@ export default function LeadProjectWizard({
     if (questionsError && step > 0 && step <= questionCount) {
       return (
         <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
-          <p className="text-sm text-red-400">{questionsError}</p>
+          <ErrorAlert message={questionsError} />
+          <p className="text-sm text-[var(--text-muted)]">{translateMessage('Please try again later.')}</p>
         </div>
       );
     }

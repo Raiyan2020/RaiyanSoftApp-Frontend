@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchTermsConditions } from '../services/pages-api';
+import { fetchAdminTermsConditions } from '../services/pages-api';
 import { TermsConditionsPage } from '../types/page.types';
 
 export function useTermsConditions(enabled = true) {
@@ -14,7 +14,7 @@ export function useTermsConditions(enabled = true) {
     setError(null);
 
     try {
-      const page = await fetchTermsConditions();
+      const page = await fetchAdminTermsConditions();
       setData(page);
       return page;
     } catch (err: any) {

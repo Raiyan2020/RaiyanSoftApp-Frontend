@@ -13,8 +13,15 @@ import SectionHeaderForm from './section-header-form';
 import BilingualFieldInputs from './bilingual-field-inputs';
 import CrudItemList from '@/components/ui/crud-item-list';
 import AdminFormModal from '@/components/ui/admin-form-modal';
+import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
+import SafeImage from '@/components/ui/safe-image';
 import type { AdminTestimonial, AdminTestimonialPayload, BilingualField, AdminSectionHeaderPayload } from '@/features/landing-page';
 import { translateMessage } from '@/lib/i18n-utils';
+import {
+  hasBilingualErrors,
+  validateRequiredBilingual,
+  type BilingualFieldErrors,
+} from './landing-form-validation';
 
 const EMPTY_BI: BilingualField = { ar: '', en: '' };
 const DEFAULT_FORM: AdminTestimonialPayload = { title: EMPTY_BI, caption: EMPTY_BI, description: EMPTY_BI, image: null };
@@ -39,24 +46,37 @@ export default function AdminTestimonialsTab() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<AdminTestimonialPayload>(DEFAULT_FORM);
+  const [imageValue, setImageValue] = useState<ImageUploadValue | null>(null);
   const [formError, setFormError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ title?: BilingualFieldErrors }>({});
 
   function openCreate() {
     setEditingId(null);
     setForm(DEFAULT_FORM);
+    setImageValue(null);
     setFormError('');
+    setFieldErrors({});
     setShowForm(true);
   }
 
   function openEdit(t: AdminTestimonial) {
     setEditingId(t.id);
     setForm(testimonialToForm(t));
+    setImageValue(null);
     setFormError('');
+    setFieldErrors({});
     setShowForm(true);
   }
 
   async function handleSave() {
     setFormError('');
+    const nextFieldErrors = { title: validateRequiredBilingual(form.title) };
+    setFieldErrors(nextFieldErrors);
+
+    if (hasBilingualErrors(nextFieldErrors.title)) {
+      return;
+    }
+
     try {
       if (editingId) {
         await updateMutation.mutateAsync({ id: editingId, payload: form });
@@ -97,11 +117,9 @@ export default function AdminTestimonialsTab() {
           return (
             <div className="flex items-start gap-3">
               {t.image ? (
-                <img src={t.image} alt={displayTitle} className="h-10 w-10 shrink-0 rounded-full object-cover" />
+                <SafeImage src={t.image} alt={displayTitle} className="h-10 w-10 shrink-0 rounded-full" />
               ) : (
-                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-primary/10 text-sm font-bold text-primary">
-                  {displayTitle?.[0]}
-                </div>
+                <SafeImage src="/logo.webp" alt={displayTitle} className="h-10 w-10 shrink-0 rounded-full" />
               )}
               <div className="min-w-0">
                 <p className="font-semibold text-[var(--text)]">{displayTitle}</p>
@@ -121,13 +139,21 @@ export default function AdminTestimonialsTab() {
         isSubmitting={isSaving}
         error={formError}
       >
-        <BilingualFieldInputs label={translateMessage('Client Name (Title)')} value={form.title} onChange={(v) => setForm((p) => ({ ...p, title: v }))} required />
+        <BilingualFieldInputs label={translateMessage('Client Name (Title)')} value={form.title} onChange={(v) => setForm((p) => ({ ...p, title: v }))} errors={fieldErrors.title} required />
         <BilingualFieldInputs label={translateMessage('Company / Role (Caption)')} value={form.caption} onChange={(v) => setForm((p) => ({ ...p, caption: v }))} />
         <BilingualFieldInputs label={translateMessage('Review / Quote')} value={form.description} onChange={(v) => setForm((p) => ({ ...p, description: v }))} multiline />
-        <div>
-          <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Client Photo')}</label>
-          <input type="file" accept="image/*" onChange={(e) => setForm((p) => ({ ...p, image: e.target.files?.[0] ?? null }))} className="w-full text-sm text-[var(--text-muted)]" />
-        </div>
+        <ImageUpload
+          label={translateMessage('Client Photo')}
+          value={imageValue}
+          onChange={(nextImage) => {
+            setImageValue(nextImage);
+            setForm((p) => ({ ...p, image: nextImage?.file ?? null }));
+          }}
+          aspectRatio={1}
+          maxWidth={1080}
+          maxHeight={1080}
+          previewClassName="aspect-square max-w-64"
+        />
       </AdminFormModal>
     </div>
   );

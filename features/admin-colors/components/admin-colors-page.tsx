@@ -4,6 +4,7 @@ import React from 'react';
 import { Edit2, Loader2, Palette, Plus, Save, Trash2, X } from 'lucide-react';
 import { useAdminColors } from '../hooks/use-admin-colors';
 import ErrorAlert from '@/components/ui/error-alert';
+import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminColorsPage() {
@@ -128,10 +129,7 @@ export default function AdminColorsPage() {
           </div>
 
           {createError ? <ErrorAlert message={createError} /> : null}
-
-          {actionMessage ? (
-            <div className="mb-4 rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">{translateMessage(actionMessage)}</div>
-          ) : null}
+          <SuccessToast message={actionMessage} />
 
           <form onSubmit={onSubmit} className="space-y-5">
             <div

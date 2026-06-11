@@ -4,21 +4,20 @@ import PageHero from '@/components/public/page-hero';
 import SectionShell from '@/components/public/section-shell';
 import CtaBlock from '@/components/public/cta-block';
 import { ServiceCard } from '@/components/public/content-cards';
+import JsonLd from '@/components/public/json-ld';
 import type { PublicService } from '@/lib/public-content';
 import { getPublicWebsiteData } from '@/lib/websiteContentPublic';
-import { createPublicMetadata } from '@/lib/site';
+import { getPageMetadata, pageSeo } from '@/lib/page-seo';
+import { createServiceCollectionJsonLd } from '@/lib/site';
 
-export const metadata: Metadata = createPublicMetadata({
-  title: 'الخدمات',
-  description: 'خدمات ريان سوفت في تطوير تطبيقات الجوال والمواقع والمتاجر الإلكترونية والهوية وتجربة المستخدم.',
-  path: '/services',
-});
+export const metadata: Metadata = getPageMetadata('services');
 
 export default async function ServicesPage() {
   const services = await getPublicWebsiteData<PublicService>('services');
 
   return (
-    <PublicLayout>
+    <PublicLayout seo={pageSeo.services}>
+      <JsonLd id="services-list-schema" data={createServiceCollectionJsonLd(services)} />
       <PageHero
         eyebrow="الخدمات"
         title="حلول رقمية تبنى حول هدف واضح"

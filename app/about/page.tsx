@@ -1,15 +1,13 @@
 import type { Metadata } from 'next';
 import PublicSimplePage from '@/components/public/public-page-section';
+import JsonLd from '@/components/public/json-ld';
 import PageHtmlContent from '@/features/pages/components/page-html-content';
 import { fetchAboutUsServer } from '@/features/pages/services/pages-api';
 import type { AboutUsPage } from '@/features/pages/types/page.types';
-import { createPublicMetadata } from '@/lib/site';
+import { getPageMetadata, pageSeo } from '@/lib/page-seo';
+import { createAboutPageJsonLd } from '@/lib/site';
 
-export const metadata: Metadata = createPublicMetadata({
-  title: 'من نحن',
-  description: 'تعرف على ريان سوفت، طريقة العمل، وما الذي يجعل المنتج الرقمي واضحا وقابلا للنمو.',
-  path: '/about',
-});
+export const metadata: Metadata = getPageMetadata('about');
 
 export default async function AboutPage() {
   let page: AboutUsPage | null = null;
@@ -25,10 +23,12 @@ export default async function AboutPage() {
 
   return (
     <PublicSimplePage
+      seoKey="about"
       eyebrow="من نحن"
       title={about?.title || 'نبني منتجات رقمية واضحة وقابلة للنمو'}
       description={about?.caption || 'ريان سوفت شريك تقني يساعد الشركات على تحويل الأفكار إلى تطبيقات ومواقع ومتاجر تعمل بوضوح وتخدم هدفا تجاريا محددا.'}
     >
+      <JsonLd id="about-page-schema" data={createAboutPageJsonLd(pageSeo.about)} />
       <div className="mx-auto max-w-3xl space-y-8">
         <PageHtmlContent
           html={about?.description}

@@ -15,7 +15,14 @@ import BilingualFieldInputs from './bilingual-field-inputs';
 import CrudItemList from '@/components/ui/crud-item-list';
 import AdminFormModal from '@/components/ui/admin-form-modal';
 import type { AdminOffer, AdminOfferPayload, BilingualField, AdminSectionHeaderPayload } from '@/features/landing-page';
+import { formatLandingButtonUrlForForm } from '@/features/landing-page';
 import { translateMessage } from '@/lib/i18n-utils';
+import {
+  hasBilingualErrors,
+  validateLandingButtonUrl,
+  validateRequiredBilingual,
+  type BilingualFieldErrors,
+} from './landing-form-validation';
 
 const EMPTY_BI: BilingualField = { ar: '', en: '' };
 const DEFAULT_FORM: AdminOfferPayload = { title: EMPTY_BI, caption: EMPTY_BI, button_text: EMPTY_BI, button_url: '', most_requested: 0 };
@@ -25,7 +32,7 @@ function offerToForm(o: AdminOffer): AdminOfferPayload {
     title: o.title,
     caption: o.caption,
     button_text: o.button_text ?? EMPTY_BI,
-    button_url: o.button_url || '',
+    button_url: formatLandingButtonUrlForForm(o.button_url),
     most_requested: o.most_requested ? 1 : 0,
   };
 }
@@ -42,11 +49,16 @@ export default function AdminOffersTab() {
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<AdminOfferPayload>(DEFAULT_FORM);
   const [formError, setFormError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{
+    title?: BilingualFieldErrors;
+    button_url?: string;
+  }>({});
 
   function openCreate() {
     setEditingId(null);
     setForm(DEFAULT_FORM);
     setFormError('');
+    setFieldErrors({});
     setShowForm(true);
   }
 
@@ -54,11 +66,23 @@ export default function AdminOffersTab() {
     setEditingId(offer.id);
     setForm(offerToForm(offer));
     setFormError('');
+    setFieldErrors({});
     setShowForm(true);
   }
 
   async function handleSave() {
     setFormError('');
+    const nextFieldErrors = {
+      title: validateRequiredBilingual(form.title),
+      button_url: validateLandingButtonUrl(form.button_url),
+    };
+
+    setFieldErrors(nextFieldErrors);
+
+    if (hasBilingualErrors(nextFieldErrors.title) || nextFieldErrors.button_url) {
+      return;
+    }
+
     try {
       if (editingId) {
         await updateMutation.mutateAsync({ id: editingId, payload: form });
@@ -117,12 +141,22 @@ export default function AdminOffersTab() {
         isSubmitting={isSaving}
         error={formError}
       >
-        <BilingualFieldInputs label={translateMessage('Title')} value={form.title} onChange={(v) => setForm((p) => ({ ...p, title: v }))} required />
+        <BilingualFieldInputs label={translateMessage('Title')} value={form.title} onChange={(v) => setForm((p) => ({ ...p, title: v }))} errors={fieldErrors.title} required />
         <BilingualFieldInputs label={translateMessage('Caption / Badge')} value={form.caption} onChange={(v) => setForm((p) => ({ ...p, caption: v }))} />
         <BilingualFieldInputs label={translateMessage('Button Text')} value={form.button_text} onChange={(v) => setForm((p) => ({ ...p, button_text: v }))} />
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Button URL')}</label>
-          <input type="text" value={form.button_url} onChange={(e) => setForm((p) => ({ ...p, button_url: e.target.value }))} placeholder="#contact" className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
+          <input
+            type="text"
+            value={form.button_url}
+            onChange={(e) => setForm((p) => ({ ...p, button_url: e.target.value }))}
+            placeholder="#contact"
+            aria-invalid={Boolean(fieldErrors.button_url)}
+            className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:outline-none ${
+              fieldErrors.button_url ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+            }`}
+          />
+          {fieldErrors.button_url ? <p className="mt-1 text-xs font-medium text-red-400">{fieldErrors.button_url}</p> : null}
         </div>
         <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-[var(--text)]">
           <input type="checkbox" checked={form.most_requested === 1} onChange={(e) => setForm((p) => ({ ...p, most_requested: e.target.checked ? 1 : 0 }))} className="h-4 w-4 rounded accent-primary" />

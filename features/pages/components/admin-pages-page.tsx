@@ -2,11 +2,13 @@
 
 import React from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { FileText, Info, Shield } from 'lucide-react';
 import { PageSlug } from '../types/page.types';
 import { useAdminPages } from '../hooks/use-admin-pages';
 import AdminPageEditor from './admin-page-editor';
 import { translateMessage } from '@/lib/i18n-utils';
+import { getAdminPageSaveUnavailableMessage } from '../services/admin-pages-api';
 
 const tabs: { id: PageSlug; label: string; icon: typeof FileText }[] = [
   { id: 'privacy-policy', label: 'Privacy Policy', icon: Shield },
@@ -48,6 +50,19 @@ export default function AdminPagesPage() {
         ))}
       </div>
 
+      <div className="grid gap-4 md:grid-cols-2">
+        <Link
+          href="/admin/website/blog/categories"
+          className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition hover:border-primary/40 hover:bg-[var(--surface-2)]"
+        >
+          <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">{translateMessage('Website CMS')}</p>
+          <h2 className="mt-2 text-lg font-black text-[var(--text)]">{translateMessage('Blog Categories')}</h2>
+          <p className="mt-2 text-sm text-[var(--text-muted)]">
+            {translateMessage('Manage the categories available to organize blog posts.')}
+          </p>
+        </Link>
+      </div>
+
       <div className="min-h-[500px] rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-xl">
         <AdminPageEditor
           slug={activeTab}
@@ -73,6 +88,8 @@ export default function AdminPagesPage() {
               // Errors are surfaced in the editor state.
             }
           }}
+          readOnly={activeTab === 'about-us'}
+          readOnlyMessage={activeTab === 'about-us' ? getAdminPageSaveUnavailableMessage() : undefined}
         />
       </div>
     </div>

@@ -16,7 +16,7 @@ export const pageLinks: NavLink[] = [
   { key: 'landing.nav.about', href: '/about' },
   { key: 'landing.nav.services', href: '/services' },
   { key: 'landing.nav.portfolio', href: '/portfolio' },
-  { key: 'landing.nav.blog', href: '/blog' },
+  { key: 'landing.nav.blog', href: '/blogs' },
   { key: 'landing.nav.pricing', href: '/pricing' },
   { key: 'landing.nav.consultation', href: '/consultation' },
   { key: 'landing.nav.contact', href: '/contact' },

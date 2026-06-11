@@ -28,6 +28,7 @@ interface TagRepeaterProps {
   tags: TagRow[];
   onChange: (tags: TagRow[]) => void;
   withUrl?: boolean;
+  errors?: Array<Partial<Record<'ar' | 'en' | 'url', string>> | undefined>;
 }
 
 export default function TagRepeater({
@@ -36,6 +37,7 @@ export default function TagRepeater({
   tags,
   onChange,
   withUrl = false,
+  errors = [],
 }: TagRepeaterProps) {
   function addRow() {
     onChange([...tags, { name: { ar: '', en: '' }, url: '' }]);
@@ -75,31 +77,49 @@ export default function TagRepeater({
               className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-2.5"
             >
               {/* Arabic */}
-              <input
-                dir="rtl"
-                type="text"
-                value={tag.name.ar}
-                onChange={(e) => updateName(i, 'ar', e.target.value)}
-                placeholder="عربي"
-                className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2 text-sm focus:border-primary focus:outline-none"
-              />
+              <div className="flex-1">
+                <input
+                  dir="rtl"
+                  type="text"
+                  value={tag.name.ar}
+                  onChange={(e) => updateName(i, 'ar', e.target.value)}
+                  placeholder="عربي"
+                  aria-invalid={Boolean(errors[i]?.ar)}
+                  className={`w-full rounded-lg border bg-[var(--surface)] px-2.5 py-2 text-sm focus:outline-none ${
+                    errors[i]?.ar ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+                  }`}
+                />
+                {errors[i]?.ar ? <p className="mt-1 text-xs font-medium text-red-400">{errors[i]?.ar}</p> : null}
+              </div>
               {/* English */}
-              <input
-                type="text"
-                value={tag.name.en}
-                onChange={(e) => updateName(i, 'en', e.target.value)}
-                placeholder={translateMessage('English (placeholder)')}
-                className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2 text-sm focus:border-primary focus:outline-none"
-              />
-              {/* Optional URL */}
-              {withUrl && (
+              <div className="flex-1">
                 <input
                   type="text"
-                  value={tag.url}
-                  onChange={(e) => updateRow(i, { url: e.target.value })}
-                  placeholder={translateMessage('URL (opt.)')}
-                  className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2.5 py-2 text-sm focus:border-primary focus:outline-none"
+                  value={tag.name.en}
+                  onChange={(e) => updateName(i, 'en', e.target.value)}
+                  placeholder={translateMessage('English (placeholder)')}
+                  aria-invalid={Boolean(errors[i]?.en)}
+                  className={`w-full rounded-lg border bg-[var(--surface)] px-2.5 py-2 text-sm focus:outline-none ${
+                    errors[i]?.en ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+                  }`}
                 />
+                {errors[i]?.en ? <p className="mt-1 text-xs font-medium text-red-400">{errors[i]?.en}</p> : null}
+              </div>
+              {/* Optional URL */}
+              {withUrl && (
+                <div className="flex-1">
+                  <input
+                    type="text"
+                    value={tag.url}
+                    onChange={(e) => updateRow(i, { url: e.target.value })}
+                    placeholder={translateMessage('URL (opt.)')}
+                    aria-invalid={Boolean(errors[i]?.url)}
+                    className={`w-full rounded-lg border bg-[var(--surface)] px-2.5 py-2 text-sm focus:outline-none ${
+                      errors[i]?.url ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+                    }`}
+                  />
+                  {errors[i]?.url ? <p className="mt-1 text-xs font-medium text-red-400">{errors[i]?.url}</p> : null}
+                </div>
               )}
               {/* Remove */}
               <button

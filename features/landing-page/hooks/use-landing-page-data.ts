@@ -8,6 +8,7 @@ import {
   fetchLandingCapabilities,
   fetchLandingOffers,
   fetchLandingTestimonials,
+  fetchLandingFaqs,
 } from '../services/public-landing-api';
 import type {
   LandingHero,
@@ -15,6 +16,7 @@ import type {
   LandingCapabilitiesData,
   LandingOffersData,
   LandingTestimonialsData,
+  LandingFaqsData,
 } from '../types/landing-page.types';
 
 type Lang = 'ar' | 'en';
@@ -25,6 +27,7 @@ export const landingPageKeys = {
   capabilities: (lang: Lang) => ['landing', 'capabilities', lang] as const,
   offers: (lang: Lang) => ['landing', 'offers', lang] as const,
   testimonials: (lang: Lang) => ['landing', 'testimonials', lang] as const,
+  faqs: (lang: Lang) => ['landing', 'faqs', lang] as const,
 };
 
 export function useLandingHeroes() {
@@ -73,6 +76,16 @@ export function useLandingTestimonials() {
   return useQuery<LandingTestimonialsData>({
     queryKey: landingPageKeys.testimonials(lang),
     queryFn: () => fetchLandingTestimonials(lang),
+    staleTime: 60_000,
+  });
+}
+
+export function useLandingFaqs() {
+  const { language } = useTranslation();
+  const lang = language === 'en' ? 'en' : 'ar';
+  return useQuery<LandingFaqsData>({
+    queryKey: landingPageKeys.faqs(lang),
+    queryFn: () => fetchLandingFaqs(lang),
     staleTime: 60_000,
   });
 }

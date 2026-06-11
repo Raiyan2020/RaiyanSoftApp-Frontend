@@ -2,14 +2,14 @@
 
 import React, { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, ArrowLeft, CheckCircle, Phone, ShieldCheck, User, X } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Phone, ShieldCheck, User, X } from 'lucide-react';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import PhoneInput from '@/components/ui/phone-input';
 import ErrorAlert from '@/components/ui/error-alert';
+import SuccessToast from '@/components/ui/success-toast';
 import { useTranslation } from '@/lib/i18nContext';
-import { translateMessage } from '@/lib/i18n-utils';
 import { usePhoneAuth } from '../hooks/use-phone-auth';
 
 interface AuthDialogProps {
@@ -150,17 +150,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
             {activeError ? (
               <ErrorAlert message={activeError} />
             ) : null}
-
-            {message ? (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-start gap-2 mb-5"
-              >
-                <CheckCircle size={16} className="text-emerald-400 shrink-0 mt-0.5" />
-                <span className="text-emerald-400 text-xs font-bold">{translateMessage(message)}</span>
-              </motion.div>
-            ) : null}
+            <SuccessToast message={message} />
 
             {step === 'phone' ? (
               <form

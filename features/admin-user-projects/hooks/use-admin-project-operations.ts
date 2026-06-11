@@ -345,6 +345,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const [error, setErrorState] = useState<string | null>(null);
   const [stageForm, setStageForm] = useState<StageFormState>(emptyStageForm);
   const [editingStageId, setEditingStageId] = useState<string | null>(null);
+  const [loadingStageId, setLoadingStageId] = useState<string | null>(null);
   const [selectedStageId, setSelectedStageId] = useState<string>('');
   const [progressValue, setProgressValue] = useState(0);
   const [progressNote, setProgressNote] = useState('');
@@ -487,6 +488,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   };
 
   const startEditStage = async (stage: ProjectStage) => {
+    setLoadingStageId(stage.id);
     let selectedStage = stage;
     let rawAdminIds: number[] = [];
 
@@ -510,6 +512,12 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       status: selectedStage.status,
     });
     setActiveTab('plan');
+    if (typeof window !== 'undefined') {
+      window.requestAnimationFrame(() => {
+        document.getElementById('stage-editor-panel')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+    setLoadingStageId(null);
   };
 
   const saveStage = async () => {
@@ -1051,6 +1059,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     stageForm,
     setStageForm,
     editingStageId,
+    loadingStageId,
     selectedStageId,
     setSelectedStageId,
     progressValue,

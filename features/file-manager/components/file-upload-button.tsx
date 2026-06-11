@@ -1,5 +1,6 @@
 import React from 'react';
 import { Upload, Loader2 } from 'lucide-react';
+import ErrorAlert from '@/components/ui/error-alert';
 
 interface FileUploadButtonProps {
   fileInputRef: React.RefObject<HTMLInputElement | null>;
@@ -45,11 +46,7 @@ export default function FileUploadButton({
         )}
       </button>
 
-      {error ? (
-        <div className="mt-3 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs text-center">
-          {error}
-        </div>
-      ) : null}
+      <ErrorAlert message={error} />
     </div>
   );
 }

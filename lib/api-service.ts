@@ -17,6 +17,7 @@ export interface ApiResponse<T = any> {
 
 interface RequestOptions extends RequestInit {
   skipGlobalToast?: boolean;
+  skipSuccessToast?: boolean;
 }
 
 function isAdminApiPath(path: string) {
@@ -106,6 +107,9 @@ class ApiService {
           }
         }
         globalToast.error(errorMsg);
+      } else if (method !== 'GET' && !fetchOptions.skipSuccessToast) {
+        const successMsg = data?.message || 'Saved successfully.';
+        globalToast.success(successMsg);
       }
 
       return data;

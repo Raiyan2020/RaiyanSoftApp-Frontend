@@ -67,11 +67,17 @@ export default function CrudItemList<T extends { id: number }>({
   canDelete = true,
 }: CrudItemListProps<T>) {
   const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
+  const [deleting, setDeleting] = useState(false);
 
   async function confirmDelete() {
     if (pendingDeleteId == null) return;
-    await onDelete?.(pendingDeleteId);
-    setPendingDeleteId(null);
+    try {
+      setDeleting(true);
+      await onDelete?.(pendingDeleteId);
+      setPendingDeleteId(null);
+    } finally {
+      setDeleting(false);
+    }
   }
 
   return (
@@ -137,8 +143,8 @@ export default function CrudItemList<T extends { id: number }>({
                     <button
                       type="button"
                       onClick={() => setPendingDeleteId(item.id)}
-                      disabled={isDeleting}
-                      className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-red-500/10 hover:text-red-400 disabled:opacity-40"
+                      disabled={isDeleting || deleting}
+                      className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-red-500/10 hover:text-red-400 disabled:opacity-40 disabled:cursor-not-allowed"
                       aria-label={translateMessage('Delete')}
                     >
                       <Trash2 size={14} />
@@ -160,6 +166,7 @@ export default function CrudItemList<T extends { id: number }>({
         onConfirm={confirmDelete}
         onCancel={() => setPendingDeleteId(null)}
         isDestructive
+        isConfirming={deleting}
       />
     </>
   );

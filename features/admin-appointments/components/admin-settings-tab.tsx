@@ -1,6 +1,7 @@
 import React from 'react';
 import { MeetingSettingsForm } from '@/features/meetings';
 import ErrorAlert from '@/components/ui/error-alert';
+import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface AdminSettingsTabProps {
@@ -24,9 +25,7 @@ export default function AdminSettingsTab({
     <div className="max-w-2xl">
       <div className="space-y-6">
         {error ? <ErrorAlert message={error} /> : null}
-        {message ? (
-          <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">{translateMessage(message)}</div>
-        ) : null}
+        <SuccessToast message={message} />
 
         <div className="grid grid-cols-2 gap-6">
           <div className="space-y-2">

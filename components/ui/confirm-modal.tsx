@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { Loader2 } from 'lucide-react';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface ConfirmModalProps {
@@ -9,6 +10,7 @@ interface ConfirmModalProps {
   confirmText: string;
   cancelText?: string;
   isDestructive?: boolean;
+  isConfirming?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
 }
@@ -20,9 +22,23 @@ export default function ConfirmModal({
   confirmText,
   cancelText = 'Cancel',
   isDestructive = false,
+  isConfirming = false,
   onConfirm,
   onCancel,
 }: ConfirmModalProps) {
+  const [internalConfirming, setInternalConfirming] = useState(false);
+  const confirming = isConfirming || internalConfirming;
+
+  const handleConfirm = async () => {
+    if (confirming) return;
+    try {
+      setInternalConfirming(true);
+      await Promise.resolve(onConfirm());
+    } finally {
+      setInternalConfirming(false);
+    }
+  };
+
   return (
     <AnimatePresence>
       {isOpen ? (
@@ -51,20 +67,27 @@ export default function ConfirmModal({
 
             <div className="flex space-x-3 rtl:space-x-reverse">
               <button
+                type="button"
                 onClick={onCancel}
+                disabled={confirming}
                 className="flex-1 py-3 rounded-xl bg-[var(--surface-2)] text-[var(--text)] font-medium text-sm hover:opacity-90 transition-colors border border-[var(--border)]"
               >
                 {translateMessage(cancelText)}
               </button>
               <button
-                onClick={onConfirm}
+                type="button"
+                onClick={handleConfirm}
+                disabled={confirming}
                 className={`flex-1 py-3 rounded-xl text-[var(--text)] font-medium text-sm transition-all shadow-lg ${
                   isDestructive
                     ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20'
                     : 'bg-primary hover:bg-sky-500 shadow-primary/20'
-                }`}
+                  } disabled:opacity-60 disabled:cursor-not-allowed`}
               >
-                {translateMessage(confirmText)}
+                <span className="inline-flex items-center gap-2">
+                  {confirming ? <Loader2 size={14} className="animate-spin" /> : null}
+                  {translateMessage(confirming ? 'Deleting...' : confirmText)}
+                </span>
               </button>
             </div>
           </motion.div>

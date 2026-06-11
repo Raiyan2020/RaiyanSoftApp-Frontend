@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { fetchPrivacyPolicy } from '../services/pages-api';
+import { fetchAdminPrivacyPolicy } from '../services/pages-api';
 import { PrivacyPolicyPage } from '../types/page.types';
 
 export function usePrivacyPolicy(enabled = true) {
@@ -14,7 +14,7 @@ export function usePrivacyPolicy(enabled = true) {
     setError(null);
 
     try {
-      const page = await fetchPrivacyPolicy();
+      const page = await fetchAdminPrivacyPolicy();
       setData(page);
       return page;
     } catch (err: any) {

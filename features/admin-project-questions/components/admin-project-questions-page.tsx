@@ -5,7 +5,6 @@ import {
   ArrowDown,
   ArrowUp,
   Check,
-  Eye,
   GripVertical,
   ListChecks,
   Loader2,
@@ -20,6 +19,7 @@ import ErrorAlert from '@/components/ui/error-alert';
 import { translateMessage } from '@/lib/i18n-utils';
 import {
   ProjectQuestion,
+  ProjectQuestionOption,
   ProjectQuestionType,
   useAdminProjectQuestions,
 } from '../hooks/use-admin-project-questions';
@@ -34,6 +34,108 @@ const FieldLabel = ({ children }: { children: React.ReactNode }) => (
     {typeof children === 'string' ? translateMessage(children) : children}
   </label>
 );
+
+const optionRowClasses =
+  'rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-3 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
+
+function OptionRow({
+  option,
+  index,
+  onChange,
+  onRemove,
+  canRemove,
+  onMove,
+  canMoveUp,
+  canMoveDown,
+}: {
+  option: ProjectQuestionOption;
+  index: number;
+  onChange: (index: number, patch: Partial<ProjectQuestionOption>) => void;
+  onRemove: (index: number) => void;
+  canRemove: boolean;
+  onMove: (fromIndex: number, toIndex: number) => void;
+  canMoveUp: boolean;
+  canMoveDown: boolean;
+}) {
+  return (
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3">
+          <span className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-primary/15 bg-primary/8 text-xs font-black text-primary">
+            {index + 1}
+          </span>
+          <div>
+            <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--text-muted)]">{translateMessage('Option')}</p>
+            <p className="text-[11px] text-[var(--text-muted)]">{translateMessage('Order and labels are saved in this row.')}</p>
+          </div>
+        </div>
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => onMove(index, index - 1)}
+            disabled={!canMoveUp}
+            className="inline-flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition hover:border-primary/30 hover:text-[var(--text)] disabled:opacity-40"
+            title={translateMessage('Move up')}
+          >
+            <ArrowUp size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={() => onMove(index, index + 1)}
+            disabled={!canMoveDown}
+            className="inline-flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition hover:border-primary/30 hover:text-[var(--text)] disabled:opacity-40"
+            title={translateMessage('Move down')}
+          >
+            <ArrowDown size={12} />
+          </button>
+          <button
+            type="button"
+            onClick={() => onRemove(index)}
+            disabled={!canRemove}
+            className="inline-flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition hover:border-red-200 hover:text-red-400 disabled:opacity-40"
+          >
+            <Trash2 size={12} />
+            {translateMessage('Remove')}
+          </button>
+        </div>
+      </div>
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="space-y-3">
+          <FieldLabel>English Label</FieldLabel>
+          <input
+            value={option.label}
+            onChange={(event) => onChange(index, { label: event.target.value })}
+            className={optionRowClasses}
+            placeholder={translateMessage('Option label in English')}
+          />
+        </div>
+        <div className="space-y-3">
+          <FieldLabel>Arabic Label</FieldLabel>
+          <input
+            value={option.labelAr || ''}
+            onChange={(event) => onChange(index, { labelAr: event.target.value })}
+            className={optionRowClasses}
+            placeholder={translateMessage('Option label in Arabic')}
+          />
+        </div>
+      </div>
+      <div className="mt-3 flex justify-start">
+        <button
+          type="button"
+          onClick={() => onChange(index, { active: option.active === false ? true : false })}
+          className={`inline-flex h-11 items-center justify-center gap-1.5 rounded-xl border px-4 text-xs font-bold transition ${
+            option.active !== false
+              ? 'border-primary/20 bg-primary/10 text-primary'
+              : 'border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-muted)]'
+          }`}
+        >
+          {option.active !== false ? <Check size={12} /> : <X size={12} />}
+          {translateMessage(option.active !== false ? 'Active' : 'Inactive')}
+        </button>
+      </div>
+    </div>
+  );
+}
 
 function QuestionRow({
   question,
@@ -100,8 +202,8 @@ function QuestionRow({
           }}
           onDragEnd={onDragEnd}
           className="mt-1 cursor-grab rounded-lg p-1 text-[var(--text-muted)] hover:bg-[var(--surface-3)] hover:text-[var(--text)] active:cursor-grabbing"
-          title="Drag to reorder"
-          aria-label="Drag to reorder"
+          title={translateMessage('Drag to reorder')}
+          aria-label={translateMessage('Drag to reorder')}
         >
           <GripVertical size={16} />
         </button>
@@ -109,17 +211,17 @@ function QuestionRow({
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <h3 className="text-sm font-bold text-[var(--text)] break-words">{question.label}</h3>
             <span className="text-[10px] text-[var(--text)] bg-[var(--surface-3)] border border-[var(--border)] rounded-full px-2 py-0.5">
-              {question.type.replace('_', ' ')}
+              {translateMessage(question.type.replace('_', ' '))}
             </span>
           </div>
           <div className="flex flex-wrap gap-2 text-[10px]">
             <span className={question.active ? 'text-emerald-400' : 'text-[var(--text-muted)]'}>
-              {question.active ? 'Active' : 'Inactive'}
+              {translateMessage(question.active ? 'Active' : 'Inactive')}
             </span>
             <span className={question.required ? 'text-primary' : 'text-[var(--text-muted)]'}>
-              {question.required ? 'Required' : 'Optional'}
+              {translateMessage(question.required ? 'Required' : 'Optional')}
             </span>
-            {question.locked ? <span className="text-amber-400">Locked</span> : null}
+            {question.locked ? <span className="text-amber-400">{translateMessage('Locked')}</span> : null}
           </div>
         </button>
         <div className="flex items-center gap-1 shrink-0 sm:self-start self-end">
@@ -128,7 +230,7 @@ function QuestionRow({
             onClick={() => onMove(question.id, -1)}
             disabled={index === 0}
             className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40"
-            title="Move up"
+            title={translateMessage('Move up')}
           >
             <ArrowUp size={14} />
           </button>
@@ -137,7 +239,7 @@ function QuestionRow({
             onClick={() => onMove(question.id, 1)}
             disabled={index === total - 1}
             className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40"
-            title="Move down"
+            title={translateMessage('Move down')}
           >
             <ArrowDown size={14} />
           </button>
@@ -149,7 +251,7 @@ function QuestionRow({
                 ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
                 : 'bg-[var(--surface-3)] text-[var(--text-muted)] hover:text-emerald-400'
             }`}
-            title={question.active ? 'Deactivate question' : 'Activate question'}
+            title={translateMessage(question.active ? 'Deactivate question' : 'Activate question')}
           >
             {question.active ? <Check size={14} /> : <X size={14} />}
           </button>
@@ -158,78 +260,10 @@ function QuestionRow({
             onClick={() => onDelete(question.id)}
             disabled={question.locked}
             className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 disabled:opacity-40"
-            title="Delete question"
+            title={translateMessage('Delete question')}
           >
             <Trash2 size={14} />
           </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function QuestionPreview({
-  label,
-  type,
-  optionsText,
-  required,
-}: {
-  label: string;
-  type: ProjectQuestionType;
-  optionsText: string;
-  required: boolean;
-}) {
-  const options = optionsText
-    .split('\n')
-    .map((line) => line.split('|')[0].trim())
-    .filter(Boolean);
-
-  return (
-    <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-5">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
-          <Eye size={18} />
-        </div>
-        <div>
-          <h2 className="text-lg font-bold text-[var(--text)]">Client Preview</h2>
-          <p className="text-xs text-[var(--text-muted)]">A compact preview of the wizard question.</p>
-        </div>
-      </div>
-      <div className="bg-[var(--bg)] border border-[var(--border)] rounded-2xl p-5">
-        <p className="text-lg font-bold text-[var(--text)] leading-snug">
-          {label || 'Question label'}
-          {required ? <span className="text-primary"> *</span> : null}
-        </p>
-        <div className="mt-5">
-          {type === 'textarea' ? <div className="h-28 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]" /> : null}
-          {type === 'text' || type === 'reference_app' ? (
-            <div className="h-12 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]" />
-          ) : null}
-          {type === 'yes_no' ? (
-            <div className="grid grid-cols-2 gap-3">
-              {['Yes', 'No'].map((item) => (
-                <div key={item} className="rounded-xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 text-sm text-[var(--text)]">
-                  {item}
-                </div>
-              ))}
-            </div>
-          ) : null}
-          {type === 'color' ? (
-            <div className="flex gap-3">
-              {['#1DB7F0', '#22C55E', '#F59E0B', '#EF4444'].map((color) => (
-                <div key={color} className="w-10 h-10 rounded-full border border-[var(--border)]" style={{ background: color }} />
-              ))}
-            </div>
-          ) : null}
-          {optionTypes.includes(type) ? (
-            <div className="space-y-2">
-              {(options.length ? options : ['Option one', 'Option two']).map((option) => (
-                <div key={option} className="rounded-xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 text-sm text-[var(--text)]">
-                  {option}
-                </div>
-              ))}
-            </div>
-          ) : null}
         </div>
       </div>
     </div>
@@ -264,14 +298,14 @@ export default function AdminProjectQuestionsPage() {
         </div>
         <Button type="button" onClick={state.startCreate} className="gap-2">
           <Plus size={18} />
-          Add Question
+          {translateMessage('Add Question')}
         </Button>
       </div>
 
       {state.error ? <ErrorAlert message={state.error} /> : null}
 
       <div className="space-y-6">
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_420px] gap-6">
+        <div className="grid grid-cols-1 gap-6">
           <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
             <div className="flex items-center gap-3 mb-5">
               <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary">
@@ -286,8 +320,8 @@ export default function AdminProjectQuestionsPage() {
             </div>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-3">
                   <FieldLabel>English Label</FieldLabel>
                   <input
                     value={state.form.label}
@@ -296,7 +330,7 @@ export default function AdminProjectQuestionsPage() {
                     placeholder={translateMessage('What platforms do you need?')}
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-3">
                   <FieldLabel>Arabic Label</FieldLabel>
                   <input
                     value={state.form.labelAr}
@@ -307,8 +341,8 @@ export default function AdminProjectQuestionsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                <div className="space-y-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-3">
                   <FieldLabel>Question Type</FieldLabel>
                   <select
                     value={state.form.type}
@@ -317,12 +351,12 @@ export default function AdminProjectQuestionsPage() {
                   >
                     {state.questionTypes.map((type) => (
                       <option key={type.value} value={type.value}>
-                        {type.label}
+                        {translateMessage(type.label)}
                       </option>
                     ))}
                   </select>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:pt-6">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:pt-7">
                   {[
                     ['required', 'Required'],
                     ['active', 'Active'],
@@ -354,14 +388,81 @@ export default function AdminProjectQuestionsPage() {
               </div>
 
               {optionTypes.includes(state.form.type) ? (
-                <div className="space-y-2">
-                  <FieldLabel>Options</FieldLabel>
-                  <textarea
-                    value={state.form.optionsText}
-                    onChange={(e) => state.setForm((prev) => ({ ...prev, optionsText: e.target.value }))}
-                    className={`${inputClasses} h-36 resize-none`}
-                    placeholder={'iOS | ايفون\nAndroid | اندرويد\nWeb | ويب'}
-                  />
+                <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div className="space-y-1.5">
+                      <FieldLabel>Options</FieldLabel>
+                      <p className="text-[11px] text-[var(--text-muted)]">
+                        {translateMessage('Add rows, then fill the English and Arabic labels for each choice.')}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        state.setForm((prev) => ({
+                          ...prev,
+                          options: [
+                            ...prev.options,
+                            {
+                              id: `option_${prev.options.length + 1}`,
+                              label: '',
+                              labelAr: '',
+                              active: true,
+                              order: prev.options.length + 1,
+                            },
+                          ],
+                        }))
+                      }
+                      className="inline-flex items-center gap-2 rounded-xl bg-primary/10 px-4 py-2.5 text-sm font-bold text-primary transition hover:bg-primary/20"
+                    >
+                      <Plus size={14} />
+                      {translateMessage('Add Option')}
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {(state.form.options.length > 0 ? state.form.options : [{ id: 'option_1', label: '', labelAr: '', active: true, order: 1 }]).map(
+                      (option, index) => (
+                        <OptionRow
+                          key={option.id}
+                          option={option}
+                          index={index}
+                          canRemove={state.form.options.length > 1}
+                          canMoveUp={index > 0}
+                          canMoveDown={index < state.form.options.length - 1}
+                          onMove={(fromIndex, toIndex) =>
+                            state.setForm((prev) => {
+                              if (toIndex < 0 || toIndex >= prev.options.length || fromIndex === toIndex) return prev;
+                              const nextOptions = [...prev.options];
+                              const [moved] = nextOptions.splice(fromIndex, 1);
+                              nextOptions.splice(toIndex, 0, moved);
+                              return {
+                                ...prev,
+                                options: nextOptions.map((item, itemIndex) => ({ ...item, order: itemIndex + 1 })),
+                              };
+                            })
+                          }
+                          onChange={(rowIndex, patch) =>
+                            state.setForm((prev) => ({
+                              ...prev,
+                              options: prev.options.map((item, itemIndex) =>
+                                itemIndex === rowIndex ? { ...item, ...patch } : item
+                              ),
+                            }))
+                          }
+                          onRemove={(rowIndex) =>
+                            state.setForm((prev) => {
+                              const nextOptions = prev.options.filter((_, itemIndex) => itemIndex !== rowIndex);
+                              return {
+                                ...prev,
+                                options: nextOptions.length > 0 ? nextOptions : [{ id: 'option_1', label: '', labelAr: '', active: true, order: 1 }],
+                              };
+                            })
+                          }
+                        />
+                      )
+                    )}
+                  </div>
                 </div>
               ) : null}
 
@@ -378,12 +479,6 @@ export default function AdminProjectQuestionsPage() {
             </div>
           </div>
 
-          <QuestionPreview
-            label={state.form.label}
-            type={state.form.type}
-            optionsText={state.form.optionsText}
-            required={state.form.required}
-          />
         </div>
 
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
@@ -442,9 +537,9 @@ export default function AdminProjectQuestionsPage() {
 
       <ConfirmModal
         isOpen={!!state.deleteId}
-        title="Delete Question?"
-        message="This removes the question from the project request wizard configuration."
-        confirmText="Delete Question"
+        title={translateMessage('Delete Question?')}
+        message={translateMessage('This removes the question from the project request wizard configuration.')}
+        confirmText={translateMessage('Delete Question')}
         isDestructive
         onConfirm={state.deleteQuestion}
         onCancel={() => state.setDeleteId(null)}

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
+import ErrorAlert from '@/components/ui/error-alert';
 import { useTermsConditions } from '@/features/pages';
 import { PageHtmlContent } from '@/features/pages';
 
@@ -40,10 +41,11 @@ export default function TermsPage() {
             <Loader2 className="me-2 animate-spin" size={18} />
             Loading...
           </div>
-        ) : error ? (
-          <p className="text-red-400">{error}</p>
         ) : (
-          <PageHtmlContent html={data?.description} emptyMessage="Terms and conditions content is not available yet." />
+          <>
+            <ErrorAlert message={error} />
+            {!error ? <PageHtmlContent html={data?.description} emptyMessage="Terms and conditions content is not available yet." /> : null}
+          </>
         )}
       </div>
     </motion.div>

@@ -69,17 +69,6 @@ export function useAdminProjects() {
     }
   };
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setFormData((prev) => ({ ...prev, logoUrl: reader.result as string }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
   return {
     projects,
     searchTerm,
@@ -96,6 +85,5 @@ export function useAdminProjects() {
     handleCloseModal,
     handleSubmit,
     handleDelete,
-    handleFileChange,
   };
 }

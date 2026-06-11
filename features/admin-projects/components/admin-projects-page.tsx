@@ -22,7 +22,6 @@ export default function AdminProjectsPage() {
     handleCloseModal,
     handleSubmit,
     handleDelete,
-    handleFileChange,
   } = useAdminProjects();
 
   return (
@@ -87,7 +86,6 @@ export default function AdminProjectsPage() {
             formData={formData}
             setFormData={setFormData}
             onSubmit={handleSubmit}
-            onFileChange={handleFileChange}
           />
         ) : null}
       </AnimatePresence>

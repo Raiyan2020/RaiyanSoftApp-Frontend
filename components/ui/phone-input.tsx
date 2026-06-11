@@ -85,6 +85,15 @@ export default function PhoneInput({
     };
   }, [defaultCountry, managedCountries]);
 
+  const maxNationalLength = React.useMemo(
+    () => getMaxNationalLength(selectedCountry ?? countryConfig.defaultCountry),
+    [countryConfig.defaultCountry, selectedCountry]
+  );
+  const inputMaxLength = React.useMemo(
+    () => getMaxInputLength(selectedCountry ?? countryConfig.defaultCountry, maxNationalLength),
+    [maxNationalLength, selectedCountry, countryConfig.defaultCountry]
+  );
+
   React.useEffect(() => {
     setSelectedCountry((currentCountry) => currentCountry ?? countryConfig.defaultCountry);
   }, [countryConfig.defaultCountry]);
@@ -129,6 +138,7 @@ export default function PhoneInput({
       countrySelectComponent={CountrySelect}
       countrySelectProps={{ callingCodes: countryConfig.callingCodes }}
       inputComponent={InputComponent}
+      inputComponentProps={{ maxLength: inputMaxLength }}
       smartCaret={false}
       {...props}
       dir="ltr"
@@ -152,6 +162,13 @@ function limitPhoneValueByCountry(value: string, country?: RPNInput.Country) {
   if (nationalDigits.length <= maxNationalLength) return value;
 
   return `+${callingCode}${nationalDigits.slice(0, maxNationalLength)}`;
+}
+
+function getMaxInputLength(country: RPNInput.Country, maxNationalLength?: number) {
+  const callingCode = RPNInput.getCountryCallingCode(country);
+  const digits = callingCode.replace(/\D/g, '').length;
+  if (!maxNationalLength) return undefined;
+  return maxNationalLength + digits + 1;
 }
 
 function getMaxNationalLength(country: RPNInput.Country) {

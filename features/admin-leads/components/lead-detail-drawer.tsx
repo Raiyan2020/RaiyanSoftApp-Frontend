@@ -4,6 +4,7 @@ import { MessageCircle, X, Copy, CheckCircle, Loader2, XCircle } from 'lucide-re
 import { useTranslation } from '@/lib/i18nContext';
 import { globalToast } from '@/lib/toast-context';
 import ErrorAlert from '@/components/ui/error-alert';
+import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
 import { AdminLeadDetail, AdminLeadListItem } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
@@ -160,11 +161,7 @@ export default function LeadDetailDrawer({
 
               {/* Feedback */}
               {statusError ? <ErrorAlert message={statusError} /> : null}
-              {actionMessage ? (
-                <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">
-                  {translateMessage(actionMessage)}
-                </div>
-              ) : null}
+              <SuccessToast message={actionMessage} />
 
               {/* Approve / Reject */}
               {canChangeStatus ? (

@@ -1,7 +1,9 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Lock, Mail, ShieldCheck, ArrowRight, Loader2, Zap } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Loader2, Zap } from 'lucide-react';
 import SafeImage from '@/components/ui/safe-image';
+import ErrorAlert from '@/components/ui/error-alert';
+import SuccessToast from '@/components/ui/success-toast';
 import { useAdminLogin } from '../hooks/use-admin-login';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -97,26 +99,8 @@ export default function AdminLoginPage() {
             />
 
 
-            {error ? (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-center gap-2 text-red-400 text-xs"
-              >
-                <ShieldCheck size={14} />
-                {translateMessage(error)}
-              </motion.div>
-            ) : null}
-
-            {bootstrapMessage ? (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="bg-emerald-500/10 border border-emerald-500/20 rounded-lg p-3 text-emerald-400 text-xs text-center"
-              >
-                {translateMessage(bootstrapMessage)}
-              </motion.div>
-            ) : null}
+            <ErrorAlert message={error} />
+            <SuccessToast message={bootstrapMessage} />
 
             <button
               type="submit"

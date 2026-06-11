@@ -11,6 +11,7 @@ import {
   isEmployeeBlocked,
 } from '../utils/employee-helpers';
 import ErrorAlert from '@/components/ui/error-alert';
+import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface EmployeeDetailDrawerProps {
@@ -105,11 +106,7 @@ export default function EmployeeDetailDrawer({
             {actionError ? (
               <ErrorAlert message={actionError} />
             ) : null}
-            {actionMessage ? (
-              <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-3 text-sm text-emerald-400">
-                {translateMessage(actionMessage)}
-              </div>
-            ) : null}
+            <SuccessToast message={actionMessage} />
           </div>
         </div>
 

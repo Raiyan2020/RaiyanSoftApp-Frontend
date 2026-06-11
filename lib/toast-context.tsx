@@ -5,6 +5,11 @@ import { Toaster, toast as sonnerToast } from 'sonner';
 import { translateMessage } from './i18n-utils';
 
 type ToastFn = (message: string) => void;
+const ACTION_TOAST_ID = 'global-action-toast';
+
+function showActionToast(type: 'success' | 'error' | 'info', message: string) {
+  sonnerToast[type](translateMessage(message), { id: ACTION_TOAST_ID });
+}
 
 interface ToastContextType {
   toast: {
@@ -17,9 +22,9 @@ interface ToastContextType {
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 const toastApi: ToastContextType['toast'] = {
-  success: (message) => sonnerToast.success(translateMessage(message)),
-  error: (message) => sonnerToast.error(translateMessage(message), { id: `global-error-${message}` }),
-  info: (message) => sonnerToast.info(translateMessage(message)),
+  success: (message) => showActionToast('success', message),
+  error: (message) => showActionToast('error', message),
+  info: (message) => showActionToast('info', message),
 };
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
@@ -30,6 +35,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         richColors
         closeButton
         position="top-right"
+        visibleToasts={1}
         toastOptions={{
           classNames: {
             toast: 'font-sans',

@@ -3,17 +3,16 @@ import PublicLayout from '@/components/public/public-layout';
 import PageHero from '@/components/public/page-hero';
 import SectionShell from '@/components/public/section-shell';
 import PublicInquiryForm from '@/components/public/public-inquiry-form';
-import { createPublicMetadata, siteConfig } from '@/lib/site';
+import JsonLd from '@/components/public/json-ld';
+import { getPageMetadata, pageSeo } from '@/lib/page-seo';
+import { createContactPageJsonLd, siteConfig } from '@/lib/site';
 
-export const metadata: Metadata = createPublicMetadata({
-  title: 'تواصل معنا',
-  description: 'تواصل مع ريان سوفت لمناقشة مشروعك الرقمي أو طلب استشارة أولى.',
-  path: '/contact',
-});
+export const metadata: Metadata = getPageMetadata('contact');
 
 export default function ContactPage() {
   return (
-    <PublicLayout>
+    <PublicLayout seo={pageSeo.contact}>
+      <JsonLd id="contact-page-schema" data={createContactPageJsonLd(pageSeo.contact)} />
       <PageHero eyebrow="تواصل معنا" title="ابدأ برسالة واضحة وسنرتب الخطوة التالية" description="اكتب تفاصيل مختصرة عن احتياجك وسنراجعها للرد بالمسار الأنسب." />
       <SectionShell>
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
@@ -33,4 +32,3 @@ export default function ContactPage() {
     </PublicLayout>
   );
 }
-

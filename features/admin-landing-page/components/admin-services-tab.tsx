@@ -13,9 +13,16 @@ import SectionHeaderForm from './section-header-form';
 import BilingualFieldInputs from './bilingual-field-inputs';
 import CrudItemList from '@/components/ui/crud-item-list';
 import AdminFormModal from '@/components/ui/admin-form-modal';
+import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
+import SafeImage from '@/components/ui/safe-image';
 import TagRepeater from '@/components/ui/tag-repeater';
 import type { AdminService, AdminServicePayload, BilingualField, AdminSectionHeaderPayload } from '@/features/landing-page';
 import { translateMessage } from '@/lib/i18n-utils';
+import {
+  hasBilingualErrors,
+  validateRequiredBilingual,
+  type BilingualFieldErrors,
+} from './landing-form-validation';
 
 const EMPTY_BI: BilingualField = { ar: '', en: '' };
 
@@ -50,24 +57,37 @@ export default function AdminServicesTab() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState<AdminServicePayload>(DEFAULT_FORM);
+  const [imageValue, setImageValue] = useState<ImageUploadValue | null>(null);
   const [formError, setFormError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{ title?: BilingualFieldErrors }>({});
 
   function openCreate() {
     setEditingId(null);
     setForm(DEFAULT_FORM);
+    setImageValue(null);
     setFormError('');
+    setFieldErrors({});
     setShowForm(true);
   }
 
   function openEdit(service: AdminService) {
     setEditingId(service.id);
     setForm(serviceToForm(service));
+    setImageValue(null);
     setFormError('');
+    setFieldErrors({});
     setShowForm(true);
   }
 
   async function handleSave() {
     setFormError('');
+    const nextFieldErrors = { title: validateRequiredBilingual(form.title) };
+    setFieldErrors(nextFieldErrors);
+
+    if (hasBilingualErrors(nextFieldErrors.title)) {
+      return;
+    }
+
     try {
       if (editingId) {
         await updateMutation.mutateAsync({ id: editingId, payload: form });
@@ -110,11 +130,9 @@ export default function AdminServicesTab() {
           return (
             <div className="flex items-start gap-3">
               {service.image ? (
-                <img src={service.image} alt={displayTitle} className="h-12 w-12 rounded-lg object-cover shrink-0" />
+                <SafeImage src={service.image} alt={displayTitle} className="h-12 w-12 rounded-lg shrink-0" />
               ) : (
-                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-primary/10 text-sm font-bold text-primary">
-                  {displayTitle?.[0]}
-                </div>
+                <SafeImage src="/logo.webp" alt={displayTitle} className="h-12 w-12 rounded-lg shrink-0" />
               )}
               <div className="min-w-0">
                 <p className="font-semibold text-[var(--text)]">{displayTitle}</p>
@@ -141,14 +159,18 @@ export default function AdminServicesTab() {
         isSubmitting={isSaving}
         error={formError}
       >
-        <BilingualFieldInputs label={translateMessage('Title')} value={form.title} onChange={(v) => setForm((p) => ({ ...p, title: v }))} required />
+        <BilingualFieldInputs label={translateMessage('Title')} value={form.title} onChange={(v) => setForm((p) => ({ ...p, title: v }))} errors={fieldErrors.title} required />
         <BilingualFieldInputs label={translateMessage('Caption')} value={form.caption} onChange={(v) => setForm((p) => ({ ...p, caption: v }))} />
         <BilingualFieldInputs label={translateMessage('Description')} value={form.description} onChange={(v) => setForm((p) => ({ ...p, description: v }))} multiline />
         <BilingualFieldInputs label={translateMessage('Overview / Outcome')} value={form.overview} onChange={(v) => setForm((p) => ({ ...p, overview: v }))} multiline />
-        <div>
-          <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Image')}</label>
-          <input type="file" accept="image/*" onChange={(e) => setForm((p) => ({ ...p, image: e.target.files?.[0] ?? null }))} className="w-full text-sm text-[var(--text-muted)]" />
-        </div>
+        <ImageUpload
+          label={translateMessage('Image')}
+          value={imageValue}
+          onChange={(nextImage) => {
+            setImageValue(nextImage);
+            setForm((p) => ({ ...p, image: nextImage?.file ?? null }));
+          }}
+        />
         <TagRepeater
           label={translateMessage('Tags')}
           addLabel={translateMessage('Add')}

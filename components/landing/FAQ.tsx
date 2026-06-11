@@ -30,17 +30,19 @@ export default function FAQ() {
               className="reveal overflow-hidden rounded-3xl border border-cyan-950/10 bg-white shadow-sm dark:border-white/10 dark:bg-white/5"
               style={{ transitionDelay: `${i * 0.06}s` }}
             >
-              <button
-                type="button"
-                onClick={() => setOpen(open === i ? -1 : i)}
-                id={`faq-trigger-${i}`}
-                className="flex w-full items-center justify-between gap-4 p-5 font-bold text-slate-950 dark:text-white sm:p-6"
-                aria-expanded={open === i}
-                aria-controls={`faq-panel-${i}`}
-              >
-                <span className={textAlign.includes('right') ? 'text-right' : 'text-left'}>{item.q}</span>
-                <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary transition-transform duration-300 ${open === i ? 'rotate-45' : 'rotate-0'}`}>+</span>
-              </button>
+              <h3 className="m-0">
+                <button
+                  type="button"
+                  onClick={() => setOpen(open === i ? -1 : i)}
+                  id={`faq-trigger-${i}`}
+                  className="flex w-full items-center justify-between gap-4 p-5 text-base font-bold text-slate-950 dark:text-white sm:p-6"
+                  aria-expanded={open === i}
+                  aria-controls={`faq-panel-${i}`}
+                >
+                  <span className={textAlign.includes('right') ? 'text-right' : 'text-left'}>{item.q}</span>
+                  <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary transition-transform duration-300 ${open === i ? 'rotate-45' : 'rotate-0'}`}>+</span>
+                </button>
+              </h3>
               <div
                 id={`faq-panel-${i}`}
                 role="region"

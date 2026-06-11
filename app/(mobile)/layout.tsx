@@ -1,26 +1,14 @@
-'use client';
-import MobileShell from '@/components/layout/mobile-shell';
-import BottomNav from '@/components/layout/bottom-nav';
-import ErrorBoundary from '@/components/layout/error-boundary';
-import { usePathname } from 'next/navigation';
+import type { Metadata } from 'next';
+import { createPublicMetadata } from '@/lib/site';
+import MobileLayoutClient from './mobile-layout-client';
+
+export const metadata: Metadata = createPublicMetadata({
+  title: 'تطبيق العملاء',
+  description: 'منطقة العملاء والتطبيق — غير مخصصة للفهرسة العامة.',
+  path: '/home',
+  noIndex: true,
+});
 
 export default function MobileLayout({ children }: { children: React.ReactNode }) {
-  const pathname = usePathname();
-  const standalonePages = ['/book', '/login', '/signup'];
-  const isStandalone = standalonePages.includes(pathname || '');
-  const mainTabs = ['/home', '/support', '/appointments', '/notifications', '/more'];
-  const showBottomNav = mainTabs.includes(pathname || '');
-
-  if (isStandalone) {
-    return <ErrorBoundary>{children}</ErrorBoundary>;
-  }
-
-  return (
-    <MobileShell>
-      <ErrorBoundary>
-        {children}
-      </ErrorBoundary>
-      {showBottomNav ? <BottomNav /> : null}
-    </MobileShell>
-  );
+  return <MobileLayoutClient>{children}</MobileLayoutClient>;
 }

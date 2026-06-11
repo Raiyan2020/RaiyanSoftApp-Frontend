@@ -26,6 +26,7 @@ import {
   Star,
   Handshake,
   FileText,
+  Flag,
   Palette,
   Settings,
   Sun,
@@ -188,6 +189,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     ...(FEATURES.rolesManagement ? [{ id: 'roles', label: t('admin.nav.roles'), icon: Shield, path: '/admin/roles', badge: 0, permission: 'roles.manage' }] : []),
     { id: 'pages', label: t('admin.nav.pages'), icon: FileText, path: '/admin/pages', badge: 0, permission: 'pages.manage' },
     { id: 'colors', label: t('admin.nav.colors'), icon: Palette, path: '/admin/colors', badge: 0, permission: 'colors.manage' },
+    { id: 'countries', label: t('admin.nav.countries'), icon: Flag, path: '/admin/countries', badge: 0, permission: '*' },
     ...(FEATURES.landingPageManagement ? [{ id: 'landing-page', label: t('admin.nav.landing_page'), icon: Layout, path: '/admin/landing-page', badge: 0, permission: '*' }] : []),
   ].filter((item) => hasPermission(currentPermissions, item.permission));
 
@@ -195,6 +197,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     { id: 'website', label: t('admin.nav.overview'), icon: Globe2, path: '/admin/website', permission: 'website.view' },
     { id: 'website-homepage', label: t('admin.nav.homepage'), icon: Home, path: '/admin/website/homepage', permission: 'website.homepage.manage' },
     { id: 'website-services', label: t('admin.nav.services'), icon: Briefcase, path: '/admin/website/services', permission: 'website.services.manage' },
+    { id: 'website-blog-categories', label: t('admin.nav.blog_categories'), icon: Tags, path: '/admin/website/blog/categories', permission: 'website.blog.manage' },
     { id: 'website-apps', label: t('admin.nav.apps_cases'), icon: FolderKanban, path: '/admin/website/apps', permission: 'website.apps.manage' },
     { id: 'website-blog', label: t('admin.nav.blog'), icon: Newspaper, path: '/admin/website/blog', permission: 'website.blog.manage' },
     { id: 'website-steps', label: t('admin.nav.steps'), icon: ListChecks, path: '/admin/website/steps', permission: 'website.steps.manage' },
@@ -246,12 +249,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       id: 'system',
       label: dir === 'rtl' ? 'النظام' : 'System',
-      items: filteredNavItems.filter((item) => ['pages', 'colors', 'landing-page'].includes(item.id)),
+      items: filteredNavItems
+        .filter((item) => ['pages', 'colors', 'countries', 'landing-page'].includes(item.id))
+        .concat(
+          filteredWebsiteNavItems
+            .filter((item) => ['website-blog', 'website-blog-categories'].includes(item.id))
+            .map((item) => ({ ...item, badge: 0 }))
+        ),
     },
     {
       id: 'website',
       label: t('admin.section.website'),
-      items: filteredWebsiteNavItems,
+      items: filteredWebsiteNavItems.filter((item) => !['website-blog', 'website-blog-categories'].includes(item.id)),
     },
   ] as const;
 

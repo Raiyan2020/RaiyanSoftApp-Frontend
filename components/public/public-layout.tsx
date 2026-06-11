@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import PublicNavigation from './public-navigation';
+import PublicWebPageJsonLd from './public-web-page-json-ld';
 import { publicServices } from '@/lib/public-content';
 import { siteConfig } from '@/lib/site';
 
@@ -12,7 +13,8 @@ const companyLinks = [
 ];
 
 const resourceLinks = [
-  { label: 'المدونة', href: '/blog' },
+  { label: 'المدونة', href: '/blogs' },
+  { label: 'تصنيفات المدونة', href: '/blogs/categories' },
   { label: 'الأسئلة الشائعة', href: '/faq' },
   { label: 'آراء العملاء', href: '/testimonials' },
   { label: 'أعمالنا', href: '/portfolio' },
@@ -29,9 +31,15 @@ type FooterGroupProps = {
   links: { label: string; href: string }[];
 };
 
-export default function PublicLayout({ children }: { children: React.ReactNode }) {
+type PublicLayoutProps = {
+  children: React.ReactNode;
+  seo?: { title: string; description: string; path: string };
+};
+
+export default function PublicLayout({ children, seo }: PublicLayoutProps) {
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)]">
+      {seo ? <PublicWebPageJsonLd title={seo.title} description={seo.description} path={seo.path} /> : null}
       <a href="#main-content" className="skip-link">تجاوز إلى المحتوى</a>
       <PublicNavigation />
       <main id="main-content">{children}</main>
@@ -82,7 +90,7 @@ export default function PublicLayout({ children }: { children: React.ReactNode }
 function FooterGroup({ title, links }: FooterGroupProps) {
   return (
     <nav aria-label={title}>
-      <h2 className="mb-4 text-base font-bold text-white">{title}</h2>
+      <p className="mb-4 text-base font-bold text-white">{title}</p>
       <ul className="space-y-3">
         {links.map((link) => (
           <li key={link.href}>

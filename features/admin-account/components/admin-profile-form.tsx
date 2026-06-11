@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { User, Phone, Mail, Lock, CheckCircle, Loader2, Save } from 'lucide-react';
+import { User, Mail, Lock, Loader2, Save } from 'lucide-react';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { adminProfileSchema, AdminProfileValues } from '../schemas/profile.schema';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import Avatar from '@/components/ui/avatar';
 import PhoneInput from '@/components/ui/phone-input';
+import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface AdminProfileFormProps {
@@ -168,17 +168,9 @@ export default function AdminProfileForm({
             )}
           />
 
-          <div className="pt-4 flex items-center justify-end gap-4">
-            {success ? (
-              <motion.div
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="text-emerald-400 text-sm font-medium flex items-center gap-2"
-              >
-                <CheckCircle size={16} /> {translateMessage('Saved Successfully')}
-              </motion.div>
-            ) : null}
+          <SuccessToast message={success ? 'Saved Successfully' : null} />
 
+          <div className="pt-4 flex items-center justify-end gap-4">
             <button
               type="submit"
               disabled={isSaving}

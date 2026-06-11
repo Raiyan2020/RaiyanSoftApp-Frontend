@@ -1,5 +1,5 @@
-import AdminWebsiteSectionPage from '@/features/admin-website/components/admin-website-section-page';
+import AdminLandingPage from '@/features/admin-landing-page/components/admin-landing-page';
 
 export default function FaqsAdminPage() {
-  return <AdminWebsiteSectionPage section="faqs" />;
+  return <AdminLandingPage />;
 }

@@ -14,7 +14,13 @@ import Contact from '@/components/landing/Contact';
 import Footer from '@/components/landing/Footer';
 import { useLanding } from './use-landing';
 
-export default function LandingPage() {
+type LandingBlogPost = { slug: string; title: string; excerpt: string; category?: string };
+
+type LandingPageProps = {
+  blogPosts?: LandingBlogPost[];
+};
+
+export default function LandingPage({ blogPosts = [] }: LandingPageProps) {
   const {
     dark,
     scrollProgress,
@@ -36,7 +42,7 @@ export default function LandingPage() {
         <motion.div variants={sectionVariants}><Works /></motion.div>
         <motion.div variants={sectionVariants}><Packages /></motion.div>
         <motion.div variants={sectionVariants}><Partners /></motion.div>
-        {/* <motion.div variants={sectionVariants}><Insights /></motion.div> */}
+        <motion.div variants={sectionVariants}><Insights posts={blogPosts} /></motion.div>
         <motion.div variants={sectionVariants}><FAQ /></motion.div>
         <motion.div variants={sectionVariants}><FinalCta /></motion.div>
         <motion.div variants={sectionVariants}><Contact /></motion.div>

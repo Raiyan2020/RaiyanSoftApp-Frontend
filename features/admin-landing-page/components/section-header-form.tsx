@@ -3,8 +3,15 @@
 import React, { useState, useEffect } from 'react';
 import { Save, Loader2 } from 'lucide-react';
 import BilingualFieldInputs from './bilingual-field-inputs';
+import ErrorAlert from '@/components/ui/error-alert';
+import { globalToast } from '@/lib/toast-context';
 import type { AdminSectionHeaderItem, AdminSectionHeaderPayload, BilingualField } from '@/features/landing-page';
 import { translateMessage } from '@/lib/i18n-utils';
+import {
+  hasBilingualErrors,
+  validateRequiredBilingual,
+  type BilingualFieldErrors,
+} from './landing-form-validation';
 
 const EMPTY_BI: BilingualField = { ar: '', en: '' };
 
@@ -20,6 +27,11 @@ export default function SectionHeaderForm({ header, loading, onSave }: Props) {
   const [description, setDescription] = useState<BilingualField>(EMPTY_BI);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState<{
+    title?: BilingualFieldErrors;
+    caption?: BilingualFieldErrors;
+    description?: BilingualFieldErrors;
+  }>({});
 
   useEffect(() => {
     if (header) {
@@ -31,10 +43,28 @@ export default function SectionHeaderForm({ header, loading, onSave }: Props) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setSaving(true);
     setError('');
+
+    const nextFieldErrors = {
+      title: validateRequiredBilingual(title),
+      caption: validateRequiredBilingual(caption),
+      description: validateRequiredBilingual(description),
+    };
+
+    setFieldErrors(nextFieldErrors);
+
+    if (
+      hasBilingualErrors(nextFieldErrors.title) ||
+      hasBilingualErrors(nextFieldErrors.caption) ||
+      hasBilingualErrors(nextFieldErrors.description)
+    ) {
+      return;
+    }
+
     try {
+      setSaving(true);
       await onSave({ title, caption, description });
+      globalToast.success(translateMessage('Saved Successfully'));
     } catch (err: unknown) {
       setError(translateMessage(err instanceof Error ? err.message : 'Failed to save'));
     } finally {
@@ -52,14 +82,14 @@ export default function SectionHeaderForm({ header, loading, onSave }: Props) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form noValidate onSubmit={handleSubmit} className="space-y-4">
       <h3 className="text-base font-bold text-[var(--text)]">{translateMessage('Section Header')}</h3>
 
-      <BilingualFieldInputs label={translateMessage('Title')} value={title} onChange={setTitle} required />
-      <BilingualFieldInputs label={translateMessage('Caption / Badge')} value={caption} onChange={setCaption} />
-      <BilingualFieldInputs label={translateMessage('Description')} value={description} onChange={setDescription} multiline />
+      <BilingualFieldInputs label={translateMessage('Title')} value={title} onChange={setTitle} errors={fieldErrors.title} required />
+      <BilingualFieldInputs label={translateMessage('Caption / Badge')} value={caption} onChange={setCaption} errors={fieldErrors.caption} required />
+      <BilingualFieldInputs label={translateMessage('Description')} value={description} onChange={setDescription} errors={fieldErrors.description} multiline required />
 
-      {error ? <p className="rounded-xl bg-red-500/10 p-3 text-sm text-red-400">{error}</p> : null}
+      <ErrorAlert message={error} />
 
       <button
         type="submit"
@@ -67,7 +97,7 @@ export default function SectionHeaderForm({ header, loading, onSave }: Props) {
         className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white transition hover:bg-primary/90 disabled:opacity-50"
       >
         {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
-        {translateMessage('Save Header')}
+        {translateMessage(saving ? 'Saving...' : 'Save Header')}
       </button>
     </form>
   );

@@ -37,6 +37,19 @@ export const websiteContentConfigs: WebsiteContentConfig[] = [
     ],
   },
   {
+    section: 'blogCategories',
+    label: 'Blog Categories',
+    singularLabel: 'Blog Category',
+    description: 'Manage the categories available to organize blog posts.',
+    collection: 'website_blog_categories',
+    permission: 'website.blog.manage',
+    requiresSlug: true,
+    fields: [
+      { key: 'description', label: 'Description', type: 'textarea' },
+      { key: 'featured', label: 'Featured', type: 'toggle' },
+    ],
+  },
+  {
     section: 'apps',
     label: 'Apps & Case Studies',
     singularLabel: 'App / Case Study',
