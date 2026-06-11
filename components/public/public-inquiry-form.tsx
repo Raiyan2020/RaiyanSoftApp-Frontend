@@ -24,7 +24,6 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
     if (!String(formData.get('email') || '').includes('@')) nextErrors.email = 'اكتب بريد إلكتروني صحيح.';
     if (!phone.trim()) nextErrors.phone = 'اكتب رقم الجوال.';
     if (!String(formData.get('message') || '').trim()) nextErrors.message = 'اكتب تفاصيل الطلب.';
-    if (mode === 'quote' && !String(formData.get('service') || '').trim()) nextErrors.service = 'اختر نوع الخدمة.';
     return nextErrors;
   };
 
@@ -47,7 +46,6 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
 
     setSubmitting(true);
     try {
-      const service = String(formData.get('service') || formData.get('topic') || 'general');
       await leadStore.submitLead({
         name: String(formData.get('name') || '').trim(),
         email: String(formData.get('email') || '').trim(),
@@ -55,13 +53,12 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
         source: mode === 'quote' ? 'public_quote_form' : 'public_contact_form',
         projectPayload: {
           type: mode,
-          service,
           message: String(formData.get('message') || '').trim(),
-          routingCategory: service,
+          routingCategory: 'general',
           submittedFrom: typeof window !== 'undefined' ? window.location.pathname : '',
         },
       });
-      trackPublicEvent('form_submit', { form: mode, service });
+      trackPublicEvent('form_submit', { form: mode, service: 'general' });
       setSubmitted(true);
     } catch (error) {
       setSubmitError(error instanceof Error ? error.message : 'تعذر إرسال النموذج حاليا.');
@@ -96,21 +93,9 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
         <PublicField id="phone" label="رقم الجوال" required error={errors.phone}>
           <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} required />
         </PublicField>
-        {mode === 'quote' ? (
-          <PublicField id="service" label="نوع الخدمة" required error={errors.service}>
-            <select id="service" name="service" className={publicInputClass} aria-invalid={Boolean(errors.service)} aria-describedby={errors.service ? 'service-error' : undefined}>
-              <option value="">اختر الخدمة</option>
-              <option value="mobile-app-development">تطبيق جوال</option>
-              <option value="web-development">موقع أو منصة</option>
-              <option value="ecommerce-development">متجر إلكتروني</option>
-              <option value="branding-ui-ux">هوية أو UX/UI</option>
-            </select>
-          </PublicField>
-        ) : (
-          <PublicField id="topic" label="الموضوع">
-            <input id="topic" name="topic" className={publicInputClass} />
-          </PublicField>
-        )}
+        <PublicField id="topic" label="الموضوع">
+          <input id="topic" name="topic" className={publicInputClass} />
+        </PublicField>
       </div>
       <PublicField id="message" label={mode === 'quote' ? 'تفاصيل المشروع' : 'الرسالة'} required error={errors.message}>
         <textarea

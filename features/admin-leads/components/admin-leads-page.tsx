@@ -6,7 +6,7 @@ import LeadsFilterBar from './leads-filter-bar';
 import LeadsTable from './leads-table';
 import LeadDetailDrawer from './lead-detail-drawer';
 import ErrorAlert from '@/components/ui/error-alert';
-import { translateMessage } from '@/lib/i18n-utils';
+import SuccessToast from '@/components/ui/success-toast';
 
 export default function AdminLeadsPage() {
   const { t } = useTranslation();
@@ -58,11 +58,8 @@ export default function AdminLeadsPage() {
 
       {statusError ? (
         <ErrorAlert message={statusError} />
-      ) : actionMessage ? (
-        <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm font-medium text-emerald-400">
-          {translateMessage(actionMessage)}
-        </div>
       ) : null}
+      <SuccessToast message={actionMessage} />
 
       <LeadsTable
         leads={leads}

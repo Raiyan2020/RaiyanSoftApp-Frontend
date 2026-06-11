@@ -1,5 +1,5 @@
-import AdminWebsiteSectionPage from '@/features/admin-website/components/admin-website-section-page';
+import AdminBlogPostsPage from '@/features/admin-blog/components/admin-blog-posts-page';
 
 export default function BlogAdminPage() {
-  return <AdminWebsiteSectionPage section="blog" />;
+  return <AdminBlogPostsPage />;
 }

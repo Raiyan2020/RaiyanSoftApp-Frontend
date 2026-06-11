@@ -1,8 +1,9 @@
 import React from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { Calendar, CheckCircle, ChevronLeft, ChevronRight, Clock, Loader2, Search, X, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle, ChevronLeft, ChevronRight, Clock, Loader2, Search, XCircle } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ErrorAlert from '@/components/ui/error-alert';
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
+import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
 import {
   AdminMeeting,
@@ -243,48 +244,27 @@ export default function AdminBookingsTab({
         </div>
       ) : null}
 
-      <AnimatePresence>
+      <Sheet open={Boolean(selectedBooking)} onOpenChange={(open) => {
+        if (!open) {
+          onCloseBooking();
+        }
+      }}>
         {selectedBooking ? (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={onCloseBooking}
-              className="fixed bg-black/60 backdrop-blur-sm z-40"
-              style={{
-                top: 'var(--admin-sheet-top, 0px)',
-                bottom: 0,
-                left: 'var(--admin-sheet-left, 0px)',
-                right: 'var(--admin-sheet-right, 0px)',
-              }}
-            />
-            <motion.aside
-              initial={{ x: '100%' }}
-              animate={{ x: 0 }}
-              exit={{ x: '100%' }}
-              transition={{ type: 'spring', damping: 25, stiffness: 260 }}
-              className="fixed z-50 w-full max-w-2xl bg-[var(--surface)] border-l border-[var(--border)] shadow-2xl overflow-y-auto"
-              style={{
-                top: 'var(--admin-sheet-top, 0px)',
-                bottom: 0,
-                right: 'var(--admin-sheet-right, 0px)',
-              }}
-            >
-              <div className="p-6 border-b border-[var(--border)] flex items-start justify-between gap-4 sticky top-0 bg-[var(--surface)] z-10">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <h2 className="text-xl font-bold text-[var(--text)]">{translateMessage('Meeting Details')}</h2>
+          <SheetContent side="right" dir="rtl" className="w-full max-w-2xl p-0">
+            <div className="flex h-full flex-col">
+              <div className="border-b border-[var(--border)] p-6 text-start">
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <SheetTitle className="text-xl font-bold">{translateMessage('Meeting Details')}</SheetTitle>
                     <StatusPill label={selectedBooking.status_label} status={selectedBooking.status} />
                   </div>
-                  <p className="text-sm text-[var(--text-muted)]">{selectedBooking.subject || translateMessage('No subject')}</p>
+                  <SheetDescription className="text-sm">
+                    {selectedBooking.subject || translateMessage('No subject')}
+                  </SheetDescription>
                 </div>
-                <button type="button" onClick={onCloseBooking} className="p-2 text-[var(--text-muted)] hover:text-[var(--text)]">
-                  <X size={20} />
-                </button>
               </div>
 
-              <div className="p-6 space-y-6">
+              <div className="flex-1 overflow-y-auto p-6 space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
                     <p className="text-xs text-[var(--text-muted)] mb-1">{translateMessage('Schedule')}</p>
@@ -306,11 +286,7 @@ export default function AdminBookingsTab({
                 </div>
 
                 {actionError ? <ErrorAlert message={actionError} /> : null}
-                {actionMessage ? (
-                  <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/10 p-4 text-sm text-emerald-400">
-                    {translateMessage(actionMessage)}
-                  </div>
-                ) : null}
+                <SuccessToast message={actionMessage} />
 
                 {selectedBooking.status === MEETING_STATUS.PENDING ? (
                   <div className="flex flex-wrap gap-3 pt-2">
@@ -348,10 +324,10 @@ export default function AdminBookingsTab({
                   ) : null}
                 </div>
               </div>
-            </motion.aside>
-          </>
+            </div>
+          </SheetContent>
         ) : null}
-      </AnimatePresence>
+      </Sheet>
     </>
   );
 }

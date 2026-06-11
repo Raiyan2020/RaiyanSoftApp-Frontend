@@ -3,6 +3,7 @@ export type WebsiteContentStatus = 'draft' | 'published' | 'archived';
 export type WebsiteContentSection =
   | 'homepage'
   | 'services'
+  | 'blogCategories'
   | 'apps'
   | 'blog'
   | 'steps'

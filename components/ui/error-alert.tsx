@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect } from 'react';
-import { toast } from 'sonner';
-import { translateMessage } from '@/lib/i18n-utils';
+import { globalToast } from '@/lib/toast-context';
 
 interface ErrorAlertProps {
   message?: string | null;
@@ -12,7 +11,7 @@ interface ErrorAlertProps {
 export default function ErrorAlert({ message }: ErrorAlertProps) {
   useEffect(() => {
     if (!message) return;
-    toast.error(translateMessage(message), { id: `error-alert-${message}` });
+    globalToast.error(message);
   }, [message]);
 
   return null;

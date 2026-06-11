@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import { useTranslation } from '@/lib/i18nContext';
 import { LeadStatusFilter } from '../hooks/use-admin-leads';
 
 interface LeadsFilterBarProps {
@@ -12,7 +13,6 @@ interface LeadsFilterBarProps {
 const STATUS_OPTIONS: { value: LeadStatusFilter; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'pending', label: 'Pending' },
-  { value: 'approved', label: 'Approved' },
   { value: 'rejected', label: 'Rejected' },
 ];
 
@@ -22,16 +22,18 @@ export default function LeadsFilterBar({
   statusFilter,
   setStatusFilter,
 }: LeadsFilterBarProps) {
+  const { t, dir } = useTranslation();
+
   return (
     <div className="bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border)] shadow-lg flex flex-col md:flex-row gap-4">
       <div className="relative flex-1">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
+        <Search className={`absolute top-1/2 -translate-y-1/2 text-[var(--text-muted)] ${dir === 'rtl' ? 'right-3' : 'left-3'}`} size={18} />
         <input
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by name, phone, or project..."
-          className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
+          placeholder={t('admin.leads.search_placeholder')}
+          className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors ${dir === 'rtl' ? 'pr-10 pl-4' : 'pl-10 pr-4'}`}
         />
       </div>
       <div className="flex gap-2 overflow-x-auto no-scrollbar">
@@ -46,7 +48,7 @@ export default function LeadsFilterBar({
                 : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)] hover:bg-[var(--surface-3)]'
             }`}
           >
-            {status.label}
+            {t(`admin.leads.filter.${status.value}`)}
           </button>
         ))}
       </div>

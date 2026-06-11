@@ -3,17 +3,13 @@ import PublicLayout from '@/components/public/public-layout';
 import PageHero from '@/components/public/page-hero';
 import SectionShell from '@/components/public/section-shell';
 import { BasicContentCard } from '@/components/public/content-cards';
-import { createPublicMetadata } from '@/lib/site';
+import { getPageMetadata, pageSeo } from '@/lib/page-seo';
 
-export const metadata: Metadata = createPublicMetadata({
-  title: 'حجز استشارة',
-  description: 'ابدأ حجز استشارة أولية مع ريان سوفت عبر مسار الحجز المتاح.',
-  path: '/consultation',
-});
+export const metadata: Metadata = getPageMetadata('consultation');
 
 export default function ConsultationPage() {
   return (
-    <PublicLayout>
+    <PublicLayout seo={pageSeo.consultation}>
       <PageHero
         eyebrow="حجز استشارة"
         title="احجز وقتا لمناقشة مشروعك"

@@ -7,7 +7,7 @@ interface SafeImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackSrc?: string;
 }
 
-const FALLBACK_URL = 'https://raiyansoft.com/wp-content/uploads/2025/12/1.jpg';
+const FALLBACK_URL = '/logo.webp';
 
 const isValidImageUrl = (url: any): boolean => {
   if (!url || typeof url !== 'string') return false;

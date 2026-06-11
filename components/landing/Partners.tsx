@@ -3,6 +3,7 @@ import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 import { useLandingTestimonials } from '@/features/landing-page';
+import SafeImage from '@/components/ui/safe-image';
 
 export default function Partners() {
   const ref = useRef<HTMLDivElement>(null);
@@ -65,7 +66,7 @@ export default function Partners() {
                   <blockquote className="mt-2 text-lg font-semibold leading-relaxed">{testimonial.description}</blockquote>
                   <div className="mt-6 flex items-center gap-3">
                     {testimonial.image ? (
-                      <img src={testimonial.image} alt={testimonial.title} className="h-11 w-11 rounded-2xl object-cover" />
+                      <SafeImage src={testimonial.image} alt={testimonial.title} className="h-11 w-11 rounded-2xl" />
                     ) : (
                       <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-primary to-emerald-400" />
                     )}

@@ -11,6 +11,7 @@ interface AppStateScreenProps {
     label: string;
   };
   secondaryAction?: React.ReactNode;
+  backLabel?: string;
 }
 
 export default function AppStateScreen({
@@ -20,6 +21,7 @@ export default function AppStateScreen({
   icon,
   primaryAction,
   secondaryAction,
+  backLabel = 'Back to homepage',
 }: AppStateScreenProps) {
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--bg)] px-4 py-12 text-[var(--text)]">
@@ -54,7 +56,7 @@ export default function AppStateScreen({
           className="mt-6 inline-flex items-center gap-2 text-xs font-bold text-[var(--text-muted)] transition-colors hover:text-primary"
         >
           <ArrowLeft size={14} />
-          Back to homepage
+          {backLabel}
         </Link>
       </section>
     </main>

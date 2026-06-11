@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { 
+import {
   ChevronDown, 
   CheckCircle2,
   Eye,
@@ -10,10 +10,9 @@ import {
   Sun, 
   Moon, 
   LogIn, 
-  Home,
-  MessageCircle,
   Calendar,
   Bell,
+  FolderKanban,
   User as UserIcon,
   LogOut
 } from 'lucide-react';
@@ -65,6 +64,12 @@ export default function NavbarDesktop({
     (record) => !completedNotifications.includes(record.id) && record.status !== 'completed'
   ).length;
   const userDisplayName = getUserDisplayName(user, t('home.guest'));
+  const profileLinks = [
+    { href: '/profile?tab=info', label: dir === 'rtl' ? 'الملف الشخصي' : 'Profile', icon: UserIcon },
+    { href: '/profile?tab=project', label: dir === 'rtl' ? 'المشاريع' : 'Projects', icon: FolderKanban },
+    { href: '/profile?tab=booking', label: dir === 'rtl' ? 'المواعيد' : 'Meetings', icon: Calendar },
+    { href: '/profile?tab=notification', label: dir === 'rtl' ? 'الإشعارات' : 'Notifications', icon: Bell },
+  ] as const;
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -306,38 +311,22 @@ export default function NavbarDesktop({
                   <p className="text-xs text-[var(--text-muted)]">{t('home.greeting')}</p>
                   <p className="text-sm font-bold text-[var(--text)] truncate">{userDisplayName}</p>
                 </div>
-                <Link
-                  href="/appointments"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors"
-                >
-                  <Calendar size={16} />
-                  <span>{t('appt.title')}</span>
-                </Link>
-                <Link
-                  href="/support"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors"
-                >
-                  <MessageCircle size={16} />
-                  <span>{t('status.support')}</span>
-                </Link>
-                <Link
-                  href="/notifications"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors"
-                >
-                  <Bell size={16} />
-                  <span>{t('notif.title')}</span>
-                </Link>
-                <Link
-                  href="/profile"
-                  onClick={() => setDropdownOpen(false)}
-                  className="flex items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors border-t border-cyan-950/5 dark:border-white/5 mt-1 pt-2"
-                >
-                  <UserIcon size={16} />
-                  <span>{t('more.view_profile')}</span>
-                </Link>
+                {profileLinks.map((link, index) => {
+                  const Icon = link.icon;
+                  return (
+                    <Link
+                      key={link.href}
+                      href={link.href}
+                      onClick={() => setDropdownOpen(false)}
+                      className={`flex items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-slate-700 hover:bg-primary/10 hover:text-primary dark:text-slate-200 transition-colors ${
+                        index === 0 ? 'border-t border-cyan-950/5 dark:border-white/5 mt-1 pt-2' : ''
+                      }`}
+                    >
+                      <Icon size={16} />
+                      <span>{link.label}</span>
+                    </Link>
+                  );
+                })}
                 <button
                   onClick={handleSignOut}
                   className="flex w-full items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-red-500 hover:bg-red-500/10 transition-colors"
@@ -362,7 +351,7 @@ export default function NavbarDesktop({
         )}
 
         <Link
-          href="/blog"
+          href="/blogs"
           className={`hidden lg:grid xl:hidden ${iconButtonClass}`}
           aria-label={t('landing.nav.blog')}
         >

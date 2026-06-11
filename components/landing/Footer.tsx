@@ -27,7 +27,7 @@ export default function Footer() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="mb-3 text-sm font-bold text-primary">{footer.ctaBadge}</p>
-              <h2 className="text-2xl font-bold text-white sm:text-3xl">{footer.ctaTitle}</h2>
+              <p className="text-2xl font-bold text-white sm:text-3xl">{footer.ctaTitle}</p>
             </div>
             <button
               type="button"
@@ -79,9 +79,10 @@ export default function Footer() {
             title={footer.resourcesTitle}
             items={footer.resources}
             onClick={(item, index) => {
-              if (index === 0) scrollTo('#faq');
-              else if (index === 1) window.location.href = '/privacy';
-              else if (index === 2) window.location.href = '/terms';
+              if (index === 0) window.location.href = '/blogs';
+              else if (index === 1) window.location.href = '/blogs/categories';
+              else if (index === 2) window.location.href = '/privacy';
+              else if (index === 3) window.location.href = '/terms';
               else scrollTo('#contact');
             }}
           />
@@ -111,7 +112,7 @@ function FooterList({
 }) {
   return (
     <div>
-      <h3 className="mb-5 text-lg font-bold text-white">{title}</h3>
+      <p className="mb-5 text-lg font-bold text-white">{title}</p>
       <ul className="space-y-3">
         {items.map((item, index) => (
           <li key={item}>

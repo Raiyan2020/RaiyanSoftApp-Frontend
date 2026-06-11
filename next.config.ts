@@ -12,6 +12,7 @@ output: 'standalone',
       { protocol: 'https', hostname: '*.googleusercontent.com' },
 
       { protocol: 'https', hostname: 'raiyansoft.com' },
+      { protocol: 'https', hostname: 'portal.raiyan.cc' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
     unoptimized: true,

@@ -1,20 +1,45 @@
-# Global Project Rules
+# RaiyanSoft Agent Rules
 
-Refer to the specialized rules in `.cursor/` for every task:
-- @architecture.md  : Folder structure, kebab-case naming, regular functions.
-- @server-first.md  : RSC defaults and the Hydration pattern.
-- @react-query.md   : Query Key factories, prefetching, and custom hooks.
-- @i18n.md          : Translation keys and RTL/Arabic styling.
+Use `AGENTS.md` as the source of truth for project conventions.
 
-## The Workflow:
-1. Fetch data in Server Components via QueryClient.
-2. Hydrate the cache.
-3. Consume data in Client Components via custom hooks in `hooks/`.
-4. No hardcoded strings; use translation files for AR and EN.
+## Current Stack
 
+- Next.js App Router
+- React + TypeScript
+- Tailwind CSS
+- React Query
+- React Hook Form + Zod
+- Sonner toasts
+- Lucide icons
 
-# MCP Tool Usage
-- Always prefer the `fetch` or `curl` MCP tools over guessing API structures.
-- Use the `shadcn-ui` MCP to install components rather than writing them from scratch.
-- When working on UI, check the `figma` MCP for design tokens if a URL is provided.
-- Use `next-intl` MCP to ensure all new text has a corresponding Arabic translation key.
+## Core Workflow
+
+1. Inspect existing feature patterns before editing.
+2. Keep app routes in `app/`.
+3. Keep feature code in root `features/[feature-name]/`.
+4. Keep shared UI primitives in `components/ui/`.
+5. Run `npm run lint` after TypeScript, shared UI, form, or data-contract changes.
+
+## Forms
+
+- Field validation errors go under the exact input.
+- Backend/API/save errors go to toast via `ErrorAlert` or the global toast API.
+- Save successes also go to toast via `SuccessToast` or the global toast API.
+- Do not use browser `alert()` or inline form-level success/error alert banners for action feedback. Toasts ALWAYS.
+- Any button that triggers a backend request must visibly disable itself and show a spinner or loading label while the request is in flight.
+- Successful non-GET API mutations should toast by default through the shared API client or the mutation hook. Silent mutations must opt out explicitly.
+- Shared confirm/delete dialogs must disable the confirm action and show a loading label/spinner while the delete request is in flight.
+
+## Dashboard Image Uploads
+
+- Use `@/components/ui/image-upload` for admin/dashboard image uploads.
+- Do not add raw `accept="image/*"` file inputs for dashboard images.
+
+## i18n And RTL
+
+- Use the existing translation helpers and Arabic/English message patterns.
+- Prefer logical spacing/positioning classes for RTL/LTR support.
+
+## Avoid Drift
+
+- Do not follow older notes that mention `src/features`, `next-intl`, or `messages/*.json`; this repo currently uses root `features/` and local translation utilities.

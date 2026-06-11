@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { X, Image as ImageIcon, Save } from 'lucide-react';
+import { X, Save } from 'lucide-react';
 import { Project } from '@/lib/projectStore';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { projectSchema, ProjectValues } from '../schemas/project.schema';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
 import { translateMessage } from '@/lib/i18n-utils';
 
 const isValidImageUrl = (url: any): boolean => {
@@ -20,13 +21,21 @@ const isValidImageUrl = (url: any): boolean => {
   }
 };
 
+function fileToDataUrl(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(String(reader.result || ''));
+    reader.onerror = () => reject(new Error('Unable to read image'));
+    reader.readAsDataURL(file);
+  });
+}
+
 interface ProjectFormModalProps {
   onClose: () => void;
   editingProject: Project | null;
   formData: ProjectValues;
   setFormData: React.Dispatch<React.SetStateAction<ProjectValues>>;
   onSubmit: (data: ProjectValues) => void;
-  onFileChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 export default function ProjectFormModal({
@@ -35,8 +44,8 @@ export default function ProjectFormModal({
   formData,
   setFormData,
   onSubmit,
-  onFileChange,
 }: ProjectFormModalProps) {
+  const [imageValue, setImageValue] = useState<ImageUploadValue | null>(null);
   const form = useForm<ProjectValues>({
     resolver: zodResolver(projectSchema),
     defaultValues: formData,
@@ -46,7 +55,9 @@ export default function ProjectFormModal({
     form.reset(formData);
   }, [formData, form]);
 
-
+  useEffect(() => {
+    setImageValue(null);
+  }, [editingProject]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
@@ -147,29 +158,51 @@ export default function ProjectFormModal({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel>Project Logo</FieldLabel>
-                  <div className="flex gap-2">
-                    <input
-                      {...field}
-                      value={field.value || ''}
-                      type="text"
-                      aria-invalid={fieldState.invalid}
-                      className={`flex-1 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors text-sm ${
-                        fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
-                      }`}
-                      placeholder={translateMessage('Paste image URL...')}
-                    />
-                    <label className="bg-[var(--surface-3)] hover:bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 flex items-center justify-center cursor-pointer transition-colors shrink-0">
-                      <ImageIcon size={20} className="text-[var(--text-muted)]" />
-                      <input type="file" accept="image/*" onChange={onFileChange} className="hidden" />
-                    </label>
-                  </div>
+                  <input
+                    {...field}
+                    value={field.value || ''}
+                    type="text"
+                    aria-invalid={fieldState.invalid}
+                    onChange={(event) => {
+                      field.onChange(event);
+                      setFormData((prev) => ({ ...prev, logoUrl: event.target.value }));
+                      setImageValue(null);
+                    }}
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors text-sm ${
+                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                    }`}
+                    placeholder={translateMessage('Paste image URL...')}
+                  />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
-                  {isValidImageUrl(field.value) ? (
+                  <div className="mt-3">
+                    <ImageUpload
+                      label={translateMessage('Upload optimized logo')}
+                      value={imageValue}
+                      onChange={async (nextImage) => {
+                        setImageValue(nextImage);
+
+                        if (!nextImage) {
+                          field.onChange('');
+                          setFormData((prev) => ({ ...prev, logoUrl: '' }));
+                          return;
+                        }
+
+                        const dataUrl = await fileToDataUrl(nextImage.file);
+                        field.onChange(dataUrl);
+                        setFormData((prev) => ({ ...prev, logoUrl: dataUrl }));
+                      }}
+                      aspectRatio={1}
+                      maxWidth={1080}
+                      maxHeight={1080}
+                      previewClassName="aspect-square max-w-48"
+                    />
+                  </div>
+                  {isValidImageUrl(field.value) && !imageValue ? (
                     <div className="mt-2 w-16 h-16 bg-[var(--surface-3)] rounded-xl border border-[var(--border)] overflow-hidden relative group">
                       <div className="relative w-full h-full">
-                        <Image src={field.value || ''} alt={translateMessage('Preview')} fill className="object-cover" />
+                        <Image src={field.value || '/logo.webp'} alt={translateMessage('Preview')} fill className="object-cover" />
                       </div>
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                         <span className="text-[10px] text-[var(--text)]">{translateMessage('Preview')}</span>

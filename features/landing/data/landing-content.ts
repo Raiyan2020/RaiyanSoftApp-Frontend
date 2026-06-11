@@ -97,37 +97,33 @@ export interface LandingContent {
     description: string;
     button: string;
   };
-  contact: {
-    badge: string;
-    title: string;
-    titleHighlight: string;
-    description: string;
-    sidebarTitle: string;
-    sidebarSteps: string[];
-    promises: string[];
-    form: {
-      name: string;
-      email: string;
-      phone: string;
-      service: string;
-      servicePlaceholder: string;
-      message: string;
-      submit: string;
-      submitting: string;
-      successTitle: string;
-      successDescription: string;
+    contact: {
+      badge: string;
+      title: string;
+      titleHighlight: string;
+      description: string;
+      sidebarTitle: string;
+      sidebarSteps: string[];
+      form: {
+        name: string;
+        email: string;
+        phone: string;
+        message: string;
+        submit: string;
+        submitting: string;
+        successTitle: string;
+        successDescription: string;
       sendAnother: string;
     };
     methods: {
       emailLabel: string;
       emailHint: string;
       phoneLabel: string;
-      phoneHint: string;
-      locationLabel: string;
-      locationHint: string;
+        phoneHint: string;
+        locationLabel: string;
+        locationHint: string;
+      };
     };
-    serviceOptions: Array<{ value: string; label: string }>;
-  };
   footer: {
     ctaBadge: string;
     ctaTitle: string;
@@ -357,13 +353,10 @@ export const landingContent: Record<LandingLanguage, LandingContent> = {
       description: 'أخبرنا عن فكرتك وسنرد بتصور أولي: ما الذي تحتاجه، كيف نبدأ، وما المرحلة الأنسب لميزانيتك.',
       sidebarTitle: 'ماذا يحدث بعد الإرسال؟',
       sidebarSteps: ['نراجع تفاصيل المشروع', 'نتواصل لتوضيح النقاط المهمة', 'نقترح المسار والمرحلة الأولى'],
-      promises: ['رد خلال يوم عمل', 'استشارة أولى مجانية', 'خطة تنفيذ واضحة', 'خصوصية كاملة للفكرة'],
       form: {
         name: 'الاسم الكامل *',
         email: 'البريد الإلكتروني *',
         phone: 'رقم الجوال',
-        service: 'نوع الخدمة',
-        servicePlaceholder: 'اختر الخدمة',
         message: 'تفاصيل المشروع *',
         submit: 'أرسل تفاصيل المشروع',
         submitting: 'جارٍ إرسال الرسالة...',
@@ -379,13 +372,6 @@ export const landingContent: Record<LandingLanguage, LandingContent> = {
         locationLabel: 'الموقع',
         locationHint: 'نخدم المشاريع عن بعد وحضورياً',
       },
-      serviceOptions: [
-        { value: 'mobile', label: 'تطبيق جوال' },
-        { value: 'web', label: 'موقع أو منصة ويب' },
-        { value: 'ecommerce', label: 'متجر إلكتروني' },
-        { value: 'identity', label: 'هوية بصرية' },
-        { value: 'other', label: 'غير ذلك' },
-      ],
     },
     footer: {
       ctaBadge: 'جاهز نبدأ؟',
@@ -608,13 +594,10 @@ export const landingContent: Record<LandingLanguage, LandingContent> = {
       description: 'Tell us about your idea and we will reply with an initial outline: what you need, how to start, and the best phase for your budget.',
       sidebarTitle: 'What happens after you submit?',
       sidebarSteps: ['We review the project details', 'We follow up on the important points', 'We propose the path and first phase'],
-      promises: ['Reply within one business day', 'Free initial consultation', 'Clear delivery plan', 'Full confidentiality for your idea'],
       form: {
         name: 'Full name *',
         email: 'Email address *',
         phone: 'Phone number',
-        service: 'Service type',
-        servicePlaceholder: 'Select a service',
         message: 'Project details *',
         submit: 'Send project details',
         submitting: 'Sending message...',
@@ -630,13 +613,6 @@ export const landingContent: Record<LandingLanguage, LandingContent> = {
         locationLabel: 'Location',
         locationHint: 'We support projects remotely and on-site',
       },
-      serviceOptions: [
-        { value: 'mobile', label: 'Mobile app' },
-        { value: 'web', label: 'Website or web platform' },
-        { value: 'ecommerce', label: 'E-commerce store' },
-        { value: 'identity', label: 'Brand identity' },
-        { value: 'other', label: 'Other' },
-      ],
     },
     footer: {
       ctaBadge: 'Ready to start?',

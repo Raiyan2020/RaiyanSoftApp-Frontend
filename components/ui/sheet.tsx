@@ -19,7 +19,7 @@ const SheetOverlay = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
-    className={`fixed z-50 bg-black/60 backdrop-blur-sm ${className || ""}`}
+    className={`fixed z-[70] bg-black/60 backdrop-blur-sm ${className || ""}`}
     style={{
       top: 'var(--admin-sheet-top, 0px)',
       bottom: 0,
@@ -69,7 +69,7 @@ const SheetContent = React.forwardRef<
     }
   }
 
-  const baseStyles = "fixed z-50 gap-4 bg-[var(--surface)] text-[var(--text)] border-[var(--border)] p-6 shadow-2xl outline-none"
+  const baseStyles = "fixed z-[70] gap-4 bg-[var(--surface)] text-[var(--text)] border-[var(--border)] p-6 shadow-2xl outline-none"
   
   // Resolve start/end styles using logical properties
   const getSideClass = (sideVal: string) => {

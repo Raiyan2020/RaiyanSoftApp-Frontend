@@ -92,6 +92,17 @@ export interface LandingTestimonialsData {
   testimonials: LandingTestimonial[];
 }
 
+export interface LandingFaq {
+  id: number;
+  question: string;
+  answer: string;
+}
+
+export interface LandingFaqsData {
+  header: LandingSectionHeader | null;
+  faqs: LandingFaq[];
+}
+
 // ---------------------------------------------------------------------------
 // Admin form payload types (bilingual: title[ar], title[en], …)
 // ---------------------------------------------------------------------------
@@ -155,6 +166,11 @@ export interface AdminTestimonialPayload {
   caption: BilingualField;
   description: BilingualField;
   image?: File | null;
+}
+
+export interface AdminFaqPayload {
+  question: BilingualField;
+  answer: BilingualField;
 }
 
 // ---------------------------------------------------------------------------
@@ -225,4 +241,104 @@ export interface AdminSectionHeaderItem {
   title: BilingualField;
   caption: BilingualField;
   description: BilingualField;
+}
+
+export interface AdminFaq {
+  id: number;
+  question: BilingualField;
+  answer: BilingualField;
+}
+
+export interface AdminFaqHeaderItem {
+  id: number;
+  title: BilingualField;
+  caption: BilingualField;
+  description: BilingualField;
+}
+
+export interface AdminAboutUsCard {
+  id: number;
+  title: BilingualField;
+  description: BilingualField;
+  image: string | null;
+}
+
+export interface AdminAboutUsCardPayload {
+  title: BilingualField;
+  description: BilingualField;
+  image?: File | null;
+}
+
+export interface AdminAboutUsSubmission {
+  id: number;
+  full_name: string;
+  email: string;
+  phone: string;
+  project_details: string;
+  created_at: string;
+}
+
+export interface AdminAboutUsSubmissionPagination {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+export interface AdminAboutUsSubmissionListResult {
+  submissions: AdminAboutUsSubmission[];
+  pagination: AdminAboutUsSubmissionPagination | null;
+}
+
+export interface AdminBanner {
+  id: number;
+  slug: string;
+  caption: BilingualField | null;
+  title: BilingualField;
+  description: BilingualField;
+  button_text: BilingualField | null;
+  button_url: string | null;
+}
+
+export interface AdminBannerPayload {
+  caption: BilingualField;
+  title: BilingualField;
+  description: BilingualField;
+  button_text: BilingualField;
+  button_url: string;
+}
+
+export interface AdminSiteSettings {
+  site_name: BilingualField;
+  site_logo: string | null;
+  site_favicon: string | null;
+  site_description: BilingualField;
+  site_email: string;
+  site_phone: string;
+  first_footer_text: BilingualField;
+  second_footer_text: BilingualField;
+}
+
+export interface AdminSiteSettingsPayload {
+  site_name: BilingualField;
+  site_description: BilingualField;
+  site_email: string;
+  site_phone: string;
+  site_logo?: File | null;
+  site_favicon?: File | null;
+  first_footer_text: BilingualField;
+  second_footer_text: BilingualField;
+}
+
+export interface AdminSocialMediaItem {
+  id: number;
+  platform: string;
+  link: string;
+  image: string | null;
+}
+
+export interface AdminSocialMediaPayload {
+  platform: string;
+  link: string;
+  image?: File | null;
 }

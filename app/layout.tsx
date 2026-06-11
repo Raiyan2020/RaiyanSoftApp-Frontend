@@ -19,6 +19,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
   return (
     <html lang={siteConfig.language} dir={siteConfig.direction} className="dark" suppressHydrationWarning>
+      <head>
+        <script
+          id="landing-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      </head>
       <body className={cairo.className}>
         <Providers>
           <Suspense fallback={null}>
@@ -26,9 +33,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </Suspense>
           {children}
         </Providers>
-        <Script id="landing-schema" type="application/ld+json" strategy="beforeInteractive">
-          {JSON.stringify(jsonLd)}
-        </Script>
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
             !function(f,b,e,v,n,t,s)

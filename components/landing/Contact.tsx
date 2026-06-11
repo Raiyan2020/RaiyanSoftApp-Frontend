@@ -10,7 +10,7 @@ export default function Contact() {
   const { content, contactMethods, textAlign } = useLandingContent();
   const { contact } = content;
 
-  const [form, setForm] = useState({ name: '', email: '', service: '', message: '' });
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [phone, setPhone] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -86,7 +86,7 @@ export default function Contact() {
                     type="button"
                       onClick={() => {
                       setSubmitted(false);
-                      setForm({ name: '', email: '', service: '', message: '' });
+                      setForm({ name: '', email: '', message: '' });
                       setPhone('');
                     }}
                     className="premium-button touch-lift mt-7 rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3 font-bold text-white shadow-lg shadow-primary/25"
@@ -126,31 +126,11 @@ export default function Contact() {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                    <div className="space-y-2">
-                      <label htmlFor="contact-phone" className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                        {contact.form.phone}
-                      </label>
-                      <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} required />
-                    </div>
-                    <div className="space-y-2">
-                      <label htmlFor="contact-service" className="text-sm font-bold text-slate-700 dark:text-slate-200">
-                        {contact.form.service}
-                      </label>
-                      <select
-                        id="contact-service"
-                        value={form.service}
-                        onChange={(e) => setForm({ ...form, service: e.target.value })}
-                        className={inputClass}
-                      >
-                        <option value="">{contact.form.servicePlaceholder}</option>
-                        {contact.serviceOptions.map((option) => (
-                          <option key={option.value} value={option.value}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                  <div className="space-y-2">
+                    <label htmlFor="contact-phone" className="text-sm font-bold text-slate-700 dark:text-slate-200">
+                      {contact.form.phone}
+                    </label>
+                    <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} required />
                   </div>
 
                   <div className="space-y-2">
@@ -165,14 +145,6 @@ export default function Contact() {
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
                       className={`${inputClass} resize-none`}
                     />
-                  </div>
-
-                  <div className="flex flex-wrap gap-2">
-                    {contact.promises.map((promise) => (
-                      <span key={promise} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">
-                        {promise}
-                      </span>
-                    ))}
                   </div>
 
                   <button

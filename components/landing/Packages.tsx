@@ -2,7 +2,11 @@
 import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import { useLandingOffers } from '@/features/landing-page';
+import {
+  getLandingButtonScrollTarget,
+  shouldOpenLandingButtonInNewTab,
+  useLandingOffers,
+} from '@/features/landing-page';
 
 export default function Packages() {
   const ref = useRef<HTMLDivElement>(null);
@@ -69,10 +73,12 @@ export default function Packages() {
                   <button
                     type="button"
                     onClick={() => {
-                      if (offer.button_url && !offer.button_url.startsWith('#')) {
-                        window.open(offer.button_url, '_blank');
+                      if (shouldOpenLandingButtonInNewTab(offer.button_url)) {
+                        window.open(offer.button_url!, '_blank');
                       } else {
-                        document.querySelector(offer.button_url || '#contact')?.scrollIntoView({ behavior: 'smooth' });
+                        document
+                          .querySelector(getLandingButtonScrollTarget(offer.button_url, '#contact'))
+                          ?.scrollIntoView({ behavior: 'smooth' });
                       }
                     }}
                     className={`mt-8 w-full rounded-2xl px-5 py-3 font-bold transition-all duration-300 hover:-translate-y-0.5 ${

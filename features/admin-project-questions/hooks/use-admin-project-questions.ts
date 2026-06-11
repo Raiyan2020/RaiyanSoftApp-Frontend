@@ -50,8 +50,7 @@ export interface ProjectQuestionFormState {
   label: string;
   labelAr: string;
   type: ProjectQuestionType;
-  optionsText: string;
-  optionIds?: string[];
+  options: ProjectQuestionOption[];
   required: boolean;
   active: boolean;
   locked: boolean;
@@ -66,7 +65,7 @@ const emptyForm: ProjectQuestionFormState = {
   label: '',
   labelAr: '',
   type: 'single_select',
-  optionsText: '',
+  options: [],
   required: true,
   active: true,
   locked: false,
@@ -77,7 +76,7 @@ const fallbackQuestionTypes: ProjectQuestionTypeOption[] = [
   { value: 'single_select', label: 'Single select' },
 ];
 
-const optionTypes: ProjectQuestionType[] = ['single_select', 'multi_select', 'yes_no', 'color'];
+const optionTypes: ProjectQuestionType[] = ['single_select', 'multi_select'];
 
 function readTranslatedValue(value: string | { en?: string; ar?: string } | undefined, locale: 'en' | 'ar') {
   if (!value) return '';
@@ -123,34 +122,29 @@ function normalizeQuestion(question: AdminFormQuestion, index: number): ProjectQ
   };
 }
 
-const optionsToText = (options: ProjectQuestionOption[]) =>
-  options.map((option) => (option.labelAr ? `${option.label} | ${option.labelAr}` : option.label)).join('\n');
+const createEmptyOption = (index: number): ProjectQuestionOption => ({
+  id: `option_${index + 1}`,
+  label: '',
+  labelAr: '',
+  active: true,
+  order: index + 1,
+});
 
-const textToOptions = (value: string): ProjectQuestionOption[] =>
-  value
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean)
-    .map((line, index) => {
-      const [label, labelAr] = line.split('|').map((part) => part.trim());
-      return {
-        id: `option_${index + 1}`,
-        label,
-        labelAr: labelAr || '',
-        active: true,
-        order: index + 1,
-      };
-    });
+function normalizeOptions(options: ProjectQuestionOption[]) {
+  return options.length > 0 ? options : [createEmptyOption(0)];
+}
 
 function mapFormToPayload(form: ProjectQuestionFormState, sortOrder: number): AdminFormQuestionPayload {
   const options = optionTypes.includes(form.type)
-    ? textToOptions(form.optionsText).map((option, index) => ({
-        id: form.optionIds?.[index],
-        value_en: option.label,
-        value_ar: option.labelAr,
-        is_active: option.active !== false,
-        sort_order: index + 1,
-      }))
+    ? form.options
+        .map((option, index) => ({
+          id: option.id,
+          value_en: option.label.trim(),
+          value_ar: option.labelAr?.trim() || option.label.trim(),
+          is_active: option.active !== false,
+          sort_order: index + 1,
+        }))
+        .filter((option) => option.value_en.length > 0 || option.value_ar.length > 0)
     : [];
 
   return {
@@ -223,8 +217,7 @@ export function useAdminProjectQuestions() {
         label: freshQuestion.label,
         labelAr: freshQuestion.labelAr || '',
         type: freshQuestion.type,
-        optionsText: optionsToText(freshQuestion.options),
-        optionIds: freshQuestion.options.map((option) => option.id),
+        options: normalizeOptions(freshQuestion.options),
         required: freshQuestion.required,
         active: freshQuestion.active,
         locked: freshQuestion.locked,
@@ -256,6 +249,8 @@ export function useAdminProjectQuestions() {
       }
 
       await loadQuestions();
+      setSelectedId(null);
+      setForm(emptyForm);
     } catch (err: any) {
       console.error('Failed to save project question:', err);
       setError(err.message || 'Failed to save project question.');

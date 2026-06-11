@@ -28,6 +28,33 @@ import {
   createAdminTestimonial,
   updateAdminTestimonial,
   deleteAdminTestimonial,
+  fetchAdminFaqs,
+  fetchAdminFaqsHeader,
+  updateAdminFaqsHeader,
+  createAdminFaq,
+  updateAdminFaq,
+  deleteAdminFaq,
+  fetchAdminAboutUsHeader,
+  updateAdminAboutUsHeader,
+  fetchAdminAboutUsCards,
+  createAdminAboutUsCard,
+  updateAdminAboutUsCard,
+  deleteAdminAboutUsCard,
+  fetchAdminAboutUsSubmissions,
+  fetchAdminAboutUsSubmission,
+  deleteAdminAboutUsSubmission,
+  fetchAdminIdeaBanner,
+  fetchAdminProjectBanner,
+  fetchAdminFooterBanner,
+  updateAdminIdeaBanner,
+  updateAdminProjectBanner,
+  updateAdminFooterBanner,
+  fetchAdminSiteSettings,
+  updateAdminSiteSettings,
+  fetchAdminSocialMedia,
+  createAdminSocialMedia,
+  updateAdminSocialMedia,
+  deleteAdminSocialMedia,
 } from '@/features/landing-page';
 import type {
   AdminHeroPayload,
@@ -36,6 +63,13 @@ import type {
   AdminCapabilityPayload,
   AdminOfferPayload,
   AdminTestimonialPayload,
+  AdminFaqPayload,
+  AdminAboutUsCardPayload,
+  AdminAboutUsSubmission,
+  AdminAboutUsSubmissionListResult,
+  AdminBannerPayload,
+  AdminSiteSettingsPayload,
+  AdminSocialMediaPayload,
 } from '@/features/landing-page';
 
 // ---------------------------------------------------------------------------
@@ -51,6 +85,16 @@ export const adminLandingKeys = {
   offersHeader: ['admin-landing', 'offers-header'] as const,
   testimonials: ['admin-landing', 'testimonials'] as const,
   testimonialsHeader: ['admin-landing', 'testimonials-header'] as const,
+  faqs: ['admin-landing', 'faqs'] as const,
+  faqsHeader: ['admin-landing', 'faqs-header'] as const,
+  aboutUsHeader: ['admin-landing', 'about-us-header'] as const,
+  aboutUsCards: ['admin-landing', 'about-us-cards'] as const,
+  aboutUsSubmissions: ['admin-landing', 'about-us-submissions'] as const,
+  ideaBanner: ['admin-landing', 'banner-idea'] as const,
+  projectBanner: ['admin-landing', 'banner-project'] as const,
+  footerBanner: ['admin-landing', 'banner-footer'] as const,
+  siteSettings: ['admin-landing', 'site-settings'] as const,
+  socialMedia: ['admin-landing', 'social-media'] as const,
 };
 
 // ---------------------------------------------------------------------------
@@ -221,5 +265,185 @@ export function useDeleteAdminTestimonial() {
   return useMutation({
     mutationFn: (id: number) => deleteAdminTestimonial(id),
     onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.testimonials }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// FAQs
+// ---------------------------------------------------------------------------
+export function useAdminFaqs() {
+  return useQuery({ queryKey: adminLandingKeys.faqs, queryFn: fetchAdminFaqs });
+}
+export function useAdminFaqsHeader() {
+  return useQuery({ queryKey: adminLandingKeys.faqsHeader, queryFn: fetchAdminFaqsHeader });
+}
+export function useUpdateAdminFaqsHeader() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: AdminSectionHeaderPayload) => updateAdminFaqsHeader(p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.faqsHeader }),
+  });
+}
+export function useCreateAdminFaq() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: AdminFaqPayload) => createAdminFaq(p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.faqs }),
+  });
+}
+export function useUpdateAdminFaq() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: AdminFaqPayload }) => updateAdminFaq(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.faqs }),
+  });
+}
+export function useDeleteAdminFaq() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deleteAdminFaq(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.faqs }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// About Us
+// ---------------------------------------------------------------------------
+export function useAdminAboutUsHeader() {
+  return useQuery({ queryKey: adminLandingKeys.aboutUsHeader, queryFn: fetchAdminAboutUsHeader });
+}
+export function useAdminAboutUsCards() {
+  return useQuery({ queryKey: adminLandingKeys.aboutUsCards, queryFn: fetchAdminAboutUsCards });
+}
+export function useUpdateAdminAboutUsHeader() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: AdminSectionHeaderPayload) => updateAdminAboutUsHeader(p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.aboutUsHeader }),
+  });
+}
+export function useCreateAdminAboutUsCard() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: AdminAboutUsCardPayload) => createAdminAboutUsCard(p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.aboutUsCards }),
+  });
+}
+export function useUpdateAdminAboutUsCard() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: AdminAboutUsCardPayload }) =>
+      updateAdminAboutUsCard(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.aboutUsCards }),
+  });
+}
+export function useDeleteAdminAboutUsCard() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deleteAdminAboutUsCard(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.aboutUsCards }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// About Us submissions
+// ---------------------------------------------------------------------------
+export function useAdminAboutUsSubmissions(page = 1, perPage = 15) {
+  return useQuery<AdminAboutUsSubmissionListResult>({
+    queryKey: [...adminLandingKeys.aboutUsSubmissions, page, perPage],
+    queryFn: () => fetchAdminAboutUsSubmissions({ page, per_page: perPage }),
+  });
+}
+
+export function useAdminAboutUsSubmission(id?: number | null) {
+  return useQuery<AdminAboutUsSubmission | null>({
+    queryKey: [...adminLandingKeys.aboutUsSubmissions, 'item', id ?? 'none'],
+    queryFn: () => (id == null ? Promise.resolve(null) : fetchAdminAboutUsSubmission(id)),
+    enabled: id != null,
+  });
+}
+
+export function useDeleteAdminAboutUsSubmission() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deleteAdminAboutUsSubmission(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.aboutUsSubmissions }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Banners
+// ---------------------------------------------------------------------------
+export function useAdminIdeaBanner() {
+  return useQuery({ queryKey: adminLandingKeys.ideaBanner, queryFn: fetchAdminIdeaBanner });
+}
+export function useAdminProjectBanner() {
+  return useQuery({ queryKey: adminLandingKeys.projectBanner, queryFn: fetchAdminProjectBanner });
+}
+export function useAdminFooterBanner() {
+  return useQuery({ queryKey: adminLandingKeys.footerBanner, queryFn: fetchAdminFooterBanner });
+}
+export function useUpdateAdminIdeaBanner() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: AdminBannerPayload) => updateAdminIdeaBanner(p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.ideaBanner }),
+  });
+}
+export function useUpdateAdminProjectBanner() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: AdminBannerPayload) => updateAdminProjectBanner(p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.projectBanner }),
+  });
+}
+export function useUpdateAdminFooterBanner() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: AdminBannerPayload) => updateAdminFooterBanner(p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.footerBanner }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Site settings
+// ---------------------------------------------------------------------------
+export function useAdminSiteSettings() {
+  return useQuery({ queryKey: adminLandingKeys.siteSettings, queryFn: fetchAdminSiteSettings });
+}
+export function useUpdateAdminSiteSettings() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: AdminSiteSettingsPayload) => updateAdminSiteSettings(p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.siteSettings }),
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Social media
+// ---------------------------------------------------------------------------
+export function useAdminSocialMedia() {
+  return useQuery({ queryKey: adminLandingKeys.socialMedia, queryFn: fetchAdminSocialMedia });
+}
+export function useCreateAdminSocialMedia() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (p: AdminSocialMediaPayload) => createAdminSocialMedia(p),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.socialMedia }),
+  });
+}
+export function useUpdateAdminSocialMedia() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: AdminSocialMediaPayload }) =>
+      updateAdminSocialMedia(id, payload),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.socialMedia }),
+  });
+}
+export function useDeleteAdminSocialMedia() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => deleteAdminSocialMedia(id),
+    onSuccess: () => qc.invalidateQueries({ queryKey: adminLandingKeys.socialMedia }),
   });
 }

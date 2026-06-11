@@ -108,6 +108,7 @@ function StageCard({
   onEdit,
   onDelete,
   canDelete,
+  isEditing,
   tr,
   language,
 }: {
@@ -116,6 +117,7 @@ function StageCard({
   onEdit: (stage: ProjectStage) => void;
   onDelete: (stageId: string) => void;
   canDelete: boolean;
+  isEditing: boolean;
   tr: (message: string) => string;
   language: 'ar' | 'en';
 }) {
@@ -160,10 +162,11 @@ function StageCard({
           <button
             type="button"
             onClick={() => onEdit(stage)}
-            className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
+            disabled={isEditing}
+            className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             title={tr('Edit stage')}
           >
-            <Edit2 size={15} />
+            {isEditing ? <Loader2 size={15} className="animate-spin" /> : <Edit2 size={15} />}
           </button>
           <button
             type="button"
@@ -352,7 +355,7 @@ export default function AdminUserProjectDetailPage({
       ) : null}
 
       {ops.activeTab === 'plan' ? (
-        <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
+          <div className="grid grid-cols-1 xl:grid-cols-[1fr_360px] gap-6">
           <div className="space-y-4">
             {ops.stages.length === 0 ? (
               <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-10 text-center text-[var(--text-muted)]">
@@ -361,21 +364,22 @@ export default function AdminUserProjectDetailPage({
               </div>
             ) : (
               ops.stages.map((stage, index) => (
-    <StageCard
-      key={stage.id}
-      stage={stage}
-      index={index}
-      onEdit={ops.startEditStage}
-      onDelete={ops.deleteStage}
-      canDelete={!ops.isApiProject}
-      tr={tr}
-      language={language}
-    />
+                    <StageCard
+                      key={stage.id}
+                      stage={stage}
+                      index={index}
+                      onEdit={ops.startEditStage}
+                      onDelete={ops.deleteStage}
+                      canDelete={!ops.isApiProject}
+                      isEditing={ops.loadingStageId === stage.id}
+                      tr={tr}
+                      language={language}
+                    />
               ))
             )}
           </div>
 
-          <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 h-fit sticky top-4">
+          <div id="stage-editor-panel" className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 h-fit sticky top-4">
             <div className="flex items-center justify-between mb-5">
               <h2 className="text-lg font-bold text-[var(--text)]">{ops.editingStageId ? tr('Edit Stage') : tr('Add Stage')}</h2>
               {ops.editingStageId ? (

@@ -46,6 +46,12 @@ docs
 migrated_prompt_history
 
 rules/
+!.agent/rules/
+!.agent/rules/*.md
+!.agents/rules/
+!.agents/rules/*.md
+!.cursor/rules/
+!.cursor/rules/*.mdc
 MOBILE_TO_RESPONSIVE_WEBSITE_PLAN.md
 
 backend

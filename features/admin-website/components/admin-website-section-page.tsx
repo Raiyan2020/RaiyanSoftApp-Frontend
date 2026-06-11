@@ -78,6 +78,7 @@ function FieldControl({
 function getPreviewHref(section: WebsiteContentSection, item: WebsiteContentItem | null) {
   if (!item) return '/';
   if (section === 'services' && item.slug) return `/services/${item.slug}`;
+  if (section === 'blogCategories' && item.slug) return `/blogs/categories/${item.slug}`;
   if (section === 'apps' && item.slug) return `/portfolio/${item.slug}`;
   if (section === 'blog' && item.slug) return `/blog/${item.slug}`;
   if (section === 'legal' && item.slug === 'privacy') return '/privacy';
@@ -86,6 +87,7 @@ function getPreviewHref(section: WebsiteContentSection, item: WebsiteContentItem
   const indexPages: Partial<Record<WebsiteContentSection, string>> = {
     homepage: '/',
     services: '/services',
+    blogCategories: '/blogs/categories',
     apps: '/portfolio',
     blog: '/blog',
     faqs: '/faq',

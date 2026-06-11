@@ -1,22 +1,23 @@
-import { apiService, ApiResponse } from '@/lib/api-service';
+import { apiService } from '@/lib/api-service';
 import { AboutUsForm, PageSlug, SimplePageForm } from '../types/page.types';
 
-function getApiErrorMessage(response: ApiResponse<unknown>) {
-  if (response.errors && typeof response.errors === 'object') {
-    const errList = Object.values(response.errors).flat();
-    if (errList.length > 0) return errList.join(' ');
-  }
-  return response.message || 'Request failed.';
+export function getAdminPageSaveUnavailableMessage() {
+  return 'About Us editing is not fully supported yet because the backend only stores title and description for these pages.';
 }
 
 export async function updateAdminPage(slug: PageSlug, payload: SimplePageForm | AboutUsForm) {
-  const response = await apiService.post<Record<string, unknown>>(`admin/pages/${slug}`, payload, {
+  const formData = new FormData();
+  formData.append('title[ar]', payload.title || '');
+  formData.append('title[en]', payload.title || '');
+  formData.append('description[ar]', payload.description || '');
+  formData.append('description[en]', payload.description || '');
+
+  const response = await apiService.post<unknown>(`admin/pages/${slug}`, formData, {
     skipGlobalToast: true,
+    skipSuccessToast: true,
   });
 
   if (!response.status) {
-    throw new Error(getApiErrorMessage(response));
+    throw new Error(response.message || getAdminPageSaveUnavailableMessage());
   }
-
-  return response.data;
 }

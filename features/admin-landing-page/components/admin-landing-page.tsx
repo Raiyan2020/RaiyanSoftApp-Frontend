@@ -7,9 +7,15 @@ import AdminServicesTab from './admin-services-tab';
 import AdminCapabilitiesTab from './admin-capabilities-tab';
 import AdminOffersTab from './admin-offers-tab';
 import AdminTestimonialsTab from './admin-testimonials-tab';
+import AdminFaqsTab from './admin-faqs-tab';
+import AdminAboutUsTab from './admin-about-us-tab';
+import AdminAboutUsSubmissionsTab from './admin-about-us-submissions-tab';
+import AdminBannersTab from './admin-banners-tab';
+import AdminSettingsTab from './admin-settings-tab';
+import AdminSocialMediaTab from './admin-social-media-tab';
 import { translateMessage } from '@/lib/i18n-utils';
 
-type Tab = 'hero' | 'services' | 'capabilities' | 'offers' | 'testimonials';
+type Tab = 'hero' | 'services' | 'capabilities' | 'offers' | 'testimonials' | 'faqs' | 'about-us' | 'about-us-submissions' | 'banners' | 'settings' | 'social-media';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'hero',          label: 'Hero Section' },
@@ -17,6 +23,12 @@ const TABS: { id: Tab; label: string }[] = [
   { id: 'capabilities',  label: 'Capabilities' },
   { id: 'offers',        label: 'Offers' },
   { id: 'testimonials',  label: 'Testimonials' },
+  { id: 'faqs',          label: 'FAQs' },
+  { id: 'about-us',      label: 'About Us' },
+  { id: 'about-us-submissions', label: 'About Us Submissions' },
+  { id: 'banners',       label: 'Banners' },
+  { id: 'settings',      label: 'Site Settings' },
+  { id: 'social-media',  label: 'Social Media' },
 ];
 
 export default function AdminLandingPagePage() {
@@ -61,6 +73,12 @@ export default function AdminLandingPagePage() {
         {activeTab === 'capabilities'  && <AdminCapabilitiesTab />}
         {activeTab === 'offers'        && <AdminOffersTab />}
         {activeTab === 'testimonials'  && <AdminTestimonialsTab />}
+        {activeTab === 'faqs'          && <AdminFaqsTab />}
+        {activeTab === 'about-us'      && <AdminAboutUsTab />}
+        {activeTab === 'about-us-submissions' && <AdminAboutUsSubmissionsTab />}
+        {activeTab === 'banners'       && <AdminBannersTab />}
+        {activeTab === 'settings'      && <AdminSettingsTab />}
+        {activeTab === 'social-media'  && <AdminSocialMediaTab />}
       </div>
     </div>
   );

@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import { AboutUsForm, PageSlug, SimplePageForm } from '../types/page.types';
 import { usePrivacyPolicy } from './use-privacy-policy';
 import { useTermsConditions } from './use-terms-conditions';
-import { useAboutUs } from './use-about-us';
+import { useAdminAboutUs } from './use-about-us';
 import { useUpdatePage } from './use-update-page';
 
 const emptySimpleForm = (): SimplePageForm => ({
@@ -36,7 +36,7 @@ export function useAdminPages() {
 
   const privacy = usePrivacyPolicy();
   const terms = useTermsConditions();
-  const about = useAboutUs();
+  const about = useAdminAboutUs();
 
   const privacyUpdate = useUpdatePage('privacy-policy');
   const termsUpdate = useUpdatePage('terms-conditions');
@@ -67,11 +67,11 @@ export function useAdminPages() {
   useEffect(() => {
     if (!about.data) return;
     setAboutForm({
-      title: about.data.about_us?.title || '',
-      caption: about.data.about_us?.caption || '',
-      description: about.data.about_us?.description || '',
-      email: about.data.contact_us?.email || '',
-      url: about.data.contact_us?.url || '',
+      title: about.data.title || '',
+      caption: about.data.caption || '',
+      description: about.data.description || '',
+      email: about.data.email || '',
+      url: about.data.url || '',
     });
   }, [about.data]);
 

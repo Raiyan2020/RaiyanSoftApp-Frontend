@@ -4,7 +4,7 @@ import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Controller, useForm } from 'react-hook-form';
-import { CheckCircle, Loader2, Mail, Save, User as UserIcon, X } from 'lucide-react';
+import { Loader2, Mail, Save, User as UserIcon, X } from 'lucide-react';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import PhoneInput from '@/components/ui/phone-input';
@@ -13,6 +13,7 @@ import type { User } from '@/lib/auth-service';
 import { getUserProfilePhoneValue } from '../hooks/use-user-profile';
 import { userProfileSchema, type UserProfileValues } from '../schemas/profile.schema';
 import ErrorAlert from '@/components/ui/error-alert';
+import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface ProfileEditDialogProps {
@@ -155,13 +156,7 @@ export default function ProfileEditDialog({
               {error ? (
                 <ErrorAlert message={error} />
               ) : null}
-
-              {success ? (
-                <div className="flex items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-4 py-3 text-sm font-bold text-emerald-400">
-                  <CheckCircle size={16} />
-                  {translateMessage('Profile updated successfully.')}
-                </div>
-              ) : null}
+              <SuccessToast message={success ? 'Profile updated successfully.' : null} />
 
               <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" onClick={onClose} disabled={isSaving}>

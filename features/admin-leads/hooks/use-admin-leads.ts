@@ -18,7 +18,7 @@ const STATUS_FILTER_MAP: Record<Exclude<LeadStatusFilter, 'all'>, LeadStatusCode
 
 export function useAdminLeads() {
   const { language } = useTranslation();
-  const [statusFilter, setStatusFilter] = useState<LeadStatusFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<LeadStatusFilter>('pending');
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);

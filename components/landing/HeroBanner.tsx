@@ -1,7 +1,11 @@
 'use client';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import { useLandingHeroes } from '@/features/landing-page';
+import {
+  getLandingButtonScrollTarget,
+  shouldOpenLandingButtonInNewTab,
+  useLandingHeroes,
+} from '@/features/landing-page';
 
 const HERO_VIDEO_ID = 'Z5c5-F3rApk';
 const HERO_VIDEO_START = 2;
@@ -91,10 +95,12 @@ export default function HeroBanner() {
               <button
                 type="button"
                 onClick={() => {
-                  if (ctaPrimaryUrl && !ctaPrimaryUrl.startsWith('#')) {
-                    window.open(ctaPrimaryUrl, '_blank');
+                  if (shouldOpenLandingButtonInNewTab(ctaPrimaryUrl)) {
+                    window.open(ctaPrimaryUrl!, '_blank');
                   } else {
-                    document.querySelector(ctaPrimaryUrl || '#contact')?.scrollIntoView({ behavior: 'smooth' });
+                    document
+                      .querySelector(getLandingButtonScrollTarget(ctaPrimaryUrl, '#contact'))
+                      ?.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
                 className="premium-button touch-lift rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3.5 text-base font-black text-white shadow-2xl shadow-primary/30 transition-all duration-300 hover:-translate-y-1 sm:px-8 sm:py-4 sm:text-lg"
@@ -104,10 +110,12 @@ export default function HeroBanner() {
               <button
                 type="button"
                 onClick={() => {
-                  if (ctaSecondaryUrl && !ctaSecondaryUrl.startsWith('#')) {
-                    window.open(ctaSecondaryUrl, '_blank');
+                  if (shouldOpenLandingButtonInNewTab(ctaSecondaryUrl)) {
+                    window.open(ctaSecondaryUrl!, '_blank');
                   } else {
-                    document.querySelector(ctaSecondaryUrl || '#works')?.scrollIntoView({ behavior: 'smooth' });
+                    document
+                      .querySelector(getLandingButtonScrollTarget(ctaSecondaryUrl, '#works'))
+                      ?.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
                 className="touch-lift rounded-2xl border border-white/15 bg-white/8 px-6 py-3.5 text-base font-black text-cyan-100 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:bg-primary/10 sm:px-8 sm:py-4 sm:text-lg"

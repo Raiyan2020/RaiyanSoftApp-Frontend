@@ -163,8 +163,18 @@ export default function ProfilePage() {
   // Route detection from query params. Auth is intentionally bypassed for now.
   useEffect(() => {
     const tabParam = searchParams.get('tab');
-    if (tabParam && ['booking', 'project', 'notification', 'info', 'chat'].includes(tabParam)) {
-      setActiveTab(tabParam as ProfileTab);
+    const normalizedTab = tabParam === 'projects'
+      ? 'project'
+      : tabParam === 'meetings'
+        ? 'booking'
+        : tabParam === 'notifications'
+          ? 'notification'
+          : tabParam === 'profile'
+            ? 'info'
+            : tabParam;
+
+    if (normalizedTab && ['booking', 'project', 'notification', 'info', 'chat'].includes(normalizedTab)) {
+      setActiveTab(normalizedTab as ProfileTab);
     }
   }, [searchParams]);
 

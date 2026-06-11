@@ -2,6 +2,7 @@
 
 import { ChevronDown } from 'lucide-react';
 import { useState } from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 
 type PublicFaqProps = {
   items: { question: string; answer: string }[];
@@ -10,23 +11,29 @@ type PublicFaqProps = {
 export default function PublicFaq({ items }: PublicFaqProps) {
   const [openIndex, setOpenIndex] = useState(0);
 
+  if (!items.length) {
+    return <p className="rounded-lg border border-cyan-950/10 bg-white px-5 py-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">{translateMessage('No FAQs yet.')}</p>;
+  }
+
   return (
     <div className="space-y-3">
       {items.map((item, index) => {
         const open = openIndex === index;
         return (
           <div key={item.question} className="overflow-hidden rounded-lg border border-cyan-950/10 bg-white dark:border-white/10 dark:bg-white/5">
-            <button
-              type="button"
-              id={`public-faq-trigger-${index}`}
-              aria-expanded={open}
-              aria-controls={`public-faq-panel-${index}`}
-              onClick={() => setOpenIndex(open ? -1 : index)}
-              className="flex w-full items-center justify-between gap-4 px-5 py-4 text-right font-black text-slate-950 dark:text-white"
-            >
-              <span>{item.question}</span>
-              <ChevronDown className={`shrink-0 text-primary transition ${open ? 'rotate-180' : ''}`} size={20} />
-            </button>
+            <h3 className="m-0">
+              <button
+                type="button"
+                id={`public-faq-trigger-${index}`}
+                aria-expanded={open}
+                aria-controls={`public-faq-panel-${index}`}
+                onClick={() => setOpenIndex(open ? -1 : index)}
+                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-right text-base font-black text-slate-950 dark:text-white"
+              >
+                <span>{item.question}</span>
+                <ChevronDown className={`shrink-0 text-primary transition ${open ? 'rotate-180' : ''}`} size={20} />
+              </button>
+            </h3>
             <div
               id={`public-faq-panel-${index}`}
               role="region"
@@ -43,4 +50,3 @@ export default function PublicFaq({ items }: PublicFaqProps) {
     </div>
   );
 }
-
