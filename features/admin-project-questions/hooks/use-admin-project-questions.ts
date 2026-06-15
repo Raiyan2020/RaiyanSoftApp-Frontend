@@ -84,8 +84,14 @@ function readTranslatedValue(value: string | { en?: string; ar?: string } | unde
   return value[locale] || '';
 }
 
+function readTypeValue(type: AdminFormQuestion['type']) {
+  if (typeof type === 'object' && type !== null) return type.value ?? type.id ?? type.key;
+  return type;
+}
+
 function mapApiType(type: AdminFormQuestion['type'], options: AdminFormQuestionOption[] = []): ProjectQuestionType {
-  if (type === 2) return 'text';
+  const value = readTypeValue(type);
+  if (value === 2 || value === '2' || value === 'TEXT' || value === 'text') return 'text';
   return options.length > 0 ? 'single_select' : 'single_select';
 }
 

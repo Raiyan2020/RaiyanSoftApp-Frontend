@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 import PhoneInput from '@/components/ui/phone-input';
-import type { LandingPageContent } from '@/features/landing-page';
+import { useSubmitLandingAboutUsForm, type LandingPageContent } from '@/features/landing-page';
 
 type ContactProps = {
   homeData?: LandingPageContent | null;
@@ -19,14 +19,22 @@ export default function Contact({ homeData }: ContactProps) {
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [phone, setPhone] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const submitForm = useSubmitLandingAboutUsForm();
+  const loading = submitForm.isPending;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      await submitForm.mutateAsync({
+        full_name: form.name,
+        email: form.email,
+        phone,
+        project_details: form.message,
+      });
+      setSubmitted(true);
+    } catch {
+      // The shared API client already shows the backend validation/network toast.
+    }
   };
 
   const inputClass =

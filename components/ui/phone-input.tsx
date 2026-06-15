@@ -138,7 +138,7 @@ export default function PhoneInput({
       countrySelectComponent={CountrySelect}
       countrySelectProps={{ callingCodes: countryConfig.callingCodes }}
       inputComponent={InputComponent}
-      inputComponentProps={{ maxLength: inputMaxLength }}
+      maxLength={inputMaxLength}
       smartCaret={false}
       {...props}
       dir="ltr"

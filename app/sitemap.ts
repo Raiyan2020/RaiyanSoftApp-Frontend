@@ -17,6 +17,9 @@ function routePriority(route: string): SitemapEntry {
   if (route.startsWith('/blogs/') || route.startsWith('/portfolio/')) {
     return { route, priority: 0.6, changeFrequency: 'monthly' };
   }
+  if (route.startsWith('/pages/')) {
+    return { route, priority: 0.7, changeFrequency: 'monthly' };
+  }
   if (route.startsWith('/services/')) {
     return { route, priority: 0.8, changeFrequency: 'monthly' };
   }

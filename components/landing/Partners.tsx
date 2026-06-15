@@ -53,7 +53,7 @@ export default function Partners({ homeData }: PartnersProps) {
                   {String(card.id).padStart(2, '0')}
                 </div>
                 <h3 className="mb-3 text-2xl font-bold text-slate-950 dark:text-white">{card.title}</h3>
-                <p className="leading-relaxed text-slate-600 dark:text-slate-300">{card.caption || card.description}</p>
+                <p className="leading-relaxed text-slate-600 dark:text-slate-300">{card.description}</p>
               </article>
             ))}
           </div>

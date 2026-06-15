@@ -16,16 +16,23 @@ function getApiErrorMessage(response: ApiResponse<unknown>) {
   return response.message || 'Request failed.';
 }
 
+function unwrapList<T>(data: T[] | { data?: T[] } | null | undefined): T[] {
+  if (Array.isArray(data)) return data;
+  if (data && Array.isArray((data as { data?: T[] }).data)) return (data as { data: T[] }).data;
+  return [];
+}
+
 export async function fetchAdminEmployees() {
-  const response = await apiService.get<AdminEmployee[]>(EMPLOYEES_PATH, {
+  const response = await apiService.get<AdminEmployee[] | { data?: AdminEmployee[] }>(EMPLOYEES_PATH, {
     skipGlobalToast: true,
   });
+  const employees = unwrapList(response.data);
 
-  if (!response.status || !Array.isArray(response.data)) {
+  if (!response.status || !Array.isArray(employees)) {
     throw new Error(getApiErrorMessage(response));
   }
 
-  return response.data;
+  return employees;
 }
 
 export async function fetchAdminEmployee(id: number | string) {

@@ -25,7 +25,7 @@ export function getEmployeeFullName(employee: EmployeeNameLike) {
 }
 
 export function isEmployeeBlocked(employee: AdminEmployee) {
-  return Boolean(employee.is_blocked ?? employee.blocked);
+  return Boolean(employee.is_blocked ?? employee.is_block ?? employee.blocked);
 }
 
 export function getEmployeeStatusLabel(employee: AdminEmployee) {

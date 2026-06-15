@@ -41,7 +41,7 @@ export default function LeadDetailDrawer({
 }: LeadDetailDrawerProps) {
   const { t } = useTranslation();
   const phone = lead?.user.phone || listItem.user.full_phone;
-  const displayName = lead?.user.name || listItem.user.full_name;
+  const displayName = lead?.user.name || lead?.user.full_name || listItem.user.full_name;
   const projectName = lead?.project_name || listItem.project_name;
   const statusLabel = formatLeadStatusLabel(lead?.status ?? listItem.status, language);
   const statusTone = getLeadStatusTone(lead?.status ?? listItem.status);

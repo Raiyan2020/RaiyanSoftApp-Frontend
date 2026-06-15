@@ -281,6 +281,7 @@ export async function createAdminOffer(payload: AdminOfferPayload): Promise<void
   const fd = new FormData();
   appendBilingual(fd, 'title', payload.title);
   appendBilingual(fd, 'caption', payload.caption);
+  appendBilingual(fd, 'description', payload.description);
   appendBilingual(fd, 'button_text', payload.button_text);
   fd.append('button_url', normalizeLandingButtonUrlForApi(payload.button_url || ''));
   fd.append('most_requested', String(payload.most_requested));
@@ -294,6 +295,7 @@ export async function updateAdminOffer(id: number, payload: AdminOfferPayload): 
   const fd = new FormData();
   appendBilingual(fd, 'title', payload.title);
   appendBilingual(fd, 'caption', payload.caption);
+  appendBilingual(fd, 'description', payload.description);
   appendBilingual(fd, 'button_text', payload.button_text);
   fd.append('button_url', normalizeLandingButtonUrlForApi(payload.button_url || ''));
   fd.append('most_requested', String(payload.most_requested));

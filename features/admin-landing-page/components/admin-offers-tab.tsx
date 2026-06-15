@@ -25,12 +25,20 @@ import {
 } from './landing-form-validation';
 
 const EMPTY_BI: BilingualField = { ar: '', en: '' };
-const DEFAULT_FORM: AdminOfferPayload = { title: EMPTY_BI, caption: EMPTY_BI, button_text: EMPTY_BI, button_url: '', most_requested: 0 };
+const DEFAULT_FORM: AdminOfferPayload = {
+  title: EMPTY_BI,
+  caption: EMPTY_BI,
+  description: EMPTY_BI,
+  button_text: EMPTY_BI,
+  button_url: '',
+  most_requested: 0,
+};
 
 function offerToForm(o: AdminOffer): AdminOfferPayload {
   return {
     title: o.title,
     caption: o.caption,
+    description: o.description ?? EMPTY_BI,
     button_text: o.button_text ?? EMPTY_BI,
     button_url: formatLandingButtonUrlForForm(o.button_url),
     most_requested: o.most_requested ? 1 : 0,
@@ -51,6 +59,8 @@ export default function AdminOffersTab() {
   const [formError, setFormError] = useState('');
   const [fieldErrors, setFieldErrors] = useState<{
     title?: BilingualFieldErrors;
+    caption?: BilingualFieldErrors;
+    button_text?: BilingualFieldErrors;
     button_url?: string;
   }>({});
 
@@ -74,12 +84,19 @@ export default function AdminOffersTab() {
     setFormError('');
     const nextFieldErrors = {
       title: validateRequiredBilingual(form.title),
+      caption: validateRequiredBilingual(form.caption),
+      button_text: validateRequiredBilingual(form.button_text),
       button_url: validateLandingButtonUrl(form.button_url),
     };
 
     setFieldErrors(nextFieldErrors);
 
-    if (hasBilingualErrors(nextFieldErrors.title) || nextFieldErrors.button_url) {
+    if (
+      hasBilingualErrors(nextFieldErrors.title) ||
+      hasBilingualErrors(nextFieldErrors.caption) ||
+      hasBilingualErrors(nextFieldErrors.button_text) ||
+      nextFieldErrors.button_url
+    ) {
       return;
     }
 
@@ -142,8 +159,9 @@ export default function AdminOffersTab() {
         error={formError}
       >
         <BilingualFieldInputs label={translateMessage('Title')} value={form.title} onChange={(v) => setForm((p) => ({ ...p, title: v }))} errors={fieldErrors.title} required />
-        <BilingualFieldInputs label={translateMessage('Caption / Badge')} value={form.caption} onChange={(v) => setForm((p) => ({ ...p, caption: v }))} />
-        <BilingualFieldInputs label={translateMessage('Button Text')} value={form.button_text} onChange={(v) => setForm((p) => ({ ...p, button_text: v }))} />
+        <BilingualFieldInputs label={translateMessage('Caption / Badge')} value={form.caption} onChange={(v) => setForm((p) => ({ ...p, caption: v }))} errors={fieldErrors.caption} required />
+        <BilingualFieldInputs label={translateMessage('Description')} value={form.description} onChange={(v) => setForm((p) => ({ ...p, description: v }))} />
+        <BilingualFieldInputs label={translateMessage('Button Text')} value={form.button_text} onChange={(v) => setForm((p) => ({ ...p, button_text: v }))} errors={fieldErrors.button_text} required />
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Button URL')}</label>
           <input

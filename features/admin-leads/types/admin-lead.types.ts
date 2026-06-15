@@ -23,9 +23,10 @@ export type AdminLeadListItem = {
 
 export type AdminLeadDetailUser = {
   id: number;
-  name: string | null;
+  name?: string | null;
+  full_name?: string | null;
   phone: string;
-  email: string;
+  email?: string | null;
 };
 
 export type AdminLeadAnswer = {

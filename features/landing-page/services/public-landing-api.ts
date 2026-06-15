@@ -1,5 +1,8 @@
-import { BASE_URL } from '@/lib/api-service';
+import { apiService, BASE_URL, type ApiResponse } from '@/lib/api-service';
 import type {
+  LandingAboutUsData,
+  LandingAboutUsFormPayload,
+  LandingBanner,
   LandingHero,
   LandingServicesData,
   LandingCapabilitiesData,
@@ -10,6 +13,7 @@ import type {
 } from '../types/landing-page.types';
 
 type Language = 'ar' | 'en';
+type BannerSlug = 'idea' | 'project' | 'footer';
 
 function unwrapApiData<T>(payload: unknown): T | null {
   if (!payload || typeof payload !== 'object') return null;
@@ -26,9 +30,17 @@ function unwrapApiData<T>(payload: unknown): T | null {
   return payload as T;
 }
 
-async function fetchLandingJson<T>(path: string, language: Language = 'ar'): Promise<T | null> {
+function getApiErrorMessage(response: ApiResponse<unknown>): string {
+  if (response.errors && typeof response.errors === 'object') {
+    const messages = Object.values(response.errors).flat();
+    if (messages.length > 0) return messages.join(' ');
+  }
+  return response.message || 'Request failed.';
+}
+
+async function fetchUserJson<T>(path: string, language: Language = 'ar'): Promise<T | null> {
   try {
-    const url = `${BASE_URL}/user/landing-page/${path}`;
+    const url = `${BASE_URL}/user/${path.replace(/^\/+/, '')}`;
     const response = await fetch(url, {
       headers: {
         Accept: 'application/json',
@@ -43,6 +55,10 @@ async function fetchLandingJson<T>(path: string, language: Language = 'ar'): Pro
   } catch {
     return null;
   }
+}
+
+async function fetchLandingJson<T>(path: string, language: Language = 'ar'): Promise<T | null> {
+  return fetchUserJson<T>(`landing-page/${path}`, language);
 }
 
 export async function fetchLandingHome(language: Language = 'ar'): Promise<LandingPageContent | null> {
@@ -86,9 +102,23 @@ export async function fetchLandingFaqs(language: Language = 'ar'): Promise<Landi
   return data ?? { header: null, faqs: [] };
 }
 
+export async function fetchLandingAboutUs(language: Language = 'ar'): Promise<LandingAboutUsData> {
+  const data = await fetchLandingJson<LandingAboutUsData>('about-us', language);
+  return data ?? { header: null, cards: [] };
+}
+
+export async function fetchLandingBanner(slug: BannerSlug, language: Language = 'ar'): Promise<LandingBanner | null> {
+  return fetchLandingJson<LandingBanner>(`banners/${slug}`, language);
+}
+
+export async function submitLandingAboutUsForm(payload: LandingAboutUsFormPayload): Promise<void> {
+  const response = await apiService.post<[] | Record<string, unknown>>('user/landing-page/about-us/form', payload);
+  if (!response.status) throw new Error(getApiErrorMessage(response));
+}
+
 export async function fetchLandingPageBySlug<T = { id: number; slug: string; title: string; description: string; image: string | null }>(
   slug: string,
   language: Language = 'ar'
 ): Promise<T | null> {
-  return fetchLandingJson<T>(`pages/${encodeURIComponent(slug)}`, language);
+  return fetchUserJson<T>(`pages/${encodeURIComponent(slug)}`, language);
 }

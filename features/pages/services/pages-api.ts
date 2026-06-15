@@ -16,6 +16,10 @@ function getApiErrorMessage(response: ApiResponse<unknown>) {
   return response.message || 'Request failed.';
 }
 
+export function getPageApiSlug(slug: PageSlug) {
+  return slug === 'terms-conditions' ? 'terms-and-conditions' : slug;
+}
+
 async function fetchPageJson<T>(path: string): Promise<T> {
   const response = await fetch(`${getApiBaseUrl()}/${path.replace(/^\//, '')}`, {
     headers: { Accept: 'application/json' },
@@ -44,7 +48,7 @@ export async function fetchPrivacyPolicy() {
 }
 
 export async function fetchTermsConditions() {
-  const response = await apiService.get<TermsConditionsPage>('user/pages/terms-conditions', {
+  const response = await apiService.get<TermsConditionsPage>(`user/pages/${getPageApiSlug('terms-conditions')}`, {
     skipGlobalToast: true,
   });
 
@@ -72,7 +76,7 @@ export function fetchPrivacyPolicyServer() {
 }
 
 export function fetchTermsConditionsServer() {
-  return fetchPageJson<TermsConditionsPage>('user/pages/terms-conditions');
+  return fetchPageJson<TermsConditionsPage>(`user/pages/${getPageApiSlug('terms-conditions')}`);
 }
 
 export function fetchAboutUsServer() {
@@ -93,7 +97,7 @@ function readLocalizedValue(value: Record<string, string> | string | undefined) 
 }
 
 export async function fetchAdminPage(slug: PageSlug): Promise<AdminPageResponse> {
-  const response = await apiService.get<AdminPageResponse>(`admin/pages/${slug}`, {
+  const response = await apiService.get<AdminPageResponse>(`admin/pages/${getPageApiSlug(slug)}`, {
     skipGlobalToast: true,
   });
 

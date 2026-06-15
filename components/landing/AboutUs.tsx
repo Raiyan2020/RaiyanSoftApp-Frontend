@@ -77,7 +77,7 @@ export default function AboutUs({ homeData }: AboutUsProps) {
                 )}
               </div>
               <div className="p-6">
-                <p className="text-sm font-bold text-primary">{card.caption}</p>
+                <p className="text-sm font-bold text-primary">{String(index + 1).padStart(2, '0')}</p>
                 <h3 className="mt-3 text-2xl font-bold text-slate-950 dark:text-white">{card.title}</h3>
                 <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-300">{card.description}</p>
               </div>

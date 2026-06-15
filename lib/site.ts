@@ -55,6 +55,7 @@ export const publicRoutes = [
   '/careers',
   '/privacy',
   '/terms',
+  '/pages',
 ] as const;
 
 export type PublicRoute = (typeof publicRoutes)[number];

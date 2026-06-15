@@ -1,8 +1,10 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslation } from '@/lib/i18nContext';
 import {
+  fetchLandingAboutUs,
+  fetchLandingBanner,
   fetchLandingHome,
   fetchLandingHeroes,
   fetchLandingServices,
@@ -11,8 +13,12 @@ import {
   fetchLandingTestimonials,
   fetchLandingFaqs,
   fetchLandingPageBySlug,
+  submitLandingAboutUsForm,
 } from '../services/public-landing-api';
 import type {
+  LandingAboutUsData,
+  LandingAboutUsFormPayload,
+  LandingBanner,
   LandingHero,
   LandingServicesData,
   LandingCapabilitiesData,
@@ -23,6 +29,7 @@ import type {
 } from '../types/landing-page.types';
 
 type Lang = 'ar' | 'en';
+type BannerSlug = 'idea' | 'project' | 'footer';
 
 export const landingPageKeys = {
   home: (lang: Lang) => ['landing', 'home', lang] as const,
@@ -32,6 +39,8 @@ export const landingPageKeys = {
   offers: (lang: Lang) => ['landing', 'offers', lang] as const,
   testimonials: (lang: Lang) => ['landing', 'testimonials', lang] as const,
   faqs: (lang: Lang) => ['landing', 'faqs', lang] as const,
+  aboutUs: (lang: Lang) => ['landing', 'about-us', lang] as const,
+  banner: (lang: Lang, slug: BannerSlug) => ['landing', 'banner', lang, slug] as const,
   page: (lang: Lang, slug: string) => ['landing', 'page', lang, slug] as const,
 };
 
@@ -105,6 +114,26 @@ export function useLandingFaqs() {
   });
 }
 
+export function useLandingAboutUs() {
+  const { language } = useTranslation();
+  const lang = language === 'en' ? 'en' : 'ar';
+  return useQuery<LandingAboutUsData>({
+    queryKey: landingPageKeys.aboutUs(lang),
+    queryFn: () => fetchLandingAboutUs(lang),
+    staleTime: 60_000,
+  });
+}
+
+export function useLandingBanner(slug: BannerSlug) {
+  const { language } = useTranslation();
+  const lang = language === 'en' ? 'en' : 'ar';
+  return useQuery<LandingBanner | null>({
+    queryKey: landingPageKeys.banner(lang, slug),
+    queryFn: () => fetchLandingBanner(slug, lang),
+    staleTime: 60_000,
+  });
+}
+
 export function useLandingPage(slug: string, enabled = true) {
   const { language } = useTranslation();
   const lang = language === 'en' ? 'en' : 'ar';
@@ -113,5 +142,11 @@ export function useLandingPage(slug: string, enabled = true) {
     queryFn: () => fetchLandingPageBySlug(slug, lang),
     enabled: enabled && Boolean(slug),
     staleTime: 60_000,
+  });
+}
+
+export function useSubmitLandingAboutUsForm() {
+  return useMutation({
+    mutationFn: (payload: LandingAboutUsFormPayload) => submitLandingAboutUsForm(payload),
   });
 }

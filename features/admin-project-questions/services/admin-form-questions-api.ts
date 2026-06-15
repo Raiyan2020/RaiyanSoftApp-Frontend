@@ -26,7 +26,7 @@ export interface AdminFormQuestion {
     en?: string;
     ar?: string;
   };
-  type: AdminFormQuestionTypeValue;
+  type: AdminFormQuestionTypeValue | AdminFormQuestionType | string;
   is_active?: boolean | number;
   sort_order?: number;
   options?: AdminFormQuestionOption[];

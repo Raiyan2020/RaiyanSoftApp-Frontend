@@ -124,19 +124,30 @@ export interface LandingPageContent {
 export interface LandingAboutCard {
   id: number;
   title: string;
-  caption: string;
   description: string;
   image: string | null;
 }
 
 export interface LandingBanner {
   id: number;
-  title: string;
-  caption: string;
-  description: string;
-  image: string | null;
+  slug: string;
+  title: string | null;
+  caption: string | null;
+  description: string | null;
   button_text: string | null;
   button_url: string | null;
+}
+
+export interface LandingAboutUsData {
+  header: LandingSectionHeader | null;
+  cards: LandingAboutCard[];
+}
+
+export interface LandingAboutUsFormPayload {
+  full_name: string;
+  email: string;
+  phone: string;
+  project_details: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -192,6 +203,7 @@ export interface AdminCapabilityPayload {
 export interface AdminOfferPayload {
   title: BilingualField;
   caption: BilingualField;
+  description: BilingualField;
   button_text: BilingualField;
   button_url: string;
   most_requested: 0 | 1;

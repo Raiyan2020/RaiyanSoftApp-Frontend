@@ -10,21 +10,12 @@ export interface TermsConditionsPage {
   description: string;
 }
 
-export interface AboutUsSection {
-  image: string | null;
-  title: string;
-  caption: string;
-  description: string;
-}
-
-export interface ContactUsSection {
-  email: string;
-  url: string;
-}
-
 export interface AboutUsPage {
-  about_us: AboutUsSection;
-  contact_us: ContactUsSection;
+  id?: number;
+  slug?: PageSlug;
+  title: string;
+  description: string;
+  image: string | null;
 }
 
 export interface SimplePageForm {
