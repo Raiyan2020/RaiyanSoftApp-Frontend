@@ -103,6 +103,42 @@ export interface LandingFaqsData {
   faqs: LandingFaq[];
 }
 
+export interface LandingPageContent {
+  heroes: LandingHero[];
+  services: LandingServicesData;
+  capabilities: LandingCapabilitiesData;
+  offers: LandingOffersData;
+  testimonials: LandingTestimonialsData;
+  faqs: LandingFaqsData;
+  about_us: {
+    header: LandingSectionHeader | null;
+    cards: LandingAboutCard[];
+  };
+  banners: {
+    idea: LandingBanner | null;
+    project: LandingBanner | null;
+    footer: LandingBanner | null;
+  };
+}
+
+export interface LandingAboutCard {
+  id: number;
+  title: string;
+  caption: string;
+  description: string;
+  image: string | null;
+}
+
+export interface LandingBanner {
+  id: number;
+  title: string;
+  caption: string;
+  description: string;
+  image: string | null;
+  button_text: string | null;
+  button_url: string | null;
+}
+
 // ---------------------------------------------------------------------------
 // Admin form payload types (bilingual: title[ar], title[en], …)
 // ---------------------------------------------------------------------------

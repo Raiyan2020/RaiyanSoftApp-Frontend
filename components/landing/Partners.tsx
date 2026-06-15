@@ -2,20 +2,26 @@
 import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import { useLandingTestimonials } from '@/features/landing-page';
 import SafeImage from '@/components/ui/safe-image';
+import type { LandingPageContent } from '@/features/landing-page';
 
-export default function Partners() {
+type PartnersProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function Partners({ homeData }: PartnersProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
   const { content, textAlign } = useLandingContent();
   const { partners } = content;
-  const { data: apiData } = useLandingTestimonials();
+  const apiAbout = homeData?.about_us;
+  const apiTestimonials = homeData?.testimonials;
 
-  const badge = apiData?.header?.caption || partners.badge;
-  const title = apiData?.header?.title || `${partners.title} ${partners.titleHighlight}`;
-  const description = apiData?.header?.description || partners.description;
-  const hasApiTestimonials = (apiData?.testimonials?.length ?? 0) > 0;
+  const badge = apiAbout?.header?.caption || apiTestimonials?.header?.caption || partners.badge;
+  const title = apiAbout?.header?.title || apiTestimonials?.header?.title || `${partners.title} ${partners.titleHighlight}`;
+  const description = apiAbout?.header?.description || apiTestimonials?.header?.description || partners.description;
+  const hasApiTestimonials = (apiTestimonials?.testimonials?.length ?? 0) > 0;
+  const hasApiAboutCards = (apiAbout?.cards?.length ?? 0) > 0;
 
   return (
     <section id="partners" className="relative overflow-hidden bg-white py-12 dark:bg-navy-950 sm:py-16 lg:py-20">
@@ -35,7 +41,23 @@ export default function Partners() {
         </div>
 
         {/* Static trust cards — shown only when no API testimonials yet */}
-        {!hasApiTestimonials ? (
+        {hasApiAboutCards ? (
+          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+            {apiAbout!.cards.map((card, i) => (
+              <article
+                key={card.id}
+                className="reveal rounded-[2rem] border border-cyan-950/10 bg-slate-50/80 p-6 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-primary/30 hover:bg-white hover:shadow-[var(--shadow-glow)] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/8"
+                style={{ transitionDelay: `${i * 0.08}s` }}
+              >
+                <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-dark text-lg font-black text-white shadow-lg shadow-primary/20">
+                  {String(card.id).padStart(2, '0')}
+                </div>
+                <h3 className="mb-3 text-2xl font-bold text-slate-950 dark:text-white">{card.title}</h3>
+                <p className="leading-relaxed text-slate-600 dark:text-slate-300">{card.caption || card.description}</p>
+              </article>
+            ))}
+          </div>
+        ) : !hasApiTestimonials ? (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {partners.trustCards.map((card, i) => (
               <article
@@ -56,7 +78,7 @@ export default function Partners() {
         {/* Testimonials grid */}
         <div className={`${hasApiTestimonials ? '' : 'mt-8'} grid gap-6 ${hasApiTestimonials ? 'grid-cols-1 sm:grid-cols-2' : 'lg:grid-cols-2'}`}>
           {hasApiTestimonials
-            ? apiData!.testimonials.map((testimonial, i) => (
+            ? apiTestimonials!.testimonials.map((testimonial, i) => (
                 <article
                   key={testimonial.id}
                   className="reveal rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-6 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/15 dark:bg-white/8"

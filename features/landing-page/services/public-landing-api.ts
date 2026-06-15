@@ -6,6 +6,7 @@ import type {
   LandingOffersData,
   LandingTestimonialsData,
   LandingFaqsData,
+  LandingPageContent,
 } from '../types/landing-page.types';
 
 type Language = 'ar' | 'en';
@@ -44,6 +45,10 @@ async function fetchLandingJson<T>(path: string, language: Language = 'ar'): Pro
   }
 }
 
+export async function fetchLandingHome(language: Language = 'ar'): Promise<LandingPageContent | null> {
+  return fetchLandingJson<LandingPageContent>('home', language);
+}
+
 /** Returns the first active hero or null. */
 export async function fetchLandingHeroes(language: Language = 'ar'): Promise<LandingHero[]> {
   const data = await fetchLandingJson<{ data: LandingHero[] } | LandingHero[]>('heroes', language);
@@ -79,4 +84,11 @@ export async function fetchLandingTestimonials(language: Language = 'ar'): Promi
 export async function fetchLandingFaqs(language: Language = 'ar'): Promise<LandingFaqsData> {
   const data = await fetchLandingJson<LandingFaqsData>('faqs', language);
   return data ?? { header: null, faqs: [] };
+}
+
+export async function fetchLandingPageBySlug<T = { id: number; slug: string; title: string; description: string; image: string | null }>(
+  slug: string,
+  language: Language = 'ar'
+): Promise<T | null> {
+  return fetchLandingJson<T>(`pages/${encodeURIComponent(slug)}`, language);
 }

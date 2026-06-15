@@ -2,8 +2,8 @@
 import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import { useLandingServices } from '@/features/landing-page';
 import SafeImage from '@/components/ui/safe-image';
+import type { LandingPageContent } from '@/features/landing-page';
 
 const SERVICE_GRADIENTS = [
   'from-sky-500 to-cyan-500',
@@ -14,18 +14,22 @@ const SERVICE_GRADIENTS = [
   'from-rose-500 to-pink-500',
 ];
 
-export default function Services() {
+type ServicesProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function Services({ homeData }: ServicesProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
   const { content, textAlign } = useLandingContent();
   const { services: staticServices } = content;
-  const { data: apiData } = useLandingServices();
+  const apiHomeServices = homeData?.services ?? null;
 
-  const badge = apiData?.header?.caption || staticServices.badge;
-  const title = apiData?.header?.title || `${staticServices.title} ${staticServices.titleHighlight}`;
-  const description = apiData?.header?.description || staticServices.description;
+  const badge = apiHomeServices?.header?.caption || staticServices.badge;
+  const title = apiHomeServices?.header?.title || `${staticServices.title} ${staticServices.titleHighlight}`;
+  const description = apiHomeServices?.header?.description || staticServices.description;
 
-  const hasApiItems = (apiData?.services?.length ?? 0) > 0;
+  const hasApiItems = (apiHomeServices?.services?.length ?? 0) > 0;
 
   return (
     <section id="services" className="relative overflow-hidden bg-white py-12 dark:bg-navy-950 sm:py-16 lg:py-20">
@@ -48,7 +52,7 @@ export default function Services() {
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
           {hasApiItems
-            ? apiData!.services.map((service, i) => {
+            ? (apiHomeServices?.services ?? []).map((service, i) => {
                 const gradient = SERVICE_GRADIENTS[i % SERVICE_GRADIENTS.length];
                 return (
                   <article

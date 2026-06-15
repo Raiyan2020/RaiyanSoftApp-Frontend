@@ -1,22 +1,22 @@
 'use client';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import {
-  getLandingButtonScrollTarget,
-  shouldOpenLandingButtonInNewTab,
-  useLandingHeroes,
-} from '@/features/landing-page';
+import { getLandingButtonScrollTarget, shouldOpenLandingButtonInNewTab } from '@/features/landing-page';
+import type { LandingPageContent } from '@/features/landing-page';
 
 const HERO_VIDEO_ID = 'Z5c5-F3rApk';
 const HERO_VIDEO_START = 2;
 
-export default function HeroBanner() {
+type HeroBannerProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function HeroBanner({ homeData }: HeroBannerProps) {
   const shouldReduceMotion = useReducedMotion();
   const { content, siteName, textAlign, flexAlign } = useLandingContent();
   const { hero } = content;
-  const { data: heroList } = useLandingHeroes();
 
-  const apiHero = heroList?.[0];
+  const apiHero = homeData?.heroes?.[0];
   const badge = apiHero?.caption || hero.badge;
   const headline = apiHero?.title || `${hero.titleLine1} ${hero.titleHighlight} ${hero.titleLine2}`;
   const description = apiHero?.description || hero.description;

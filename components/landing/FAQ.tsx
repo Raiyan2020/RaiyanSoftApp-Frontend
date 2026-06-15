@@ -2,29 +2,39 @@
 import { useRef, useState } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
+import type { LandingPageContent } from '@/features/landing-page';
 
-export default function FAQ() {
+type FAQProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function FAQ({ homeData }: FAQProps) {
   const [open, setOpen] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
   const { content, textAlign } = useLandingContent();
   const { faq } = content;
+  const apiFaqs = homeData?.faqs;
+  const apiHeader = apiFaqs?.header;
+  const apiItems = apiFaqs?.faqs ?? [];
 
   return (
     <section id="faq" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
       <div ref={ref} className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
         <div className={`reveal ${textAlign}`}>
           <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-            {faq.badge}
+            {apiHeader?.caption || faq.badge}
           </div>
           <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
-            {faq.title} <span className="gradient-text">{faq.titleHighlight}</span>
+            {apiHeader?.title || faq.title}
           </h2>
-          <p className="mt-5 text-lg leading-relaxed text-slate-600 dark:text-slate-300">{faq.description}</p>
+          <p className="mt-5 text-lg leading-relaxed text-slate-600 dark:text-slate-300">
+            {apiHeader?.description || faq.description}
+          </p>
         </div>
 
         <div className="space-y-4">
-          {faq.items.map((item, i) => (
+          {(apiItems.length > 0 ? apiItems.map((item) => ({ q: item.question, a: item.answer })) : faq.items).map((item, i) => (
             <div
               key={item.q}
               className="reveal overflow-hidden rounded-3xl border border-cyan-950/10 bg-white shadow-sm dark:border-white/10 dark:bg-white/5"

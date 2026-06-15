@@ -2,26 +2,27 @@
 import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import {
-  getLandingButtonScrollTarget,
-  shouldOpenLandingButtonInNewTab,
-  useLandingOffers,
-} from '@/features/landing-page';
+import { getLandingButtonScrollTarget, shouldOpenLandingButtonInNewTab } from '@/features/landing-page';
+import type { LandingPageContent } from '@/features/landing-page';
 
-export default function Packages() {
+type PackagesProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function Packages({ homeData }: PackagesProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
   const { content, textAlign } = useLandingContent();
   const { packages } = content;
-  const { data: apiData } = useLandingOffers();
+  const apiOffers = homeData?.offers;
 
-  const badge = apiData?.header?.caption || packages.badge;
-  const title = apiData?.header?.title || `${packages.title} ${packages.titleHighlight}`;
-  const description = apiData?.header?.description || packages.description;
-  const hasApiItems = (apiData?.offers?.length ?? 0) > 0;
+  const badge = apiOffers?.header?.caption || packages.badge;
+  const title = apiOffers?.header?.title || `${packages.title} ${packages.titleHighlight}`;
+  const description = apiOffers?.header?.description || packages.description;
+  const hasApiItems = (apiOffers?.offers?.length ?? 0) > 0;
 
   const gridClass = hasApiItems
-    ? apiData!.offers.length === 3
+    ? apiOffers!.offers.length === 3
       ? 'grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.2fr_0.9fr] lg:items-stretch'
       : 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:items-stretch'
     : 'grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.2fr_0.9fr] lg:items-stretch';
@@ -46,7 +47,7 @@ export default function Packages() {
 
         <div className={gridClass}>
           {hasApiItems
-            ? apiData!.offers.map((offer, i) => (
+            ? apiOffers!.offers.map((offer, i) => (
                 <article
                   key={offer.id}
                   className={`reveal rounded-[2rem] border p-6 shadow-sm transition-all duration-500 hover:-translate-y-2 sm:p-8 ${

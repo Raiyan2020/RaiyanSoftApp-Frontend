@@ -3,12 +3,18 @@ import { useRef, useState } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 import PhoneInput from '@/components/ui/phone-input';
+import type { LandingPageContent } from '@/features/landing-page';
 
-export default function Contact() {
+type ContactProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function Contact({ homeData }: ContactProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
   const { content, contactMethods, textAlign } = useLandingContent();
   const { contact } = content;
+  const banner = homeData?.banners?.project;
 
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [phone, setPhone] = useState('');
@@ -49,9 +55,12 @@ export default function Contact() {
           <aside className="reveal space-y-5 lg:col-span-2">
             <div className="overflow-hidden rounded-[2rem] bg-slate-950 p-7 text-white shadow-2xl shadow-cyan-950/20">
               <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-emerald-400 text-2xl font-black">
-                24h
+                {banner?.caption ? banner.caption.slice(0, 2) : '24h'}
               </div>
-              <h3 className="text-2xl font-bold">{contact.sidebarTitle}</h3>
+              <h3 className="text-2xl font-bold">{banner?.title || contact.sidebarTitle}</h3>
+              <p className="mt-3 text-sm leading-relaxed text-slate-300">
+                {banner?.description || contact.description}
+              </p>
               <div className="mt-6 space-y-4">
                 {contact.sidebarSteps.map((step, i) => (
                   <div key={step} className="flex gap-3">

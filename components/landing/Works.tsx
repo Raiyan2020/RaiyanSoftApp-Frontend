@@ -2,8 +2,8 @@
 import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import { useLandingCapabilities } from '@/features/landing-page';
 import SafeImage from '@/components/ui/safe-image';
+import type { LandingPageContent } from '@/features/landing-page';
 
 const workGradients = [
   'from-sky-500 to-cyan-500',
@@ -14,17 +14,20 @@ const workGradients = [
   'from-rose-500 to-pink-500',
 ];
 
-export default function Works() {
+type WorksProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function Works({ homeData }: WorksProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
   const { content, dir, textAlign } = useLandingContent();
   const { works } = content;
-  const { data: apiData } = useLandingCapabilities();
-
-  const badge = apiData?.header?.caption || works.badge;
-  const title = apiData?.header?.title || `${works.title} ${works.titleHighlight}`;
-  const description = apiData?.header?.description || works.description;
-  const hasApiItems = (apiData?.capabilities?.length ?? 0) > 0;
+  const apiCapabilities = homeData?.capabilities;
+  const badge = apiCapabilities?.header?.caption || works.badge;
+  const title = apiCapabilities?.header?.title || `${works.title} ${works.titleHighlight}`;
+  const description = apiCapabilities?.header?.description || works.description;
+  const hasApiItems = (apiCapabilities?.capabilities?.length ?? 0) > 0;
 
   return (
     <section id="works" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
@@ -48,7 +51,7 @@ export default function Works() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 lg:gap-6">
           {hasApiItems
-            ? apiData!.capabilities.map((cap, i) => (
+            ? apiCapabilities!.capabilities.map((cap, i) => (
                 <article
                   key={cap.id}
                   id={`work-${cap.id}`}
