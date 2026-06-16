@@ -24,7 +24,7 @@ export default function ChatInputBar({
   return (
     <div ref={composerRef} className="shrink-0 z-40 px-4 sm:px-6 pb-4">
       <motion.div
-        initial={{ y: 20, opacity: 0 }}
+        initial={false}
         animate={{ y: 0, opacity: 1 }}
         className="bg-[var(--surface)] backdrop-blur-xl p-2 rounded-2xl border border-[var(--border)] shadow-lg flex items-end gap-2"
       >

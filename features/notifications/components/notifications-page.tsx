@@ -104,7 +104,7 @@ export default function NotificationsPage() {
               ))
             ) : !isLoading ? (
               <motion.div
-                initial={{ opacity: 0 }}
+                initial={false}
                 animate={{ opacity: 1 }}
                 className="md:col-span-2 xl:col-span-3 flex flex-col items-center justify-center py-20 text-[var(--text-muted)]"
               >

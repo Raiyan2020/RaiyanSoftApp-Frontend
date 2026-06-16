@@ -16,6 +16,11 @@ export function useSectionReveal(ref: RefObject<HTMLElement | null>) {
 
     const elements = Array.from(container.querySelectorAll('.reveal'));
 
+    if (typeof IntersectionObserver === 'undefined') {
+      elements.forEach(reveal);
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {

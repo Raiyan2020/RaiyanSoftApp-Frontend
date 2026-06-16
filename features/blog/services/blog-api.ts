@@ -28,13 +28,17 @@ function unwrapItem<T>(data: ApiResponseShape<T> | null | undefined): T | null {
 }
 
 export async function fetchPublicBlogs(): Promise<BlogListItem[]> {
-  const response = await fetch(`${BASE_URL}/user/blogs`, {
-    headers: { Accept: 'application/json' },
-    next: { revalidate: 60 },
-  });
-  const json = await response.json().catch(() => null);
-  if (!response.ok || !json?.status) return [];
-  return unwrapList<BlogListItem>(json.data);
+  try {
+    const response = await fetch(`${BASE_URL}/user/blogs`, {
+      headers: { Accept: 'application/json' },
+      next: { revalidate: 60 },
+    });
+    const json = await response.json().catch(() => null);
+    if (!response.ok || !json?.status) return [];
+    return unwrapList<BlogListItem>(json.data);
+  } catch {
+    return [];
+  }
 }
 
 export async function fetchPublicBlog(slug: string): Promise<BlogDetailItem | null> {

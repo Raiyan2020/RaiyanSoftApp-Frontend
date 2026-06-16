@@ -15,7 +15,7 @@ interface FileListItemProps {
 export default function FileListItem({ file, dir, isImage, formatSize, onDelete }: FileListItemProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: dir === 'rtl' ? 20 : -20 }}
       className="app-card rounded-xl p-3 flex items-center gap-3 group"

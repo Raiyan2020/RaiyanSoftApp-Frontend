@@ -500,7 +500,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <AnimatePresence>
               {isUserMenuOpen ? (
                 <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  initial={false}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.1 }}
@@ -544,7 +544,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {isMobileMenuOpen ? (
             <>
               <motion.div
-                initial={{ opacity: 0 }}
+                initial={false}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -573,14 +573,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <AnimatePresence>
           {isCommandOpen ? (
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={false}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[80] flex items-start justify-center bg-black/70 px-4 pt-24 backdrop-blur-sm"
               onClick={() => setIsCommandOpen(false)}
             >
               <motion.div
-                initial={{ opacity: 0, y: -12, scale: 0.98 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -12, scale: 0.98 }}
                 onClick={(event) => event.stopPropagation()}

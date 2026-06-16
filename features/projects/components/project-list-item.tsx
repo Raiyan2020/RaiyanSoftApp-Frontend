@@ -15,7 +15,7 @@ export default function ProjectListItem({ name, description, logoUrl, link }: Pr
       href={link}
       target="_blank"
       rel="noopener noreferrer"
-      initial={{ opacity: 0, y: 10 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -2 }}
       whileTap={{ scale: 0.98 }}

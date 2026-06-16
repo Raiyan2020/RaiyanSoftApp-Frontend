@@ -30,7 +30,7 @@ export default function AuthRequiredModal({ isOpen, onClose, redirectTo }: AuthR
       <AnimatePresence>
         {isOpen ? (
           <motion.div
-            initial={{ opacity: 0 }}
+            initial={false}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
@@ -38,7 +38,7 @@ export default function AuthRequiredModal({ isOpen, onClose, redirectTo }: AuthR
             dir={dir}
           >
             <motion.div
-              initial={{ scale: 0.9, opacity: 0, y: 20 }}
+              initial={false}
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.9, opacity: 0, y: 20 }}
               onClick={(e) => e.stopPropagation()}

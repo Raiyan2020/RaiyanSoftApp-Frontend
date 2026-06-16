@@ -14,7 +14,7 @@ export default function AdminProjectCard({ project, onOpenModal, onDeleteProject
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={false}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-4 shadow-lg hover:border-[var(--border)] transition-colors group relative overflow-hidden"

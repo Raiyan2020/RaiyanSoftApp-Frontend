@@ -20,7 +20,7 @@ export default function LeadCapturePage() {
     return (
       <div className="flex flex-col items-center justify-center h-full min-h-screen bg-[var(--bg)] text-[var(--text)] p-6" dir={dir}>
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
+          initial={false}
           animate={{ scale: 1, opacity: 1 }}
           className="bg-[var(--surface-3)] border border-[var(--border)] rounded-3xl p-8 max-w-sm w-full text-center"
         >

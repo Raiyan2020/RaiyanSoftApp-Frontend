@@ -9,7 +9,7 @@ interface BookingSuccessStepProps {
 
 export default function BookingSuccessStep({ onBookAnother }: BookingSuccessStepProps) {
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-10 space-y-6 text-center">
+    <motion.div initial={false} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-10 space-y-6 text-center">
       <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/30">
         <CheckCircle size={48} />
       </div>

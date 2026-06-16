@@ -99,7 +99,7 @@ export default function NotificationComposer({
             <AnimatePresence mode="wait">
               {targetType === 'single' ? (
                 <motion.div
-                  initial={{ opacity: 0, height: 0 }}
+                  initial={false}
                   animate={{ opacity: 1, height: 'auto' }}
                   exit={{ opacity: 0, height: 0 }}
                   className="overflow-visible"
@@ -122,7 +122,7 @@ export default function NotificationComposer({
                       <AnimatePresence>
                         {showUserDropdown && searchQuery ? (
                           <motion.div
-                            initial={{ opacity: 0, y: 10 }}
+                            initial={false}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
                             className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl shadow-2xl z-50 overflow-hidden"

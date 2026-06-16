@@ -63,7 +63,7 @@ export default function HeroBanner({ homeData }: HeroBannerProps) {
       <motion.div
         className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl items-center px-4 pb-10 pt-24 sm:px-6 sm:pb-14 sm:pt-28 lg:px-8 lg:pb-20 lg:pt-32"
         variants={parent}
-        initial={shouldReduceMotion ? false : 'hidden'}
+        initial={false}
         animate="visible"
       >
         <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">

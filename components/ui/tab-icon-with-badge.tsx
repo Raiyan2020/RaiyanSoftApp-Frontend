@@ -23,7 +23,7 @@ export default function TabIconWithBadge({ icon: Icon, isActive, badgeCount }: T
       <AnimatePresence>
         {badgeCount > 0 ? (
           <motion.div
-            initial={{ scale: 0, opacity: 0 }}
+            initial={false}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             className="absolute -top-1 -right-1.5 rtl:-left-1.5 rtl:right-auto z-10 flex items-center justify-center min-w-[18px] h-[18px] bg-red-500 rounded-full border-2 border-[var(--surface)] px-1 pointer-events-none"

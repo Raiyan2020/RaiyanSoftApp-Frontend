@@ -110,7 +110,7 @@ export default function WizardShell({
           >
             {errors.length > 0 ? (
               <motion.div
-                initial={{ opacity: 0, y: 10 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-medium text-center"
               >

@@ -62,7 +62,7 @@ export default function ProjectFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
+        initial={false}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(event) => event.stopPropagation()}

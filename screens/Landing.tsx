@@ -41,7 +41,7 @@ export default function LandingPage({ blogPosts = [], homeData }: LandingPagePro
       <a href="#main-content" className="skip-link">تجاوز إلى المحتوى</a>
       <div className="scroll-progress" style={{ '--scroll-progress': `${scrollProgress}%` } as React.CSSProperties} />
       <Navbar dark={dark} onToggleDark={toggleDark} />
-      <motion.main id="main-content" variants={pageVariants} initial={shouldReduceMotion ? false : 'hidden'} animate="visible">
+      <motion.main id="main-content" variants={pageVariants} initial={false} animate="visible">
         <motion.div variants={sectionVariants}><HeroBanner homeData={homeData} /></motion.div>
         <motion.div variants={sectionVariants}><Services homeData={homeData} /></motion.div>
         {/* <motion.div variants={sectionVariants}><Sectors /></motion.div> */}

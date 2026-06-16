@@ -34,7 +34,7 @@ export default function AppointmentsPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: dir === 'rtl' ? -20 : 20 }}
+      initial={false}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: dir === 'rtl' ? 20 : -20 }}
       className="app-page app-page-wide"

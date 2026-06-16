@@ -80,7 +80,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
           {errorMsg ? <ErrorAlert message={errorMsg} /> : null}
 
           {step === 1 ? (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+            <motion.div initial={false} animate={{ opacity: 1, x: 0 }} className="space-y-6">
               <div className="space-y-3">
                 <div className="flex items-center justify-between mb-1">
                   <button
@@ -152,7 +152,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
                 {selectedDate ? (
                   <motion.div
                     key="time-selection"
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={false}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, height: 0 }}
                     className="space-y-4"
@@ -202,7 +202,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
           ) : null}
 
           {step === 2 ? (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-5">
+            <motion.div initial={false} animate={{ opacity: 1, x: 0 }} className="space-y-5">
               <h3 className="text-lg font-bold text-[var(--text)] mb-2">{t('appt.step_details')}</h3>
 
               <div className="bg-primary/10 border border-primary/20 rounded-xl p-3.5 flex items-center justify-between">
@@ -274,13 +274,13 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
           ) : null}
 
           {step === authStep && !isAuthenticated ? (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="h-full">
+            <motion.div initial={false} animate={{ opacity: 1, x: 0 }} className="h-full">
               <BookingAuthGate onAuthenticated={async () => { await handleBook(); }} submitError={errorMsg} />
             </motion.div>
           ) : null}
 
           {step === successStep ? (
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-10 space-y-6">
+            <motion.div initial={false} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-10 space-y-6">
               <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/30">
                 <CheckCircle size={48} />
               </div>

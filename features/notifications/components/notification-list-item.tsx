@@ -46,7 +46,7 @@ export default function NotificationListItem({ notification, onClick, onDismiss 
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 20 }}
+      initial={false}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, x: dir === 'rtl' ? 100 : -100 }}
       whileTap={{ scale: 0.98 }}

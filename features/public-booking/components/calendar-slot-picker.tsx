@@ -41,7 +41,7 @@ export default function CalendarSlotPicker({
   today.setHours(0, 0, 0, 0);
 
   return (
-    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-8">
+    <motion.div initial={false} animate={{ opacity: 1, x: 0 }} className="space-y-8">
       <div className="space-y-4">
         <div className="flex items-center justify-between mb-2">
           <button
@@ -100,7 +100,7 @@ export default function CalendarSlotPicker({
       </div>
 
       {selectedDate ? (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 pt-4 border-t border-[var(--border)]">
+        <motion.div initial={false} animate={{ opacity: 1, y: 0 }} className="space-y-4 pt-4 border-t border-[var(--border)]">
           <h3 className="text-[var(--text)] font-bold">{translateMessage('Select Time')}</h3>
           {loadingSlots ? (
             <div className="flex justify-center py-4">

@@ -35,7 +35,7 @@ export default function Sectors() {
       <motion.div
         className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
         variants={container}
-        initial={shouldReduceMotion ? false : 'hidden'}
+        initial={false}
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
       >

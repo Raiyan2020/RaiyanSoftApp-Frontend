@@ -32,7 +32,7 @@ export default function ChatMessage({ msg, showName }: ChatMessageProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      initial={false}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       className={`flex flex-col mb-4 ${alignClass}`}
     >

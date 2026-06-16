@@ -67,7 +67,7 @@ export default function WizardColorPicker({
         <AnimatePresence>
           {showCustomColor ? (
             <motion.div
-              initial={{ height: 0, opacity: 0 }}
+              initial={false}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               className="w-full overflow-hidden flex flex-col items-center gap-4 bg-[var(--surface-3)] p-4 rounded-2xl border border-[var(--border)]"

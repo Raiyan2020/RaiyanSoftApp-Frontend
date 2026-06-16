@@ -50,7 +50,7 @@ export default function WizardIndustryStep({
       </div>
 
       {selectedIndustry === 'Other' ? (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
+        <motion.div initial={false} animate={{ opacity: 1, y: 0 }} className="mt-6">
           <label className="text-xs font-bold text-[var(--text-muted)] uppercase mb-2 block">{t('wizard.specify')}</label>
           <input
             autoFocus

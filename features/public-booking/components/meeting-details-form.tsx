@@ -43,7 +43,7 @@ export default function MeetingDetailsForm({
   confirmLabel,
 }: MeetingDetailsFormProps) {
   return (
-    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+    <motion.div initial={false} animate={{ opacity: 1, x: 0 }} className="space-y-6">
       <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center justify-between">
         <div>
           <p className="text-primary font-bold text-sm">
