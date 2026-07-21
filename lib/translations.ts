@@ -425,7 +425,11 @@ export const translations = {
     "landing.nav.toggle_dark": "Toggle Dark Mode",
     "landing.nav.menu": "Menu",
     "landing.nav.language": "Language",
-    "profile.title": "Profile"
+    "profile.title": "Profile",
+    "admin.landing.faqs": "FAQs",
+    "admin.landing.add_faq": "Add FAQ",
+    "admin.landing.edit_faq": "Edit FAQ",
+    "admin.landing.delete_faq": "Delete this FAQ?"
   },
   ar: {
     // Auth

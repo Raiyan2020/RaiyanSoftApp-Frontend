@@ -1,5 +1,6 @@
 import { globalToast } from './toast-context';
 import { authService } from './auth-service';
+import { readStoredLanguage } from './language';
 
 export function getApiBaseUrl() {
   const url = process.env.NEXT_PUBLIC_API_URL || 'https://portal.raiyan.cc/api';
@@ -45,6 +46,9 @@ class ApiService {
   private getHeaders(isFormattedData: boolean, path: string): HeadersInit {
     const headers: Record<string, string> = {
       'Accept': 'application/json',
+      // The backend defaults to Arabic when this is absent, so every response
+      // must carry the selected language explicitly.
+      'Accept-Language': readStoredLanguage(),
     };
 
     if (!isFormattedData) {

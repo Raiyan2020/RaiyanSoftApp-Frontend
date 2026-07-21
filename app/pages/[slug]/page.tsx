@@ -5,6 +5,7 @@ import PublicSimplePage from '@/components/public/public-page-section';
 import { fetchLandingPageBySlug } from '@/features/landing-page';
 import { createBreadcrumbJsonLd, createPublicMetadata, getCanonicalUrl } from '@/lib/site';
 import JsonLd from '@/components/public/json-ld';
+import { getServerLanguage } from '@/lib/language.server';
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -20,7 +21,7 @@ type LandingPageRecord = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const page = await fetchLandingPageBySlug<LandingPageRecord>(slug, 'ar');
+  const page = await fetchLandingPageBySlug<LandingPageRecord>(slug, await getServerLanguage());
 
   if (!page) {
     return createPublicMetadata({ title: 'الصفحة غير موجودة', path: `/pages/${slug}` });
@@ -36,7 +37,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function LandingPageSlugPage({ params }: PageProps) {
   const { slug } = await params;
-  const page = await fetchLandingPageBySlug<LandingPageRecord>(slug, 'ar');
+  const page = await fetchLandingPageBySlug<LandingPageRecord>(slug, await getServerLanguage());
 
   if (!page) notFound();
 

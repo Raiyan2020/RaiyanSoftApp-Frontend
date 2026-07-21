@@ -6,13 +6,14 @@ import { getPageMetadata, pageSeo } from '@/lib/page-seo';
 import { createWebSiteJsonLd } from '@/lib/site';
 import { fetchPublicBlogs } from '@/features/blog/services/blog-api';
 import { fetchLandingHome } from '@/features/landing-page';
+import { getServerLanguage } from '@/lib/language.server';
 
 export const metadata: Metadata = getPageMetadata('home');
 
 export default async function Page() {
   const homeSeo = pageSeo.home;
   const blogPosts = await fetchPublicBlogs();
-  const landingHome = await fetchLandingHome('ar');
+  const landingHome = await fetchLandingHome(await getServerLanguage());
 
   return (
     <>

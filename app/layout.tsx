@@ -5,7 +5,9 @@ import { Suspense } from 'react';
 import Providers from './providers';
 import './globals.css';
 import MetaPixelTracker from '@/components/MetaPixelTracker';
-import { createOrganizationJsonLd, createPublicMetadata, siteConfig } from '@/lib/site';
+import { createOrganizationJsonLd, createPublicMetadata } from '@/lib/site';
+import { getDirection } from '@/lib/language';
+import { getServerLanguage } from '@/lib/language.server';
 
 const cairo = Cairo({ subsets: ['arabic', 'latin'], weight: ['300', '400', '500', '600', '700', '800', '900'] });
 
@@ -14,11 +16,12 @@ export const metadata: Metadata = createPublicMetadata();
 // Disable static prerendering because app pages depend on client-side providers.
 export const dynamic = 'force-dynamic';
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const jsonLd = createOrganizationJsonLd();
+  const language = await getServerLanguage();
 
   return (
-    <html lang={siteConfig.language} dir={siteConfig.direction} className="dark" suppressHydrationWarning>
+    <html lang={language} dir={getDirection(language)} className="dark" suppressHydrationWarning>
       <head>
         <script
           id="landing-schema"
@@ -27,7 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className={cairo.className}>
-        <Providers>
+        <Providers initialLanguage={language}>
           <Suspense fallback={null}>
             <MetaPixelTracker />
           </Suspense>

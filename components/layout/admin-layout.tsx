@@ -51,6 +51,188 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
+interface SidebarItem {
+  id: string;
+  label: string;
+  path: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  badge?: number;
+}
+
+interface SidebarSection {
+  id: string;
+  label: string;
+  items: SidebarItem[];
+}
+
+interface SidebarContentProps {
+  t: ReturnType<typeof useTranslation>['t'];
+  pathname: string;
+  isSidebarCollapsed: boolean;
+  sidebarSections: readonly SidebarSection[];
+  filteredNavItems: Array<{ id: string }>;
+  filteredWebsiteNavItems: Array<{ id: string }>;
+  sidebarSearch: string;
+  setSidebarSearch: React.Dispatch<React.SetStateAction<string>>;
+  setIsCommandOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  navigateToAdminPath: (path: string) => void;
+  collapsedSections: Record<string, boolean>;
+  setCollapsedSections: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+}
+
+function SidebarContent({
+  t,
+  pathname,
+  isSidebarCollapsed,
+  sidebarSections,
+  filteredNavItems,
+  filteredWebsiteNavItems,
+  sidebarSearch,
+  setSidebarSearch,
+  setIsCommandOpen,
+  navigateToAdminPath,
+  collapsedSections,
+  setCollapsedSections,
+}: SidebarContentProps) {
+  const toggleSection = (sectionId: string) => {
+    setCollapsedSections((current) => ({
+      ...current,
+      [sectionId]: !current[sectionId],
+    }));
+  };
+
+  const renderItem = (item: SidebarItem) => {
+    const isActive = pathname.includes(item.path);
+    const badge = item.badge ?? 0;
+
+    return (
+      <button
+        key={item.id}
+        type="button"
+        onClick={() => navigateToAdminPath(item.path)}
+        title={isSidebarCollapsed ? item.label : undefined}
+        className={`group relative w-full overflow-hidden rounded-xl border px-3 py-2 text-start transition-all duration-200 ${
+          isSidebarCollapsed ? 'flex justify-center px-2.5' : 'flex items-center gap-2.5'
+        } ${
+          isActive
+            ? 'border-primary/25 bg-primary/10 text-primary shadow-[0_6px_18px_rgba(29,183,240,0.1)]'
+            : 'border-transparent bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
+        }`}
+      >
+        {isActive ? <span className="absolute inset-y-2 left-1 w-0.5 rounded-full bg-primary" /> : null}
+        <div className="relative grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[var(--surface-2)] text-[var(--text-muted)] transition-colors group-hover:bg-[var(--surface)] group-hover:text-[var(--text)]">
+          <item.icon size={16} />
+          {badge > 0 ? (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm z-10">
+              {badge > 99 ? '99+' : badge}
+            </span>
+          ) : null}
+        </div>
+        {!isSidebarCollapsed ? (
+          <span className="min-w-0 flex-1 truncate text-[13px] font-semibold tracking-tight">{item.label}</span>
+        ) : null}
+      </button>
+    );
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className={`p-3 flex items-center border-b border-[var(--border)] ${isSidebarCollapsed ? 'justify-center' : 'gap-2.5'}`}>
+        <div className="grid h-8 w-8 place-items-center rounded-xl bg-primary/10 ring-1 ring-primary/15 relative overflow-hidden">
+          <SafeImage
+            src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
+            alt="Raiyansoft"
+            className="h-5 w-5 object-contain"
+          />
+        </div>
+        <div className={isSidebarCollapsed ? 'hidden' : ''}>
+          <h1 className="text-[var(--text)] font-extrabold text-sm leading-none tracking-tight">Raiyansoft</h1>
+          <span className="mt-0.5 inline-flex rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-primary">
+            {t('admin.panel')}
+          </span>
+        </div>
+      </div>
+
+      {!isSidebarCollapsed ? (
+        <div className="border-b border-[var(--border)] p-2.5 space-y-2">
+          <button
+            type="button"
+            onClick={() => setIsCommandOpen(true)}
+            className="flex w-full items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-start text-[13px] text-[var(--text-muted)] transition-all hover:border-primary/30 hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
+          >
+            <Search size={16} className="shrink-0" />
+            <span className="flex-1 font-medium">{t('admin.search.links')}</span>
+            <kbd className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
+              {t('admin.search.shortcut')}
+            </kbd>
+          </button>
+          <div className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 shadow-inner">
+            <Search size={15} className="text-[var(--text-muted)] shrink-0" />
+            <input
+              value={sidebarSearch}
+              onChange={(event) => setSidebarSearch(event.target.value)}
+              placeholder={t('admin.search.sidebar')}
+              className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none"
+            />
+          </div>
+        </div>
+      ) : null}
+
+      <div className="flex-1 overflow-y-auto no-scrollbar px-2.5 py-2.5">
+        <div className="space-y-2">
+          {sidebarSections.map((section) => {
+            if (section.items.length === 0) return null;
+            const isCollapsed = collapsedSections[section.id];
+
+            return (
+              <div key={section.id} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-1">
+                {!isSidebarCollapsed ? (
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(section.id)}
+                    className="flex w-full items-center justify-between rounded-xl px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+                    aria-expanded={!isCollapsed}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="h-1 w-1 rounded-full bg-primary/70" />
+                      {section.label}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[9px] font-semibold normal-case tracking-normal text-[var(--text-muted)]">
+                        {section.items.length}
+                      </span>
+                      <ChevronDown
+                        size={13}
+                        className={`transition-transform duration-200 ${isCollapsed ? '-rotate-90' : 'rotate-0'}`}
+                      />
+                    </span>
+                  </button>
+                ) : null}
+
+                {!isCollapsed || isSidebarCollapsed ? (
+                  <div className="space-y-1 p-0.5 pt-1">
+                    {section.items.map(renderItem)}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+
+          {!isSidebarCollapsed && sidebarSearch && filteredNavItems.length === 0 && filteredWebsiteNavItems.length === 0 ? (
+            <div className="px-4 py-8 text-center text-xs font-medium text-[var(--text-muted)]">
+              {t('admin.search.no_results')}
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className={`p-2 border-t border-[var(--border)] text-center ${isSidebarCollapsed ? 'hidden' : ''}`}>
+        <p className="text-[10px] text-[var(--text-muted)]">{t('admin.version')}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -271,149 +453,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     setCommandQuery('');
   };
 
-  function SidebarContent() {
-    const toggleSection = (sectionId: string) => {
-      setCollapsedSections((current) => ({
-        ...current,
-        [sectionId]: !current[sectionId],
-      }));
-    };
-
-    const renderItem = (item: (typeof navItems)[number] | (typeof websiteNavItems)[number]) => {
-      const isActive = pathname.includes(item.path);
-      const badge = 'badge' in item ? item.badge : 0;
-      return (
-        <button
-          key={item.id}
-          type="button"
-          onClick={() => navigateToAdminPath(item.path)}
-          title={isSidebarCollapsed ? item.label : undefined}
-          className={`group relative w-full overflow-hidden rounded-xl border px-3 py-2 text-start transition-all duration-200 ${
-            isSidebarCollapsed ? 'flex justify-center px-2.5' : 'flex items-center gap-2.5'
-          } ${
-            isActive
-              ? 'border-primary/25 bg-primary/10 text-primary shadow-[0_6px_18px_rgba(29,183,240,0.1)]'
-              : 'border-transparent bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
-          }`}
-        >
-          {isActive ? <span className="absolute inset-y-2 left-1 w-0.5 rounded-full bg-primary" /> : null}
-          <div className="relative grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[var(--surface-2)] text-[var(--text-muted)] transition-colors group-hover:bg-[var(--surface)] group-hover:text-[var(--text)]">
-            <item.icon size={16} />
-            {badge > 0 ? (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm z-10">
-                {badge > 99 ? '99+' : badge}
-              </span>
-            ) : null}
-          </div>
-          {!isSidebarCollapsed ? (
-            <span className="min-w-0 flex-1 truncate text-[13px] font-semibold tracking-tight">{item.label}</span>
-          ) : null}
-        </button>
-      );
-    };
-
-    return (
-      <div className="flex flex-col h-full">
-        <div className={`p-3 flex items-center border-b border-[var(--border)] ${isSidebarCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-          <div className="grid h-8 w-8 place-items-center rounded-xl bg-primary/10 ring-1 ring-primary/15 relative overflow-hidden">
-            <SafeImage
-              src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
-              alt="Raiyansoft"
-              className="h-5 w-5 object-contain"
-            />
-          </div>
-          <div className={isSidebarCollapsed ? 'hidden' : ''}>
-            <h1 className="text-[var(--text)] font-extrabold text-sm leading-none tracking-tight">Raiyansoft</h1>
-            <span className="mt-0.5 inline-flex rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-primary">
-              {t('admin.panel')}
-            </span>
-          </div>
-        </div>
-
-        {!isSidebarCollapsed ? (
-          <div className="border-b border-[var(--border)] p-2.5 space-y-2">
-            <button
-              type="button"
-              onClick={() => setIsCommandOpen(true)}
-              className="flex w-full items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-start text-[13px] text-[var(--text-muted)] transition-all hover:border-primary/30 hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
-            >
-              <Search size={16} className="shrink-0" />
-              <span className="flex-1 font-medium">{t('admin.search.links')}</span>
-              <kbd className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
-                {t('admin.search.shortcut')}
-              </kbd>
-            </button>
-            <div className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 shadow-inner">
-              <Search size={15} className="text-[var(--text-muted)] shrink-0" />
-              <input
-                value={sidebarSearch}
-                onChange={(event) => setSidebarSearch(event.target.value)}
-                placeholder={t('admin.search.sidebar')}
-                className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none"
-              />
-            </div>
-          </div>
-        ) : null}
-
-        <div className="flex-1 overflow-y-auto no-scrollbar px-2.5 py-2.5">
-          <div className="space-y-2">
-            {sidebarSections.map((section) => {
-              if (section.items.length === 0) return null;
-              const isCollapsed = collapsedSections[section.id];
-
-              return (
-                <div key={section.id} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-1">
-                  {!isSidebarCollapsed ? (
-                    <button
-                      type="button"
-                      onClick={() => toggleSection(section.id)}
-                      className="flex w-full items-center justify-between rounded-xl px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
-                      aria-expanded={!isCollapsed}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="h-1 w-1 rounded-full bg-primary/70" />
-                        {section.label}
-                      </span>
-                      <span className="flex items-center gap-2">
-                        <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[9px] font-semibold normal-case tracking-normal text-[var(--text-muted)]">
-                          {section.items.length}
-                        </span>
-                        <ChevronDown
-                          size={13}
-                          className={`transition-transform duration-200 ${isCollapsed ? '-rotate-90' : 'rotate-0'}`}
-                        />
-                      </span>
-                    </button>
-                  ) : null}
-
-                  {!isCollapsed || isSidebarCollapsed ? (
-                    <div className="space-y-1 p-0.5 pt-1">
-                      {section.items.map(renderItem)}
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })}
-
-          {!isSidebarCollapsed && sidebarSearch && filteredNavItems.length === 0 && filteredWebsiteNavItems.length === 0 ? (
-            <div className="px-4 py-8 text-center text-xs font-medium text-[var(--text-muted)]">
-              {t('admin.search.no_results')}
-            </div>
-          ) : null}
-          </div>
-        </div>
-
-        <div className={`p-2 border-t border-[var(--border)] text-center ${isSidebarCollapsed ? 'hidden' : ''}`}>
-          <p className="text-[10px] text-[var(--text-muted)]">{t('admin.version')}</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-screen w-full bg-[var(--bg)] text-[var(--text)] flex overflow-hidden font-sans" dir={dir}>
       <aside className={`hidden md:block ${isSidebarCollapsed ? 'w-16' : 'w-60'} bg-[var(--surface)] border-r border-[var(--border)] shadow-2xl z-[60] shrink-0 transition-all duration-300`}>
-        <SidebarContent />
+        <SidebarContent
+          t={t}
+          pathname={pathname}
+          isSidebarCollapsed={isSidebarCollapsed}
+          sidebarSections={sidebarSections}
+          filteredNavItems={filteredNavItems}
+          filteredWebsiteNavItems={filteredWebsiteNavItems}
+          sidebarSearch={sidebarSearch}
+          setSidebarSearch={setSidebarSearch}
+          setIsCommandOpen={setIsCommandOpen}
+          navigateToAdminPath={navigateToAdminPath}
+          collapsedSections={collapsedSections}
+          setCollapsedSections={setCollapsedSections}
+        />
       </aside>
 
       <div className="flex-1 flex flex-col relative w-full h-full overflow-hidden min-h-0">
@@ -557,7 +613,20 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                 className="fixed inset-y-0 left-0 w-60 bg-[var(--surface)] border-r border-[var(--border)] z-50 md:hidden shadow-2xl"
               >
-                <SidebarContent />
+                <SidebarContent
+                  t={t}
+                  pathname={pathname}
+                  isSidebarCollapsed={isSidebarCollapsed}
+                  sidebarSections={sidebarSections}
+                  filteredNavItems={filteredNavItems}
+                  filteredWebsiteNavItems={filteredWebsiteNavItems}
+                  sidebarSearch={sidebarSearch}
+                  setSidebarSearch={setSidebarSearch}
+                  setIsCommandOpen={setIsCommandOpen}
+                  navigateToAdminPath={navigateToAdminPath}
+                  collapsedSections={collapsedSections}
+                  setCollapsedSections={setCollapsedSections}
+                />
                 <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}

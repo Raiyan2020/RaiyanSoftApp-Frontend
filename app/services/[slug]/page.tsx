@@ -10,6 +10,7 @@ import { createBreadcrumbJsonLd, createFaqJsonLd, createPublicMetadata, createSe
 import { getPublicWebsiteData } from '@/lib/websiteContentPublic';
 import { fetchLandingFaqs } from '@/features/landing-page';
 import { publicServices, type PublicService } from '@/lib/public-content';
+import { getServerLanguage } from '@/lib/language.server';
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -22,7 +23,7 @@ async function getServices() {
 }
 
 async function getFaqs() {
-  const { faqs } = await fetchLandingFaqs('ar');
+  const { faqs } = await fetchLandingFaqs(await getServerLanguage());
   return faqs.map((item) => ({ question: item.question, answer: item.answer }));
 }
 
