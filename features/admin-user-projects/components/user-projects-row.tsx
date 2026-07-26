@@ -3,6 +3,9 @@ import Link from 'next/link';
 import { Eye, LayoutGrid, Link as LinkIcon, Edit2 } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
 import { UserProject } from '@/lib/userProjectsStore';
+import { translateMessage } from '@/lib/i18n-utils';
+
+const capitalize = (value: string) => (value ? value.charAt(0).toUpperCase() + value.slice(1) : value);
 
 interface UserProjectsRowProps {
   project: UserProject;
@@ -40,28 +43,28 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
             </div>
           </div>
           <span className={`shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize border ${isCancelled ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
-            {project.status}
+            {translateMessage(capitalize(project.status))}
           </span>
         </div>
 
         {/* Details */}
         <div className="rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 py-2 flex flex-col gap-1.5">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[var(--text-muted)]">Owner</span>
+            <span className="text-[var(--text-muted)]">{translateMessage('Owner')}</span>
             <span className="font-medium text-[var(--text)] truncate max-w-[60%]">{project.ownerName}</span>
           </div>
           <div className="flex items-center justify-between text-xs">
-            <span className="text-[var(--text-muted)]">Pricing</span>
+            <span className="text-[var(--text-muted)]">{translateMessage('Pricing')}</span>
             <span className="font-medium text-[var(--text)]">{project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : '—'}</span>
           </div>
           {project.estimatedDuration ? (
             <div className="flex items-center justify-between text-xs">
-              <span className="text-[var(--text-muted)]">Duration</span>
-              <span className="font-medium text-[var(--text)]">{project.estimatedDuration} days</span>
+              <span className="text-[var(--text-muted)]">{translateMessage('Duration')}</span>
+              <span className="font-medium text-[var(--text)]">{project.estimatedDuration} {translateMessage('days')}</span>
             </div>
           ) : null}
           <div className="flex items-center justify-between text-xs pt-1 border-t border-[var(--border)]">
-            <span className="text-[var(--text-muted)]">Created</span>
+            <span className="text-[var(--text-muted)]">{translateMessage('Created')}</span>
             <span className="text-[var(--text-muted)]">{formatDate(project.createdAt)}</span>
           </div>
         </div>
@@ -73,7 +76,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
             className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-xs font-medium text-[var(--text)] hover:border-primary/30 hover:text-primary transition-colors"
           >
             <Eye size={14} />
-            View
+            {translateMessage('View')}
           </Link>
           {canEditProject ? (
             <button
@@ -82,7 +85,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
               className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-xs font-medium text-[var(--text)] hover:border-primary/30 hover:text-primary transition-colors"
             >
               <Edit2 size={14} />
-              Edit
+              {translateMessage('Edit')}
             </button>
           ) : null}
         </div>
@@ -123,7 +126,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
                 : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
             }`}
           >
-            {project.status}
+            {translateMessage(capitalize(project.status))}
           </span>
         </td>
         <td className="p-5">
@@ -132,7 +135,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
               {project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : '—'}
             </span>
             <span className="text-[var(--text-muted)] text-[10px]">
-              {project.estimatedDuration ? `${project.estimatedDuration} days` : '—'}
+              {project.estimatedDuration ? `${project.estimatedDuration} ${translateMessage('days')}` : '—'}
             </span>
           </div>
         </td>
@@ -146,12 +149,12 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
           </div>
         </td>
         <td className="p-5 text-[var(--text-muted)] text-xs">{formatDate(project.createdAt)}</td>
-        <td className="p-5 text-right">
+        <td className="p-5 text-end">
           <div className="flex items-center justify-end gap-2">
             <Link
               href={detailHref}
               className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 rounded-lg text-[var(--text-muted)] hover:text-primary transition-colors border border-[var(--border)] hover:border-primary/30"
-              title="Open operations"
+              title={translateMessage('Open operations')}
             >
               <Eye size={16} />
             </Link>
@@ -160,7 +163,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
                 type="button"
                 onClick={() => onEdit(project)}
                 className="p-2 bg-[var(--surface-3)] hover:bg-white/5 rounded-lg text-[var(--text-muted)] hover:text-primary transition-colors border border-[var(--border)] hover:border-primary/30"
-                title="Edit project"
+                title={translateMessage('Edit project')}
               >
                 <Edit2 size={16} />
               </button>

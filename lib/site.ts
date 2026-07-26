@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { translateMessage } from './i18n-utils';
 
 export const siteConfig = {
   name: 'ريان سوفت',
@@ -238,14 +239,14 @@ export function createServiceJsonLd(service: { title: string; description: strin
   };
 }
 
-export function createServiceCollectionJsonLd(services: { title: string; description: string; slug: string }[]) {
+export function createServiceCollectionJsonLd(services: { title: string; description: string; slug: string }[], language: 'ar' | 'en' = 'ar') {
   return createItemListJsonLd(
     services.map((service) => ({
       name: service.title,
       description: service.description,
       url: getCanonicalUrl(`/services/${service.slug}`),
     })),
-    'خدمات ريان سوفت',
+    translateMessage('Raiyan Soft services', language),
   );
 }
 
@@ -322,11 +323,11 @@ export function createLegalPageJsonLd(page: { title: string; description: string
   };
 }
 
-export function createOfferCatalogJsonLd(items: { name: string; description: string; features?: string[] }[]) {
+export function createOfferCatalogJsonLd(items: { name: string; description: string; features?: string[] }[], language: 'ar' | 'en' = 'ar') {
   return {
     '@context': 'https://schema.org',
     '@type': 'OfferCatalog',
-    name: 'باقات ريان سوفت',
+    name: translateMessage('Raiyan Soft packages', language),
     itemListElement: items.map((item) => ({
       '@type': 'Offer',
       name: item.name,
@@ -340,36 +341,36 @@ export function createOfferCatalogJsonLd(items: { name: string; description: str
   };
 }
 
-export function createReviewListJsonLd(items: { quote: string; author: string; role?: string; company?: string }[]) {
+export function createReviewListJsonLd(items: { quote: string; author: string; role?: string; company?: string }[], language: 'ar' | 'en' = 'ar') {
   return createItemListJsonLd(
     items.map((item) => ({
       name: item.author,
       description: item.quote,
       url: getCanonicalUrl('/testimonials'),
     })),
-    'آراء عملاء ريان سوفت',
+    translateMessage('Raiyan Soft customer reviews', language),
   );
 }
 
-export function createPeopleListJsonLd(items: { name?: string; title?: string; role?: string; bio?: string }[]) {
+export function createPeopleListJsonLd(items: { name?: string; title?: string; role?: string; bio?: string }[], language: 'ar' | 'en' = 'ar') {
   return createItemListJsonLd(
     items.map((item) => ({
       name: item.name || item.title || siteConfig.name,
       description: [item.role, item.bio].filter(Boolean).join(' - '),
       url: getCanonicalUrl('/team'),
     })),
-    'فريق ريان سوفت',
+    translateMessage('Raiyan Soft team', language),
   );
 }
 
-export function createJobPostingListJsonLd(items: { title: string; department?: string; location?: string; workType?: string; description: string }[]) {
+export function createJobPostingListJsonLd(items: { title: string; department?: string; location?: string; workType?: string; description: string }[], language: 'ar' | 'en' = 'ar') {
   return createItemListJsonLd(
     items.map((item) => ({
       name: item.title,
       description: [item.department, item.location, item.workType, item.description].filter(Boolean).join(' - '),
       url: getCanonicalUrl('/careers'),
     })),
-    'وظائف ريان سوفت',
+    translateMessage('Raiyan Soft jobs', language),
   );
 }
 

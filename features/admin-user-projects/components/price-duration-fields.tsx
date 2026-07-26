@@ -1,5 +1,6 @@
 import React from 'react';
 import { DollarSign, Clock } from 'lucide-react';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface PriceDurationFieldsProps {
   estimatedPrice: string | number;
@@ -26,32 +27,32 @@ export default function PriceDurationFields({
   return (
     <div className="grid grid-cols-2 gap-4">
       <div className="space-y-1">
-        <label className="text-xs font-medium text-[var(--text)] ml-1">Estimated Price (KWD)</label>
+        <label className="text-xs font-medium text-[var(--text)] ms-1">{translateMessage('Estimated Price (KWD)')}</label>
         <div className="relative">
-          <DollarSign size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+          <DollarSign size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <input
             type="number"
             value={estimatedPrice}
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, estimatedPrice: e.target.value }))
             }
-            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors"
-            placeholder="e.g. 1500"
+            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-9 pe-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors"
+            placeholder={translateMessage('e.g. 1500')}
           />
         </div>
       </div>
       <div className="space-y-1">
-        <label className="text-xs font-medium text-[var(--text)] ml-1">Est. Duration (Days)</label>
+        <label className="text-xs font-medium text-[var(--text)] ms-1">{translateMessage('Est. Duration (Days)')}</label>
         <div className="relative">
-          <Clock size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+          <Clock size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
           <input
             type="number"
             value={estimatedDuration}
             onChange={(e) =>
               setFormData((prev) => ({ ...prev, estimatedDuration: e.target.value }))
             }
-            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors"
-            placeholder="e.g. 21"
+            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-9 pe-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors"
+            placeholder={translateMessage('e.g. 21')}
           />
         </div>
       </div>

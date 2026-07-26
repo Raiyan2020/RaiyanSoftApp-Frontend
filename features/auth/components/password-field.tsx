@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import Input from '@/components/ui/input';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface PasswordFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label: string;
@@ -32,7 +33,7 @@ export default function PasswordField({
         type="button"
         onClick={() => setShowPassword(!showPassword)}
         className="absolute end-3 top-[34px] text-[var(--text-muted)] hover:text-[var(--text)] transition-colors p-1"
-        aria-label={showPassword ? 'Hide password' : 'Show password'}
+        aria-label={translateMessage(showPassword ? 'Hide password' : 'Show password')}
       >
         {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
       </button>

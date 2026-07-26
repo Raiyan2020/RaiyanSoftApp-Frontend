@@ -1,3 +1,4 @@
+import { translateMessage } from '@/lib/i18n-utils';
 import { AdminApiUser } from '../services/admin-users-api';
 import { AdminUser } from '../types/admin-user.types';
 
@@ -11,14 +12,14 @@ function splitName(user: AdminApiUser) {
   const fullName = user.full_name?.trim();
   if (!fullName) {
     return {
-      firstName: user.first_name || 'Unknown',
+      firstName: user.first_name || translateMessage('Unknown'),
       lastName: user.last_name || '',
     };
   }
 
   const [firstName, ...rest] = fullName.split(/\s+/);
   return {
-    firstName: firstName || 'Unknown',
+    firstName: firstName || translateMessage('Unknown'),
     lastName: rest.join(' '),
   };
 }
@@ -31,7 +32,7 @@ export function mapAdminApiUser(user: AdminApiUser): AdminUser {
     id: String(user.id),
     firstName,
     lastName,
-    email: user.email || 'No Email',
+    email: user.email || translateMessage('No Email'),
     phone: [user.country_code, user.phone].filter(Boolean).join(' ') || user.phone || '',
     role: 'Customer',
     status: user.is_block ? 'Disabled' : 'Active',

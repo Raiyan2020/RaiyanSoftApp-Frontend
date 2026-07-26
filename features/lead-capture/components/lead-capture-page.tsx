@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
 import { ProjectWizard } from '@/features/projects';
+import { translateMessage } from '@/lib/i18n-utils';
 import { useLeadCapture } from '../hooks/use-lead-capture';
 
 export default function LeadCapturePage() {
@@ -28,12 +29,13 @@ export default function LeadCapturePage() {
             <CheckCircle size={40} className="text-emerald-500" />
           </div>
           <h1 className="text-2xl font-bold mb-4">
-            {language === 'ar' ? 'تم استلام طلبك' : 'Request Received'}
+            {translateMessage('Request Received', language)}
           </h1>
           <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-6">
-            {language === 'ar'
-              ? 'شكراً لمشاركتك فكرتك. فريقنا يراجع تفاصيل مشروعك الآن وسيتواصل معك قريباً.'
-              : 'Thank you for sharing your vision. Our team is reviewing your project details and will contact you shortly.'}
+            {translateMessage(
+              'Thank you for sharing your vision. Our team is reviewing your project details and will contact you shortly.',
+              language
+            )}
           </p>
 
           {requestId ? (
@@ -43,7 +45,7 @@ export default function LeadCapturePage() {
               rel="noopener noreferrer"
               className="inline-flex items-center justify-center w-full bg-[#25D366] text-white font-bold py-4 px-6 rounded-xl shadow-[0_0_20px_rgba(37,211,102,0.3)] hover:shadow-[0_0_25px_rgba(37,211,102,0.5)] transition-all"
             >
-              {language === 'ar' ? 'اضغط هنا لتأكيد الطلب' : 'Click here to confirm your request'}
+              {translateMessage('Click here to confirm your request', language)}
             </a>
           ) : null}
         </motion.div>

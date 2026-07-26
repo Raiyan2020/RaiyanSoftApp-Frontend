@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService, User } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 import { useAuthGuard } from '@/lib/authGuardContext';
 import { guestStore } from '@/lib/guestStore';
 import { getUserDisplayName } from '@/lib/user-display';
@@ -22,7 +23,7 @@ export function useHome() {
   }, []);
 
   const isGuest = !currentUser && guestStore.isGuest;
-  const userName = currentUser ? getUserDisplayName(currentUser) : (isGuest ? t('home.guest') : 'User');
+  const userName = currentUser ? getUserDisplayName(currentUser) : (isGuest ? t('home.guest') : translateMessage('User'));
 
   const {
     projects,

@@ -153,6 +153,10 @@ export const translations = {
     "industry.Logistics & Shipping": "Logistics & Shipping",
     "industry.Other": "Other",
     "ref.None": "None",
+    "ref.Talabat": "Talabat",
+    "ref.4Sale": "4Sale",
+    "ref.Sheeel": "Sheeel",
+    "ref.Careem": "Careem",
 
     // SEO / system pages
     "seo.not_found_title": "Page not found",
@@ -425,6 +429,13 @@ export const translations = {
     "landing.nav.toggle_dark": "Toggle Dark Mode",
     "landing.nav.menu": "Menu",
     "landing.nav.language": "Language",
+    "landing.nav.projects_tab": "Projects",
+    "landing.nav.meetings_tab": "Meetings",
+    "landing.nav.notifications_hint": "Click any notification to open its details",
+    "landing.nav.mark_complete": "Mark complete",
+    "landing.nav.view_all_notifications": "View all notifications",
+    "landing.nav.user_menu": "User menu",
+    "landing.nav.mobile_menu_options": "Mobile Menu Options",
     "profile.title": "Profile",
     "admin.landing.faqs": "FAQs",
     "admin.landing.add_faq": "Add FAQ",
@@ -584,6 +595,10 @@ export const translations = {
     "industry.Logistics & Shipping": "لوجستيات وشحن",
     "industry.Other": "أخرى",
     "ref.None": "لا يوجد",
+    "ref.Talabat": "طلبات",
+    "ref.4Sale": "4Sale",
+    "ref.Sheeel": "شيول",
+    "ref.Careem": "كريم",
 
     // SEO / system pages
     "seo.not_found_title": "الصفحة غير موجودة",
@@ -861,6 +876,13 @@ export const translations = {
     "landing.nav.toggle_dark": "تبديل الوضع الليلي",
     "landing.nav.menu": "القائمة",
     "landing.nav.language": "اللغة",
+    "landing.nav.projects_tab": "المشاريع",
+    "landing.nav.meetings_tab": "المواعيد",
+    "landing.nav.notifications_hint": "اضغط على أي إشعار لفتح تفاصيله",
+    "landing.nav.mark_complete": "تمييز كمكتمل",
+    "landing.nav.view_all_notifications": "عرض كل الإشعارات",
+    "landing.nav.user_menu": "قائمة المستخدم",
+    "landing.nav.mobile_menu_options": "خيارات القائمة على الجوال",
     "profile.title": "الملف الشخصي"
   }
 };

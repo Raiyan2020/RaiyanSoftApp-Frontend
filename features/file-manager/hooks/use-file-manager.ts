@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { globalConfirm } from '@/lib/confirm-dialog';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export interface UploadedFile {
   id: string;
@@ -39,10 +40,10 @@ export function useFileManager() {
 
   const handleDelete = async (_file: UploadedFile) => {
     const confirmed = await globalConfirm.confirm({
-      title: 'Delete file?',
+      title: translateMessage('Delete file?'),
       message: t('files.delete_confirm'),
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      confirmText: translateMessage('Delete'),
+      cancelText: translateMessage('Cancel'),
       destructive: true,
     });
     if (!confirmed) return;

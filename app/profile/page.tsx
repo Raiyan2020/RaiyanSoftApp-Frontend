@@ -21,6 +21,7 @@ import { useUserProfile } from '@/features/profile/hooks/use-user-profile';
 import ErrorAlert from '@/components/ui/error-alert';
 import { logoutUser } from '@/features/auth/services/user-auth-api';
 import { guestStore } from '@/lib/guestStore';
+import { translateMessage } from '@/lib/i18n-utils';
 
 type ProfileTab = 'all' | ProfileRecordType | 'chat';
 
@@ -269,7 +270,7 @@ export default function ProfilePage() {
 
               <nav
                 className="flex flex-row gap-1 overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-1 no-scrollbar lg:flex-col lg:overflow-visible"
-                aria-label="Profile sections"
+                aria-label={translateMessage('Profile sections')}
                 dir={dir}
               >
                 {tabs.map((tab) => {

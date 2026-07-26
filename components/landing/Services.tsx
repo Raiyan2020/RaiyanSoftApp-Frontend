@@ -61,7 +61,7 @@ export default function Services({ homeData }: ServicesProps) {
                     className="reveal group relative overflow-hidden rounded-[1.75rem] border border-cyan-950/10 bg-white p-5 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-primary/30 hover:shadow-[var(--shadow-glow)] dark:border-white/10 dark:bg-white/5 sm:p-7 lg:rounded-[2rem] lg:p-8"
                     style={{ transitionDelay: `${i * 0.08}s` }}
                   >
-                    <div className={`absolute -left-12 -top-12 h-40 w-40 rounded-full bg-gradient-to-br ${gradient} opacity-15 blur-2xl transition-opacity duration-500 group-hover:opacity-25`} />
+                    <div className={`absolute -start-12 -top-12 h-40 w-40 rounded-full bg-gradient-to-br ${gradient} opacity-15 blur-2xl transition-opacity duration-500 group-hover:opacity-25`} />
                     <div className="relative z-10 flex h-full flex-col gap-4 sm:gap-6 lg:gap-7">
                       <div className="flex items-start justify-between gap-4">
                         <div>
@@ -107,7 +107,7 @@ export default function Services({ homeData }: ServicesProps) {
                   className="reveal group relative overflow-hidden rounded-[1.75rem] border border-cyan-950/10 bg-white p-5 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-primary/30 hover:shadow-[var(--shadow-glow)] dark:border-white/10 dark:bg-white/5 sm:p-7 lg:rounded-[2rem] lg:p-8"
                   style={{ transitionDelay: `${i * 0.08}s` }}
                 >
-                  <div className={`absolute -left-12 -top-12 h-40 w-40 rounded-full bg-gradient-to-br ${service.gradient} opacity-15 blur-2xl transition-opacity duration-500 group-hover:opacity-25`} />
+                  <div className={`absolute -start-12 -top-12 h-40 w-40 rounded-full bg-gradient-to-br ${service.gradient} opacity-15 blur-2xl transition-opacity duration-500 group-hover:opacity-25`} />
                   <div className="relative z-10 flex h-full flex-col gap-4 sm:gap-6 lg:gap-7">
                     <div className="flex items-start justify-between gap-4">
                       <div>

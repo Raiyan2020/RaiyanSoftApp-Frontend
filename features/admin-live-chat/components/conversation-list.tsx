@@ -34,7 +34,7 @@ export default function ConversationList({
           <h2 className="text-[var(--text)] font-bold text-lg flex items-center gap-2">
             <MessageCircle size={20} className="text-primary" />
             {translateMessage('Inbox')}
-            <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full ml-auto">
+            <span className="text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full ms-auto">
               {conversations.length}
             </span>
           </h2>
@@ -51,13 +51,13 @@ export default function ConversationList({
         </div>
 
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={16} />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={16} />
           <input
             type="text"
             placeholder={translateMessage('Search customers...')}
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl py-2 pl-9 pr-3 text-sm text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
+            className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl py-2 ps-9 pe-3 text-sm text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
           />
         </div>
       </div>

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { fetchAdminMeetings } from '../services/admin-meetings-api';
 import { AdminMeeting, AdminMeetingsFilters, MeetingsPagination } from '@/features/meetings';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export function useAdminMeetingsList(filters: AdminMeetingsFilters) {
   const [meetings, setMeetings] = useState<AdminMeeting[]>([]);
@@ -19,7 +20,7 @@ export function useAdminMeetingsList(filters: AdminMeetingsFilters) {
       setMeetings(result.meetings);
       setPagination(result.pagination);
     } catch (err: any) {
-      setError(err.message || 'Failed to load meetings.');
+      setError(translateMessage(err.message || 'Failed to load meetings.'));
       setMeetings([]);
       setPagination(null);
     } finally {

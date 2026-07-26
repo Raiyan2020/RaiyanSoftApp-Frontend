@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface SafeImageProps extends React.ImgHTMLAttributes<HTMLImageElement> {
   fallbackSrc?: string;
@@ -46,7 +47,7 @@ export default function SafeImage({
     <div className={`relative ${className || ''}`} style={{ overflow: 'hidden' }}>
       <Image
         src={finalSrc}
-        alt={alt || 'Image'}
+        alt={alt || translateMessage('Image')}
         fill
         className="object-cover"
         onError={handleError}

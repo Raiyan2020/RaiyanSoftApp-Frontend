@@ -79,7 +79,7 @@ export function useProjectWizard({
   const generateAndSetDescription = () => {
     const parts: string[] = [];
     const industryKey = `industry.${formData.industry}`;
-    const industryText = formData.industry === 'Other' ? formData.industryOther || 'custom' : t(industryKey);
+    const industryText = formData.industry === 'Other' ? formData.industryOther || (dir === 'rtl' ? 'مخصص' : 'custom') : t(industryKey);
     const serviceKey = `service.${formData.serviceModel}`;
     const serviceText = t(serviceKey);
 
@@ -270,8 +270,9 @@ export function useProjectWizard({
       onComplete(requestId);
     } catch (e: any) {
       console.error(e);
-      let msg = 'Failed to create project.';
+      let msg = t('Failed to create project.');
       if (e.code === 'auth/email-already-in-use') msg = t('auth.email_in_use');
+      else if (e.message === 'Please sign in before creating a project.') msg = t('Please sign in before creating a project.');
       else if (e.message) msg = e.message;
       setErrors([msg]);
     } finally {

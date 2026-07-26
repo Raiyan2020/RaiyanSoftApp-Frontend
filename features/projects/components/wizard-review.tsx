@@ -172,11 +172,15 @@ export default function WizardReview({
               <option value="" disabled>
                 {t('wizard.select_option')}
               </option>
-              {closestAppsList.map((app) => (
-                <option key={app} value={app}>
-                  {t(`ref.${app}`)}
-                </option>
-              ))}
+              {closestAppsList.map((app) => {
+                const translated = t(`ref.${app}`);
+                const label = translated === `ref.${app}` ? app : translated;
+                return (
+                  <option key={app} value={app}>
+                    {label}
+                  </option>
+                );
+              })}
             </select>
           </div>
           <div className="grid grid-cols-2 gap-4">

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export function useLeadCapture() {
   const router = useRouter();
@@ -18,7 +19,7 @@ export function useLeadCapture() {
 
   const getWhatsAppLink = () => {
     if (!requestId) return '';
-    const text = language === 'ar' ? `تأكيد طلب رقم ${requestId}` : `Confirm request #${requestId}`;
+    const text = translateMessage('Confirm request #{id}', language).replace('{id}', requestId);
     const encodedText = encodeURIComponent(text);
     return `https://wa.me/96560070353?text=${encodedText}`;
   };

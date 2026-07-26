@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 import {
   AdminFormQuestion,
   AdminFormQuestionOption,
@@ -115,7 +116,7 @@ function normalizeQuestion(question: AdminFormQuestion, index: number): ProjectQ
 
   return {
     id: String(question.id),
-    label: readTranslatedValue(question.name, 'en') || 'Untitled question',
+    label: readTranslatedValue(question.name, 'en') || translateMessage('Untitled question'),
     labelAr: readTranslatedValue(question.name, 'ar'),
     type: mapApiType(question.type, question.options),
     options,

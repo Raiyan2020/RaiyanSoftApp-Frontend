@@ -207,7 +207,7 @@ function QuestionRow({
         >
           <GripVertical size={16} />
         </button>
-        <button type="button" onClick={() => onEdit(question)} className="text-left min-w-0 flex-1">
+        <button type="button" onClick={() => onEdit(question)} className="text-start min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <h3 className="text-sm font-bold text-[var(--text)] break-words">{question.label}</h3>
             <span className="text-[10px] text-[var(--text)] bg-[var(--surface-3)] border border-[var(--border)] rounded-full px-2 py-0.5">

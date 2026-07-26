@@ -1,4 +1,6 @@
 import { apiService, ApiResponse, getApiBaseUrl } from '@/lib/api-service';
+import type { AppLanguage } from '@/lib/language';
+import { translateMessage } from '@/lib/i18n-utils';
 import {
   AboutUsPage,
   PrivacyPolicyPage,
@@ -20,10 +22,10 @@ export function getPageApiSlug(slug: PageSlug) {
   return slug === 'terms-conditions' ? 'terms-and-conditions' : slug;
 }
 
-async function fetchPageJson<T>(path: string): Promise<T> {
+async function fetchPageJson<T>(path: string, language: AppLanguage = 'ar'): Promise<T> {
   const response = await fetch(`${getApiBaseUrl()}/${path.replace(/^\//, '')}`, {
-    headers: { Accept: 'application/json' },
-    next: { revalidate: 60 },
+    headers: { Accept: 'application/json', 'Accept-Language': language },
+    cache: 'no-store',
   });
 
   const data = (await response.json()) as ApiResponse<T>;
@@ -71,16 +73,16 @@ export async function fetchAboutUs() {
   return response.data;
 }
 
-export function fetchPrivacyPolicyServer() {
-  return fetchPageJson<PrivacyPolicyPage>('user/pages/privacy-policy');
+export function fetchPrivacyPolicyServer(language: AppLanguage = 'ar') {
+  return fetchPageJson<PrivacyPolicyPage>('user/pages/privacy-policy', language);
 }
 
-export function fetchTermsConditionsServer() {
-  return fetchPageJson<TermsConditionsPage>(`user/pages/${getPageApiSlug('terms-conditions')}`);
+export function fetchTermsConditionsServer(language: AppLanguage = 'ar') {
+  return fetchPageJson<TermsConditionsPage>(`user/pages/${getPageApiSlug('terms-conditions')}`, language);
 }
 
-export function fetchAboutUsServer() {
-  return fetchPageJson<AboutUsPage>('user/pages/about-us');
+export function fetchAboutUsServer(language: AppLanguage = 'ar') {
+  return fetchPageJson<AboutUsPage>('user/pages/about-us', language);
 }
 
 type AdminPageResponse = {
@@ -119,7 +121,7 @@ export async function fetchAdminPrivacyPolicy(): Promise<SimplePageForm> {
 export async function fetchAdminTermsConditions(): Promise<SimplePageForm> {
   const page = await fetchAdminPage('terms-conditions');
   return {
-    title: readLocalizedValue(page.title) || 'Terms and Conditions',
+    title: readLocalizedValue(page.title) || translateMessage('Terms and Conditions'),
     description: readLocalizedValue(page.description),
   };
 }

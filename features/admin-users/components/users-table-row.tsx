@@ -3,6 +3,7 @@ import { Mail, Phone, Eye, Ban, CheckCircle, Trash2 } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
 import { FEATURES } from '@/lib/feature-flags';
 import { AdminUser } from '../types/admin-user.types';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface UsersTableRowProps {
   user: AdminUser;
@@ -28,7 +29,7 @@ export default function UsersTableRow({
             <div className="font-medium text-[var(--text)]">
               {user.firstName} {user.lastName}
             </div>
-            <div className="text-[var(--text-muted)] text-xs">ID: {user.userCode || user.id}</div>
+            <div className="text-[var(--text-muted)] text-xs">{translateMessage('ID')}: {user.userCode || user.id}</div>
           </div>
         </div>
       </td>
@@ -38,7 +39,7 @@ export default function UsersTableRow({
             <Mail size={12} className="text-[var(--text-muted)]" /> {user.email}
           </span>
           <span className="flex items-center gap-1.5">
-            <Phone size={12} className="text-[var(--text-muted)]" /> {user.phone || 'N/A'}
+            <Phone size={12} className="text-[var(--text-muted)]" /> {user.phone || translateMessage('N/A')}
           </span>
         </div>
       </td>
@@ -50,7 +51,7 @@ export default function UsersTableRow({
               : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
           }`}
         >
-          {user.role}
+          {translateMessage(user.role)}
         </span>
       </td>
       <td className="p-5">
@@ -60,17 +61,17 @@ export default function UsersTableRow({
               user.status === 'Active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500'
             }`}
           />
-          <span className={user.status === 'Active' ? 'text-[var(--text)]' : 'text-[var(--text-muted)]'}>{user.status}</span>
+          <span className={user.status === 'Active' ? 'text-[var(--text)]' : 'text-[var(--text-muted)]'}>{translateMessage(user.status)}</span>
         </div>
       </td>
       <td className="p-5 text-[var(--text-muted)]">{formatDate(user.registeredAt)}</td>
-      <td className="p-5 text-right">
+      <td className="p-5 text-end">
         <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             type="button"
             onClick={() => onSelectUser(user)}
             className="p-2 hover:bg-white/5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
-            title="View Details"
+            title={translateMessage('View Details')}
           >
             <Eye size={16} />
           </button>
@@ -80,7 +81,7 @@ export default function UsersTableRow({
             className={`p-2 hover:bg-white/5 rounded-lg transition-colors ${
               user.status === 'Active' ? 'text-amber-400 hover:text-amber-300' : 'text-emerald-400 hover:text-emerald-300'
             }`}
-            title={user.status === 'Active' ? 'Disable Account' : 'Enable Account'}
+            title={translateMessage(user.status === 'Active' ? 'Disable Account' : 'Enable Account')}
           >
             {user.status === 'Active' ? <Ban size={16} /> : <CheckCircle size={16} />}
           </button>
@@ -89,7 +90,7 @@ export default function UsersTableRow({
               type="button"
               onClick={() => onDeleteUser(user.id)}
               className="p-2 hover:bg-red-500/10 rounded-lg text-[var(--text-muted)] hover:text-red-400 transition-colors"
-              title="Delete User"
+              title={translateMessage('Delete User')}
             >
               <Trash2 size={16} />
             </button>

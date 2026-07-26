@@ -5,6 +5,7 @@ import { PublicField, PublicFormStatus, publicInputClass } from './public-form-f
 import { trackPublicEvent } from '@/lib/analytics';
 import { leadStore } from '@/lib/leadStore';
 import PhoneInput from '@/components/ui/phone-input';
+import { translateMessage } from '@/lib/i18n-utils';
 
 type PublicInquiryFormProps = {
   mode: 'contact' | 'quote';
@@ -20,10 +21,10 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
 
   const validate = (formData: FormData) => {
     const nextErrors: Record<string, string> = {};
-    if (!String(formData.get('name') || '').trim()) nextErrors.name = 'اكتب الاسم الكامل.';
-    if (!String(formData.get('email') || '').includes('@')) nextErrors.email = 'اكتب بريد إلكتروني صحيح.';
-    if (!phone.trim()) nextErrors.phone = 'اكتب رقم الجوال.';
-    if (!String(formData.get('message') || '').trim()) nextErrors.message = 'اكتب تفاصيل الطلب.';
+    if (!String(formData.get('name') || '').trim()) nextErrors.name = 'Full name is required';
+    if (!String(formData.get('email') || '').includes('@')) nextErrors.email = 'Please enter a valid email';
+    if (!phone.trim()) nextErrors.phone = 'Phone number is required';
+    if (!String(formData.get('message') || '').trim()) nextErrors.message = 'Message is required';
     return nextErrors;
   };
 
@@ -61,7 +62,7 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
       trackPublicEvent('form_submit', { form: mode, service: 'general' });
       setSubmitted(true);
     } catch (error) {
-      setSubmitError(error instanceof Error ? error.message : 'تعذر إرسال النموذج حاليا.');
+      setSubmitError(error instanceof Error ? error.message : 'Unable to submit the form right now.');
       trackPublicEvent('form_submit_error', { form: mode });
     } finally {
       setSubmitting(false);
@@ -72,7 +73,7 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
     return (
       <PublicFormStatus
         type="success"
-        message="تم تجهيز نموذج الإرسال بنجاح. سيتم ربط هذا النموذج بالتخزين الفعلي في Phase D."
+        message="Your request has been submitted successfully. Our team will contact you shortly."
       />
     );
   }
@@ -80,24 +81,24 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
   return (
     <form onSubmit={onSubmit} onFocus={onStart} className="space-y-5 rounded-lg border border-cyan-950/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
       {submitError ? <PublicFormStatus type="error" message={submitError} /> : null}
-      {submitting ? <PublicFormStatus type="loading" message="جار إرسال الطلب..." /> : null}
+      {submitting ? <PublicFormStatus type="loading" message="Submitting..." /> : null}
       <div className="grid gap-5 sm:grid-cols-2">
-        <PublicField id="name" label="الاسم الكامل" required error={errors.name}>
+        <PublicField id="name" label="Full Name" required error={errors.name}>
           <input id="name" name="name" className={publicInputClass} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? 'name-error' : undefined} />
         </PublicField>
-        <PublicField id="email" label="البريد الإلكتروني" required error={errors.email}>
+        <PublicField id="email" label="Email Address" required error={errors.email}>
           <input id="email" name="email" type="email" dir="ltr" className={publicInputClass} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'email-error' : undefined} />
         </PublicField>
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
-        <PublicField id="phone" label="رقم الجوال" required error={errors.phone}>
+        <PublicField id="phone" label="Phone Number" required error={errors.phone}>
           <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} required />
         </PublicField>
-        <PublicField id="topic" label="الموضوع">
+        <PublicField id="topic" label="Subject">
           <input id="topic" name="topic" className={publicInputClass} />
         </PublicField>
       </div>
-      <PublicField id="message" label={mode === 'quote' ? 'تفاصيل المشروع' : 'الرسالة'} required error={errors.message}>
+      <PublicField id="message" label={mode === 'quote' ? 'Project Details' : 'Message'} required error={errors.message}>
         <textarea
           id="message"
           name="message"
@@ -112,7 +113,7 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
         disabled={submitting}
         className="w-full rounded-lg bg-primary px-5 py-3 text-sm font-black text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
       >
-        {submitting ? 'جار الإرسال...' : mode === 'quote' ? 'إرسال طلب عرض السعر' : 'إرسال الرسالة'}
+        {translateMessage(submitting ? 'Submitting...' : mode === 'quote' ? 'Send Quote Request' : 'Send Message')}
       </button>
     </form>
   );

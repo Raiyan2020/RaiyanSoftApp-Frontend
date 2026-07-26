@@ -26,7 +26,7 @@ export default function TabIconWithBadge({ icon: Icon, isActive, badgeCount }: T
             initial={false}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
-            className="absolute -top-1 -right-1.5 rtl:-left-1.5 rtl:right-auto z-10 flex items-center justify-center min-w-[18px] h-[18px] bg-red-500 rounded-full border-2 border-[var(--surface)] px-1 pointer-events-none"
+            className="absolute -top-1 -end-1.5 z-10 flex items-center justify-center min-w-[18px] h-[18px] bg-red-500 rounded-full border-2 border-[var(--surface)] px-1 pointer-events-none"
           >
             <span className="text-[10px] font-bold text-[var(--text)] leading-none">
               {badgeCount > 99 ? '99+' : badgeCount}

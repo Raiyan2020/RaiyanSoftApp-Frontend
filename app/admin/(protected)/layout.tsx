@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import AdminLayout from '@/components/layout/admin-layout';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/auth-service';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminProtectedLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function AdminProtectedLayout({ children }: { children: React.Rea
 
   if (isChecking) {
     return (
-      <div className="h-screen w-full bg-[var(--bg)] flex items-center justify-center text-[var(--text)]">Loading...</div>
+      <div className="h-screen w-full bg-[var(--bg)] flex items-center justify-center text-[var(--text)]">{translateMessage('Loading...')}</div>
     );
   }
 

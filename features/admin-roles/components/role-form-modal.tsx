@@ -69,7 +69,7 @@ export default function RoleFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Role Name <span className="text-red-400">*</span></FieldLabel>
+                  <FieldLabel>{translateMessage('Role Name')} <span className="text-red-400">*</span></FieldLabel>
                   <input
                     {...field}
                     type="text"

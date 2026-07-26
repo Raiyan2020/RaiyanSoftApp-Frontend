@@ -1,3 +1,4 @@
+import { translateMessage } from '@/lib/i18n-utils';
 import { StoredProject } from '../types/form-question.types';
 
 export type UserProjectStage = {
@@ -79,7 +80,7 @@ export function mapStoredProject(project: StoredProject): UserProjectView {
 
   return {
     id: String(project.id),
-    name: project.project_name || `Project #${project.id}`,
+    name: project.project_name || translateMessage('Project #{id}').replace('{id}', String(project.id)),
     description: buildDescription(project),
     estimatedPrice: null,
     estimatedDuration: null,
@@ -103,7 +104,7 @@ export function mapStoredProject(project: StoredProject): UserProjectView {
     })),
     stages: (extraProject.stages || []).map((stage, index) => ({
       id: String(stage.id ?? `stage-${index}`),
-      title: stage.title || `Step ${index + 1}`,
+      title: stage.title || translateMessage('Step {n}').replace('{n}', String(index + 1)),
       description: stage.description || '',
       assignedTo: stage.assignedTo || '',
       estimatedDays: stage.estimatedDays ?? null,
@@ -125,7 +126,7 @@ export function mapStoredProject(project: StoredProject): UserProjectView {
       clientVisible: Boolean(report.clientVisible),
       createdAt: report.createdAt ?? Date.now(),
       updatedAt: report.updatedAt ?? Date.now(),
-      createdByName: report.createdByName || 'Team',
+      createdByName: report.createdByName || translateMessage('Team'),
       sentAt: report.sentAt ?? null,
     })),
   };

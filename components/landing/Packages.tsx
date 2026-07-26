@@ -29,7 +29,7 @@ export default function Packages({ homeData }: PackagesProps) {
 
   return (
     <section id="packages" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
-      <div className="pointer-events-none absolute left-0 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute start-0 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className={`reveal mb-10 grid gap-6 lg:mb-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end`}>
           <div className={`space-y-4 ${textAlign}`}>

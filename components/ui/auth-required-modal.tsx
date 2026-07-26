@@ -65,7 +65,7 @@ export default function AuthRequiredModal({ isOpen, onClose, redirectTo }: AuthR
               <button
                 type="button"
                 onClick={onClose}
-                className="absolute top-4 right-4 rtl:right-auto rtl:left-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+                className="absolute top-4 end-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
               >
                 <X size={20} />
               </button>

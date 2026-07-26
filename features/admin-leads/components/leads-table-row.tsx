@@ -4,6 +4,7 @@ import { useTranslation } from '@/lib/i18nContext';
 import Avatar from '@/components/ui/avatar';
 import { AdminLeadListItem, LEAD_STATUS, LeadStatusCode } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusCode, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
+import { LEAD_APPROVAL_WHATSAPP_MESSAGE } from '../utils/whatsapp-template';
 
 interface LeadsTableRowProps {
   lead: AdminLeadListItem;
@@ -22,9 +23,7 @@ export default function LeadsTableRow({
 }: LeadsTableRowProps) {
   const { t, language } = useTranslation();
   const waDigits = toWhatsAppDigits(lead.user.full_phone);
-  const waMessage =
-    'السلام عليكم ورحمة الله وبركاته\nحضرتك قدمت عندنا طلب تطبيق ، طلبك مقبول ان شاء الله ممكن تفاصيل اكثر عن المشروع';
-  const encodedWaMessage = encodeURIComponent(waMessage);
+  const encodedWaMessage = encodeURIComponent(LEAD_APPROVAL_WHATSAPP_MESSAGE);
 
   const waUrl = waDigits
     ? `https://web.whatsapp.com/send/?phone=${waDigits}&text=${encodedWaMessage}&type=phone_number&app_absent=0`
@@ -72,14 +71,14 @@ export default function LeadsTableRow({
             {isUpdatingStatus ? (
               <Loader2
                 size={14}
-                className="pointer-events-none absolute top-1/2 -translate-y-1/2 animate-spin text-primary ltr:right-2 rtl:left-2"
+                className="pointer-events-none absolute top-1/2 -translate-y-1/2 animate-spin text-primary end-2"
               />
             ) : null}
           </div>
         </div>
       </td>
       <td className="p-5 text-[var(--text-muted)] text-xs">{lead.date}</td>
-      <td className="p-5 text-right">
+      <td className="p-5 text-end">
         <div className="flex items-center justify-end gap-2">
           <a
             href={waUrl || undefined}

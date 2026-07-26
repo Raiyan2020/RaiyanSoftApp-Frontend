@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { rejectAdminMeeting } from '../services/admin-meetings-api';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export function useRejectMeeting() {
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ export function useRejectMeeting() {
       return await rejectAdminMeeting(id);
     } catch (err: any) {
       const message = err.message || 'Failed to reject meeting.';
-      setError(message);
+      setError(translateMessage(message));
       throw err;
     } finally {
       setLoading(false);

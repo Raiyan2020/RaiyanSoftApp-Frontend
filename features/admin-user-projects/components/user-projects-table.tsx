@@ -36,7 +36,7 @@ export default function UserProjectsTable({
       ) : (
         <>
           <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-left border-collapse">
+            <table className="w-full text-start border-collapse">
               <thead>
                 <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
                   <th className="p-5 font-medium">{translateMessage('Project')}</th>
@@ -44,7 +44,7 @@ export default function UserProjectsTable({
                   <th className="p-5 font-medium">{translateMessage('Pricing')}</th>
                   <th className="p-5 font-medium">{translateMessage('Customer')}</th>
                   <th className="p-5 font-medium">{translateMessage('Created')}</th>
-                  <th className="p-5 font-medium text-right">{translateMessage('Actions')}</th>
+                  <th className="p-5 font-medium text-end">{translateMessage('Actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-sm">

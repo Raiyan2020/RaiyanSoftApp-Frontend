@@ -33,7 +33,7 @@ export default function AdminLoginPage() {
     <div className="min-h-screen w-full flex items-center justify-center bg-[var(--bg)] relative overflow-hidden">
       <AdminLoginRedirect />
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-50" />
+        <div className="absolute -top-1/2 -start-1/2 w-[200%] h-[200%] bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent opacity-50" />
       </div>
 
       <div className="w-full max-w-xl p-6 relative z-10 sm:max-w-2xl">
@@ -43,7 +43,7 @@ export default function AdminLoginPage() {
               <SafeImage
                 src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
                 className="w-10 h-10 object-contain"
-                alt="Raiyansoft Logo"
+                alt={translateMessage('Raiyansoft Logo')}
               />
             </div>
             <h1 className="text-2xl font-bold text-[var(--text)]">{translateMessage('Admin Access')}</h1>
@@ -107,7 +107,7 @@ export default function AdminLoginPage() {
               ) : (
                 <>
                   <span>{translateMessage('Sign In')}</span>
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform rtl:rotate-180" />
                 </>
               )}
             </button>

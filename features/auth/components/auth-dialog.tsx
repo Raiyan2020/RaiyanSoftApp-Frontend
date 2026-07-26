@@ -10,6 +10,7 @@ import PhoneInput from '@/components/ui/phone-input';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 import { usePhoneAuth } from '../hooks/use-phone-auth';
 
 interface AuthDialogProps {
@@ -95,7 +96,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
 
   const activeError = localError || error;
   const needsNameBeforeOtp = Boolean(isNewUser && !newUserOtpSent);
-  const sendOtpLabel = dir === 'rtl' ? 'إنشاء الحساب وإرسال رمز التحقق' : 'Create account and send OTP';
+  const sendOtpLabel = translateMessage('Create account and send OTP');
 
   return (
     <AnimatePresence>
@@ -119,7 +120,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 rtl:right-auto rtl:left-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+              className="absolute top-4 end-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
               aria-label={t('auth.close')}
             >
               <X size={20} />
@@ -222,9 +223,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
 
                 {needsNameBeforeOtp ? (
                   <div className="rounded-xl border border-primary/20 bg-primary/10 p-3 text-start text-xs font-medium leading-5 text-primary">
-                    {dir === 'rtl'
-                      ? 'بعد إدخال الاسم اضغط الزر بالأسفل وسنرسل رمز التحقق إلى هاتفك.'
-                      : 'After entering your name, press the button below and we will send the OTP to your phone.'}
+                    {translateMessage('After entering your name, press the button below and we will send the OTP to your phone.')}
                   </div>
                 ) : (
                   <Input

@@ -7,6 +7,8 @@ import SectionShell from '@/components/public/section-shell';
 import JsonLd from '@/components/public/json-ld';
 import { createCollectionPageJsonLd, createItemListJsonLd, getCanonicalUrl, createPublicMetadata } from '@/lib/site';
 import { fetchPublicBlogCategory, fetchPublicBlogCategoryBlogs, fetchPublicBlogCategories } from '@/features/blog/services/blog-api';
+import { translateMessage } from '@/lib/i18n-utils';
+import { getServerLanguage } from '@/lib/language.server';
 
 export async function generateStaticParams() {
   const categories = await fetchPublicBlogCategories();
@@ -15,30 +17,38 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: { params: { slug: string } }): Promise<Metadata> {
   const { slug } = params;
-  const category = await fetchPublicBlogCategory(slug);
+  const language = await getServerLanguage();
+  const category = await fetchPublicBlogCategory(slug, language);
 
   if (!category) {
-    return createPublicMetadata({ title: 'التصنيف غير موجود', description: 'التصنيف غير موجود', path: '/blogs/categories' });
+    return createPublicMetadata({
+      title: translateMessage('Category Not Found', language),
+      description: translateMessage('Category Not Found', language),
+      path: '/blogs/categories',
+    });
   }
 
   return createPublicMetadata({
     title: category.title,
-    description: `مقالات ضمن تصنيف ${category.title}`,
+    description: translateMessage('Articles in the {category} category', language).replace('{category}', category.title),
     path: `/blogs/categories/${slug}`,
   });
 }
 
 export default async function BlogCategoryPage({ params }: { params: { slug: string } }) {
   const { slug } = params;
-  const category = await fetchPublicBlogCategory(slug);
-  const categoryPosts = await fetchPublicBlogCategoryBlogs(slug);
+  const language = await getServerLanguage();
+  const tt = (message: string) => translateMessage(message, language);
+  const category = await fetchPublicBlogCategory(slug, language);
+  const categoryPosts = await fetchPublicBlogCategoryBlogs(slug, language);
   const categoryTitle = category?.title || '';
+  const articlesInCategory = tt('Articles in the {category} category').replace('{category}', categoryTitle);
 
   if (!category) notFound();
 
   return (
-    <PublicLayout seo={{ title: categoryTitle, description: `مقالات ضمن تصنيف ${categoryTitle}`, path: `/blogs/categories/${slug}` }}>
-      <JsonLd id={`blog-category-collection-${slug}`} data={createCollectionPageJsonLd({ title: categoryTitle, description: `مقالات ضمن تصنيف ${categoryTitle}`, path: `/blogs/categories/${slug}` })} />
+    <PublicLayout seo={{ title: categoryTitle, description: articlesInCategory, path: `/blogs/categories/${slug}` }}>
+      <JsonLd id={`blog-category-collection-${slug}`} data={createCollectionPageJsonLd({ title: categoryTitle, description: articlesInCategory, path: `/blogs/categories/${slug}` })} />
       <JsonLd
         id={`blog-category-list-${slug}`}
         data={createItemListJsonLd(
@@ -52,18 +62,18 @@ export default async function BlogCategoryPage({ params }: { params: { slug: str
       />
 
       <PageHero
-        eyebrow="المدونة"
+        eyebrow={tt('Blog')}
         title={category.title}
-        description={`مقالات مرتبطة بتصنيف ${category.title}.`}
+        description={tt('Articles related to the {category} category.').replace('{category}', category.title)}
         breadcrumbs={[
-          { label: 'الرئيسية', href: '/' },
-          { label: 'المدونة', href: '/blogs' },
-          { label: 'التصنيفات', href: '/blogs/categories' },
+          { label: tt('Home'), href: '/' },
+          { label: tt('Blog'), href: '/blogs' },
+          { label: tt('Categories'), href: '/blogs/categories' },
           { label: category.title, href: `/blogs/categories/${slug}` },
         ]}
       />
 
-      <SectionShell title="المقالات" description="كل المقالات المرتبطة بهذا التصنيف.">
+      <SectionShell title={tt('Articles')} description={tt('All articles related to this category.')}>
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {categoryPosts.map((post) => (
             <Link

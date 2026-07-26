@@ -5,6 +5,7 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { claimSchema, ClaimValues } from '../schemas/claim.schema';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface ClaimFormProps {
   status: string;
@@ -134,7 +135,7 @@ export default function ClaimForm({ status, onSubmit, t }: ClaimFormProps) {
         disabled={status === 'claiming'}
         className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all mt-6 flex items-center justify-center gap-2"
       >
-        {status === 'claiming' ? <Loader2 className="animate-spin" /> : 'Create Account & Claim'}
+        {status === 'claiming' ? <Loader2 className="animate-spin" /> : translateMessage('Create Account & Claim')}
       </button>
     </form>
   );

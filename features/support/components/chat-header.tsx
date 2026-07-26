@@ -2,6 +2,7 @@ import React from 'react';
 import { Info } from 'lucide-react';
 import SafeImage from '@/components/ui/safe-image';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function ChatHeader() {
   const { t } = useTranslation();
@@ -13,7 +14,7 @@ export default function ChatHeader() {
           <div className="w-10 h-10 rounded-full overflow-hidden border border-[var(--border)]">
             <SafeImage
               src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
-              alt="Support"
+              alt={translateMessage('Support')}
               className="w-full h-full object-cover object-center"
             />
           </div>

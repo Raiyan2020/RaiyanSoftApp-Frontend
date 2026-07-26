@@ -1,13 +1,14 @@
 'use client';
 import { motion, useReducedMotion, type Variants } from 'framer-motion';
+import { translateMessage } from '@/lib/i18n-utils';
 
 const sectors = [
-  { title: 'التجارة الإلكترونية', body: 'صفحات منتجات، دفع، شحن، وتحويل أعلى.' },
-  { title: 'الخدمات والحجوزات', body: 'رحلات حجز ولوحات متابعة أخف تشغيلياً.' },
-  { title: 'التعليم والمنصات', body: 'تعلم ومحتوى ولوحات مستخدمين عربية.' },
-  { title: 'العقار والمزادات', body: 'بحث، خرائط، وصفحات وحدات تقود للتواصل.' },
-  { title: 'المطاعم والتوصيل', body: 'طلب سريع، فروع، تتبع، وقوائم جوال.' },
-  { title: 'العلامات الناشئة', body: 'هوية وموقع إطلاق وحضور متناسق.' },
+  { title: 'E-commerce', body: 'Product pages, checkout, shipping, and higher conversion.' },
+  { title: 'Services & Bookings', body: 'Booking journeys and lighter operational tracking dashboards.' },
+  { title: 'Education & Platforms', body: 'Learning, content, and Arabic user dashboards.' },
+  { title: 'Real Estate & Auctions', body: 'Search, maps, and unit pages that drive contact.' },
+  { title: 'Restaurants & Delivery', body: 'Fast ordering, branches, tracking, and mobile menus.' },
+  { title: 'Emerging Brands', body: 'Identity, launch website, and consistent presence.' },
 ];
 
 export default function Sectors() {
@@ -30,7 +31,7 @@ export default function Sectors() {
   return (
     <section id="sectors" className="relative overflow-hidden bg-white py-12 dark:bg-navy-950 sm:py-16 lg:py-20">
       <div className="pointer-events-none absolute inset-0 premium-grid opacity-35" />
-      <div className="pointer-events-none absolute -left-32 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute -start-32 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
 
       <motion.div
         className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
@@ -42,26 +43,26 @@ export default function Sectors() {
         <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
           <motion.div variants={item} className="max-w-xl">
             <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-              القطاعات
+              {translateMessage('Sectors')}
             </div>
             <h2 className="text-2xl font-bold leading-[1.34] tracking-[-0.01em] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.2rem]">
-              نخصص الحل حسب <span className="gradient-text">مجالك وسلوك عملائك</span>
+              {translateMessage('We tailor the solution to')} <span className="gradient-text">{translateMessage('your industry and customer behavior')}</span>
             </h2>
             <p className="mt-5 text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg">
-              لا نستخدم قالباً واحداً لكل مشروع. نعيد ترتيب الرسالة، الثقة، والدعوة للإجراء حسب قرار الشراء في مجالك.
+              {translateMessage("We don't use one template for every project. We reorder the message, trust, and call-to-action based on the buying decision in your industry.")}
             </p>
           </motion.div>
 
           <motion.div variants={item} className="rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-5 text-white shadow-2xl shadow-cyan-950/20 dark:border-white/10 sm:p-6 lg:p-8">
             <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
               <div>
-                <p className="text-sm font-bold text-primary">طريقة التفكير</p>
+                <p className="text-sm font-bold text-primary">{translateMessage('Our Thinking')}</p>
                 <h3 className="mt-3 text-2xl font-bold leading-[1.35] sm:text-3xl">
-                  كل قطاع له لحظة قرار مختلفة.
+                  {translateMessage('Every sector has a different decision moment.')}
                 </h3>
               </div>
               <p className="text-sm leading-relaxed text-slate-300 sm:text-base">
-                نحدد ما يحتاجه العميل ليثق، ثم نبني الواجهة حول تلك اللحظة: منتج واضح، مسار قصير، ودليل اجتماعي في المكان الصحيح.
+                {translateMessage('We identify what the customer needs to trust, then build the interface around that moment: a clear product, a short path, and social proof in the right place.')}
               </p>
             </div>
           </motion.div>
@@ -78,8 +79,8 @@ export default function Sectors() {
                 {String(index + 1).padStart(2, '0')}
               </span>
               <div>
-                <h3 className="text-base font-bold text-slate-950 dark:text-white sm:text-lg">{sector.title}</h3>
-                <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{sector.body}</p>
+                <h3 className="text-base font-bold text-slate-950 dark:text-white sm:text-lg">{translateMessage(sector.title)}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{translateMessage(sector.body)}</p>
               </div>
             </motion.article>
           ))}

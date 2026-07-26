@@ -5,6 +5,7 @@ import ErrorAlert from '@/components/ui/error-alert';
 import Avatar from '@/components/ui/avatar';
 import { AdminLeadListItem, AdminLeadsPagination, LEAD_STATUS, LeadStatusCode } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusCode, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
+import { LEAD_APPROVAL_WHATSAPP_MESSAGE } from '../utils/whatsapp-template';
 import LeadsTableRow from './leads-table-row';
 
 interface LeadsTableProps {
@@ -57,14 +58,14 @@ export default function LeadsTable({
         <>
           {/* Desktop table */}
           <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-left">
+            <table className="w-full text-start">
               <thead>
                 <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
                   <th className="p-5 font-medium">{t('admin.leads.name')}</th>
                   <th className="p-5 font-medium">{t('admin.leads.project_info')}</th>
                   <th className="p-5 font-medium">{t('admin.leads.status')}</th>
                   <th className="p-5 font-medium">{t('admin.leads.date')}</th>
-                  <th className="p-5 font-medium text-right">{t('admin.leads.action')}</th>
+                  <th className="p-5 font-medium text-end">{t('admin.leads.action')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)] text-sm">
@@ -90,9 +91,8 @@ export default function LeadsTable({
               const statusLabel = formatLeadStatusLabel(statusCode, language);
               const canChangeStatus = isLeadPending(lead.status);
               const waDigits = toWhatsAppDigits(lead.user.full_phone);
-              const waMessage = 'السلام عليكم ورحمة الله وبركاته\nحضرتك قدمت عندنا طلب تطبيق ، طلبك مقبول ان شاء الله ممكن تفاصيل اكثر عن المشروع';
               const waUrl = waDigits
-                ? `https://web.whatsapp.com/send/?phone=${waDigits}&text=${encodeURIComponent(waMessage)}&type=phone_number&app_absent=0`
+                ? `https://web.whatsapp.com/send/?phone=${waDigits}&text=${encodeURIComponent(LEAD_APPROVAL_WHATSAPP_MESSAGE)}&type=phone_number&app_absent=0`
                 : null;
 
               return (
@@ -175,7 +175,7 @@ export default function LeadsTable({
               onClick={() => onPageChange(pagination.current_page - 1)}
               className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--border)] disabled:opacity-40"
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={16} className="rtl:rotate-180" />
             </button>
             <button
               type="button"
@@ -183,7 +183,7 @@ export default function LeadsTable({
               onClick={() => onPageChange(pagination.current_page + 1)}
               className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--border)] disabled:opacity-40"
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={16} className="rtl:rotate-180" />
             </button>
           </div>
         </div>

@@ -47,7 +47,7 @@ export async function fetchUserSettings() {
 export async function fetchUserSettingsServer() {
   const response = await fetch(`${getApiBaseUrl()}/user/settings`, {
     headers: { Accept: 'application/json' },
-    next: { revalidate: 300 },
+    cache: 'no-store',
   });
 
   const data = (await response.json()) as ApiResponse<ApiUserSettings>;

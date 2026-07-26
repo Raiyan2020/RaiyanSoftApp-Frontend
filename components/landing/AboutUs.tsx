@@ -6,6 +6,7 @@ import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 import type { LandingPageContent } from '@/features/landing-page';
 import SafeImage from '@/components/ui/safe-image';
+import { translateMessage } from '@/lib/i18n-utils';
 
 type AboutUsProps = {
   homeData?: LandingPageContent | null;
@@ -14,7 +15,7 @@ type AboutUsProps = {
 export default function AboutUs({ homeData }: AboutUsProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
-  const { content, textAlign } = useLandingContent();
+  const { content, textAlign, lang } = useLandingContent();
   const { partners } = content;
   const apiAbout = homeData?.about_us;
   const apiBanner = homeData?.banners?.idea;
@@ -44,7 +45,7 @@ export default function AboutUs({ homeData }: AboutUsProps) {
           <div className="reveal mb-8 rounded-[2rem] border border-cyan-950/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5 sm:p-8">
             <div className="grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-center">
               <div>
-                <p className="text-sm font-bold text-primary">{apiBanner.caption || 'Idea'}</p>
+                <p className="text-sm font-bold text-primary">{apiBanner.caption || translateMessage('Idea', lang)}</p>
                 <h3 className="mt-3 text-2xl font-bold text-slate-950 dark:text-white">{apiBanner.title}</h3>
                 <p className="mt-4 text-base leading-relaxed text-slate-600 dark:text-slate-300">{apiBanner.description}</p>
               </div>
@@ -54,7 +55,7 @@ export default function AboutUs({ homeData }: AboutUsProps) {
                     href={apiBanner.button_url || '#contact'}
                     className="inline-flex rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3.5 text-base font-bold text-white shadow-xl shadow-primary/25 transition hover:-translate-y-0.5"
                   >
-                    {apiBanner.button_text || 'Learn more'}
+                    {apiBanner.button_text || translateMessage('Learn more', lang)}
                   </a>
                 </div>
               ) : null}

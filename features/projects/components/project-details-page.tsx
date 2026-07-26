@@ -23,8 +23,8 @@ const stageStatusClasses: Record<string, string> = {
   blocked: 'bg-red-500/10 text-red-400 border-red-500/20',
 };
 
-const formatDate = (value?: number | null) => {
-  if (!value) return 'Not set';
+const formatDate = (value?: number | null, dir?: string) => {
+  if (!value) return dir === 'rtl' ? 'غير محدد' : 'Not set';
   return new Date(value).toLocaleDateString('en-GB', {
     day: 'numeric',
     month: 'short',
@@ -33,6 +33,8 @@ const formatDate = (value?: number | null) => {
 };
 
 const clamp = (value: number) => Math.max(0, Math.min(100, value));
+
+const capitalize = (value: string) => (value ? value.charAt(0).toUpperCase() + value.slice(1) : value);
 
 function StatCard({
   icon: Icon,
@@ -161,7 +163,7 @@ function OverviewSection({
           <StatCard
             icon={Clock3}
             label={dir === 'rtl' ? 'المدة' : 'Timeline'}
-            value={project.estimatedDuration ? `${project.estimatedDuration} days` : 'Open'}
+            value={project.estimatedDuration ? `${project.estimatedDuration} ${t('days')}` : t('Open')}
             hint={dir === 'rtl' ? 'تقدير الزمن المتوقع' : 'Estimated delivery window'}
           />
         </div>
@@ -205,7 +207,15 @@ function OverviewSection({
   );
 }
 
-function StepsSection({ stages, dir }: { stages: UserProjectStage[]; dir: string }) {
+function StepsSection({
+  stages,
+  dir,
+  t,
+}: {
+  stages: UserProjectStage[];
+  dir: string;
+  t: (key: string) => string;
+}) {
   return (
     <div className="space-y-4">
       <div className="grid gap-4 lg:grid-cols-3">
@@ -245,7 +255,7 @@ function StepsSection({ stages, dir }: { stages: UserProjectStage[]; dir: string
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <h3 className="text-base font-bold text-[var(--text)]">{stage.title}</h3>
-                        <Badge className={stageStatusClasses[stage.status] || ''}>{stage.status}</Badge>
+                        <Badge className={stageStatusClasses[stage.status] || ''}>{t(capitalize(stage.status))}</Badge>
                       </div>
                       <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">
                         {stage.description || (dir === 'rtl' ? 'لا يوجد وصف لهذه الخطوة.' : 'No description added for this step.')}
@@ -255,10 +265,10 @@ function StepsSection({ stages, dir }: { stages: UserProjectStage[]; dir: string
                           {dir === 'rtl' ? 'الترتيب' : 'Order'} {index + 1}
                         </span>
                         <span className="rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-3 py-1">
-                          {stage.assignedTo || (dir === 'rtl' ? 'غير معين' : 'Unassigned')}
+                          {stage.assignedTo || t('Unassigned')}
                         </span>
                         <span className="rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-3 py-1">
-                          {stage.estimatedDays ? `${stage.estimatedDays} days` : (dir === 'rtl' ? 'بدون مدة' : 'No estimate')}
+                          {stage.estimatedDays ? `${stage.estimatedDays} ${t('days')}` : t('No estimate')}
                         </span>
                       </div>
                     </div>
@@ -273,7 +283,7 @@ function StepsSection({ stages, dir }: { stages: UserProjectStage[]; dir: string
                       <div className="h-2 rounded-full bg-primary" style={{ width: `${clamp(stage.progress)}%` }} />
                     </div>
                     <p className="mt-2 text-xs text-[var(--text-muted)]">
-                      {dir === 'rtl' ? 'آخر تحديث' : 'Updated'} {formatDate(stage.updatedAt)}
+                      {dir === 'rtl' ? 'آخر تحديث' : 'Updated'} {formatDate(stage.updatedAt, dir)}
                     </p>
                   </div>
                 </div>
@@ -291,7 +301,15 @@ function StepsSection({ stages, dir }: { stages: UserProjectStage[]; dir: string
   );
 }
 
-function ReportsSection({ reports, dir }: { reports: UserProjectWeeklyReport[]; dir: string }) {
+function ReportsSection({
+  reports,
+  dir,
+  t,
+}: {
+  reports: UserProjectWeeklyReport[];
+  dir: string;
+  t: (key: string) => string;
+}) {
   return (
     <div className="space-y-4">
       <div className="grid gap-4 lg:grid-cols-3">
@@ -329,13 +347,13 @@ function ReportsSection({ reports, dir }: { reports: UserProjectWeeklyReport[]; 
                   <div className="min-w-0">
                     <div className="flex flex-wrap items-center gap-2">
                       <h3 className="text-base font-bold text-[var(--text)]">
-                        {formatDate(report.weekStart)} - {formatDate(report.weekEnd)}
+                        {formatDate(report.weekStart, dir)} - {formatDate(report.weekEnd, dir)}
                       </h3>
                       <Badge className={report.status === 'sent' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : ''}>
-                        {report.status}
+                        {t(capitalize(report.status))}
                       </Badge>
                       {report.clientVisible ? (
-                        <Badge variant="info">Client visible</Badge>
+                        <Badge variant="info">{dir === 'rtl' ? 'مرئية للعميل' : 'Client visible'}</Badge>
                       ) : (
                         <Badge variant="neutral">{dir === 'rtl' ? 'داخلي' : 'Internal'}</Badge>
                       )}
@@ -345,9 +363,9 @@ function ReportsSection({ reports, dir }: { reports: UserProjectWeeklyReport[]; 
                     </p>
                   </div>
                   <div className="min-w-[12rem] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4 text-sm text-[var(--text-muted)]">
-                    <p className="font-semibold text-[var(--text)]">{report.createdByName || 'Team'}</p>
-                    <p className="mt-1">{dir === 'rtl' ? 'أنشئ' : 'Created'} {formatDate(report.createdAt)}</p>
-                    <p className="mt-1">{dir === 'rtl' ? 'أرسل' : 'Sent'} {formatDate(report.sentAt)}</p>
+                    <p className="font-semibold text-[var(--text)]">{report.createdByName || t('Team')}</p>
+                    <p className="mt-1">{dir === 'rtl' ? 'أنشئ' : 'Created'} {formatDate(report.createdAt, dir)}</p>
+                    <p className="mt-1">{dir === 'rtl' ? 'أرسل' : 'Sent'} {formatDate(report.sentAt, dir)}</p>
                   </div>
                 </div>
               </article>
@@ -437,7 +455,13 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
               <div className="grid min-w-[18rem] gap-3 sm:grid-cols-2 lg:grid-cols-1">
                 <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">{dir === 'rtl' ? 'الحالة' : 'Status'}</p>
-                  <p className="mt-2 text-lg font-bold text-[var(--text)] capitalize">{project.statusLabel || project.status}</p>
+                  <p className="mt-2 text-lg font-bold text-[var(--text)] capitalize">
+                    {(() => {
+                      const statusKey = `status.${project.status}`;
+                      const translatedStatus = t(statusKey);
+                      return translatedStatus === statusKey ? project.statusLabel || project.status : translatedStatus;
+                    })()}
+                  </p>
                 </div>
                 <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4">
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">{dir === 'rtl' ? 'النسخة' : 'Version'}</p>
@@ -484,9 +508,9 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
           />
         ) : null}
 
-        {activeTab === 'steps' ? <StepsSection stages={project.stages || []} dir={dir} /> : null}
+        {activeTab === 'steps' ? <StepsSection stages={project.stages || []} dir={dir} t={t} /> : null}
 
-        {activeTab === 'reports' ? <ReportsSection reports={project.weeklyReports || []} dir={dir} /> : null}
+        {activeTab === 'reports' ? <ReportsSection reports={project.weeklyReports || []} dir={dir} t={t} /> : null}
       </div>
     </div>
   );

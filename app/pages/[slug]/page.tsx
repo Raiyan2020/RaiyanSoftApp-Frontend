@@ -6,6 +6,7 @@ import { fetchLandingPageBySlug } from '@/features/landing-page';
 import { createBreadcrumbJsonLd, createPublicMetadata, getCanonicalUrl } from '@/lib/site';
 import JsonLd from '@/components/public/json-ld';
 import { getServerLanguage } from '@/lib/language.server';
+import { translateMessage } from '@/lib/i18n-utils';
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -21,10 +22,11 @@ type LandingPageRecord = {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const page = await fetchLandingPageBySlug<LandingPageRecord>(slug, await getServerLanguage());
+  const language = await getServerLanguage();
+  const page = await fetchLandingPageBySlug<LandingPageRecord>(slug, language);
 
   if (!page) {
-    return createPublicMetadata({ title: 'الصفحة غير موجودة', path: `/pages/${slug}` });
+    return createPublicMetadata({ title: translateMessage('Page Not Found', language), path: `/pages/${slug}` });
   }
 
   return createPublicMetadata({
@@ -37,17 +39,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function LandingPageSlugPage({ params }: PageProps) {
   const { slug } = await params;
-  const page = await fetchLandingPageBySlug<LandingPageRecord>(slug, await getServerLanguage());
+  const language = await getServerLanguage();
+  const tt = (message: string) => translateMessage(message, language);
+  const page = await fetchLandingPageBySlug<LandingPageRecord>(slug, language);
 
   if (!page) notFound();
 
   return (
-    <PublicSimplePage seoKey="about" eyebrow="صفحات الموقع" title={page.title} description={page.description}>
+    <PublicSimplePage seoKey="about" eyebrow={tt('Site Pages')} title={page.title} description={page.description}>
       <JsonLd
         id={`landing-page-breadcrumbs-${page.slug}`}
         data={createBreadcrumbJsonLd([
-          { name: 'الرئيسية', url: getCanonicalUrl('/') },
-          { name: 'صفحات الموقع', url: getCanonicalUrl('/pages') },
+          { name: tt('Home'), url: getCanonicalUrl('/') },
+          { name: tt('Site Pages'), url: getCanonicalUrl('/pages') },
           { name: page.title, url: getCanonicalUrl(`/pages/${page.slug}`) },
         ])}
       />

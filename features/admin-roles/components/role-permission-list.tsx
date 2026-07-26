@@ -1,6 +1,7 @@
 import React from 'react';
 import { Check, Shield } from 'lucide-react';
 import { PERMISSION_GROUPS } from '@/lib/permissions';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface RolePermissionListProps {
   selectedPermissions: string[];
@@ -13,7 +14,7 @@ export default function RolePermissionList({
 }: RolePermissionListProps) {
   return (
     <div className="space-y-4">
-      <label className="text-xs font-medium text-[var(--text)] ml-1">Permissions</label>
+      <label className="text-xs font-medium text-[var(--text)] ms-1">{translateMessage('Permissions')}</label>
       {PERMISSION_GROUPS.map((group) => (
         <div key={group.label} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3">

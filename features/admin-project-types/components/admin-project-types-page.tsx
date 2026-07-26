@@ -41,7 +41,7 @@ function TypeCard({
       }`}
     >
       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
-        <button type="button" onClick={() => onEdit(type)} className="text-left min-w-0 flex items-start gap-3">
+        <button type="button" onClick={() => onEdit(type)} className="text-start min-w-0 flex items-start gap-3">
           <div
             className="w-11 h-11 rounded-xl border border-[var(--border)] flex items-center justify-center text-[var(--text)] shrink-0"
             style={{ background: type.color || '#1DB7F0' }}
@@ -52,15 +52,15 @@ function TypeCard({
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-[var(--text)] font-bold break-words">{type.name}</h3>
               <span className={type.active ? 'text-[10px] text-emerald-400' : 'text-[10px] text-[var(--text-muted)]'}>
-                {type.active ? 'Active' : 'Inactive'}
+                {translateMessage(type.active ? 'Active' : 'Inactive')}
               </span>
             </div>
-            <p className="text-sm text-[var(--text-muted)] line-clamp-2 mt-1">{type.description || 'No description added.'}</p>
+            <p className="text-sm text-[var(--text-muted)] line-clamp-2 mt-1">{type.description || translateMessage('No description added.')}</p>
             <p className="text-xs text-[var(--text-muted)] mt-2">
-              {type.priceMin || type.priceMax ? `${type.priceMin || 0}-${type.priceMax || 0} KWD` : 'No price range'} ·{' '}
+              {type.priceMin || type.priceMax ? `${type.priceMin || 0}-${type.priceMax || 0} KWD` : translateMessage('No price range')} ·{' '}
               {type.durationMin || type.durationMax
-                ? `${type.durationMin || 0}-${type.durationMax || 0} days`
-                : 'No duration range'}
+                ? `${type.durationMin || 0}-${type.durationMax || 0} ${translateMessage('days')}`
+                : translateMessage('No duration range')}
             </p>
           </div>
         </button>
@@ -70,7 +70,7 @@ function TypeCard({
             onClick={() => onMove(type.id, -1)}
             disabled={index === 0}
             className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40"
-            title="Move up"
+            title={translateMessage('Move up')}
           >
             <ArrowUp size={14} />
           </button>
@@ -79,7 +79,7 @@ function TypeCard({
             onClick={() => onMove(type.id, 1)}
             disabled={index === total - 1}
             className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-white/5 disabled:opacity-40"
-            title="Move down"
+            title={translateMessage('Move down')}
           >
             <ArrowDown size={14} />
           </button>
@@ -87,7 +87,7 @@ function TypeCard({
             type="button"
             onClick={() => onDelete(type.id)}
             className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10"
-            title="Delete type"
+            title={translateMessage('Delete Type')}
           >
             <Trash2 size={14} />
           </button>
@@ -118,7 +118,7 @@ export default function AdminProjectTypesPage() {
         </div>
         <Button type="button" onClick={state.startCreate} className="gap-2">
           <Plus size={18} />
-          Add Type
+          {translateMessage('Add Type')}
         </Button>
       </div>
 

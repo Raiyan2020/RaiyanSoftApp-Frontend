@@ -8,6 +8,7 @@ import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
 import { AdminLeadDetail, AdminLeadListItem } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
+import { LEAD_APPROVAL_WHATSAPP_MESSAGE } from '../utils/whatsapp-template';
 import LeadProjectSummary from './lead-project-summary';
 
 interface LeadDetailDrawerProps {
@@ -48,9 +49,7 @@ export default function LeadDetailDrawer({
   const canChangeStatus = lead ? isLeadPending(lead.status) : isLeadPending(listItem.status);
 
   const waDigits = toWhatsAppDigits(phone);
-  const waMessage =
-    'السلام عليكم ورحمة الله وبركاته\nحضرتك قدمت عندنا طلب تطبيق ، طلبك مقبول ان شاء الله ممكن تفاصيل اكثر عن المشروع';
-  const encodedWaMessage = encodeURIComponent(waMessage);
+  const encodedWaMessage = encodeURIComponent(LEAD_APPROVAL_WHATSAPP_MESSAGE);
   const waUrl = waDigits
     ? `https://web.whatsapp.com/send/?phone=${waDigits}&text=${encodedWaMessage}&type=phone_number&app_absent=0`
     : null;

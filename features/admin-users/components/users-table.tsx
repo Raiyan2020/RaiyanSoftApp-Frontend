@@ -20,7 +20,7 @@ export default function UsersTable({
 }: UsersTableProps) {
   return (
     <div className="hidden md:block overflow-x-auto">
-      <table className="w-full text-left border-collapse">
+      <table className="w-full text-start border-collapse">
         <thead>
           <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
             <th className="p-5 font-medium">{translateMessage('User')}</th>
@@ -28,7 +28,7 @@ export default function UsersTable({
             <th className="p-5 font-medium">{translateMessage('Role')}</th>
             <th className="p-5 font-medium">{translateMessage('Status')}</th>
             <th className="p-5 font-medium">{translateMessage('Registered')}</th>
-            <th className="p-5 font-medium text-right">{translateMessage('Actions')}</th>
+            <th className="p-5 font-medium text-end">{translateMessage('Actions')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--border)] text-sm">

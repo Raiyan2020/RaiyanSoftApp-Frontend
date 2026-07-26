@@ -64,7 +64,7 @@ export default function UserProjectEditDrawer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Project Name</FieldLabel>
+                  <FieldLabel>{translateMessage('Project Name')}</FieldLabel>
                   <input
                     {...field}
                     type="text"
@@ -83,13 +83,13 @@ export default function UserProjectEditDrawer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Industry</FieldLabel>
+                  <FieldLabel>{translateMessage('Industry')}</FieldLabel>
                   <div className="relative">
-                    <Briefcase size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                    <Briefcase size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                     <select
                       {...field}
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors appearance-none ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-9 pe-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors appearance-none ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     >
@@ -110,7 +110,7 @@ export default function UserProjectEditDrawer({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>Specify Industry</FieldLabel>
+                    <FieldLabel>{translateMessage('Specify Industry')}</FieldLabel>
                     <input
                       {...field}
                       type="text"
@@ -131,13 +131,13 @@ export default function UserProjectEditDrawer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Project Status</FieldLabel>
+                  <FieldLabel>{translateMessage('Project Status')}</FieldLabel>
                   <div className="relative">
-                    <Activity size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                    <Activity size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                     <select
                       {...field}
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors appearance-none capitalize ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-9 pe-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors appearance-none capitalize ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     >
@@ -156,18 +156,18 @@ export default function UserProjectEditDrawer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Project URL</FieldLabel>
+                  <FieldLabel>{translateMessage('Project URL')}</FieldLabel>
                   <div className="relative">
-                    <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                    <LinkIcon size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                     <input
                       {...field}
                       type="url"
                       value={field.value ?? ''}
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-9 pe-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
-                      placeholder="https://..."
+                      placeholder={translateMessage('https://...')}
                     />
                   </div>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -180,7 +180,7 @@ export default function UserProjectEditDrawer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Description</FieldLabel>
+                  <FieldLabel>{translateMessage('Description')}</FieldLabel>
                   <textarea
                     {...field}
                     maxLength={250}

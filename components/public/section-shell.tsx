@@ -1,4 +1,5 @@
 import { translateMessage } from '@/lib/i18n-utils';
+import { getServerLanguage } from '@/lib/language.server';
 
 type SectionShellProps = {
   eyebrow?: string;
@@ -14,15 +15,16 @@ const tones = {
   dark: 'bg-slate-950 text-white',
 };
 
-export default function SectionShell({ eyebrow, title, description, children, tone = 'white' }: SectionShellProps) {
+export default async function SectionShell({ eyebrow, title, description, children, tone = 'white' }: SectionShellProps) {
+  const language = await getServerLanguage();
   return (
     <section className={`${tones[tone]} py-14 sm:py-18 lg:py-20`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {title || description || eyebrow ? (
           <div className="mb-10 max-w-3xl">
-            {eyebrow ? <p className="mb-3 text-sm font-black text-primary">{translateMessage(eyebrow)}</p> : null}
-            {title ? <h2 className="text-2xl font-black sm:text-3xl lg:text-4xl">{translateMessage(title)}</h2> : null}
-            {description ? <p className="mt-4 text-base leading-8 text-slate-600 dark:text-slate-300">{translateMessage(description)}</p> : null}
+            {eyebrow ? <p className="mb-3 text-sm font-black text-primary">{translateMessage(eyebrow, language)}</p> : null}
+            {title ? <h2 className="text-2xl font-black sm:text-3xl lg:text-4xl">{translateMessage(title, language)}</h2> : null}
+            {description ? <p className="mt-4 text-base leading-8 text-slate-600 dark:text-slate-300">{translateMessage(description, language)}</p> : null}
           </div>
         ) : null}
         {children}

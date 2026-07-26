@@ -78,7 +78,7 @@ export default function AdminScheduleTab({
                   />
                 </button>
 
-                <span className={`font-bold ${isEnabled ? 'text-[var(--text)]' : 'text-[var(--text-muted)]'}`}>{dayName}</span>
+                <span className={`font-bold ${isEnabled ? 'text-[var(--text)]' : 'text-[var(--text-muted)]'}`}>{translateMessage(dayName)}</span>
               </div>
 
               <div className={`flex-1 space-y-2 ${dir === 'rtl' ? 'md:text-right' : ''}`}>

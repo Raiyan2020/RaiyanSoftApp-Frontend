@@ -6,14 +6,18 @@ import { fetchPrivacyPolicyServer } from '@/features/pages/services/pages-api';
 import type { PrivacyPolicyPage } from '@/features/pages/types/page.types';
 import { getPageMetadata, pageSeo } from '@/lib/page-seo';
 import { createLegalPageJsonLd } from '@/lib/site';
+import { translateMessage } from '@/lib/i18n-utils';
+import { getServerLanguage } from '@/lib/language.server';
 
 export const metadata: Metadata = getPageMetadata('privacy');
 
 export default async function PrivacyPage() {
+  const language = await getServerLanguage();
+  const tt = (message: string) => translateMessage(message, language);
   let page: PrivacyPolicyPage | null = null;
 
   try {
-    page = await fetchPrivacyPolicyServer();
+    page = await fetchPrivacyPolicyServer(language);
   } catch {
     page = null;
   }
@@ -21,15 +25,15 @@ export default async function PrivacyPage() {
   return (
     <PublicSimplePage
       seoKey="privacy"
-      eyebrow="قانوني"
-      title={page?.title || 'سياسة الخصوصية'}
-      description="كيف نجمع معلوماتك ونستخدمها ونحميها."
+      eyebrow={tt('Legal')}
+      title={page?.title || tt('Privacy Policy')}
+      description={tt('How we collect, use, and protect your information.')}
     >
       <JsonLd id="privacy-page-schema" data={createLegalPageJsonLd(pageSeo.privacy)} />
       <article className="mx-auto max-w-3xl">
         <PageHtmlContent
           html={page?.description}
-          emptyMessage="Privacy policy content is not available yet."
+          emptyMessage={tt('Privacy policy content is not available yet.')}
         />
       </article>
     </PublicSimplePage>

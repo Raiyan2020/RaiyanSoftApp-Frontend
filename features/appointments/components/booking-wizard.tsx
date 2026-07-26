@@ -45,7 +45,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
   } = useBookingWizard(onClose, onBooked);
 
   const calendarRows = getCalendarRows();
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => translateMessage(d));
   const monthLabel = viewDate.toLocaleDateString(dir === 'rtl' ? 'ar-KW' : 'en-US', { month: 'long', year: 'numeric' });
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -217,7 +217,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
                   <p className="text-[var(--text)] text-lg font-bold">{selectedTime}</p>
                 </div>
                 <button type="button" onClick={() => setStep(1)} className="text-xs text-[var(--text-muted)] underline hover:text-[var(--text)]">
-                  Change
+                  {translateMessage('Change')}
                 </button>
               </div>
 
@@ -286,7 +286,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
               </div>
               <h2 className="text-2xl font-bold text-[var(--text)]">{t('appt.booking_success')}</h2>
               <button type="button" onClick={onClose} className="bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] px-8 py-3 rounded-xl font-bold transition-colors">
-                Done
+                {translateMessage('Done')}
               </button>
             </motion.div>
           ) : null}
@@ -317,7 +317,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
               {isSubmitting
                 ? <Loader2 className="animate-spin" />
                 : step === 2 && !isAuthenticated
-                  ? (dir === 'rtl' ? 'متابعة' : 'Continue')
+                  ? translateMessage('Continue')
                   : step === 2
                     ? t('appt.confirm_btn')
                     : t('wizard.next')}

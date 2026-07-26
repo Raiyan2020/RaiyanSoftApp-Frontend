@@ -52,14 +52,14 @@ export default function AboutPage() {
               <SafeImage
                 src={data?.image || 'https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png'}
                 className="w-full h-full object-contain relative z-10"
-                alt="Raiyansoft Logo"
+                alt={translateMessage('Raiyansoft Logo')}
               />
             </div>
-            <h2 className="text-2xl font-bold text-[var(--text)] mb-2">{data?.title || 'Raiyansoft'}</h2>
+            <h2 className="text-2xl font-bold text-[var(--text)] mb-2">{data?.title || translateMessage('Raiyansoft')}</h2>
           </div>
 
           <div className="app-card rounded-2xl p-5">
-            <PageHtmlContent html={data?.description} emptyMessage="About us content is not available yet." />
+            <PageHtmlContent html={data?.description} emptyMessage={translateMessage('About us content is not available yet.')} />
           </div>
 
           <div className="text-center pt-8 opacity-50">

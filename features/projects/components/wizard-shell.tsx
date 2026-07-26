@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface WizardShellProps {
   step: number;
@@ -92,7 +93,7 @@ export default function WizardShell({
                 type="button"
                 onClick={onClose}
                 className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
-                aria-label="Close dialog"
+                aria-label={translateMessage('Close dialog', language === 'ar' ? 'ar' : 'en')}
               >
                 <X size={18} />
               </button>

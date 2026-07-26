@@ -33,10 +33,10 @@ export default function ChatPanel({
         <>
           <div className="p-4 border-b border-[var(--border)] bg-[var(--surface-2)] flex justify-between items-center z-10">
             <div className="flex items-center gap-3">
-              <Avatar name={selectedConversation?.customerName || 'User'} size="md" className="w-10 h-10" />
+              <Avatar name={selectedConversation?.customerName || translateMessage('User')} size="md" className="w-10 h-10" />
               <div>
                 <h2 className="text-[var(--text)] font-bold text-base">
-                  {selectedConversation?.customerName || 'Unknown User'}
+                  {selectedConversation?.customerName || translateMessage('Unknown User')}
                 </h2>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
@@ -65,7 +65,7 @@ export default function ChatPanel({
                   msg={msg}
                   isStaff={isStaff}
                   showName={showName}
-                  customerName={selectedConversation?.customerName || 'Customer'}
+                  customerName={selectedConversation?.customerName || translateMessage('Customer')}
                 />
               );
             })}

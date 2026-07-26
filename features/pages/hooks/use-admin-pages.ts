@@ -7,6 +7,7 @@ import { usePrivacyPolicy } from './use-privacy-policy';
 import { useTermsConditions } from './use-terms-conditions';
 import { useAdminAboutUs } from './use-about-us';
 import { useUpdatePage } from './use-update-page';
+import { translateMessage } from '@/lib/i18n-utils';
 
 const emptySimpleForm = (): SimplePageForm => ({
   title: '',
@@ -59,7 +60,7 @@ export function useAdminPages() {
   useEffect(() => {
     if (!terms.data) return;
     setTermsForm({
-      title: terms.data.title || 'Terms and Conditions',
+      title: terms.data.title || translateMessage('Terms and Conditions'),
       description: terms.data.description || '',
     });
   }, [terms.data]);

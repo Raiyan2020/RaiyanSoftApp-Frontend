@@ -7,17 +7,18 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { siteConfig } from '@/lib/site';
 import { trackPublicEvent } from '@/lib/analytics';
+import { translateMessage } from '@/lib/i18n-utils';
 
 const navLinks = [
-  { label: 'الرئيسية', href: '/' },
-  { label: 'من نحن', href: '/about' },
-  { label: 'الخدمات', href: '/services' },
-  { label: 'الأعمال', href: '/portfolio' },
-  { label: 'المدونة', href: '/blogs' },
-  { label: 'تصنيفات المدونة', href: '/blogs/categories' },
-  { label: 'الأسعار', href: '/pricing' },
-  { label: 'استشارة', href: '/consultation' },
-  { label: 'تواصل معنا', href: '/contact' },
+  { label: 'Home', href: '/' },
+  { label: 'About Us', href: '/about' },
+  { label: 'Services', href: '/services' },
+  { label: 'Works', href: '/portfolio' },
+  { label: 'Blog', href: '/blogs' },
+  { label: 'Blog Categories', href: '/blogs/categories' },
+  { label: 'Pricing', href: '/pricing' },
+  { label: 'Consultation', href: '/consultation' },
+  { label: 'Contact Us', href: '/contact' },
 ];
 
 export default function PublicNavigation() {
@@ -53,7 +54,7 @@ export default function PublicNavigation() {
           <span className="truncate text-base font-black text-slate-950 dark:text-white">{siteConfig.name}</span>
         </Link>
 
-        <nav aria-label="التنقل العام" className="hidden items-center gap-1 lg:flex">
+        <nav aria-label={translateMessage('Public Navigation')} className="hidden items-center gap-1 lg:flex">
           {navLinks.map((link) => {
             const active = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
             return (
@@ -67,7 +68,7 @@ export default function PublicNavigation() {
                     : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
                 }`}
               >
-                {link.label}
+                {translateMessage(link.label)}
               </Link>
             );
           })}
@@ -77,7 +78,7 @@ export default function PublicNavigation() {
           <button
             type="button"
             onClick={toggleDark}
-            aria-label="تبديل الوضع الليلي"
+            aria-label={translateMessage('Toggle Dark Mode')}
             className="grid h-10 w-10 place-items-center rounded-lg border border-cyan-950/10 bg-white text-slate-700 transition hover:border-primary hover:text-primary dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
           >
             {dark ? <Sun size={18} /> : <Moon size={18} />}
@@ -85,14 +86,14 @@ export default function PublicNavigation() {
           <Link
             className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-black text-white transition hover:bg-primary-dark sm:inline-flex"
             href="/quote"
-            onClick={() => trackPublicEvent('cta_click', { location: 'public_navigation', href: '/quote', label: 'اطلب عرض سعر' })}
+            onClick={() => trackPublicEvent('cta_click', { location: 'public_navigation', href: '/quote', label: 'Get a Quote' })}
           >
-            اطلب عرض سعر
+            {translateMessage('Get a Quote')}
           </Link>
           <button
             type="button"
             onClick={() => setOpen((value) => !value)}
-            aria-label="القائمة"
+            aria-label={translateMessage('Menu')}
             aria-expanded={open}
             aria-controls="public-mobile-menu"
             className="grid h-10 w-10 place-items-center rounded-lg border border-cyan-950/10 bg-white text-slate-700 transition hover:border-primary hover:text-primary dark:border-white/10 dark:bg-white/5 dark:text-slate-200 lg:hidden"
@@ -103,7 +104,7 @@ export default function PublicNavigation() {
       </div>
 
       <div id="public-mobile-menu" className={`border-t border-cyan-950/10 lg:hidden dark:border-white/10 ${open ? 'block' : 'hidden'}`}>
-        <nav aria-label="التنقل العام للجوال" className="mx-auto grid max-w-7xl gap-1 px-4 py-4 sm:px-6">
+        <nav aria-label={translateMessage('Public Mobile Navigation')} className="mx-auto grid max-w-7xl gap-1 px-4 py-4 sm:px-6">
           {navLinks.map((link) => {
             const active = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
             return (
@@ -117,16 +118,16 @@ export default function PublicNavigation() {
                     : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10'
                 }`}
               >
-                {link.label}
+                {translateMessage(link.label)}
               </Link>
             );
           })}
           <Link
             className="mt-2 rounded-lg bg-primary px-4 py-3 text-center text-sm font-black text-white transition hover:bg-primary-dark"
             href="/quote"
-            onClick={() => trackPublicEvent('cta_click', { location: 'public_mobile_navigation', href: '/quote', label: 'اطلب عرض سعر' })}
+            onClick={() => trackPublicEvent('cta_click', { location: 'public_mobile_navigation', href: '/quote', label: 'Get a Quote' })}
           >
-            اطلب عرض سعر
+            {translateMessage('Get a Quote')}
           </Link>
         </nav>
       </div>

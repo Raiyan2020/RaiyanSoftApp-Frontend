@@ -173,7 +173,7 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
 
             <label className="space-y-2">
               <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Slug')} {config.requiresSlug ? '*' : ''}</span>
-              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.slug} onChange={(event) => manager.updateField('slug', event.target.value)} placeholder="url-friendly-slug" />
+              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.slug} onChange={(event) => manager.updateField('slug', event.target.value)} placeholder={translateMessage('url-friendly-slug')} />
             </label>
 
             <label className="space-y-2">

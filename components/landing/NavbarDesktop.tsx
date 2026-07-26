@@ -65,10 +65,10 @@ export default function NavbarDesktop({
   ).length;
   const userDisplayName = getUserDisplayName(user, t('home.guest'));
   const profileLinks = [
-    { href: '/profile?tab=info', label: dir === 'rtl' ? 'الملف الشخصي' : 'Profile', icon: UserIcon },
-    { href: '/profile?tab=project', label: dir === 'rtl' ? 'المشاريع' : 'Projects', icon: FolderKanban },
-    { href: '/profile?tab=booking', label: dir === 'rtl' ? 'المواعيد' : 'Meetings', icon: Calendar },
-    { href: '/profile?tab=notification', label: dir === 'rtl' ? 'الإشعارات' : 'Notifications', icon: Bell },
+    { href: '/profile?tab=info', label: t('profile.title'), icon: UserIcon },
+    { href: '/profile?tab=project', label: t('landing.nav.projects_tab'), icon: FolderKanban },
+    { href: '/profile?tab=booking', label: t('landing.nav.meetings_tab'), icon: Calendar },
+    { href: '/profile?tab=notification', label: t('notif.title'), icon: Bell },
   ] as const;
 
   useEffect(() => {
@@ -158,7 +158,7 @@ export default function NavbarDesktop({
           {pagesOpen ? (
             <div
               id="landing-pages-menu"
-              className="absolute left-0 top-full mt-3 grid w-[34rem] grid-cols-2 gap-2 rounded-3xl border border-cyan-950/10 bg-white p-4 text-right shadow-2xl shadow-cyan-950/12 dark:border-white/10 dark:bg-navy-950"
+              className={`absolute ${dir === 'rtl' ? 'right-0' : 'left-0'} top-full mt-3 grid w-[34rem] grid-cols-2 gap-2 rounded-3xl border border-cyan-950/10 bg-white p-4 text-start shadow-2xl shadow-cyan-950/12 dark:border-white/10 dark:bg-navy-950`}
             >
               {pageLinks.map((link) => (
                 <Link
@@ -223,11 +223,11 @@ export default function NavbarDesktop({
             type="button"
             onClick={() => setNotificationsOpen((open) => !open)}
             className={`relative ${iconButtonClass}`}
-            aria-label={dir === 'rtl' ? 'الإشعارات' : 'Notifications'}
+            aria-label={t('notif.title')}
           >
             <Bell size={18} />
             {unreadNotificationCount > 0 ? (
-              <span className="absolute -right-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-black text-white ring-2 ring-[var(--surface)]">
+              <span className="absolute -end-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-black text-white ring-2 ring-[var(--surface)]">
                 {unreadNotificationCount}
               </span>
             ) : null}
@@ -240,9 +240,9 @@ export default function NavbarDesktop({
             >
               <div className={`mb-2 flex items-center justify-between gap-3 px-2 ${dir === 'rtl' ? 'flex-row-reverse text-right' : 'text-left'}`}>
                 <div>
-                  <p className="text-sm font-black text-[var(--text)]">{dir === 'rtl' ? 'الإشعارات' : 'Notifications'}</p>
+                  <p className="text-sm font-black text-[var(--text)]">{t('notif.title')}</p>
                   <p className="text-xs text-[var(--text-muted)]">
-                    {dir === 'rtl' ? 'اضغط على أي إشعار لفتح تفاصيله' : 'Click any notification to open its details'}
+                    {t('landing.nav.notifications_hint')}
                   </p>
                 </div>
                 <Bell size={18} className="text-primary" />
@@ -271,8 +271,8 @@ export default function NavbarDesktop({
                           onClick={() => markNotificationComplete(record.id)}
                           disabled={isComplete}
                           className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition-colors hover:text-emerald-400 disabled:opacity-40"
-                          aria-label={dir === 'rtl' ? 'تمييز كمكتمل' : 'Mark complete'}
-                          title={dir === 'rtl' ? 'تمييز كمكتمل' : 'Mark complete'}
+                          aria-label={t('landing.nav.mark_complete')}
+                          title={t('landing.nav.mark_complete')}
                         >
                           {isComplete ? <CheckCircle2 size={16} /> : <Eye size={16} />}
                         </button>
@@ -287,7 +287,7 @@ export default function NavbarDesktop({
                 onClick={() => setNotificationsOpen(false)}
                 className="mt-3 flex items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2.5 text-xs font-bold text-[var(--text)] transition-colors hover:text-primary"
               >
-                {dir === 'rtl' ? 'عرض كل الإشعارات' : 'View all notifications'}
+                {t('landing.nav.view_all_notifications')}
               </Link>
             </div>
           ) : null}
@@ -298,7 +298,7 @@ export default function NavbarDesktop({
             <button
               onClick={() => setDropdownOpen(!dropdownOpen)}
               className="flex items-center gap-2 focus:outline-none"
-              aria-label="User menu"
+              aria-label={t('landing.nav.user_menu')}
             >
               <Avatar name={userDisplayName} size="md" className="cursor-pointer" />
             </button>

@@ -5,16 +5,25 @@ import JsonLd from '@/components/public/json-ld';
 import { getPublicWebsiteData } from '@/lib/websiteContentPublic';
 import { getPageMetadata } from '@/lib/page-seo';
 import { createItemListJsonLd, getCanonicalUrl } from '@/lib/site';
+import { translateMessage } from '@/lib/i18n-utils';
+import { getServerLanguage } from '@/lib/language.server';
 
 export const metadata: Metadata = getPageMetadata('partners');
 
 type PublicPartner = { name?: string; title?: string; description: string };
 
 export default async function PartnersPage() {
-  const partners = await getPublicWebsiteData<PublicPartner>('partners');
+  const language = await getServerLanguage();
+  const tt = (message: string) => translateMessage(message, language);
+  const partners = await getPublicWebsiteData<PublicPartner>('partners', language);
 
   return (
-    <PublicSimplePage seoKey="partners" eyebrow="الشركاء" title="شراكات تدعم التنفيذ الرقمي" description="يمكن إدارة أسماء ووصف الشركاء المعتمدين من لوحة التحكم.">
+    <PublicSimplePage
+      seoKey="partners"
+      eyebrow={tt('Partners')}
+      title={tt('Partnerships that support digital execution.')}
+      description={tt('Names and descriptions of approved partners can be managed from the dashboard.')}
+    >
       <JsonLd
         id="partners-list-schema"
         data={createItemListJsonLd(
@@ -23,7 +32,7 @@ export default async function PartnersPage() {
             description: item.description,
             url: getCanonicalUrl('/partners'),
           })),
-          'شركاء ريان سوفت',
+          tt('Raiyan Soft partners'),
         )}
       />
       <div className="grid gap-4 md:grid-cols-2">

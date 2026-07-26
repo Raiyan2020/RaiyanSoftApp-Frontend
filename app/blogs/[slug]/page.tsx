@@ -8,6 +8,8 @@ import CtaBlock from '@/components/public/cta-block';
 import JsonLd from '@/components/public/json-ld';
 import { createArticleJsonLd, createBreadcrumbJsonLd, createPublicMetadata, getCanonicalUrl } from '@/lib/site';
 import { fetchPublicBlog, fetchPublicBlogs } from '@/features/blog/services/blog-api';
+import { translateMessage } from '@/lib/i18n-utils';
+import { getServerLanguage } from '@/lib/language.server';
 
 type PageProps = { params: Promise<{ slug: string }> };
 
@@ -18,12 +20,13 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const post = await fetchPublicBlog(slug);
+  const language = await getServerLanguage();
+  const post = await fetchPublicBlog(slug, language);
 
   if (!post) {
     return createPublicMetadata({
-      title: 'المقال غير موجود',
-      description: 'لم نتمكن من العثور على هذا المقال في مدونة ريان سوفت.',
+      title: translateMessage('Article Not Found', language),
+      description: translateMessage('We could not find this article on the Raiyan Soft blog.', language),
       path: '/blogs',
     });
   }
@@ -38,7 +41,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
-  const post = await fetchPublicBlog(slug);
+  const language = await getServerLanguage();
+  const tt = (message: string) => translateMessage(message, language);
+  const post = await fetchPublicBlog(slug, language);
   if (!post) notFound();
 
   const relatedPosts = [
@@ -54,19 +59,19 @@ export default async function BlogPostPage({ params }: PageProps) {
       <JsonLd
         id={`article-breadcrumbs-${post.slug}`}
         data={createBreadcrumbJsonLd([
-          { name: 'الرئيسية', url: getCanonicalUrl('/') },
-          { name: 'المدونة', url: getCanonicalUrl('/blogs') },
+          { name: tt('Home'), url: getCanonicalUrl('/') },
+          { name: tt('Blog'), url: getCanonicalUrl('/blogs') },
           { name: post.title, url: getCanonicalUrl(`/blogs/${post.slug}`) },
         ])}
       />
 
       <PageHero
-        eyebrow={post.category?.title || 'المدونة'}
+        eyebrow={post.category?.title || tt('Blog')}
         title={post.title}
         description={post.excerpt}
         breadcrumbs={[
-          { label: 'الرئيسية', href: '/' },
-          { label: 'المدونة', href: '/blogs' },
+          { label: tt('Home'), href: '/' },
+          { label: tt('Blog'), href: '/blogs' },
           ...(post.category ? [{ label: post.category.title, href: categoryHref }] : []),
           { label: post.title, href: `/blogs/${post.slug}` },
         ]}
@@ -88,7 +93,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           </article>
 
           <aside className="rounded-lg border border-cyan-950/10 bg-slate-50 p-5 dark:border-white/10 dark:bg-white/5">
-            <p className="text-sm font-black text-slate-950 dark:text-white">مقالات ذات صلة</p>
+            <p className="text-sm font-black text-slate-950 dark:text-white">{tt('Related Articles')}</p>
             <div className="mt-4 space-y-3">
               {relatedPosts.length > 0 ? (
                 relatedPosts.map((item) => (
@@ -98,7 +103,7 @@ export default async function BlogPostPage({ params }: PageProps) {
                 ))
               ) : (
                 <Link href="/blogs" className="block rounded-lg bg-white p-4 text-sm font-bold text-primary dark:bg-white/5">
-                  العودة إلى كل المقالات
+                  {tt('Back to All Articles')}
                 </Link>
               )}
             </div>
@@ -106,7 +111,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         </div>
       </SectionShell>
 
-      <CtaBlock title="تحتاج مساعدة في قرار المنتج؟" description="اكتب لنا عن فكرتك وسنساعدك في ترتيب النطاق والخطوة القادمة." />
+      <CtaBlock title={tt('Need help with a product decision?')} description={tt("Write to us about your idea and we'll help you organize the scope and the next step.")} />
     </PublicLayout>
   );
 }

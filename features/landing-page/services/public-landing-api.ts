@@ -1,4 +1,5 @@
 import { apiService, BASE_URL, type ApiResponse } from '@/lib/api-service';
+import { translateMessage } from '@/lib/i18n-utils';
 import type {
   LandingAboutUsData,
   LandingAboutUsFormPayload,
@@ -35,7 +36,7 @@ function getApiErrorMessage(response: ApiResponse<unknown>): string {
     const messages = Object.values(response.errors).flat();
     if (messages.length > 0) return messages.join(' ');
   }
-  return response.message || 'Request failed.';
+  return translateMessage(response.message || 'Request failed.');
 }
 
 async function fetchUserJson<T>(path: string, language: Language = 'ar'): Promise<T | null> {
@@ -46,7 +47,7 @@ async function fetchUserJson<T>(path: string, language: Language = 'ar'): Promis
         Accept: 'application/json',
         'Accept-Language': language,
       },
-      next: { revalidate: 60 },
+      cache: 'no-store',
     });
     if (!response.ok) return null;
     const json = await response.json();

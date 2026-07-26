@@ -1,4 +1,5 @@
 import { apiService, BASE_URL } from '@/lib/api-service';
+import type { AppLanguage } from '@/lib/language';
 import type {
   BlogCategory,
   BlogCategoryDetail,
@@ -27,11 +28,11 @@ function unwrapItem<T>(data: ApiResponseShape<T> | null | undefined): T | null {
   return data as T;
 }
 
-export async function fetchPublicBlogs(): Promise<BlogListItem[]> {
+export async function fetchPublicBlogs(language: AppLanguage = 'ar'): Promise<BlogListItem[]> {
   try {
     const response = await fetch(`${BASE_URL}/user/blogs`, {
-      headers: { Accept: 'application/json' },
-      next: { revalidate: 60 },
+      headers: { Accept: 'application/json', 'Accept-Language': language },
+      cache: 'no-store',
     });
     const json = await response.json().catch(() => null);
     if (!response.ok || !json?.status) return [];
@@ -41,40 +42,40 @@ export async function fetchPublicBlogs(): Promise<BlogListItem[]> {
   }
 }
 
-export async function fetchPublicBlog(slug: string): Promise<BlogDetailItem | null> {
+export async function fetchPublicBlog(slug: string, language: AppLanguage = 'ar'): Promise<BlogDetailItem | null> {
   const response = await fetch(`${BASE_URL}/user/blogs/${slug}`, {
-    headers: { Accept: 'application/json' },
-    next: { revalidate: 60 },
+    headers: { Accept: 'application/json', 'Accept-Language': language },
+    cache: 'no-store',
   });
   const json = await response.json().catch(() => null);
   if (!response.ok || !json?.status) return null;
   return unwrapItem<BlogDetailItem>(json.data);
 }
 
-export async function fetchPublicBlogCategories(): Promise<BlogCategory[]> {
+export async function fetchPublicBlogCategories(language: AppLanguage = 'ar'): Promise<BlogCategory[]> {
   const response = await fetch(`${BASE_URL}/user/blog-categories`, {
-    headers: { Accept: 'application/json' },
-    next: { revalidate: 60 },
+    headers: { Accept: 'application/json', 'Accept-Language': language },
+    cache: 'no-store',
   });
   const json = await response.json().catch(() => null);
   if (!response.ok || !json?.status) return [];
   return unwrapList<BlogCategory>(json.data);
 }
 
-export async function fetchPublicBlogCategory(slug: string): Promise<BlogCategory | null> {
+export async function fetchPublicBlogCategory(slug: string, language: AppLanguage = 'ar'): Promise<BlogCategory | null> {
   const response = await fetch(`${BASE_URL}/user/blog-categories/${slug}`, {
-    headers: { Accept: 'application/json' },
-    next: { revalidate: 60 },
+    headers: { Accept: 'application/json', 'Accept-Language': language },
+    cache: 'no-store',
   });
   const json = await response.json().catch(() => null);
   if (!response.ok || !json?.status) return null;
   return unwrapItem<BlogCategory>(json.data);
 }
 
-export async function fetchPublicBlogCategoryBlogs(slug: string): Promise<BlogListItem[]> {
+export async function fetchPublicBlogCategoryBlogs(slug: string, language: AppLanguage = 'ar'): Promise<BlogListItem[]> {
   const response = await fetch(`${BASE_URL}/user/blog-categories/${slug}/blogs`, {
-    headers: { Accept: 'application/json' },
-    next: { revalidate: 60 },
+    headers: { Accept: 'application/json', 'Accept-Language': language },
+    cache: 'no-store',
   });
   const json = await response.json().catch(() => null);
   if (!response.ok || !json?.status) return [];

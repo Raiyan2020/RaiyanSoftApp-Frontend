@@ -15,6 +15,7 @@ import Contact from '@/components/landing/Contact';
 import Footer from '@/components/landing/Footer';
 import type { LandingPageContent } from '@/features/landing-page';
 import { useLanding } from './use-landing';
+import { useTranslation } from '@/lib/i18nContext';
 
 type LandingBlogPost = { slug: string; title: string; excerpt: string; category?: string };
 
@@ -32,13 +33,14 @@ export default function LandingPage({ blogPosts = [], homeData }: LandingPagePro
     pageVariants,
     sectionVariants,
   } = useLanding();
+  const { t } = useTranslation();
 
   return (
     <div
       className="min-h-screen bg-[var(--bg)] text-[var(--text)]"
       data-landing-home-heroes={homeData?.heroes.length ?? 0}
     >
-      <a href="#main-content" className="skip-link">تجاوز إلى المحتوى</a>
+      <a href="#main-content" className="skip-link">{t('Skip to content')}</a>
       <div className="scroll-progress" style={{ '--scroll-progress': `${scrollProgress}%` } as React.CSSProperties} />
       <Navbar dark={dark} onToggleDark={toggleDark} />
       <motion.main id="main-content" variants={pageVariants} initial={false} animate="visible">

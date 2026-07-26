@@ -20,6 +20,8 @@ export default function WizardReferenceApp({
       <div className="space-y-3">
         {closestApps.map((opt) => {
           const isSelected = selectedApp === opt;
+          const translated = t(`ref.${opt}`);
+          const label = translated === `ref.${opt}` ? opt : translated;
           return (
             <button
               type="button"
@@ -31,7 +33,7 @@ export default function WizardReferenceApp({
                   : 'bg-[var(--surface-3)] border-[var(--border)] text-[var(--text-muted)] hover:bg-[var(--surface-3)]'
               }`}
             >
-              <span className="font-medium text-lg">{t(`ref.${opt}`)}</span>
+              <span className="font-medium text-lg">{label}</span>
               {isSelected ? <Check size={20} className="text-primary" /> : null}
             </button>
           );

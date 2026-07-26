@@ -9,6 +9,7 @@ import PhoneInput from '@/components/ui/phone-input';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 import { usePhoneAuth } from '@/features/auth';
 
 interface LeadProjectAuthGateProps {
@@ -17,7 +18,7 @@ interface LeadProjectAuthGateProps {
 }
 
 export default function LeadProjectAuthGate({ onAuthenticated, submitError }: LeadProjectAuthGateProps) {
-  const { t, dir } = useTranslation();
+  const { t, dir, language } = useTranslation();
   const { step, phone, isNewUser, newUserOtpSent, loading, error, message, checkPhone, submitRegistrationDetails, submitOtp } = usePhoneAuth({
     onSuccess: onAuthenticated,
   });
@@ -28,7 +29,7 @@ export default function LeadProjectAuthGate({ onAuthenticated, submitError }: Le
 
   const activeError = localError || error || submitError;
   const needsNameBeforeOtp = Boolean(isNewUser && !newUserOtpSent);
-  const sendOtpLabel = dir === 'rtl' ? 'إنشاء الحساب وإرسال رمز التحقق' : 'Create account and send OTP';
+  const sendOtpLabel = translateMessage('Create account and send OTP', language);
 
   const handlePhoneSubmit = () => {
     setLocalError(null);
@@ -71,12 +72,10 @@ export default function LeadProjectAuthGate({ onAuthenticated, submitError }: Le
   return (
     <div className="flex h-full flex-col p-6 pt-10" dir={dir}>
       <h2 className="mb-2 text-2xl font-bold text-[var(--text)]">
-        {dir === 'rtl' ? 'سجّل للمتابعة' : 'Sign in to continue'}
+        {translateMessage('Sign in to continue', language)}
       </h2>
       <p className="mb-6 text-sm text-[var(--text-muted)]">
-        {dir === 'rtl'
-          ? 'أدخل رقم هاتفك لإرسال طلبك عبر النظام.'
-          : 'Enter your phone number to submit your project request.'}
+        {translateMessage('Enter your phone number to submit your project request.', language)}
       </p>
 
       {activeError ? (
@@ -116,9 +115,10 @@ export default function LeadProjectAuthGate({ onAuthenticated, submitError }: Le
           ) : null}
           {needsNameBeforeOtp ? (
             <div className="rounded-xl border border-primary/20 bg-primary/10 p-3 text-start text-xs font-medium leading-5 text-primary">
-              {dir === 'rtl'
-                ? 'بعد إدخال الاسم اضغط الزر بالأسفل وسنرسل رمز التحقق إلى هاتفك.'
-                : 'After entering your name, press the button below and we will send the OTP to your phone.'}
+              {translateMessage(
+                'After entering your name, press the button below and we will send the OTP to your phone.',
+                language
+              )}
             </div>
           ) : (
             <Input

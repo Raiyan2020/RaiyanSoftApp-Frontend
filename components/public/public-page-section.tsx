@@ -23,8 +23,8 @@ export default function PublicSimplePage({
   path,
   seoKey,
   children,
-  ctaTitle = 'جاهز نرتب الخطوة التالية؟',
-  ctaDescription = 'شاركنا فكرة المشروع وسنقترح المسار الأنسب للبدء بوضوح.',
+  ctaTitle = "Ready to plan the next step?",
+  ctaDescription = "Share your project idea and we'll suggest the clearest path to get started.",
 }: PublicSimplePageProps) {
   const resolvedPath = path ?? (seoKey ? pageSeo[seoKey].path : '/');
   const jsonLdTitle = seoKey ? pageSeo[seoKey].title : title;
@@ -38,8 +38,8 @@ export default function PublicSimplePage({
         title={title}
         description={description}
         actions={[
-          { label: 'اطلب عرض سعر', href: '/quote' },
-          { label: 'تواصل معنا', href: '/contact', variant: 'secondary' },
+          { label: 'Get a Quote', href: '/quote' },
+          { label: 'Contact Us', href: '/contact', variant: 'secondary' },
         ]}
       />
       <SectionShell>{children}</SectionShell>

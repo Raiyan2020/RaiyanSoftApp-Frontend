@@ -16,76 +16,76 @@ export type PublicService = {
 export const publicServices: PublicService[] = [
   {
     slug: 'mobile-app-development',
-    title: 'تطوير تطبيقات الجوال',
-    shortTitle: 'تطبيقات الجوال',
-    description: 'تصميم وتطوير تطبيقات iOS و Android بتجربة عربية واضحة ومسار إطلاق قابل للتوسع.',
-    outcomes: ['تطبيق جاهز للنشر', 'لوحة تحكم عند الحاجة', 'خطة تحسين بعد الإطلاق'],
-    deliverables: ['تحليل المتطلبات', 'تصميم UX/UI', 'تطوير التطبيق', 'اختبارات وتجهيز المتاجر'],
+    title: 'Mobile App Development',
+    shortTitle: 'Mobile Apps',
+    description: 'Design and development of iOS and Android apps with a clear user experience and a scalable launch path.',
+    outcomes: ['A launch-ready app', 'An admin dashboard when needed', 'A post-launch optimization plan'],
+    deliverables: ['Requirements analysis', 'UX/UI design', 'App development', 'Testing and store submission preparation'],
   },
   {
     slug: 'web-development',
-    title: 'تطوير المواقع والمنصات',
-    shortTitle: 'المواقع والمنصات',
-    description: 'بناء مواقع ومنصات سريعة ومتوافقة مع محركات البحث ومهيأة للتحويل والقياس.',
-    outcomes: ['موقع سريع', 'هيكل SEO واضح', 'تجربة متجاوبة بالكامل'],
-    deliverables: ['خريطة صفحات', 'تصميم واجهات', 'تطوير Next.js', 'تهيئة الأداء والقياس'],
+    title: 'Web & Platform Development',
+    shortTitle: 'Websites & Platforms',
+    description: 'Building fast, SEO-friendly websites and platforms optimized for conversion and measurement.',
+    outcomes: ['A fast website', 'A clear SEO structure', 'A fully responsive experience'],
+    deliverables: ['Sitemap planning', 'Interface design', 'Next.js development', 'Performance and analytics setup'],
   },
   {
     slug: 'ecommerce-development',
-    title: 'تطوير المتاجر الإلكترونية',
-    shortTitle: 'المتاجر الإلكترونية',
-    description: 'تجارب بيع متكاملة من عرض المنتج حتى الدفع مع مسارات شراء مختصرة وواضحة.',
-    outcomes: ['متجر جاهز للبيع', 'ربط دفع وشحن', 'تجربة شراء محسنة'],
-    deliverables: ['كتالوج المنتجات', 'صفحات البيع', 'الدفع والشحن', 'تقارير ومتابعة'],
+    title: 'E-commerce Development',
+    shortTitle: 'Online Stores',
+    description: 'Complete selling experiences from product display through checkout, with short and clear purchase paths.',
+    outcomes: ['A store ready to sell', 'Payment and shipping integration', 'An optimized purchase experience'],
+    deliverables: ['Product catalog', 'Sales pages', 'Payment and shipping', 'Reports and tracking'],
   },
   {
     slug: 'branding-ui-ux',
-    title: 'الهوية البصرية وتصميم UX/UI',
-    shortTitle: 'الهوية والتجربة',
-    description: 'نظام بصري وتجربة استخدام تمنح المنتج حضورا واضحا وقابلا للتطبيق عبر القنوات.',
-    outcomes: ['هوية موحدة', 'واجهات قابلة للتنفيذ', 'إرشادات استخدام'],
-    deliverables: ['شعار وألوان', 'نظام تصميم', 'نماذج واجهات', 'مواد إطلاق'],
+    title: 'Branding and UX/UI Design',
+    shortTitle: 'Branding & Experience',
+    description: 'A visual system and user experience that give the product a clear, consistent presence across channels.',
+    outcomes: ['A unified identity', 'Implementation-ready interfaces', 'Usage guidelines'],
+    deliverables: ['Logo and color palette', 'Design system', 'Interface mockups', 'Launch materials'],
   },
 ];
 
 export const publicFaqs = [
   {
-    question: 'كم يستغرق تنفيذ المشروع؟',
-    answer: 'يعتمد على النطاق. المواقع التعريفية قد تبدأ من أسبوعين، بينما التطبيقات والمنصات تمر غالبا بمراحل من 4 إلى 12 أسبوعا.',
+    question: 'How long does a project take to complete?',
+    answer: 'It depends on the scope. Informational websites can start from two weeks, while apps and platforms typically go through phases lasting 4 to 12 weeks.',
   },
   {
-    question: 'هل يمكن البدء بمرحلة صغيرة؟',
-    answer: 'نعم. يمكن البدء بمرحلة اكتشاف أو نسخة MVP لتقليل المخاطر وتوضيح التكلفة قبل التوسع.',
+    question: 'Can we start with a small phase?',
+    answer: 'Yes. You can start with a discovery phase or an MVP version to reduce risk and clarify cost before scaling up.',
   },
   {
-    question: 'هل تساعدون في التصميم فقط أو البرمجة فقط؟',
-    answer: 'يمكن تنفيذ التصميم أو البرمجة أو الرحلة كاملة، لكن أفضل النتائج تحدث عندما ترتبط تجربة المستخدم بالتنفيذ من البداية.',
+    question: 'Do you help with design only or development only?',
+    answer: "We can deliver design only, development only, or the full journey - but the best results happen when user experience and implementation are connected from the start.",
   },
 ];
 
 export const pricingPackages = [
   {
-    name: 'انطلاقة',
-    description: 'مناسب للمواقع التعريفية والحضور الرقمي الأول.',
-    features: ['صفحات أساسية', 'تصميم متجاوب', 'تهيئة SEO أساسية', 'نموذج تواصل'],
+    name: 'Launch',
+    description: 'Suitable for informational websites and your first digital presence.',
+    features: ['Core pages', 'Responsive design', 'Basic SEO setup', 'Contact form'],
   },
   {
-    name: 'نمو',
-    description: 'مناسب للشركات التي تحتاج تجربة أعمق وتحويلات أكثر وضوحا.',
-    features: ['هيكل صفحات متقدم', 'مكونات قابلة لإعادة الاستخدام', 'تحسين أداء', 'ربط تحليلات'],
+    name: 'Growth',
+    description: 'Suitable for companies that need a deeper experience and clearer conversions.',
+    features: ['Advanced page structure', 'Reusable components', 'Performance optimization', 'Analytics integration'],
   },
   {
-    name: 'منتج مخصص',
-    description: 'مناسب للتطبيقات والمنصات والمتاجر التي تحتاج تكاملات خاصة.',
-    features: ['تحليل منتج', 'تصميم UX/UI', 'تطوير مخصص', 'اختبارات وإطلاق'],
+    name: 'Custom Product',
+    description: 'Suitable for apps, platforms, and stores that need custom integrations.',
+    features: ['Product analysis', 'UX/UI design', 'Custom development', 'Testing and launch'],
   },
 ];
 
 export const portfolioItems = [
   {
     slug: 'sample-digital-platform',
-    title: 'منصة رقمية مخصصة',
-    summary: 'نموذج داخلي يوضح بنية دراسة الحالة إلى حين إضافة مشاريع حقيقية معتمدة.',
+    title: 'Custom Digital Platform',
+    summary: 'An internal sample that illustrates the case study structure until real, approved projects are added.',
     isPlaceholder: true,
     serviceSlug: 'web-development' satisfies ServiceSlug,
   },
@@ -94,37 +94,37 @@ export const portfolioItems = [
 export const blogPosts = [
   {
     slug: 'estimate-digital-product-cost',
-    title: 'كيف تحدد تكلفة منتجك الرقمي قبل البدء؟',
-    excerpt: 'إطار مبسط لفهم نطاق المشروع والعوامل التي تؤثر في التكلفة والمدة.',
-    category: 'إدارة المنتج',
+    title: 'How do you estimate your digital product cost before you start?',
+    excerpt: 'A simple framework for understanding project scope and the factors that affect cost and duration.',
+    category: 'Product Management',
     body: [
-      'تبدأ أي تقديرات جيدة من تعريف واضح للنطاق، وليس من رقم عشوائي أو افتراض سريع.',
-      'كلما كانت المتطلبات أوضح، أصبح من الأسهل تقدير الوقت والتكلفة والمخاطر المحتملة.',
-      'أفضل طريقة هي تقسيم الفكرة إلى مخرجات صغيرة ثم ترتيبها حسب الأولوية لتحديد النسخة الأولى.',
+      'Any good estimate starts from a clear definition of scope, not from a random number or a quick guess.',
+      'The clearer the requirements, the easier it becomes to estimate time, cost, and potential risks.',
+      'The best approach is to break the idea into small deliverables, then prioritize them to define the first version.',
     ].join('\n'),
     isPlaceholder: true,
   },
   {
     slug: 'ux-content-that-converts',
-    title: 'كيف تساعد تجربة المستخدم والمحتوى في رفع التحويل؟',
-    excerpt: 'ربط الرسائل مع واجهة واضحة يقلل الاحتكاك ويزيد فرص الإكمال.',
-    category: 'UX وكتابة المحتوى',
+    title: 'How do user experience and content help increase conversion?',
+    excerpt: 'Connecting your messaging with a clear interface reduces friction and increases completion rates.',
+    category: 'UX & Content Writing',
     body: [
-      'لا يكفي أن تكون الواجهة جميلة، بل يجب أن تشرح الخطوة التالية بوضوح للمستخدم.',
-      'المحتوى المختصر والمباشر يخفف التردد ويجعل اتخاذ القرار أسهل.',
-      'عندما تعمل الرسالة والمحتوى والتصميم معاً، يصبح التحويل جزءاً طبيعياً من التجربة.',
+      "It isn't enough for the interface to be beautiful - it must also clearly explain the next step to the user.",
+      'Short, direct content eases hesitation and makes decision-making easier.',
+      'When messaging, content, and design work together, conversion becomes a natural part of the experience.',
     ].join('\n'),
     isPlaceholder: true,
   },
   {
     slug: 'launching-with-a-minimum-viable-scope',
-    title: 'الإطلاق بنطاق MVP: كيف تبدأ من دون مبالغة؟',
-    excerpt: 'استخدم نسخة أولى صغيرة لتتعلم بسرعة وتبني على نتائج حقيقية.',
-    category: 'إدارة المنتج',
+    title: 'Launching with an MVP scope: how do you start without overdoing it?',
+    excerpt: 'Use a small first version to learn quickly and build on real results.',
+    category: 'Product Management',
     body: [
-      'النطاق الأصغر لا يعني منتجاً أضعف، بل يعني تركيزاً أكبر على القيمة الأساسية.',
-      'النسخة الأولى يجب أن تختبر الفرضيات المهمة قبل الاستثمار في التفاصيل الثانوية.',
-      'كل دورة إطلاق مبكر تمنحك بيانات أفضل لاتخاذ قرار التطوير التالي.',
+      'A smaller scope does not mean a weaker product - it means a stronger focus on core value.',
+      'The first version should test the important hypotheses before investing in secondary details.',
+      'Every early-launch cycle gives you better data for making the next development decision.',
     ].join('\n'),
     isPlaceholder: true,
   },
@@ -132,26 +132,26 @@ export const blogPosts = [
 
 export const testimonials = [
   {
-    quote: 'تضاف الشهادات الحقيقية بعد اعتمادها من العملاء.',
-    author: 'فريق ريان سوفت',
-    role: 'محتوى مؤقت',
+    quote: 'Real testimonials will be added here once approved by clients.',
+    author: 'Raiyan Soft team',
+    role: 'Temporary content',
     isPlaceholder: true,
   },
 ];
 
 export const partners = [
   {
-    name: 'شركاء التقنية',
-    description: 'تضاف أسماء الشركاء الحقيقيين بعد اعتمادها.',
+    name: 'Technology Partners',
+    description: 'The names of real partners will be added here once approved.',
     isPlaceholder: true,
   },
 ];
 
 export const teamMembers = [
   {
-    name: 'فريق ريان سوفت',
-    role: 'فريق المنتج والتطوير',
-    bio: 'يتم تحديث هذه الصفحة بأسماء الفريق المعتمدة لاحقا.',
+    name: 'Raiyan Soft team',
+    role: 'Product and Development Team',
+    bio: 'This page will be updated with approved team member names later.',
     isPlaceholder: true,
   },
 ];

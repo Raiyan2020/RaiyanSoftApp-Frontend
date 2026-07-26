@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useMemo, useState } from 'react';
 import Button from '@/components/ui/button';
+import { translateMessage } from './i18n-utils';
 import {
   Dialog,
   DialogContent,
@@ -88,19 +89,19 @@ export function ConfirmProvider({ children }: { children: React.ReactNode }) {
       <Dialog open={state.open} onOpenChange={(open) => !open && close(false)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{state.title}</DialogTitle>
-            <DialogDescription>{state.message}</DialogDescription>
+            <DialogTitle>{translateMessage(state.title)}</DialogTitle>
+            <DialogDescription>{translateMessage(state.message)}</DialogDescription>
           </DialogHeader>
           <DialogFooter className="mt-6">
             <Button variant="outline" type="button" onClick={() => close(false)}>
-              {state.cancelText}
+              {translateMessage(state.cancelText)}
             </Button>
             <Button
               variant={state.destructive ? 'destructive' : 'primary'}
               type="button"
               onClick={() => close(true)}
             >
-              {state.confirmText}
+              {translateMessage(state.confirmText)}
             </Button>
           </DialogFooter>
         </DialogContent>

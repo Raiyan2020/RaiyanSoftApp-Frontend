@@ -98,7 +98,7 @@ export default function ProfileEditDialog({
                   render={({ field, fieldState }) => (
                     <Input
                       {...field}
-                      label="First name"
+                      label="First Name"
                       icon={<UserIcon size={16} />}
                       error={fieldState.error?.message}
                       autoComplete="given-name"
@@ -111,7 +111,7 @@ export default function ProfileEditDialog({
                   render={({ field, fieldState }) => (
                     <Input
                       {...field}
-                      label="Last name"
+                      label="Last Name"
                       icon={<UserIcon size={16} />}
                       error={fieldState.error?.message}
                       autoComplete="family-name"
@@ -140,7 +140,7 @@ export default function ProfileEditDialog({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>Phone number</FieldLabel>
+                    <FieldLabel>Phone Number</FieldLabel>
                     <PhoneInput
                       value={field.value}
                       onChange={field.onChange}
@@ -156,7 +156,7 @@ export default function ProfileEditDialog({
               {error ? (
                 <ErrorAlert message={error} />
               ) : null}
-              <SuccessToast message={success ? 'Profile updated successfully.' : null} />
+              <SuccessToast message={success ? translateMessage('Profile updated successfully.') : null} />
 
               <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" onClick={onClose} disabled={isSaving}>

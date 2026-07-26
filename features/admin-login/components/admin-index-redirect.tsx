@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { authService } from '@/lib/auth-service';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminIndexRedirect() {
   const router = useRouter();
@@ -17,7 +18,7 @@ export default function AdminIndexRedirect() {
 
   return (
     <div className="flex min-h-screen w-full items-center justify-center bg-[var(--bg)] text-sm font-semibold text-[var(--text-muted)]">
-      Loading admin dashboard...
+      {translateMessage('Loading admin dashboard...')}
     </div>
   );
 }

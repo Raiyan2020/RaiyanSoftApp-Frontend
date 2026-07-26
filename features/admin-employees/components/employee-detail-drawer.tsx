@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { X, Mail, Phone, Ban, CheckCircle, Trash2, Loader2 } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
+import { useTranslation } from '@/lib/i18nContext';
 import { AdminEmployee } from '../types/admin-employee.types';
 import {
   formatEmployeeDate,
@@ -35,6 +36,7 @@ export default function EmployeeDetailDrawer({
   actionMessage,
   actionError,
 }: EmployeeDetailDrawerProps) {
+  const { dir } = useTranslation();
   const fullName = getEmployeeFullName(employee);
   const isBlocked = isEmployeeBlocked(employee);
 
@@ -48,12 +50,12 @@ export default function EmployeeDetailDrawer({
         className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
       />
       <motion.div
-        initial={{ x: '100%' }}
+        initial={{ x: dir === 'rtl' ? '-100%' : '100%' }}
         animate={{ x: 0 }}
-        exit={{ x: '100%' }}
+        exit={{ x: dir === 'rtl' ? '-100%' : '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         onClick={(event) => event.stopPropagation()}
-        className="fixed inset-y-0 right-0 z-50 w-full max-w-md bg-[var(--surface)] border-l border-[var(--border)] shadow-2xl flex flex-col"
+        className="fixed inset-y-0 end-0 z-50 w-full max-w-md bg-[var(--surface)] border-s border-[var(--border)] shadow-2xl flex flex-col"
       >
         <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
           <h2 className="text-xl font-bold text-[var(--text)]">{translateMessage('Employee Details')}</h2>
@@ -74,7 +76,7 @@ export default function EmployeeDetailDrawer({
               <Avatar name={fullName} size="xl" className="w-full h-full text-3xl border-4 border-[var(--border)] shadow-xl" />
             </div>
             <h3 className="text-2xl font-bold text-[var(--text)]">{fullName}</h3>
-            <p className="text-[var(--text-muted)]">{formatRoleLabel(employee.role)}</p>
+            <p className="text-[var(--text-muted)]">{translateMessage(formatRoleLabel(employee.role))}</p>
           </div>
 
           <div className="space-y-4">
@@ -88,13 +90,13 @@ export default function EmployeeDetailDrawer({
               <div className="text-xs text-[var(--text-muted)] mb-1 flex items-center gap-2">
                 <Phone size={12} /> {translateMessage('Phone')}
               </div>
-              <div className="text-[var(--text)]">{employee.phone || 'N/A'}</div>
+              <div className="text-[var(--text)]">{employee.phone || translateMessage('N/A')}</div>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
                 <div className="text-xs text-[var(--text-muted)] mb-1">{translateMessage('Status')}</div>
                 <div className={isBlocked ? 'text-red-400' : 'text-emerald-400'}>
-                  {getEmployeeStatusLabel(employee)}
+                  {translateMessage(getEmployeeStatusLabel(employee))}
                 </div>
               </div>
               <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">

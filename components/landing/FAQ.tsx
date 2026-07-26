@@ -49,7 +49,7 @@ export default function FAQ({ homeData }: FAQProps) {
                   aria-expanded={open === i}
                   aria-controls={`faq-panel-${i}`}
                 >
-                  <span className={textAlign.includes('right') ? 'text-right' : 'text-left'}>{item.q}</span>
+                  <span className="text-start">{item.q}</span>
                   <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary transition-transform duration-300 ${open === i ? 'rotate-45' : 'rotate-0'}`}>+</span>
                 </button>
               </h3>

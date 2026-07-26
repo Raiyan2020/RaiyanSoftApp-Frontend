@@ -160,7 +160,7 @@ export function useLeadProjectWizard({
       const data = response.data as { request_id?: string } | [];
       const requestId = Array.isArray(data) ? undefined : data?.request_id;
       await queryClient.invalidateQueries({ queryKey: leadProjectKeys.all });
-      globalToast.success(response.message || (dir === 'rtl' ? 'تم إنشاء الطلب بنجاح.' : 'Lead created successfully.'));
+      globalToast.success(response.message || 'Lead created successfully.');
       clearLeadProjectDraft();
       onComplete(requestId);
     } catch (err: any) {

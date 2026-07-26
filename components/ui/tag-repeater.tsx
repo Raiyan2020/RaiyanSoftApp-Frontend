@@ -83,7 +83,7 @@ export default function TagRepeater({
                   type="text"
                   value={tag.name.ar}
                   onChange={(e) => updateName(i, 'ar', e.target.value)}
-                  placeholder="عربي"
+                  placeholder={translateMessage('Type in Arabic')}
                   aria-invalid={Boolean(errors[i]?.ar)}
                   className={`w-full rounded-lg border bg-[var(--surface)] px-2.5 py-2 text-sm focus:outline-none ${
                     errors[i]?.ar ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
@@ -97,7 +97,7 @@ export default function TagRepeater({
                   type="text"
                   value={tag.name.en}
                   onChange={(e) => updateName(i, 'en', e.target.value)}
-                  placeholder={translateMessage('English (placeholder)')}
+                  placeholder={translateMessage('Type in English')}
                   aria-invalid={Boolean(errors[i]?.en)}
                   className={`w-full rounded-lg border bg-[var(--surface)] px-2.5 py-2 text-sm focus:outline-none ${
                     errors[i]?.en ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'

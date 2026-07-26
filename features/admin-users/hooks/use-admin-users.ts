@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { globalToast } from '@/lib/toast-context';
+import { translateMessage } from '@/lib/i18n-utils';
 import { UserProject } from '@/lib/userProjectsStore';
 import { fetchAdminUsers, toggleAdminUserBlock } from '../services/admin-users-api';
 import { fetchAdminProjects } from '@/features/admin-user-projects';
@@ -119,12 +120,12 @@ export function useAdminUsers() {
   }), [filterStatus, searchTerm, users]);
 
   const formatDate = (ts: number) => {
-    if (!ts) return 'N/A';
+    if (!ts) return translateMessage('N/A');
     return new Date(ts).toLocaleDateString('en-UK', { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   const formatDateTime = (ts: number) => {
-    if (!ts) return 'N/A';
+    if (!ts) return translateMessage('N/A');
     return new Date(ts).toLocaleString('en-UK', {
       day: 'numeric',
       month: 'short',

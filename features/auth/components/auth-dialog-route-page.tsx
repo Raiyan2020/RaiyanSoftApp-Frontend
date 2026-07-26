@@ -8,6 +8,7 @@ import AuthDialog from './auth-dialog';
 import SafeImage from '@/components/ui/safe-image';
 import { guestStore } from '@/lib/guestStore';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AuthDialogRoutePage() {
   const router = useRouter();
@@ -30,7 +31,7 @@ export default function AuthDialogRoutePage() {
         <div className="flex justify-center mb-8">
           <SafeImage
             src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
-            alt="Logo"
+            alt={translateMessage('Logo')}
             className="w-16 h-16 object-contain"
           />
         </div>

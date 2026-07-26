@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Trash2, Download } from 'lucide-react';
 import SafeImage from '@/components/ui/safe-image';
+import { translateMessage } from '@/lib/i18n-utils';
 import { UploadedFile } from '../hooks/use-file-manager';
 
 interface FileListItemProps {
@@ -33,7 +34,7 @@ export default function FileListItem({ file, dir, isImage, formatSize, onDelete 
         <p className="text-[var(--text-muted)] text-xs flex items-center gap-2">
           <span>{formatSize(file.size)}</span>
           <span className="w-1 h-1 rounded-full bg-[var(--border)]" />
-          <span className="uppercase">{file.type.split('/')[1] || 'FILE'}</span>
+          <span className="uppercase">{file.type.split('/')[1] || translateMessage('FILE')}</span>
         </p>
       </div>
 

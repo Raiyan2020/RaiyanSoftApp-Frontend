@@ -37,13 +37,13 @@ export default function UserProfileTab({ selectedUser, formatDate, formatDateTim
           <div className="text-[var(--text-muted)] text-xs mb-1 flex items-center gap-1">
             <Phone size={12} /> {translateMessage('Phone')}
           </div>
-          <div className="text-[var(--text)] text-sm font-medium">{selectedUser.phone || 'N/A'}</div>
+          <div className="text-[var(--text)] text-sm font-medium">{selectedUser.phone || translateMessage('N/A')}</div>
         </div>
         <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
           <div className="text-[var(--text-muted)] text-xs mb-1 flex items-center gap-1">
             <UserIcon size={12} /> {translateMessage('Role')}
           </div>
-          <div className="text-[var(--text)] text-sm font-medium">{selectedUser.role}</div>
+          <div className="text-[var(--text)] text-sm font-medium">{translateMessage(selectedUser.role)}</div>
         </div>
         <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
           <div className="text-[var(--text-muted)] text-xs mb-1 flex items-center gap-1">

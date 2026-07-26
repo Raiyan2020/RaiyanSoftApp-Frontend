@@ -8,6 +8,7 @@ import CalendarSlotPicker from './calendar-slot-picker';
 import MeetingDetailsForm from './meeting-details-form';
 import BookingSuccessStep from './booking-success-step';
 import ErrorAlert from '@/components/ui/error-alert';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function PublicBookingPage() {
   const router = useRouter();
@@ -114,14 +115,14 @@ export default function PublicBookingPage() {
       </div>
 
       {step === 1 ? (
-        <div className="p-6 border-t border-[var(--border)] bg-[var(--surface)] fixed bottom-0 left-0 right-0 max-w-2xl mx-auto">
+        <div className="p-6 border-t border-[var(--border)] bg-[var(--surface)] fixed bottom-0 start-0 end-0 max-w-2xl mx-auto">
           <button
             type="button"
             onClick={() => setStep(2)}
             disabled={!selectedDate || !selectedTime}
             className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Continue <ChevronRight size={18} />
+            {translateMessage('Continue')} <ChevronRight size={18} className={dir === 'rtl' ? 'rotate-180' : ''} />
           </button>
         </div>
       ) : null}

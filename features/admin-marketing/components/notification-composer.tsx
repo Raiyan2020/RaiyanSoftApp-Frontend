@@ -106,7 +106,7 @@ export default function NotificationComposer({
                 >
                   {!selectedUser ? (
                     <div className="relative" ref={dropdownRef}>
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
+                      <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
                       <input
                         type="text"
                         value={searchQuery}
@@ -116,7 +116,7 @@ export default function NotificationComposer({
                         }}
                         onFocus={() => setShowUserDropdown(true)}
                         placeholder={translateMessage('Search user by name, email, or phone...')}
-                        className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
+                        className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
                       />
 
                       <AnimatePresence>
@@ -125,7 +125,7 @@ export default function NotificationComposer({
                             initial={false}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
-                            className="absolute top-full left-0 right-0 mt-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl shadow-2xl z-50 overflow-hidden"
+                            className="absolute top-full start-0 end-0 mt-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl shadow-2xl z-50 overflow-hidden"
                           >
                             {filteredUsers.length > 0 ? (
                               filteredUsers.map((user) => (
@@ -133,7 +133,7 @@ export default function NotificationComposer({
                                   key={user.id}
                                   type="button"
                                   onClick={() => handleUserSelect(user)}
-                                  className="w-full text-left p-3 hover:bg-white/5 border-b border-[var(--border)] last:border-0 flex items-center gap-3 transition-colors"
+                                  className="w-full text-start p-3 hover:bg-white/5 border-b border-[var(--border)] last:border-0 flex items-center gap-3 transition-colors"
                                 >
                                   <Avatar name={`${user.firstName} ${user.lastName}`} size="sm" className="w-8 h-8 text-xs" />
                                   <div>
@@ -143,7 +143,7 @@ export default function NotificationComposer({
                                     <div className="text-xs text-[var(--text-muted)]">{user.email}</div>
                                   </div>
                                   <span
-                                    className={`ml-auto text-[10px] px-2 py-0.5 rounded-full ${
+                                    className={`ms-auto text-[10px] px-2 py-0.5 rounded-full ${
                                       user.status === 'Active'
                                         ? 'bg-emerald-500/10 text-emerald-400'
                                         : 'bg-red-500/10 text-red-400'

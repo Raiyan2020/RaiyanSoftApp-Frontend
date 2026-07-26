@@ -32,7 +32,7 @@ export default function Works({ homeData }: WorksProps) {
   return (
     <section id="works" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-      <div className="pointer-events-none absolute -right-32 top-32 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute -end-32 top-32 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className={`reveal mb-10 flex flex-col gap-4 text-center lg:mb-12 lg:flex-row lg:items-end lg:justify-between ${textAlign}`}>

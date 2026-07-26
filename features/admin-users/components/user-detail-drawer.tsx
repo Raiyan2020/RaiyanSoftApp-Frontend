@@ -7,6 +7,7 @@ import { AdminUser } from '../types/admin-user.types';
 import UserProfileTab from './user-profile-tab';
 import UserProjectsTab from './user-projects-tab';
 import { translateMessage } from '@/lib/i18n-utils';
+import { useTranslation } from '@/lib/i18nContext';
 
 interface UserDetailDrawerProps {
   selectedUser: AdminUser;
@@ -33,6 +34,7 @@ export default function UserDetailDrawer({
   onToggleStatus,
   onDeleteUser,
 }: UserDetailDrawerProps) {
+  const { dir } = useTranslation();
   return (
     <>
       <motion.div
@@ -44,12 +46,12 @@ export default function UserDetailDrawer({
       />
 
       <motion.div
-        initial={{ x: '100%' }}
+        initial={{ x: dir === 'rtl' ? '-100%' : '100%' }}
         animate={{ x: 0 }}
-        exit={{ x: '100%' }}
+        exit={{ x: dir === 'rtl' ? '-100%' : '100%' }}
         transition={{ type: 'spring', damping: 30, stiffness: 300 }}
         onClick={(event) => event.stopPropagation()}
-        className="fixed inset-y-0 right-0 z-50 w-full max-w-lg bg-[var(--surface)] border-l border-[var(--border)] shadow-2xl flex flex-col"
+        className="fixed inset-y-0 end-0 z-50 w-full max-w-lg bg-[var(--surface)] border-s border-[var(--border)] shadow-2xl flex flex-col"
       >
         <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
           <h2 className="text-xl font-bold text-[var(--text)]">{translateMessage('User Details')}</h2>

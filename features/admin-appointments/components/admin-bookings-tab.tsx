@@ -78,12 +78,12 @@ export default function AdminBookingsTab({
     <>
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={17} />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={17} />
           <input
             value={searchQuery}
             onChange={(event) => onSearchQueryChange(event.target.value)}
             placeholder={translateMessage('Search by name...')}
-            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary"
+            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -98,7 +98,7 @@ export default function AdminBookingsTab({
                   : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)] hover:text-[var(--text)]'
               }`}
             >
-              {status.label}
+              {translateMessage(status.label)}
             </button>
           ))}
         </div>
@@ -147,25 +147,25 @@ export default function AdminBookingsTab({
         </div>
 
         <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full text-start">
             <thead>
               <tr className="text-xs text-[var(--text-muted)] uppercase border-b border-[var(--border)]">
-                <th className="pb-3 pl-2">{translateMessage('Date/Time')}</th>
+                <th className="pb-3 ps-2">{translateMessage('Date/Time')}</th>
                 <th className="pb-3">{translateMessage('Subject')}</th>
                 <th className="pb-3">{translateMessage('Type')}</th>
                 <th className="pb-3">{translateMessage('Status')}</th>
-                <th className="pb-3 text-right">{translateMessage('Actions')}</th>
+                <th className="pb-3 text-end">{translateMessage('Actions')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--border)] text-sm">
               {bookings.map((meeting) => (
                 <tr key={meeting.id} className="group hover:bg-white/5 transition-colors">
-                  <td className="py-4 pl-2 text-[var(--text)]">
+                  <td className="py-4 ps-2 text-[var(--text)]">
                     <div className="font-medium">{formatDateTime(meeting.date_time)}</div>
                     <div className="text-xs text-[var(--text-muted)]">{meeting.created_at}</div>
                   </td>
                   <td className="py-4 text-[var(--text)]">
-                    <button type="button" onClick={() => onOpenBooking(meeting)} className="text-left hover:text-primary">
+                    <button type="button" onClick={() => onOpenBooking(meeting)} className="text-start hover:text-primary">
                       <div className="truncate max-w-[220px]">{meeting.subject || '—'}</div>
                       {meeting.notes ? <div className="text-xs text-[var(--text-muted)] truncate max-w-[220px]">{meeting.notes}</div> : null}
                     </button>
@@ -174,7 +174,7 @@ export default function AdminBookingsTab({
                   <td className="py-4">
                     <StatusPill label={meeting.status_label} status={meeting.status} />
                   </td>
-                  <td className="py-4 text-right">
+                  <td className="py-4 text-end">
                     <div className="flex justify-end gap-2">
                       <Button type="button" variant="outline" size="sm" onClick={() => onOpenBooking(meeting)}>
                         {translateMessage('Details')}

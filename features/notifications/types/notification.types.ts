@@ -1,4 +1,5 @@
 import type { ApiNotification } from '../services/notifications-api';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export type NotificationType = 'system' | 'success' | 'warning' | 'message' | 'payment';
 
@@ -15,14 +16,14 @@ export interface Notification {
   data: ApiNotification['data'];
 }
 
-export function mapApiNotification(notification: ApiNotification): Notification {
+export function mapApiNotification(notification: ApiNotification, language?: 'en' | 'ar'): Notification {
   const rawType = notification.data?.type || notification.type || 'system';
 
   return {
     id: notification.id,
     type: mapNotificationType(String(rawType)),
     rawType: String(rawType),
-    title: notification.data?.title || 'Notification',
+    title: notification.data?.title || translateMessage('Notification', language),
     message: notification.data?.message || '',
     timestamp: notification.created_at ? new Date(notification.created_at).getTime() : Date.now(),
     read: Boolean(notification.read_at),

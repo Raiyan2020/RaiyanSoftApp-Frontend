@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { BilingualField } from '@/features/landing-page';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface Props {
   label: string;
@@ -20,7 +21,7 @@ export default function BilingualFieldInputs({ label, value, onChange, multiline
         {(['ar', 'en'] as const).map((lang) => (
           <div key={lang}>
             <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              {lang === 'ar' ? 'Arabic (عربي)' : 'English'}
+              {lang === 'ar' ? translateMessage('Arabic (عربي)') : translateMessage('English')}
             </label>
             {multiline ? (
               <textarea

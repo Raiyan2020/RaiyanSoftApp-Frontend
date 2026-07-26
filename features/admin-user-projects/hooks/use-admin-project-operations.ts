@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { authService } from '@/lib/auth-service';
 import { globalToast } from '@/lib/toast-context';
 import { globalConfirm } from '@/lib/confirm-dialog';
+import { translateMessage } from '@/lib/i18n-utils';
 import { useAdminEmployeesList } from '@/features/admin-employees';
 import {
   ProjectAttachment,
@@ -576,10 +577,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const deleteStage = async (stageId: string) => {
     if (!project) return;
     const confirmed = await globalConfirm.confirm({
-      title: 'Delete stage?',
-      message: 'Delete this stage? Progress updates will remain in history.',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: translateMessage('Delete stage?'),
+      message: translateMessage('Delete this stage? Progress updates will remain in history.'),
+      confirmText: translateMessage('Delete'),
+      cancelText: translateMessage('Cancel'),
       destructive: true,
     });
     if (!confirmed) return;
@@ -614,10 +615,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       const nextValue = Math.max(0, Math.min(100, Number(progressValue) || 0));
       if (nextValue >= 100 && selectedStage.progress < 100) {
         const confirmed = await globalConfirm.confirm({
-          title: 'Mark stage complete?',
-          message: 'Mark this stage complete at 100% progress?',
-          confirmText: 'Mark complete',
-          cancelText: 'Cancel',
+          title: translateMessage('Mark stage complete?'),
+          message: translateMessage('Mark this stage complete at 100% progress?'),
+          confirmText: translateMessage('Mark complete'),
+          cancelText: translateMessage('Cancel'),
         });
         if (!confirmed) {
           setSaving(false);
@@ -696,10 +697,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     const attachment = attachments.find((item) => item.id === attachmentId);
     if (!attachment) return;
     const confirmed = await globalConfirm.confirm({
-      title: 'Delete attachment?',
-      message: 'Delete this attachment?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: translateMessage('Delete attachment?'),
+      message: translateMessage('Delete this attachment?'),
+      confirmText: translateMessage('Delete'),
+      cancelText: translateMessage('Cancel'),
       destructive: true,
     });
     if (!confirmed) return;
@@ -749,10 +750,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const deleteInternalNote = async (noteId: string) => {
     if (!project) return;
     const confirmed = await globalConfirm.confirm({
-      title: 'Delete note?',
-      message: 'Delete this internal note?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: translateMessage('Delete note?'),
+      message: translateMessage('Delete this internal note?'),
+      confirmText: translateMessage('Delete'),
+      cancelText: translateMessage('Cancel'),
       destructive: true,
     });
     if (!confirmed) return;
@@ -889,10 +890,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const deleteWeeklyReport = async (reportId: string) => {
     if (!project) return;
     const confirmed = await globalConfirm.confirm({
-      title: 'Delete report?',
-      message: 'Delete this weekly report?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: translateMessage('Delete report?'),
+      message: translateMessage('Delete this weekly report?'),
+      confirmText: translateMessage('Delete'),
+      cancelText: translateMessage('Cancel'),
       destructive: true,
     });
     if (!confirmed) return;

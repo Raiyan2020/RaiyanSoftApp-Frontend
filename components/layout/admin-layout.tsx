@@ -119,11 +119,11 @@ function SidebarContent({
             : 'border-transparent bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
         }`}
       >
-        {isActive ? <span className="absolute inset-y-2 left-1 w-0.5 rounded-full bg-primary" /> : null}
+        {isActive ? <span className="absolute inset-y-2 start-1 w-0.5 rounded-full bg-primary" /> : null}
         <div className="relative grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[var(--surface-2)] text-[var(--text-muted)] transition-colors group-hover:bg-[var(--surface)] group-hover:text-[var(--text)]">
           <item.icon size={16} />
           {badge > 0 ? (
-            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm z-10">
+            <span className="absolute -top-2 -end-2 bg-red-500 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm z-10">
               {badge > 99 ? '99+' : badge}
             </span>
           ) : null}
@@ -536,12 +536,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <button
               type="button"
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="flex items-center gap-3 p-1.5 pr-3 rounded-full hover:bg-[var(--surface-2)] border border-transparent hover:border-[var(--border)] transition-all group"
+              className="flex items-center gap-3 p-1.5 pe-3 rounded-full hover:bg-[var(--surface-2)] border border-transparent hover:border-[var(--border)] transition-all group"
             >
               <div className="w-8 h-8 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center overflow-hidden">
                 <Avatar name={currentUser?.displayName || t('admin.mobile_title')} size="sm" className="w-full h-full text-xs" />
               </div>
-              <div className="hidden sm:block text-left">
+              <div className="hidden sm:block text-start">
                 <p className="text-xs font-bold text-[var(--text)] leading-none">{currentUser?.displayName || t('admin.account.default_user')}</p>
                 <p className="text-[10px] text-[var(--text-muted)] leading-none mt-1 group-hover:text-primary transition-colors">
                   {t('admin.account.view')}
@@ -560,7 +560,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.1 }}
-                  className="absolute right-0 top-full mt-2 w-56 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-2xl py-2 z-50 overflow-hidden"
+                  className="absolute end-0 top-full mt-2 w-56 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-2xl py-2 z-50 overflow-hidden"
                 >
                   <div className="px-4 py-3 border-b border-[var(--border)] mb-1">
                     <p className="text-sm font-bold text-[var(--text)] truncate">{currentUser?.displayName}</p>
@@ -573,7 +573,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       setIsUserMenuOpen(false);
                       router.push('/admin/account');
                     }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] flex items-center gap-2 transition-colors"
+                    className="w-full text-start px-4 py-2.5 text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] flex items-center gap-2 transition-colors"
                   >
                     <User size={16} />
                     <span>{t('admin.account.edit')}</span>
@@ -584,7 +584,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2 transition-colors"
+                    className="w-full text-start px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2 transition-colors"
                   >
                     <LogOut size={16} />
                     <span>{t('admin.account.signout')}</span>
@@ -607,11 +607,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
               />
               <motion.div
-                initial={{ x: '-100%' }}
+                initial={{ x: dir === 'rtl' ? '100%' : '-100%' }}
                 animate={{ x: 0 }}
-                exit={{ x: '-100%' }}
+                exit={{ x: dir === 'rtl' ? '100%' : '-100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="fixed inset-y-0 left-0 w-60 bg-[var(--surface)] border-r border-[var(--border)] z-50 md:hidden shadow-2xl"
+                className={`fixed inset-y-0 start-0 w-60 bg-[var(--surface)] z-50 md:hidden shadow-2xl ${dir === 'rtl' ? 'border-s' : 'border-e'} border-[var(--border)]`}
               >
                 <SidebarContent
                   t={t}
@@ -630,7 +630,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                 <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="absolute top-4 right-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)]"
+                  className="absolute top-4 end-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)]"
                 >
                   <X size={20} />
                 </button>
@@ -705,7 +705,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         <main className="flex-1 min-h-0 overflow-y-auto bg-[var(--bg)] p-4 md:p-8 relative">
           <div className="absolute inset-0 opacity-20 pointer-events-none">
-            <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/5 to-transparent" />
+            <div className="absolute top-0 start-0 w-full h-[500px] bg-gradient-to-b from-primary/5 to-transparent" />
           </div>
 
           <div className="max-w-6xl mx-auto relative z-10 h-full pb-20">{children}</div>

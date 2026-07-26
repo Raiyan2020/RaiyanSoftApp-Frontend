@@ -63,8 +63,8 @@ export default function PhoneInput({
 
     const countries: RPNInput.Country[] = [];
     const labels: RPNInput.Labels = {
-      country: 'Country',
-      phone: 'Phone number',
+      country: translateMessage('Country'),
+      phone: translateMessage('Phone Number'),
     };
     const callingCodes: CountryCallingCodes = {};
 
@@ -316,7 +316,7 @@ function CountrySelect({
               })
             ) : (
               <div className="p-4 text-center text-xs text-[var(--text-muted)]">
-                No countries found.
+                {translateMessage('No countries found.')}
               </div>
             )}
           </div>

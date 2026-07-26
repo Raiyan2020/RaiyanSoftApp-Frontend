@@ -4,6 +4,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useRouter } from 'next/navigation';
 import { translations } from './translations';
 import { translateMessage } from './i18n-utils';
+import { queryClient } from './query-client';
 import {
   DEFAULT_LANGUAGE,
   getDirection,
@@ -49,6 +50,11 @@ export const I18nProvider: React.FC<{ children: ReactNode; initialLanguage?: Lan
     // Server components read the language from the cookie, so the rendered
     // server output must be refetched for the new language to take effect.
     router.refresh();
+    // React Query caches server data client-side independent of the server
+    // render tree (e.g. providers mounted above this one, like settings/colors),
+    // so those cached responses must be invalidated explicitly or they keep
+    // showing content fetched under the previous language until they go stale.
+    queryClient.invalidateQueries();
   };
 
   const effectiveLanguage = language;

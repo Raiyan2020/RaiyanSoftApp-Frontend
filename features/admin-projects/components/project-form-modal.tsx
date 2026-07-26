@@ -84,7 +84,7 @@ export default function ProjectFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Project Name <span className="text-red-400">*</span></FieldLabel>
+                  <FieldLabel>{translateMessage('Project Name')} <span className="text-red-400">*</span></FieldLabel>
                   <input
                     {...field}
                     type="text"
@@ -106,7 +106,7 @@ export default function ProjectFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Short Description <span className="text-red-400">*</span></FieldLabel>
+                  <FieldLabel>{translateMessage('Short Description')} <span className="text-red-400">*</span></FieldLabel>
                   <textarea
                     {...field}
                     maxLength={120}
@@ -135,7 +135,7 @@ export default function ProjectFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Project URL <span className="text-red-400">*</span></FieldLabel>
+                  <FieldLabel>{translateMessage('Project URL')} <span className="text-red-400">*</span></FieldLabel>
                   <input
                     {...field}
                     type="url"
@@ -143,7 +143,7 @@ export default function ProjectFormModal({
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
-                    placeholder="https://..."
+                    placeholder={translateMessage('https://...')}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -157,7 +157,7 @@ export default function ProjectFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Project Logo</FieldLabel>
+                  <FieldLabel>{translateMessage('Project Logo')}</FieldLabel>
                   <input
                     {...field}
                     value={field.value || ''}
