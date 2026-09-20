@@ -14,14 +14,14 @@ export default function Partners({ homeData }: PartnersProps) {
   useSectionReveal(ref);
   const { content, textAlign } = useLandingContent();
   const { partners } = content;
-  const apiAbout = homeData?.about_us;
   const apiTestimonials = homeData?.testimonials;
 
-  const badge = apiAbout?.header?.caption || apiTestimonials?.header?.caption || partners.badge;
-  const title = apiAbout?.header?.title || apiTestimonials?.header?.title || `${partners.title} ${partners.titleHighlight}`;
-  const description = apiAbout?.header?.description || apiTestimonials?.header?.description || partners.description;
+  // The About Us block is rendered by AboutUs. Reusing its API header here
+  // creates a duplicate section when the CMS has about_us content.
+  const badge = apiTestimonials?.header?.caption || partners.badge;
+  const title = apiTestimonials?.header?.title || `${partners.title} ${partners.titleHighlight}`;
+  const description = apiTestimonials?.header?.description || partners.description;
   const hasApiTestimonials = (apiTestimonials?.testimonials?.length ?? 0) > 0;
-  const hasApiAboutCards = (apiAbout?.cards?.length ?? 0) > 0;
 
   return (
     <section id="partners" className="relative overflow-hidden bg-white py-12 dark:bg-navy-950 sm:py-16 lg:py-20">
@@ -41,23 +41,7 @@ export default function Partners({ homeData }: PartnersProps) {
         </div>
 
         {/* Static trust cards — shown only when no API testimonials yet */}
-        {hasApiAboutCards ? (
-          <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-            {apiAbout!.cards.map((card, i) => (
-              <article
-                key={card.id}
-                className="reveal rounded-[2rem] border border-cyan-950/10 bg-slate-50/80 p-6 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-primary/30 hover:bg-white hover:shadow-[var(--shadow-glow)] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/8"
-                style={{ transitionDelay: `${i * 0.08}s` }}
-              >
-                <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-dark text-lg font-black text-white shadow-lg shadow-primary/20">
-                  {String(card.id).padStart(2, '0')}
-                </div>
-                <h3 className="mb-3 text-2xl font-bold text-slate-950 dark:text-white">{card.title}</h3>
-                <p className="leading-relaxed text-slate-600 dark:text-slate-300">{card.description}</p>
-              </article>
-            ))}
-          </div>
-        ) : !hasApiTestimonials ? (
+        {!hasApiTestimonials ? (
           <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
             {partners.trustCards.map((card, i) => (
               <article
