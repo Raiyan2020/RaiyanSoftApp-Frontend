@@ -36,7 +36,7 @@ export default function Services({ homeData }: ServicesProps) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(18,169,217,0.12),transparent_34%),linear-gradient(to_bottom,#ffffff,rgba(247,251,253,0.82))] dark:bg-[radial-gradient(circle_at_top_right,rgba(18,169,217,0.12),transparent_32%),linear-gradient(to_bottom,#020617,#071827)]" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-10 grid gap-4 lg:mb-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-end`}>
+        <div className={`reveal mb-10 lg:mb-12`}>
           <div className={`space-y-4 ${textAlign}`}>
             <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
               {badge}
@@ -45,7 +45,7 @@ export default function Services({ homeData }: ServicesProps) {
               {title}
             </h2>
           </div>
-          <p className={`mx-auto max-w-3xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg lg:mx-0 ${textAlign}`}>
+          <p className={`mt-5 max-w-3xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg ${textAlign}`}>
             {description}
           </p>
         </div>

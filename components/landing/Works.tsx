@@ -35,7 +35,7 @@ export default function Works({ homeData }: WorksProps) {
       <div className="pointer-events-none absolute -end-32 top-32 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-10 flex flex-col gap-4 text-center lg:mb-12 lg:flex-row lg:items-end lg:justify-between ${textAlign}`}>
+        <div className={`reveal mb-10 text-start lg:mb-12 ${textAlign}`}>
           <div className="space-y-4">
             <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
               {badge}
@@ -44,7 +44,7 @@ export default function Works({ homeData }: WorksProps) {
               {title}
             </h2>
           </div>
-          <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg lg:mx-0">
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg">
             {description}
           </p>
         </div>
