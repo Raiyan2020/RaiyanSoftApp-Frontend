@@ -84,18 +84,18 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
       {submitting ? <PublicFormStatus type="loading" message="Submitting..." /> : null}
       <div className="grid gap-5 sm:grid-cols-2">
         <PublicField id="name" label="Full Name" required error={errors.name}>
-          <input id="name" name="name" className={publicInputClass} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? 'name-error' : undefined} />
+          <input id="name" name="name" placeholder={translateMessage('Full Name')} className={publicInputClass} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? 'name-error' : undefined} />
         </PublicField>
         <PublicField id="email" label="Email Address" required error={errors.email}>
-          <input id="email" name="email" type="email" dir="ltr" className={publicInputClass} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'email-error' : undefined} />
+          <input id="email" name="email" type="email" dir="ltr" placeholder={translateMessage('Email Address')} className={publicInputClass} aria-invalid={Boolean(errors.email)} aria-describedby={errors.email ? 'email-error' : undefined} />
         </PublicField>
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
         <PublicField id="phone" label="Phone Number" required error={errors.phone}>
-          <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} required />
+          <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} placeholder={translateMessage('Phone Number')} required />
         </PublicField>
         <PublicField id="topic" label="Subject">
-          <input id="topic" name="topic" className={publicInputClass} />
+          <input id="topic" name="topic" placeholder={translateMessage('Subject')} className={publicInputClass} />
         </PublicField>
       </div>
       <PublicField id="message" label={mode === 'quote' ? 'Project Details' : 'Message'} required error={errors.message}>
@@ -103,6 +103,7 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
           id="message"
           name="message"
           rows={6}
+          placeholder={translateMessage(mode === 'quote' ? 'Project Details' : 'Message')}
           className={`${publicInputClass} resize-none`}
           aria-invalid={Boolean(errors.message)}
           aria-describedby={errors.message ? 'message-error' : undefined}
