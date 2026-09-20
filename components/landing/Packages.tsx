@@ -4,6 +4,7 @@ import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 import { getLandingButtonScrollTarget, shouldOpenLandingButtonInNewTab } from '@/features/landing-page';
 import type { LandingPageContent } from '@/features/landing-page';
+import PageHtmlContent from '@/features/pages/components/page-html-content';
 
 type PackagesProps = {
   homeData?: LandingPageContent | null;
@@ -31,7 +32,7 @@ export default function Packages({ homeData }: PackagesProps) {
     <section id="packages" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
       <div className="pointer-events-none absolute start-0 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-10 grid gap-6 lg:mb-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end`}>
+        <div className="reveal mb-10 lg:mb-12">
           <div className={`space-y-4 ${textAlign}`}>
             <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
               {badge}
@@ -40,7 +41,7 @@ export default function Packages({ homeData }: PackagesProps) {
               {title}
             </h2>
           </div>
-          <p className={`mx-auto max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300 lg:mx-0 ${textAlign}`}>
+          <p className={`mt-5 max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300 ${textAlign}`}>
             {description}
           </p>
         </div>
@@ -67,9 +68,10 @@ export default function Packages({ homeData }: PackagesProps) {
                     {offer.caption}
                   </p>
                   {offer.description ? (
-                    <p className={`mt-3 text-sm leading-relaxed ${offer.most_requested ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                      {offer.description}
-                    </p>
+                    <PageHtmlContent
+                      html={offer.description}
+                      className={`mt-3 text-sm leading-relaxed ${offer.most_requested ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}
+                    />
                   ) : null}
                   <button
                     type="button"

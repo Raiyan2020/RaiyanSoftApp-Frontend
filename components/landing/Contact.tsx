@@ -4,6 +4,7 @@ import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 import PhoneInput from '@/components/ui/phone-input';
 import { useSubmitLandingAboutUsForm, type LandingPageContent } from '@/features/landing-page';
+import PageHtmlContent from '@/features/pages/components/page-html-content';
 
 type ContactProps = {
   homeData?: LandingPageContent | null;
@@ -47,14 +48,14 @@ export default function Contact({ homeData }: ContactProps) {
       <div className="pointer-events-none absolute bottom-10 start-10 h-64 w-64 rounded-full bg-emerald-300/10 blur-3xl" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-10 text-center lg:mb-12 ${textAlign}`}>
+        <div className={`reveal mb-10 text-start lg:mb-12 ${textAlign}`}>
           <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
             {contact.badge}
           </div>
           <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
             {contact.title} <span className="gradient-text">{contact.titleHighlight}</span>
           </h2>
-          <p className="mx-auto mt-5 max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300">
+          <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300">
             {contact.description}
           </p>
         </div>
@@ -66,9 +67,11 @@ export default function Contact({ homeData }: ContactProps) {
                 {banner?.caption ? banner.caption.slice(0, 2) : '24h'}
               </div>
               <h3 className="text-2xl font-bold">{banner?.title || contact.sidebarTitle}</h3>
-              <p className="mt-3 text-sm leading-relaxed text-slate-300">
-                {banner?.description || contact.description}
-              </p>
+              {banner?.description ? (
+                <PageHtmlContent html={banner.description} className="mt-3 text-sm leading-relaxed text-slate-300" />
+              ) : (
+                <p className="mt-3 text-sm leading-relaxed text-slate-300">{contact.description}</p>
+              )}
               <div className="mt-6 space-y-4">
                 {contact.sidebarSteps.map((step, i) => (
                   <div key={step} className="flex gap-3">
@@ -124,6 +127,7 @@ export default function Contact({ homeData }: ContactProps) {
                         required
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        placeholder={contact.form.name}
                         className={inputClass}
                       />
                     </div>
@@ -137,6 +141,7 @@ export default function Contact({ homeData }: ContactProps) {
                         required
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        placeholder={contact.form.email}
                         className={inputClass}
                         dir="ltr"
                       />
@@ -147,7 +152,7 @@ export default function Contact({ homeData }: ContactProps) {
                     <label htmlFor="contact-phone" className="text-sm font-bold text-slate-700 dark:text-slate-200">
                       {contact.form.phone}
                     </label>
-                    <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} required />
+                    <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} placeholder={contact.form.phone} required />
                   </div>
 
                   <div className="space-y-2">
@@ -160,6 +165,7 @@ export default function Contact({ homeData }: ContactProps) {
                       rows={5}
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      placeholder={contact.form.message}
                       className={`${inputClass} resize-none`}
                     />
                   </div>
