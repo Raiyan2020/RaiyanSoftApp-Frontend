@@ -27,11 +27,7 @@ export function useAdminUsers() {
 
     try {
       const query = searchTerm.trim();
-      const data = await fetchAdminUsers({
-        name: query,
-        email: query,
-        phone: query,
-      });
+      const data = await fetchAdminUsers({ search: query });
       const mappedUsers = data.map(mapAdminApiUser);
       setUsers(mappedUsers);
       setSelectedUser((current) =>
@@ -144,7 +140,25 @@ export function useAdminUsers() {
   };
 
   const handleExport = () => {
-    globalToast.info(`Exporting ${filteredUsers.length} users to CSV...`);
+    const escapeCsv = (value: string) => `"${value.replace(/"/g, '""')}"`;
+    const rows = [
+      ['Name', 'Email', 'Phone', 'Status', 'Registered'],
+      ...filteredUsers.map((user) => [
+        `${user.firstName} ${user.lastName}`.trim(),
+        user.email,
+        user.phone,
+        user.status,
+        formatDate(user.registeredAt),
+      ]),
+    ];
+    const csv = `\uFEFF${rows.map((row) => row.map(escapeCsv).join(',')).join('\r\n')}`;
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `users-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    globalToast.info('Users CSV downloaded.');
   };
 
   const handleToggleStatus = async (user: AdminUser) => {

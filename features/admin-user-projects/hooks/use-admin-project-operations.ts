@@ -381,7 +381,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     try {
       const [apiProject, apiStages, apiProgress, apiReports, apiAttachments] = await Promise.all([
         fetchAdminProject(projectId),
-        fetchAdminStages(),
+        fetchAdminStages({ project_id: projectId, per_page: 100 }),
         optionalList(() => fetchAdminStageProgress({ project_id: projectId, per_page: 100 })),
         optionalList(() => fetchAdminReports({ project_id: projectId })),
         optionalList(() => fetchAdminStageAttachments({ project_id: projectId, per_page: 100 })),

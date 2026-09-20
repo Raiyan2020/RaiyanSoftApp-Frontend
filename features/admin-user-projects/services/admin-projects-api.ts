@@ -289,8 +289,8 @@ export async function updateAdminProject(id: number | string, payload: AdminProj
   return unwrapItem<AdminProjectSummary>(response.data);
 }
 
-export async function fetchAdminStages() {
-  const response = await apiService.get<AdminStage[] | { data?: AdminStage[] }>('admin/stages', {
+export async function fetchAdminStages(params?: { project_id?: number | string; per_page?: number }) {
+  const response = await apiService.get<AdminStage[] | { data?: AdminStage[] }>(`admin/stages${toQueryString(params)}`, {
     skipGlobalToast: true,
   });
 

@@ -19,11 +19,18 @@ export default function Footer({ homeData }: FooterProps) {
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const socialLinks = [
-    { key: 'twitter', label: 'X', href: socialMedia?.twitter },
-    { key: 'instagram', label: 'IG', href: socialMedia?.instagram },
-    { key: 'linkedin', label: 'in', href: socialMedia?.linkedin },
-  ].filter((item) => item.href);
+  const socialLabels: Record<string, string> = {
+    facebook: 'f',
+    twitter: 'X',
+    instagram: 'IG',
+    linkedin: 'in',
+    youtube: 'YT',
+    tiktok: 'TT',
+    snapchat: 'SC',
+  };
+  const socialLinks = Object.entries(socialMedia || {})
+    .filter(([, href]) => Boolean(href))
+    .map(([key, href]) => ({ key, label: socialLabels[key.toLowerCase()] || key.slice(0, 2).toUpperCase(), href }));
 
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-slate-950 text-slate-300">

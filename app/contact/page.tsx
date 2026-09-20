@@ -8,12 +8,19 @@ import { getPageMetadata, pageSeo } from '@/lib/page-seo';
 import { createContactPageJsonLd, siteConfig } from '@/lib/site';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
+import { fetchUserSettingsServer } from '@/features/settings/services/user-settings-api';
 
 export const metadata: Metadata = getPageMetadata('contact');
 
 export default async function ContactPage() {
   const language = await getServerLanguage();
   const tt = (message: string) => translateMessage(message, language);
+  let settings: Awaited<ReturnType<typeof fetchUserSettingsServer>> | null = null;
+  try {
+    settings = await fetchUserSettingsServer();
+  } catch {
+    settings = null;
+  }
 
   return (
     <PublicLayout seo={pageSeo.contact}>
@@ -28,11 +35,11 @@ export default async function ContactPage() {
           <aside className="space-y-4">
             <div className="rounded-lg border border-cyan-950/10 bg-white p-5 dark:border-white/10 dark:bg-white/5">
               <p className="text-sm font-black text-primary">{tt('Email')}</p>
-              <p className="mt-2 font-bold text-slate-950 dark:text-white">{siteConfig.email}</p>
+              <p className="mt-2 font-bold text-slate-950 dark:text-white">{settings?.site_email || siteConfig.email}</p>
             </div>
             <div className="rounded-lg border border-cyan-950/10 bg-white p-5 dark:border-white/10 dark:bg-white/5">
               <p className="text-sm font-black text-primary">{tt('Phone')}</p>
-              <p className="mt-2 font-bold text-slate-950 dark:text-white" dir="ltr">{siteConfig.phone}</p>
+              <p className="mt-2 font-bold text-slate-950 dark:text-white" dir="ltr">{settings?.site_phone || siteConfig.phone}</p>
             </div>
           </aside>
           <PublicInquiryForm mode="contact" />

@@ -102,7 +102,7 @@ function SidebarContent({
   };
 
   const renderItem = (item: SidebarItem) => {
-    const isActive = pathname.includes(item.path);
+    const isActive = item.path === '/admin' ? pathname === '/admin' : pathname.includes(item.path);
     const badge = item.badge ?? 0;
 
     return (
@@ -339,6 +339,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 
   const navItems = [
+    { id: 'dashboard', label: t('admin.nav.dashboard'), icon: Home, path: '/admin/dashboard', badge: 0, permission: '*' },
     { id: 'leads', label: t('admin.nav.leads'), icon: Inbox, path: '/admin/leads', badge: 0, permission: 'leads.view' },
     { id: 'project-questions', label: t('admin.nav.project_questions'), icon: ListChecks, path: '/admin/project-questions', badge: 0, permission: 'lead_questions.manage' },
     ...(FEATURES.portfolioProjects ? [{ id: 'projects', label: t('admin.nav.portfolio'), icon: FolderKanban, path: '/admin/projects', badge: 0, permission: 'portfolio.manage' }] : []),
@@ -417,7 +418,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       id: 'operations',
       label: dir === 'rtl' ? 'العمليات' : 'Operations',
-      items: filteredNavItems.filter((item) => ['leads', 'appointments', 'marketing', 'live-chat'].includes(item.id)),
+      items: filteredNavItems.filter((item) => ['dashboard', 'leads', 'appointments', 'marketing', 'live-chat'].includes(item.id)),
     },
     {
       id: 'content',

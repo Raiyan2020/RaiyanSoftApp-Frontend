@@ -132,7 +132,7 @@ export function useAdminLeads() {
   const handleStatusChange = async (lead: AdminLeadListItem, nextStatus: LeadStatusCode) => {
     const currentStatus = getLeadStatusCode(lead.status);
     if (currentStatus === nextStatus || updatingLeadId) return;
-    if (nextStatus === LEAD_STATUS.PENDING) return;
+    if (nextStatus === LEAD_STATUS.PENDING || (currentStatus === LEAD_STATUS.REJECTED && nextStatus === LEAD_STATUS.REJECTED)) return;
 
     setUpdatingLeadId(lead.id);
 

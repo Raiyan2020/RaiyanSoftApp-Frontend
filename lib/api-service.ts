@@ -30,11 +30,7 @@ function handleUnauthorized(path: string) {
 
   if (isAdminApiPath(path)) {
     authService.clearAdminSession();
-    if (!window.location.pathname.startsWith('/')) {
-      window.location.replace('/');
-    } else {
-      window.location.replace('/');
-    }
+    window.location.replace('/admin/login');
     return;
   }
 

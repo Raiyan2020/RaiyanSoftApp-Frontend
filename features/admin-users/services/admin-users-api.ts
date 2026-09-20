@@ -14,6 +14,7 @@ export type AdminApiUser = {
 };
 
 export type AdminUsersFilters = {
+  search?: string;
   name?: string;
   email?: string;
   phone?: string;

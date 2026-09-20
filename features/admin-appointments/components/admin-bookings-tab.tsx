@@ -57,6 +57,10 @@ function StatusPill({ label, status }: { label: string; status: number }) {
   );
 }
 
+function canApprove(status: number) {
+  return status === MEETING_STATUS.PENDING || status === MEETING_STATUS.REJECTED;
+}
+
 // Same digit-normalization rule as admin-leads' toWhatsAppDigits (Kuwait 8-digit numbers get the 965 prefix).
 function toWhatsAppDigits(phone: string): string | null {
   if (!phone) return null;
@@ -207,14 +211,12 @@ export default function AdminBookingsTab({
                   {translateMessage('Details')}
                 </Button>
                 <MeetingWhatsAppButton phone={meeting.user?.full_phone} />
-                {meeting.status === MEETING_STATUS.PENDING ? (
+                {canApprove(meeting.status) ? (
                   <>
                     <Button type="button" size="sm" onClick={() => onApproveBooking(meeting.id)} disabled={actionLoading}>
                       {translateMessage('Approve')}
                     </Button>
-                    <Button type="button" variant="destructive" size="sm" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading}>
-                      {translateMessage('Reject')}
-                    </Button>
+                    {meeting.status === MEETING_STATUS.PENDING ? <Button type="button" variant="destructive" size="sm" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading}>{translateMessage('Reject')}</Button> : null}
                   </>
                 ) : null}
               </div>
@@ -264,7 +266,7 @@ export default function AdminBookingsTab({
                         {translateMessage('Details')}
                       </Button>
                       <MeetingWhatsAppButton phone={meeting.user?.full_phone} />
-                      {meeting.status === MEETING_STATUS.PENDING ? (
+                      {canApprove(meeting.status) ? (
                         <>
                           <button
                             type="button"
@@ -275,15 +277,7 @@ export default function AdminBookingsTab({
                           >
                             <CheckCircle size={16} />
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => onRejectBooking(meeting.id)}
-                            disabled={actionLoading}
-                            className="p-2 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
-                            title={translateMessage('Reject')}
-                          >
-                            <XCircle size={16} />
-                          </button>
+                          {meeting.status === MEETING_STATUS.PENDING ? <button type="button" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading} className="p-2 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors" title={translateMessage('Reject')}><XCircle size={16} /></button> : null}
                         </>
                       ) : null}
                     </div>
@@ -382,7 +376,7 @@ export default function AdminBookingsTab({
                 {actionError ? <ErrorAlert message={actionError} /> : null}
                 <SuccessToast message={actionMessage} />
 
-                {selectedBooking.status === MEETING_STATUS.PENDING ? (
+                {canApprove(selectedBooking.status) ? (
                   <div className="flex flex-wrap gap-3 pt-2">
                     <Button
                       type="button"
@@ -393,16 +387,7 @@ export default function AdminBookingsTab({
                       {actionLoading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle size={16} />}
                       {translateMessage('Approve')}
                     </Button>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      onClick={() => onRejectBooking(selectedBooking.id)}
-                      disabled={actionLoading}
-                      className="gap-2"
-                    >
-                      {actionLoading ? <Loader2 className="animate-spin" size={16} /> : <XCircle size={16} />}
-                      {translateMessage('Reject')}
-                    </Button>
+                    {selectedBooking.status === MEETING_STATUS.PENDING ? <Button type="button" variant="destructive" onClick={() => onRejectBooking(selectedBooking.id)} disabled={actionLoading} className="gap-2">{actionLoading ? <Loader2 className="animate-spin" size={16} /> : <XCircle size={16} />}{translateMessage('Reject')}</Button> : null}
                   </div>
                 ) : null}
 
