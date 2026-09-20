@@ -6,6 +6,7 @@ import { Archive, Copy, ExternalLink, Plus, Search, Trash2 } from 'lucide-react'
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ErrorAlert from '@/components/ui/error-alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getWebsiteContentConfig } from '../config/website-content-config';
 import { useAdminWebsiteContent } from '../hooks/use-admin-website-content';
@@ -53,14 +54,18 @@ function FieldControl({
 
   if (field.type === 'select') {
     return (
-      <select className={baseClass} value={value || ''} onChange={(event) => onChange(event.target.value)}>
-        <option value="">{translateMessage('Select')}</option>
-        {field.options?.map((option) => (
-          <option key={option.value} value={option.value}>
-            {translateMessage(option.label)}
-          </option>
-        ))}
-      </select>
+      <Select value={value || undefined} onValueChange={onChange}>
+        <SelectTrigger className={baseClass}>
+          <SelectValue placeholder={translateMessage('Select')} />
+        </SelectTrigger>
+        <SelectContent>
+          {field.options?.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {translateMessage(option.label)}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
     );
   }
 
@@ -183,10 +188,15 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
 
             <label className="space-y-2">
               <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Locale')}</span>
-              <select className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.locale} onChange={(event) => manager.updateField('locale', event.target.value)}>
-                <option value="ar">{translateMessage('Arabic')}</option>
-                <option value="en">{translateMessage('English')}</option>
-              </select>
+              <Select value={manager.form.locale} onValueChange={(value) => manager.updateField('locale', value)}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ar">{translateMessage('Arabic')}</SelectItem>
+                  <SelectItem value="en">{translateMessage('English')}</SelectItem>
+                </SelectContent>
+              </Select>
             </label>
           </div>
 

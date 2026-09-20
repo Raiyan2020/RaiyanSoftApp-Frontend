@@ -16,8 +16,7 @@ export const metadata: Metadata = getPageMetadata('blog');
 export default async function BlogsPage() {
   const language = await getServerLanguage();
   const tt = (message: string) => translateMessage(message, language);
-  const blogPosts = await fetchPublicBlogs(language);
-  const categories = await fetchPublicBlogCategories(language);
+  const [blogPosts, categories] = await Promise.all([fetchPublicBlogs(language), fetchPublicBlogCategories(language)]);
   const featuredPost = blogPosts[0];
   const remainingPosts = blogPosts.slice(1);
 

@@ -7,6 +7,8 @@ interface AdminUserProjectDetailRouteProps {
   }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminUserProjectDetailRoute({
   params,
 }: AdminUserProjectDetailRouteProps) {

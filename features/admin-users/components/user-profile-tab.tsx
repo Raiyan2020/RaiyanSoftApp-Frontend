@@ -21,7 +21,7 @@ export default function UserProfileTab({ selectedUser, formatDate, formatDateTim
             className="w-full h-full text-3xl border-4 border-[var(--border)] shadow-xl"
           />
           <div
-            className={`absolute bottom-1 right-1 w-5 h-5 rounded-full border-4 border-[var(--border)] ${
+            className={`absolute bottom-1 end-1 w-5 h-5 rounded-full border-4 border-[var(--border)] ${
               selectedUser.status === 'Active' ? 'bg-emerald-500' : 'bg-red-500'
             }`}
           />

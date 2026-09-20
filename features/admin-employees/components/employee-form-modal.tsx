@@ -172,7 +172,7 @@ export default function EmployeeFormModal({
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel>Phone</FieldLabel>
+                      <FieldLabel>{translateMessage('Phone')}</FieldLabel>
                       <PhoneInput value={field.value || ''} onChange={(value) => field.onChange(value || '')} />
                       {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
                     </Field>

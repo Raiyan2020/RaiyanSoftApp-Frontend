@@ -91,7 +91,7 @@ export default function RoleFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Description</FieldLabel>
+                  <FieldLabel>{translateMessage('Description')}</FieldLabel>
                   <textarea
                     {...field}
                     aria-invalid={fieldState.invalid}

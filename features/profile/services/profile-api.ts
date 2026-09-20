@@ -1,5 +1,6 @@
 import { apiService, type ApiResponse } from '@/lib/api-service';
 import type { User } from '@/lib/auth-service';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export interface UpdateUserProfilePayload {
   full_name: string;
@@ -30,7 +31,7 @@ export async function fetchUserProfile() {
   }
 
   const user = unwrapUser(response.data);
-  if (!user) throw new Error('Profile data is missing.');
+  if (!user) throw new Error(translateMessage('Profile data is missing.'));
 
   return user;
 }
@@ -47,7 +48,7 @@ export async function updateUserProfile(payload: UpdateUserProfilePayload) {
   }
 
   const user = unwrapUser(response.data);
-  if (!user) throw new Error('Updated profile data is missing.');
+  if (!user) throw new Error(translateMessage('Updated profile data is missing.'));
 
   return user;
 }

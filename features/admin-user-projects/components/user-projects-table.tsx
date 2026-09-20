@@ -1,6 +1,7 @@
 import React from 'react';
 import { LayoutGrid, Loader2 } from 'lucide-react';
 import { UserProject } from '@/lib/userProjectsStore';
+import { Table, TableHeader, TableBody, TableRow, TableHead } from '@/components/ui/table';
 import { translateMessage } from '@/lib/i18n-utils';
 import UserProjectsRow from './user-projects-row';
 
@@ -35,24 +36,26 @@ export default function UserProjectsTable({
         </div>
       ) : (
         <>
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-start border-collapse">
-              <thead>
-                <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
-                  <th className="p-5 font-medium">{translateMessage('Project')}</th>
-                  <th className="p-5 font-medium">{translateMessage('Status')}</th>
-                  <th className="p-5 font-medium">{translateMessage('Pricing')}</th>
-                  <th className="p-5 font-medium">{translateMessage('Customer')}</th>
-                  <th className="p-5 font-medium">{translateMessage('Created')}</th>
-                  <th className="p-5 font-medium text-end">{translateMessage('Actions')}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--border)] text-sm">
+          <div className="hidden md:block">
+            <Table className="text-start border-collapse">
+              <TableHeader>
+                <TableRow className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider hover:bg-transparent">
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Reference')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Project')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Type')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Status')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Pricing')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Customer')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Created')}</TableHead>
+                  <TableHead className="p-5 font-medium text-end">{translateMessage('Actions')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-[var(--border)] text-sm">
                 {filteredProjects.map((p) => (
                   <UserProjectsRow key={p.id} project={p} onEdit={onEdit} formatDate={formatDate} variant="desktop" />
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           <div className="md:hidden grid gap-3 p-4">

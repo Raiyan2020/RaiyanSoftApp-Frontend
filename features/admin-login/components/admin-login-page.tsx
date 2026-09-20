@@ -56,7 +56,7 @@ export default function AdminLoginPage() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Email Address</FieldLabel>
+                  <FieldLabel>{translateMessage('Email Address')}</FieldLabel>
                   <div className="relative">
                     <Mail className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
                     <input
@@ -79,7 +79,7 @@ export default function AdminLoginPage() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Password</FieldLabel>
+                  <FieldLabel>{translateMessage('Password')}</FieldLabel>
                   <PasswordInput
                     {...field}
                     aria-invalid={fieldState.invalid}

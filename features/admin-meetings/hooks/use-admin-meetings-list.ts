@@ -29,6 +29,9 @@ export function useAdminMeetingsList(filters: AdminMeetingsFilters) {
   }, [filters]);
 
   useEffect(() => {
+    // Genuine external synchronization: fetches the list from the API on
+    // mount/filter change; loading/data/error are set from the async lifecycle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
     reload();
   }, [reload]);
 

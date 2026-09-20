@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { apiService, BASE_URL, type ApiResponse } from '@/lib/api-service';
 import { translateMessage } from '@/lib/i18n-utils';
 import type {
@@ -39,7 +40,7 @@ function getApiErrorMessage(response: ApiResponse<unknown>): string {
   return translateMessage(response.message || 'Request failed.');
 }
 
-async function fetchUserJson<T>(path: string, language: Language = 'ar'): Promise<T | null> {
+const fetchUserJson = cache(async function fetchUserJson<T>(path: string, language: Language = 'ar'): Promise<T | null> {
   try {
     const url = `${BASE_URL}/user/${path.replace(/^\/+/, '')}`;
     const response = await fetch(url, {
@@ -47,7 +48,7 @@ async function fetchUserJson<T>(path: string, language: Language = 'ar'): Promis
         Accept: 'application/json',
         'Accept-Language': language,
       },
-      cache: 'no-store',
+      next: { revalidate: 300 },
     });
     if (!response.ok) return null;
     const json = await response.json();
@@ -56,7 +57,7 @@ async function fetchUserJson<T>(path: string, language: Language = 'ar'): Promis
   } catch {
     return null;
   }
-}
+}) as <T>(path: string, language?: Language) => Promise<T | null>;
 
 async function fetchLandingJson<T>(path: string, language: Language = 'ar'): Promise<T | null> {
   return fetchUserJson<T>(`landing-page/${path}`, language);

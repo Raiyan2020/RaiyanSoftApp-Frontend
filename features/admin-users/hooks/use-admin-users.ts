@@ -38,7 +38,7 @@ export function useAdminUsers() {
         current ? mappedUsers.find((user) => user.id === current.id) || current : null
       );
     } catch (err: any) {
-      setError(err.message || 'Failed to load users.');
+      setError(err.message || translateMessage('Failed to load users.'));
       setUsers([]);
     } finally {
       setLoading(false);
@@ -96,16 +96,24 @@ export function useAdminUsers() {
 
   useEffect(() => {
     if (selectedUser && activeTab === 'projects') {
+      // Genuine external synchronization: fetches the selected user's
+      // projects from the API when the projects tab is opened.
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
       fetchUserProjects(selectedUser.id);
     }
   }, [selectedUser, activeTab]);
 
-  useEffect(() => {
+  // Reset the tab/local project list when the selected user is cleared,
+  // adjusted during render (comparing against the previous selected user)
+  // instead of in an effect.
+  const [prevSelectedUser, setPrevSelectedUser] = useState(selectedUser);
+  if (selectedUser !== prevSelectedUser) {
+    setPrevSelectedUser(selectedUser);
     if (!selectedUser) {
       setActiveTab('profile');
       setUserProjects([]);
     }
-  }, [selectedUser]);
+  }
 
   const filteredUsers = useMemo(() => users.filter((user) => {
     const matchesSearch =

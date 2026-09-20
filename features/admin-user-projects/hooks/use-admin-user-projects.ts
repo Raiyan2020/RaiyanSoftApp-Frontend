@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
 import { globalToast } from '@/lib/toast-context';
+import { translateMessage } from '@/lib/i18n-utils';
 import { UserProject, ProjectStatus } from '@/lib/userProjectsStore';
 import { UserProjectEditValues } from '../schemas/user-project-edit.schema';
 import { AdminProjectSummary, fetchAdminProjects, updateAdminProject } from '../services/admin-projects-api';
+
+export type ProjectTypeFilter = '' | (typeof INDUSTRIES)[number];
 
 export const statusOptions: ProjectStatus[] = [
   'pricing',
@@ -120,6 +123,8 @@ const mapAdminProjectToUserProject = (project: AdminProjectSummary): UserProject
   ownerId: 'api',
   ownerName: project.user?.full_name || 'Customer',
   ownerEmail: project.user?.email || '',
+  ownerPhone: project.user?.full_phone || '',
+  referenceNumber: project.request_id || '',
   name: project.project_name || `Project ${project.id}`,
   description: project.description || '',
   estimatedPrice: (() => {
@@ -149,6 +154,15 @@ export function useAdminUserProjects() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [typeFilter, setTypeFilter] = useState<ProjectTypeFilter>('');
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
+    return () => window.clearTimeout(timer);
+  }, [searchTerm]);
 
   const [editingProject, setEditingProject] = useState<UserProject | null>(null);
   const [formData, setFormData] = useState<UserProjectEditValues>({
@@ -165,26 +179,39 @@ export function useAdminUserProjects() {
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedSearch, dateFrom, dateTo, typeFilter]);
 
   const fetchProjects = async () => {
     setLoading(true);
     setError(null);
     try {
-      const results = (await fetchAdminProjects()).map(mapAdminProjectToUserProject);
+      const results = (
+        await fetchAdminProjects({
+          search: debouncedSearch || undefined,
+          dateFrom: dateFrom || undefined,
+          dateTo: dateTo || undefined,
+          type: industryToProjectType(typeFilter) || undefined,
+        })
+      ).map(mapAdminProjectToUserProject);
 
       results.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
       setProjects(results);
     } catch (err: any) {
       console.error('Failed to load projects:', err);
-      setError(`Error loading projects: ${err.message || 'Request failed.'}`);
+      setError(`${translateMessage('Error loading projects:')} ${err.message || translateMessage('Request failed.')}`);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
+  // Repopulate the edit form whenever the project being edited changes,
+  // adjusted during render (comparing against the previous editingProject)
+  // instead of in an effect.
+  const [prevEditingProject, setPrevEditingProject] = useState(editingProject);
+  if (editingProject !== prevEditingProject) {
+    setPrevEditingProject(editingProject);
     if (editingProject) {
       setFormData({
         name: editingProject.name || '',
@@ -208,16 +235,11 @@ export function useAdminUserProjects() {
         industryOther: '',
       });
     }
-  }, [editingProject]);
+  }
 
-  const filteredProjects = projects.filter((p) => {
-    const term = searchTerm.toLowerCase();
-    return (
-      (p.name && p.name.toLowerCase().includes(term)) ||
-      (p.ownerName && p.ownerName.toLowerCase().includes(term)) ||
-      (p.ownerEmail && p.ownerEmail.toLowerCase().includes(term))
-    );
-  });
+  // Filtering (search/date/type) now happens server-side in fetchProjects,
+  // so the fetched list is already the filtered list.
+  const filteredProjects = projects;
 
   const handleEdit = (project: UserProject) => {
     setEditingProject(project);
@@ -293,6 +315,12 @@ export function useAdminUserProjects() {
     error,
     searchTerm,
     setSearchTerm,
+    dateFrom,
+    setDateFrom,
+    dateTo,
+    setDateTo,
+    typeFilter,
+    setTypeFilter,
     editingProject,
     setEditingProject,
     formData,

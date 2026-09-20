@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Edit2, Loader2, Plus, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
@@ -22,14 +22,21 @@ export default function AdminSocialMediaTab() {
   const [error, setError] = useState('');
   const [pendingDelete, setPendingDelete] = useState<AdminSocialMediaItem | null>(null);
 
-  useEffect(() => {
+  // Default to the first item whenever nothing is selected yet and the list
+  // changes, adjusted during render instead of in an effect.
+  const [prevSelectSync, setPrevSelectSync] = useState<{
+    selected: AdminSocialMediaItem | null;
+    data: AdminSocialMediaItem[] | undefined;
+  }>({ selected, data: query.data });
+  if (selected !== prevSelectSync.selected || query.data !== prevSelectSync.data) {
+    setPrevSelectSync({ selected, data: query.data });
     if (!selected && query.data?.[0]) {
       const next = query.data[0];
       setSelected(next);
       setPlatform(next.platform);
       setLink(next.link);
     }
-  }, [query.data, selected]);
+  }
 
   const reset = () => {
     setSelected(null);

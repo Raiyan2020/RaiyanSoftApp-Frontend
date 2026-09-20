@@ -39,8 +39,10 @@ export default async function BlogCategoryPage({ params }: { params: { slug: str
   const { slug } = params;
   const language = await getServerLanguage();
   const tt = (message: string) => translateMessage(message, language);
-  const category = await fetchPublicBlogCategory(slug, language);
-  const categoryPosts = await fetchPublicBlogCategoryBlogs(slug, language);
+  const [category, categoryPosts] = await Promise.all([
+    fetchPublicBlogCategory(slug, language),
+    fetchPublicBlogCategoryBlogs(slug, language),
+  ]);
   const categoryTitle = category?.title || '';
   const articlesInCategory = tt('Articles in the {category} category').replace('{category}', categoryTitle);
 

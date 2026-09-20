@@ -3,10 +3,17 @@ import { ChevronLeft, ChevronRight, Loader2, Phone, MessageCircle, Eye } from 'l
 import { useTranslation } from '@/lib/i18nContext';
 import ErrorAlert from '@/components/ui/error-alert';
 import Avatar from '@/components/ui/avatar';
+import { Table, TableHeader, TableBody, TableRow, TableHead } from '@/components/ui/table';
 import { AdminLeadListItem, AdminLeadsPagination, LEAD_STATUS, LeadStatusCode } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusCode, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
 import { LEAD_APPROVAL_WHATSAPP_MESSAGE } from '../utils/whatsapp-template';
 import LeadsTableRow from './leads-table-row';
+
+function leadTypeLabel(type: AdminLeadListItem['type']): string {
+  if (!type) return '';
+  if (typeof type === 'string') return type;
+  return type.name || type.key || type.value || '';
+}
 
 interface LeadsTableProps {
   leads: AdminLeadListItem[];
@@ -57,18 +64,20 @@ export default function LeadsTable({
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-start">
-              <thead>
-                <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
-                  <th className="p-5 font-medium">{t('admin.leads.name')}</th>
-                  <th className="p-5 font-medium">{t('admin.leads.project_info')}</th>
-                  <th className="p-5 font-medium">{t('admin.leads.status')}</th>
-                  <th className="p-5 font-medium">{t('admin.leads.date')}</th>
-                  <th className="p-5 font-medium text-end">{t('admin.leads.action')}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--border)] text-sm">
+          <div className="hidden md:block">
+            <Table className="text-start">
+              <TableHeader>
+                <TableRow className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider hover:bg-transparent">
+                  <TableHead className="p-5 font-medium text-start">{t('admin.leads.reference')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{t('admin.leads.name')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{t('admin.leads.project_info')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{t('admin.leads.type')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{t('admin.leads.status')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{t('admin.leads.date')}</TableHead>
+                  <TableHead className="p-5 font-medium text-end">{t('admin.leads.action')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-[var(--border)] text-sm">
                 {leads.map((lead) => (
                   <LeadsTableRow
                     key={lead.id}
@@ -79,8 +88,8 @@ export default function LeadsTable({
                     onChangeStatus={onChangeStatus}
                   />
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           {/* Mobile cards */}
@@ -115,9 +124,16 @@ export default function LeadsTable({
 
                   {/* Project info */}
                   <div className="rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className="text-[var(--text-muted)]">{t('admin.leads.reference')}</span>
+                      <span className="font-mono text-[var(--text)]">{lead.request_id || '—'}</span>
+                    </div>
                     <p className="text-sm font-medium text-[var(--text)]">{lead.project_name}</p>
                     {lead.description ? (
                       <p className="text-xs text-[var(--text-muted)] mt-0.5 line-clamp-2">{lead.description}</p>
+                    ) : null}
+                    {leadTypeLabel(lead.type) ? (
+                      <p className="text-xs text-[var(--text-muted)] mt-1">{leadTypeLabel(lead.type)}</p>
                     ) : null}
                     <p className="text-xs text-[var(--text-muted)] mt-1">{lead.date}</p>
                   </div>

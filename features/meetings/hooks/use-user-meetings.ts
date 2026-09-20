@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 import { fetchUserMeetings } from '../services/user-meetings-api';
 import { MeetingsPagination, UserMeeting, UserMeetingsFilters } from '../types/meeting.types';
 
@@ -27,7 +28,7 @@ export function useUserMeetings(filters: UserMeetingsFilters = {}, enabled = tru
       setMeetings(result.meetings);
       setPagination(result.pagination);
     } catch (err: any) {
-      setError(err.message || 'Failed to load meetings.');
+      setError(err.message || translateMessage('Failed to load meetings.'));
       setMeetings([]);
       setPagination(null);
     } finally {
@@ -36,6 +37,9 @@ export function useUserMeetings(filters: UserMeetingsFilters = {}, enabled = tru
   }, [enabled, normalizedFilters]);
 
   useEffect(() => {
+    // Genuine external synchronization: fetches the list from the API on
+    // mount/filter change; loading/data/error are set from the async lifecycle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
     reload();
   }, [reload]);
 

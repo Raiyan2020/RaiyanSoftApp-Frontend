@@ -22,6 +22,9 @@ function buildMeetingsQuery(filters: AdminMeetingsFilters) {
   if (filters.email?.trim()) params.set('email', filters.email.trim());
   if (filters.phone?.trim()) params.set('phone', filters.phone.trim());
   if (filters.status) params.set('status', String(filters.status));
+  if (filters.type) params.set('type', String(filters.type));
+  if (filters.dateFrom) params.set('date_from', filters.dateFrom);
+  if (filters.dateTo) params.set('date_to', filters.dateTo);
   if (filters.page) params.set('page', String(filters.page));
   const query = params.toString();
   return query ? `?${query}` : '';

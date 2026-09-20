@@ -139,7 +139,7 @@ export default function AdminProjectTypesPage() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="space-y-2">
-                <FieldLabel>Name</FieldLabel>
+                <FieldLabel>{translateMessage('Name')}</FieldLabel>
                 <input
                   value={state.form.name}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, name: e.target.value }))}
@@ -148,7 +148,7 @@ export default function AdminProjectTypesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <FieldLabel>Arabic Name</FieldLabel>
+                <FieldLabel>{translateMessage('Arabic Name')}</FieldLabel>
                 <input
                   value={state.form.nameAr}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, nameAr: e.target.value }))}
@@ -159,7 +159,7 @@ export default function AdminProjectTypesPage() {
             </div>
 
             <div className="space-y-2">
-              <FieldLabel>Description</FieldLabel>
+              <FieldLabel>{translateMessage('Description')}</FieldLabel>
               <textarea
                 value={state.form.description}
                 onChange={(e) => state.setForm((prev) => ({ ...prev, description: e.target.value }))}
@@ -170,7 +170,7 @@ export default function AdminProjectTypesPage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
-                <FieldLabel>Min Price</FieldLabel>
+                <FieldLabel>{translateMessage('Min Price')}</FieldLabel>
                 <input
                   type="number"
                   value={state.form.priceMin}
@@ -179,7 +179,7 @@ export default function AdminProjectTypesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <FieldLabel>Max Price</FieldLabel>
+                <FieldLabel>{translateMessage('Max Price')}</FieldLabel>
                 <input
                   type="number"
                   value={state.form.priceMax}
@@ -188,7 +188,7 @@ export default function AdminProjectTypesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <FieldLabel>Min Days</FieldLabel>
+                <FieldLabel>{translateMessage('Min Days')}</FieldLabel>
                 <input
                   type="number"
                   value={state.form.durationMin}
@@ -197,7 +197,7 @@ export default function AdminProjectTypesPage() {
                 />
               </div>
               <div className="space-y-2">
-                <FieldLabel>Max Days</FieldLabel>
+                <FieldLabel>{translateMessage('Max Days')}</FieldLabel>
                 <input
                   type="number"
                   value={state.form.durationMax}
@@ -209,7 +209,7 @@ export default function AdminProjectTypesPage() {
 
             <div className="grid grid-cols-[1fr_auto] gap-3 items-end">
               <div className="space-y-2">
-                <FieldLabel>Color</FieldLabel>
+                <FieldLabel>{translateMessage('Color')}</FieldLabel>
                 <input
                   type="color"
                   value={state.form.color}

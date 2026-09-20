@@ -94,10 +94,6 @@ export default function PhoneInput({
     [maxNationalLength, selectedCountry, countryConfig.defaultCountry]
   );
 
-  React.useEffect(() => {
-    setSelectedCountry((currentCountry) => currentCountry ?? countryConfig.defaultCountry);
-  }, [countryConfig.defaultCountry]);
-
   const handlePhoneChange = React.useCallback(
     (nextValue?: string) => {
       const limitedValue = limitPhoneValueByCountry(
@@ -187,6 +183,7 @@ const InputComponent = React.forwardRef<HTMLInputElement, React.InputHTMLAttribu
   ({ className = '', style, ...props }, ref) => (
     <input
       ref={ref}
+      // i18n-ignore-next-line: phone input is pinned dir="ltr"; calling codes must not mirror
       className={`min-w-0 flex-1 bg-[var(--surface)] border border-[var(--border)] border-l-0 rounded-r-xl py-3 px-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all font-mono text-left ${className}`}
       {...props}
       dir="ltr"
@@ -218,22 +215,21 @@ function CountrySelect({
   const [searchQuery, setSearchQuery] = React.useState('');
   const containerRef = React.useRef<HTMLDivElement>(null);
 
+  const closeDropdown = () => {
+    setIsOpen(false);
+    setSearchQuery('');
+  };
+
   React.useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
+        closeDropdown();
       }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
-
-  React.useEffect(() => {
-    if (!isOpen) {
-      setSearchQuery('');
-    }
-  }, [isOpen]);
 
   const filteredCountries = options.filter((option) => {
     if (!option.value) return false;
@@ -260,7 +256,7 @@ function CountrySelect({
     >
       <button
         type="button"
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={() => (isOpen ? closeDropdown() : setIsOpen(true))}
         disabled={disabled}
         className="flex h-full items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-l-xl border-r-0 px-3 py-3 text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
@@ -270,7 +266,10 @@ function CountrySelect({
       </button>
 
       {isOpen ? (
-        <div className="absolute top-full left-0 mt-2 w-72 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col">
+        <div
+          // i18n-ignore-next-line: phone input is pinned dir="ltr"; calling codes must not mirror
+          className="absolute top-full left-0 mt-2 w-72 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-2xl z-50 overflow-hidden flex flex-col"
+        >
           <div className="p-2 border-b border-[var(--border)] flex items-center gap-2 bg-[var(--surface-2)]">
             <Search size={14} className="text-[var(--text-muted)] shrink-0 ms-1" />
             <input
@@ -297,8 +296,9 @@ function CountrySelect({
                     type="button"
                     onClick={() => {
                       onChange(country.value as RPNInput.Country);
-                      setIsOpen(false);
+                      closeDropdown();
                     }}
+                    // i18n-ignore-next-line: phone input is pinned dir="ltr"; calling codes must not mirror
                     className={`w-full flex items-center gap-3 px-3 py-2.5 hover:bg-[var(--surface-2)] transition-colors text-left border-b border-[var(--border)] last:border-0 ${
                       isSelected ? 'bg-primary/10' : ''
                     }`}
@@ -306,6 +306,7 @@ function CountrySelect({
                     <FlagComponent country={country.value} countryName={country.label} />
                     <div className="flex-1 min-w-0">
                       <div className="text-xs text-[var(--text)] font-medium truncate">{country.label}</div>
+                      {/* i18n-ignore-next-line: phone input is pinned dir="ltr"; calling codes must not mirror */}
                       <div className="text-[10px] text-[var(--text-muted)] text-left">
                         {getDisplayCallingCode(country.value, callingCodes)}
                       </div>

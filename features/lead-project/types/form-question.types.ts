@@ -10,6 +10,7 @@ export type FormQuestion = {
   name: string;
   options: FormQuestionOption[];
   type?: FormQuestionType;
+  section?: 'basics' | 'technical' | 'business' | 'branding' | null;
 };
 
 export type QuestionAnswerPayload =

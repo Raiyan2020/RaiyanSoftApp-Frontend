@@ -158,7 +158,11 @@ export default function ImageUpload({
   useEffect(() => {
     if (!sourceFile) return;
 
+    // Genuine external synchronization: creates a browser object URL that
+    // must be revoked on cleanup/re-run, so it cannot be created during
+    // render (a discarded render pass would leak the URL).
     const objectUrl = URL.createObjectURL(sourceFile);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- the preview URL only exists once the object URL above is created; it cannot be computed during render.
     setSourcePreviewUrl(objectUrl);
 
     return () => URL.revokeObjectURL(objectUrl);
@@ -167,7 +171,11 @@ export default function ImageUpload({
   useEffect(() => {
     if (!sourceFile) return;
 
+    // Genuine external synchronization: kicks off an async image-optimization
+    // pipeline; loading/error state is set from the async lifecycle here and
+    // from the settled promise below, not derived from render state.
     let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- see comment above.
     setIsProcessing(true);
     setError('');
 

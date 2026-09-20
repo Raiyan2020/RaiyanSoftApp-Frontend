@@ -13,9 +13,6 @@ const cairo = Cairo({ subsets: ['arabic', 'latin'], weight: ['300', '400', '500'
 
 export const metadata: Metadata = createPublicMetadata();
 
-// Disable static prerendering because app pages depend on client-side providers.
-export const dynamic = 'force-dynamic';
-
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const jsonLd = createOrganizationJsonLd();
   const language = await getServerLanguage();

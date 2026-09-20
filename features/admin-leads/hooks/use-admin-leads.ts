@@ -21,6 +21,9 @@ export function useAdminLeads() {
   const [statusFilter, setStatusFilter] = useState<LeadStatusFilter>('pending');
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [typeFilter, setTypeFilter] = useState('');
   const [page, setPage] = useState(1);
   const [selectedLeadId, setSelectedLeadId] = useState<number | null>(null);
   const [selectedListItem, setSelectedListItem] = useState<AdminLeadListItem | null>(null);
@@ -32,17 +35,26 @@ export function useAdminLeads() {
     return () => window.clearTimeout(timer);
   }, [searchQuery]);
 
-  useEffect(() => {
+  // Reset to page 1 whenever the effective filters change. Adjusted during
+  // render (comparing against the previous filter values) instead of in an
+  // effect.
+  const [prevFilterKey, setPrevFilterKey] = useState(`${debouncedSearch}|${statusFilter}|${dateFrom}|${dateTo}|${typeFilter}`);
+  const filterKey = `${debouncedSearch}|${statusFilter}|${dateFrom}|${dateTo}|${typeFilter}`;
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
     setPage(1);
-  }, [debouncedSearch, statusFilter]);
+  }
 
   const filters = useMemo(
     () => ({
       name: debouncedSearch || undefined,
       status: statusFilter === 'all' ? undefined : STATUS_FILTER_MAP[statusFilter],
+      dateFrom: dateFrom || undefined,
+      dateTo: dateTo || undefined,
+      type: typeFilter || undefined,
       page,
     }),
-    [debouncedSearch, page, statusFilter]
+    [debouncedSearch, page, statusFilter, dateFrom, dateTo, typeFilter]
   );
 
   const {
@@ -54,8 +66,12 @@ export function useAdminLeads() {
   } = useAdminLeadsList(filters, language);
 
   useEffect(() => {
+    // Genuine external synchronization: keeps the locally-held selected
+    // list item (used for optimistic display) in step with the server list
+    // once it refreshes, e.g. after an approve/reject action.
     if (!selectedLeadId) return;
     const refreshed = leads.find((lead) => lead.id === selectedLeadId);
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing selection with refreshed server list; see comment above.
     if (refreshed) setSelectedListItem(refreshed);
   }, [leads, selectedLeadId]);
 
@@ -176,6 +192,12 @@ export function useAdminLeads() {
     setStatusFilter,
     searchQuery,
     setSearchQuery,
+    dateFrom,
+    setDateFrom,
+    dateTo,
+    setDateTo,
+    typeFilter,
+    setTypeFilter,
     language,
     openLead,
     closeLead,

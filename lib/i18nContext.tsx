@@ -15,7 +15,6 @@ import {
 import { DirectionProvider } from '@radix-ui/react-direction';
 
 type Language = 'en' | 'ar';
-type TranslationKey = keyof typeof translations.en;
 
 interface I18nContextProps {
   language: Language;
@@ -37,7 +36,14 @@ export const I18nProvider: React.FC<{ children: ReactNode; initialLanguage?: Lan
 
   useEffect(() => {
     // Reconcile with localStorage for visitors whose preference predates the cookie.
+    // Genuine external synchronization, deliberately left as an effect: this
+    // is a one-time, client-only read of legacy localStorage (unavailable on
+    // the server, so it cannot be computed during the initial render without
+    // causing a hydration mismatch) that backfills the cookie. Do not
+    // restructure — ~182 files depend on the <Fragment key={effectiveLanguage}>
+    // remount behaviour this reconciliation feeds into.
     const stored = readStoredLanguage();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time client-only storage reconciliation; see comment above.
     if (stored !== language) setLanguageState(stored);
     persistLanguage(stored);
     // Runs once: this only backfills the cookie from a legacy localStorage value.

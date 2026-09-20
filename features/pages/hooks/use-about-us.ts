@@ -28,6 +28,9 @@ export function useAboutUs(enabled = true) {
 
   useEffect(() => {
     if (!enabled) return;
+    // Genuine external synchronization: fetches the page from the API on
+    // mount; loading/data/error are set from the async lifecycle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
     reload().catch(() => undefined);
   }, [enabled, reload]);
 
@@ -58,6 +61,9 @@ export function useAdminAboutUs(enabled = true) {
 
   useEffect(() => {
     if (!enabled) return;
+    // Genuine external synchronization: fetches the page from the API on
+    // mount; loading/data/error are set from the async lifecycle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
     reload().catch(() => undefined);
   }, [enabled, reload]);
 

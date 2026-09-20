@@ -1,21 +1,24 @@
 'use client';
+import dynamic from 'next/dynamic';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/landing/Navbar';
 import HeroBanner from '@/components/landing/HeroBanner';
-import Services from '@/components/landing/Services';
-import Sectors from '@/components/landing/Sectors';
-import Works from '@/components/landing/Works';
-import Packages from '@/components/landing/Packages';
-import AboutUs from '@/components/landing/AboutUs';
-import Partners from '@/components/landing/Partners';
-import Insights from '@/components/landing/Insights';
-import FAQ from '@/components/landing/FAQ';
-import FinalCta from '@/components/landing/FinalCta';
-import Contact from '@/components/landing/Contact';
-import Footer from '@/components/landing/Footer';
 import type { LandingPageContent } from '@/features/landing-page';
 import { useLanding } from './use-landing';
 import { useTranslation } from '@/lib/i18nContext';
+
+// Below-the-fold sections: lazy-loaded to keep them out of the initial bundle.
+// ssr stays true (the default) so the HTML still contains the content for SEO.
+const Services = dynamic(() => import('@/components/landing/Services'));
+const Works = dynamic(() => import('@/components/landing/Works'));
+const Packages = dynamic(() => import('@/components/landing/Packages'));
+const AboutUs = dynamic(() => import('@/components/landing/AboutUs'));
+const Partners = dynamic(() => import('@/components/landing/Partners'));
+const Insights = dynamic(() => import('@/components/landing/Insights'));
+const FAQ = dynamic(() => import('@/components/landing/FAQ'));
+const FinalCta = dynamic(() => import('@/components/landing/FinalCta'));
+const Contact = dynamic(() => import('@/components/landing/Contact'));
+const Footer = dynamic(() => import('@/components/landing/Footer'));
 
 type LandingBlogPost = { slug: string; title: string; excerpt: string; category?: string };
 

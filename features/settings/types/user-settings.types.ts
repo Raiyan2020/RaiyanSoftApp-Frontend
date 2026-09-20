@@ -23,6 +23,7 @@ export interface UserSettings {
   site_email: string;
   site_phone: string;
   site_address: string;
+  whatsapp_number?: string | null;
   social_media: SocialMediaLinks;
   first_footer_text?: string;
   second_footer_text?: string;

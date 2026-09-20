@@ -55,9 +55,14 @@ export default function ProjectFormModal({
     form.reset(formData);
   }, [formData, form]);
 
-  useEffect(() => {
+  // Clear the picked upload preview whenever the project being edited
+  // changes, adjusted during render (comparing against the previous
+  // editingProject) instead of in an effect.
+  const [prevEditingProject, setPrevEditingProject] = useState(editingProject);
+  if (editingProject !== prevEditingProject) {
+    setPrevEditingProject(editingProject);
     setImageValue(null);
-  }, [editingProject]);
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>

@@ -195,7 +195,7 @@ export default function NotificationComposer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel className="font-bold uppercase tracking-wider">Title</FieldLabel>
+                  <FieldLabel className="font-bold uppercase tracking-wider">{translateMessage('Title')}</FieldLabel>
                   <input
                     {...field}
                     type="text"
@@ -216,7 +216,7 @@ export default function NotificationComposer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel className="font-bold uppercase tracking-wider">Message</FieldLabel>
+                  <FieldLabel className="font-bold uppercase tracking-wider">{translateMessage('Message')}</FieldLabel>
                   <textarea
                     {...field}
                     rows={4}

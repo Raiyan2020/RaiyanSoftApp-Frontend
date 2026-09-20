@@ -1,4 +1,6 @@
+import { cache } from 'react';
 import { apiService, BASE_URL } from '@/lib/api-service';
+import { translateMessage } from '@/lib/i18n-utils';
 import type { AppLanguage } from '@/lib/language';
 import type {
   BlogCategory,
@@ -28,11 +30,11 @@ function unwrapItem<T>(data: ApiResponseShape<T> | null | undefined): T | null {
   return data as T;
 }
 
-export async function fetchPublicBlogs(language: AppLanguage = 'ar'): Promise<BlogListItem[]> {
+export const fetchPublicBlogs = cache(async function fetchPublicBlogs(language: AppLanguage = 'ar'): Promise<BlogListItem[]> {
   try {
     const response = await fetch(`${BASE_URL}/user/blogs`, {
       headers: { Accept: 'application/json', 'Accept-Language': language },
-      cache: 'no-store',
+      next: { revalidate: 300 },
     });
     const json = await response.json().catch(() => null);
     if (!response.ok || !json?.status) return [];
@@ -40,47 +42,67 @@ export async function fetchPublicBlogs(language: AppLanguage = 'ar'): Promise<Bl
   } catch {
     return [];
   }
-}
+});
 
-export async function fetchPublicBlog(slug: string, language: AppLanguage = 'ar'): Promise<BlogDetailItem | null> {
-  const response = await fetch(`${BASE_URL}/user/blogs/${slug}`, {
-    headers: { Accept: 'application/json', 'Accept-Language': language },
-    cache: 'no-store',
-  });
-  const json = await response.json().catch(() => null);
-  if (!response.ok || !json?.status) return null;
-  return unwrapItem<BlogDetailItem>(json.data);
-}
+export const fetchPublicBlog = cache(async function fetchPublicBlog(slug: string, language: AppLanguage = 'ar'): Promise<BlogDetailItem | null> {
+  try {
+    const response = await fetch(`${BASE_URL}/user/blogs/${slug}`, {
+      headers: { Accept: 'application/json', 'Accept-Language': language },
+      next: { revalidate: 300 },
+    });
+    const json = await response.json().catch(() => null);
+    if (!response.ok || !json?.status) return null;
+    return unwrapItem<BlogDetailItem>(json.data);
+  } catch {
+    // The public site must still build/render when the content API is unreachable.
+    return null;
+  }
+});
 
-export async function fetchPublicBlogCategories(language: AppLanguage = 'ar'): Promise<BlogCategory[]> {
-  const response = await fetch(`${BASE_URL}/user/blog-categories`, {
-    headers: { Accept: 'application/json', 'Accept-Language': language },
-    cache: 'no-store',
-  });
-  const json = await response.json().catch(() => null);
-  if (!response.ok || !json?.status) return [];
-  return unwrapList<BlogCategory>(json.data);
-}
+export const fetchPublicBlogCategories = cache(async function fetchPublicBlogCategories(language: AppLanguage = 'ar'): Promise<BlogCategory[]> {
+  try {
+    const response = await fetch(`${BASE_URL}/user/blog-categories`, {
+      headers: { Accept: 'application/json', 'Accept-Language': language },
+      next: { revalidate: 300 },
+    });
+    const json = await response.json().catch(() => null);
+    if (!response.ok || !json?.status) return [];
+    return unwrapList<BlogCategory>(json.data);
+  } catch {
+    // The public site must still build/render when the content API is unreachable.
+    return [];
+  }
+});
 
-export async function fetchPublicBlogCategory(slug: string, language: AppLanguage = 'ar'): Promise<BlogCategory | null> {
-  const response = await fetch(`${BASE_URL}/user/blog-categories/${slug}`, {
-    headers: { Accept: 'application/json', 'Accept-Language': language },
-    cache: 'no-store',
-  });
-  const json = await response.json().catch(() => null);
-  if (!response.ok || !json?.status) return null;
-  return unwrapItem<BlogCategory>(json.data);
-}
+export const fetchPublicBlogCategory = cache(async function fetchPublicBlogCategory(slug: string, language: AppLanguage = 'ar'): Promise<BlogCategory | null> {
+  try {
+    const response = await fetch(`${BASE_URL}/user/blog-categories/${slug}`, {
+      headers: { Accept: 'application/json', 'Accept-Language': language },
+      next: { revalidate: 300 },
+    });
+    const json = await response.json().catch(() => null);
+    if (!response.ok || !json?.status) return null;
+    return unwrapItem<BlogCategory>(json.data);
+  } catch {
+    // The public site must still build/render when the content API is unreachable.
+    return null;
+  }
+});
 
-export async function fetchPublicBlogCategoryBlogs(slug: string, language: AppLanguage = 'ar'): Promise<BlogListItem[]> {
-  const response = await fetch(`${BASE_URL}/user/blog-categories/${slug}/blogs`, {
-    headers: { Accept: 'application/json', 'Accept-Language': language },
-    cache: 'no-store',
-  });
-  const json = await response.json().catch(() => null);
-  if (!response.ok || !json?.status) return [];
-  return unwrapList<BlogListItem>(json.data);
-}
+export const fetchPublicBlogCategoryBlogs = cache(async function fetchPublicBlogCategoryBlogs(slug: string, language: AppLanguage = 'ar'): Promise<BlogListItem[]> {
+  try {
+    const response = await fetch(`${BASE_URL}/user/blog-categories/${slug}/blogs`, {
+      headers: { Accept: 'application/json', 'Accept-Language': language },
+      next: { revalidate: 300 },
+    });
+    const json = await response.json().catch(() => null);
+    if (!response.ok || !json?.status) return [];
+    return unwrapList<BlogListItem>(json.data);
+  } catch {
+    // The public site must still build/render when the content API is unreachable.
+    return [];
+  }
+});
 
 export async function fetchAdminBlogs(params?: { search?: string; category_id?: number | string; per_page?: number }): Promise<BlogListItem[]> {
   const query = new URLSearchParams();
@@ -124,7 +146,7 @@ export async function createAdminBlog(payload: BlogPayload): Promise<void> {
   if (payload.image) body.append('image', payload.image);
   if (payload.og_image) body.append('og_image', payload.og_image);
   const response = await apiService.post<unknown>('admin/blogs', body, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || 'Failed to save blog.');
+  if (!response.status) throw new Error(response.message || translateMessage('Failed to save blog.'));
 }
 
 export async function updateAdminBlog(id: number, payload: BlogPayload): Promise<void> {
@@ -151,12 +173,12 @@ export async function updateAdminBlog(id: number, payload: BlogPayload): Promise
   if (payload.image) body.append('image', payload.image);
   if (payload.og_image) body.append('og_image', payload.og_image);
   const response = await apiService.post<unknown>(`admin/blogs/${id}`, body, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || 'Failed to save blog.');
+  if (!response.status) throw new Error(response.message || translateMessage('Failed to save blog.'));
 }
 
 export async function deleteAdminBlog(id: number): Promise<void> {
   const response = await apiService.delete<unknown>(`admin/blogs/${id}`, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || 'Failed to delete blog.');
+  if (!response.status) throw new Error(response.message || translateMessage('Failed to delete blog.'));
 }
 
 export async function fetchAdminBlogCategories(params?: { per_page?: number; all?: boolean; search?: string }): Promise<BlogCategoryWithCount[]> {
@@ -197,7 +219,7 @@ export async function createAdminBlogCategory(payload: BlogCategoryPayload): Pro
   if (payload.image) body.append('image', payload.image);
   if (payload.og_image) body.append('og_image', payload.og_image);
   const response = await apiService.post<unknown>('admin/blog-categories', body, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || 'Failed to save blog category.');
+  if (!response.status) throw new Error(response.message || translateMessage('Failed to save blog category.'));
 }
 
 export async function updateAdminBlogCategory(id: number, payload: BlogCategoryPayload): Promise<void> {
@@ -220,10 +242,10 @@ export async function updateAdminBlogCategory(id: number, payload: BlogCategoryP
   if (payload.image) body.append('image', payload.image);
   if (payload.og_image) body.append('og_image', payload.og_image);
   const response = await apiService.post<unknown>(`admin/blog-categories/${id}`, body, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || 'Failed to save blog category.');
+  if (!response.status) throw new Error(response.message || translateMessage('Failed to save blog category.'));
 }
 
 export async function deleteAdminBlogCategory(id: number): Promise<void> {
   const response = await apiService.delete<unknown>(`admin/blog-categories/${id}`, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || 'Failed to delete blog category.');
+  if (!response.status) throw new Error(response.message || translateMessage('Failed to delete blog category.'));
 }

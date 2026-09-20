@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { translateMessage } from '@/lib/i18n-utils';
 import { apiService } from '@/lib/api-service';
 import { authService } from '@/lib/auth-service';
 import { AdminLoginValues } from '../schemas/admin-login.schema';
@@ -40,7 +41,7 @@ export function useAdminLogin() {
       router.push('/admin/projects');
     } catch (err: any) {
       console.error('Admin Login Error:', err);
-      setError(err.message || 'Login failed. Please check your credentials.');
+      setError(err.message || translateMessage('Login failed. Please check your credentials.'));
     } finally {
       setIsLoading(false);
     }

@@ -14,9 +14,11 @@ export type AdminLeadListUser = {
 
 export type AdminLeadListItem = {
   id: number;
+  request_id?: string;
   user: AdminLeadListUser;
   description: string;
   project_name: string;
+  type?: string | { value?: string; key?: string; name?: string } | null;
   status: string;
   date: string;
 };
@@ -60,6 +62,9 @@ export type AdminLeadsFilters = {
   name?: string;
   status?: LeadStatusCode;
   requestId?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  type?: string;
   page?: number;
 };
 

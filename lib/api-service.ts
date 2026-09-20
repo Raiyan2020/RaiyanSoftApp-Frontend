@@ -55,9 +55,9 @@ class ApiService {
       headers['Content-Type'] = 'application/json';
     }
 
-    // Determine token to use based on the path
-    const tokenKey = isAdminApiPath(path) ? 'admin_token' : 'user_token';
-    const token = typeof window !== 'undefined' ? localStorage.getItem(tokenKey) : null;
+    // Determine token to use based on the path. Reuses authService's
+    // try/catch-wrapped storage access instead of reading localStorage directly.
+    const token = isAdminApiPath(path) ? authService.getAdminToken() : authService.getUserToken();
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;

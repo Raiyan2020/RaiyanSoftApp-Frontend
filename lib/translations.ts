@@ -119,10 +119,18 @@ export const translations = {
     "lead_contact.title": "Almost Done!",
     "lead_contact.subtitle": "Enter your details so our team can contact you about your project.",
     "lead_contact.fullname": "Full Name",
+    "lead_contact.fullname_placeholder": "John Doe",
     "lead_contact.phone": "Phone Number",
     "lead_contact.email_opt": "Email (Optional)",
     "lead_contact.review_btn": "Review",
     "lead_contact.submit_btn": "Submit Request",
+
+    // Contact choice modal (F-LEAD-03)
+    "contact_choice.title": "Request Sent",
+    "contact_choice.subtitle": "How would you like us to follow up with you?",
+    "contact_choice.book": "Book an appointment",
+    "contact_choice.whatsapp": "Chat on WhatsApp",
+    "contact_choice.close": "I'll decide later",
     
     // Wizard Data
     "platform.Website": "Website",
@@ -305,6 +313,12 @@ export const translations = {
     "admin.leads.filter.all": "All",
     "admin.leads.filter.pending": "Pending",
     "admin.leads.filter.rejected": "Rejected",
+    "admin.leads.date_from": "From date",
+    "admin.leads.date_to": "To date",
+    "admin.leads.project_type": "Project Type",
+    "admin.leads.all_types": "All Types",
+    "admin.leads.reference": "Reference",
+    "admin.leads.type": "Type",
     "admin.leads.name": "Name",
     "admin.leads.project_info": "Project Info",
     "admin.leads.status": "Status",
@@ -561,10 +575,18 @@ export const translations = {
     "lead_contact.title": "بقيت خطوة أخيرة",
     "lead_contact.subtitle": "أدخل بياناتك ليتواصل معك فريقنا بخصوص مشروعك.",
     "lead_contact.fullname": "الاسم الكامل",
+    "lead_contact.fullname_placeholder": "محمد أحمد",
     "lead_contact.phone": "رقم الهاتف",
     "lead_contact.email_opt": "البريد الإلكتروني (اختياري)",
     "lead_contact.review_btn": "مراجعة",
     "lead_contact.submit_btn": "إرسال الطلب",
+
+    // Contact choice modal (F-LEAD-03)
+    "contact_choice.title": "تم إرسال الطلب",
+    "contact_choice.subtitle": "كيف تفضّل أن نتواصل معك؟",
+    "contact_choice.book": "حجز موعد",
+    "contact_choice.whatsapp": "التواصل عبر واتساب",
+    "contact_choice.close": "سأقرر لاحقاً",
 
     // Wizard Data
     "platform.Website": "موقع إلكتروني",
@@ -752,6 +774,12 @@ export const translations = {
     "admin.leads.filter.all": "الكل",
     "admin.leads.filter.pending": "قيد الانتظار",
     "admin.leads.filter.rejected": "مرفوض",
+    "admin.leads.date_from": "من تاريخ",
+    "admin.leads.date_to": "إلى تاريخ",
+    "admin.leads.project_type": "نوع المشروع",
+    "admin.leads.all_types": "كل الأنواع",
+    "admin.leads.reference": "الرقم المرجعي",
+    "admin.leads.type": "النوع",
     "admin.leads.name": "الاسم",
     "admin.leads.project_info": "معلومات المشروع",
     "admin.leads.status": "الحالة",

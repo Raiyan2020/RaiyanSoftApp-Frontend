@@ -1,9 +1,17 @@
 "use client";
 
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import {
+  createProjectType,
+  deleteProjectType,
+  fetchProjectTypes,
+  moveProjectType,
+  updateProjectType,
+} from '../services';
 
 export interface ProjectType {
   id: string;
+  slug?: string;
   name: string;
   nameAr?: string;
   description?: string;
@@ -43,20 +51,35 @@ const emptyForm: ProjectTypeForm = {
   durationMax: '',
 };
 
-const unavailableMessage = 'Project type management is not available in the Laravel backend routes yet.';
-
 export function useAdminProjectTypes() {
-  const [types] = useState<ProjectType[]>([]);
+  const [types, setTypes] = useState<ProjectType[]>([]);
+  const [loading, setLoading] = useState(true);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [form, setForm] = useState<ProjectTypeForm>(emptyForm);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState<string | null>(unavailableMessage);
+  const [error, setError] = useState<string | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    setLoading(true);
+    try {
+      const data = await fetchProjectTypes();
+      setTypes([...data].sort((a, b) => a.order - b.order));
+    } catch (err: any) {
+      setError(err.message || 'Failed to load project types.');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const startCreate = () => {
     setEditingId(null);
     setForm(emptyForm);
-    setError(unavailableMessage);
+    setError(null);
   };
 
   const startEdit = (type: ProjectType) => {
@@ -73,21 +96,54 @@ export function useAdminProjectTypes() {
       durationMin: type.durationMin ? String(type.durationMin) : '',
       durationMax: type.durationMax ? String(type.durationMax) : '',
     });
-    setError(unavailableMessage);
+    setError(null);
   };
 
-  const runUnavailableAction = async () => {
+  const saveType = async () => {
     setSaving(true);
-    setError(unavailableMessage);
-    setSaving(false);
+    setError(null);
+    try {
+      if (editingId) {
+        await updateProjectType(editingId, form);
+      } else {
+        await createProjectType(form);
+      }
+      startCreate();
+      await load();
+    } catch (err: any) {
+      setError(err.message || 'Failed to save project type.');
+    } finally {
+      setSaving(false);
+    }
   };
 
-  const saveType = runUnavailableAction;
-  const moveType = runUnavailableAction;
+  const moveType = async (id: string, direction: -1 | 1) => {
+    setSaving(true);
+    setError(null);
+    try {
+      await moveProjectType(id, direction);
+      await load();
+    } catch (err: any) {
+      setError(err.message || 'Failed to reorder project type.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const deleteType = async () => {
-    await runUnavailableAction();
-    setDeleteId(null);
+    if (!deleteId) return;
+    setSaving(true);
+    setError(null);
+    try {
+      await deleteProjectType(deleteId);
+      if (editingId === deleteId) startCreate();
+      await load();
+    } catch (err: any) {
+      setError(err.message || 'Failed to delete project type.');
+    } finally {
+      setSaving(false);
+      setDeleteId(null);
+    }
   };
 
   return {
@@ -95,7 +151,7 @@ export function useAdminProjectTypes() {
     form,
     setForm,
     editingId,
-    loading: false,
+    loading,
     saving,
     error,
     setError,

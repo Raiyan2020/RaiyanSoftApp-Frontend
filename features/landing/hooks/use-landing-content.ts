@@ -39,7 +39,7 @@ export function useLandingContent() {
     [content.contact.methods, dir, lang, settings]
   );
 
-  const textAlign = dir === 'rtl' ? 'text-center lg:text-right' : 'text-center lg:text-left';
+  const textAlign = 'text-center lg:text-start';
   const flexAlign = dir === 'rtl' ? 'lg:justify-start' : 'lg:justify-start';
 
   return {

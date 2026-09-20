@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, ArrowLeft, Phone, ShieldCheck, User, X } from 'lucide-react';
 import { isValidPhoneNumber } from 'react-phone-number-input';
@@ -38,7 +38,11 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
   const [otp, setOtp] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
 
-  useEffect(() => {
+  // Clear all dialog state when it closes, adjusted during render
+  // (comparing against the previous `isOpen`) instead of in an effect.
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (!isOpen) {
       reset();
       setPhoneValue('');
@@ -46,7 +50,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
       setOtp('');
       setLocalError(null);
     }
-  }, [isOpen, reset]);
+  }
 
   const handlePhoneSubmit = () => {
     setLocalError(null);
@@ -205,6 +209,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
                   {t('auth.change_phone')}
                 </button>
 
+                {/* i18n-ignore-next-line: raw phone number box is dir="ltr" by design */}
                 <div className="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 text-sm font-mono text-[var(--text)] text-left" dir="ltr">
                   {phone}
                 </div>

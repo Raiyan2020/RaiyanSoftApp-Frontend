@@ -16,6 +16,12 @@ export default function AdminAppointmentsPage() {
     listError,
     bookingStatusFilter,
     setBookingStatusFilter,
+    bookingTypeFilter,
+    setBookingTypeFilter,
+    bookingDateFrom,
+    setBookingDateFrom,
+    bookingDateTo,
+    setBookingDateTo,
     bookingSearch,
     setBookingSearch,
     selectedBooking,
@@ -67,11 +73,17 @@ export default function AdminAppointmentsPage() {
               error={listError}
               pagination={pagination}
               statusFilter={bookingStatusFilter}
+              typeFilter={bookingTypeFilter}
+              dateFrom={bookingDateFrom}
+              dateTo={bookingDateTo}
               searchQuery={bookingSearch}
               actionMessage={actionMessage}
               actionError={actionError}
               actionLoading={actionLoading}
               onStatusFilterChange={setBookingStatusFilter}
+              onTypeFilterChange={setBookingTypeFilter}
+              onDateFromChange={setBookingDateFrom}
+              onDateToChange={setBookingDateTo}
               onSearchQueryChange={setBookingSearch}
               selectedBooking={selectedBooking}
               onOpenBooking={openBooking}

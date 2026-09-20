@@ -146,6 +146,7 @@ function SidebarContent({
           />
         </div>
         <div className={isSidebarCollapsed ? 'hidden' : ''}>
+          {/* i18n-ignore-next-line: brand name, never translated */}
           <h1 className="text-[var(--text)] font-extrabold text-sm leading-none tracking-tight">Raiyansoft</h1>
           <span className="mt-0.5 inline-flex rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-primary">
             {t('admin.panel')}

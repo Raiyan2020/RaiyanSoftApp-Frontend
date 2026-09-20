@@ -8,6 +8,7 @@ import { useEffect, useState } from 'react';
 import { siteConfig } from '@/lib/site';
 import { trackPublicEvent } from '@/lib/analytics';
 import { translateMessage } from '@/lib/i18n-utils';
+import { persistTheme, readStoredTheme } from '@/lib/theme';
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -26,13 +27,20 @@ export default function PublicNavigation() {
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
 
-  useEffect(() => {
+  // Close the mobile menu when the route changes. Adjusted during render
+  // (comparing against the previous pathname) instead of in an effect.
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
     setOpen(false);
-  }, [pathname]);
+  }
 
   useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    const nextDark = saved === 'dark';
+    // Genuine mount-time sync: the persisted theme lives in localStorage,
+    // which isn't available on the server, so it can only be read once the
+    // component mounts on the client.
+    const nextDark = readStoredTheme() === 'dark';
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial state must come from client-only storage; there is no render-time value to compute this from.
     setDark(nextDark);
     document.documentElement.classList.toggle('dark', nextDark);
   }, []);
@@ -41,7 +49,7 @@ export default function PublicNavigation() {
     const nextDark = !dark;
     setDark(nextDark);
     document.documentElement.classList.toggle('dark', nextDark);
-    localStorage.setItem('theme', nextDark ? 'dark' : 'light');
+    persistTheme(nextDark ? 'dark' : 'light');
   };
 
   return (

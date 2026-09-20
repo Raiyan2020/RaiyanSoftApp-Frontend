@@ -22,6 +22,7 @@ import ErrorAlert from '@/components/ui/error-alert';
 import { logoutUser } from '@/features/auth/services/user-auth-api';
 import { guestStore } from '@/lib/guestStore';
 import { translateMessage } from '@/lib/i18n-utils';
+import { persistTheme, readStoredTheme } from '@/lib/theme';
 
 type ProfileTab = 'all' | ProfileRecordType | 'chat';
 
@@ -137,33 +138,31 @@ export default function ProfilePage() {
     error: projectsError,
   } = useUserStoredProjects(Boolean(authService.getUserToken()));
 
-  // Initialize theme
+  // Initialize theme. Genuine mount-time sync: the persisted theme lives in
+  // localStorage, which isn't available on the server, so it can only be
+  // read once the component mounts on the client.
   useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark') {
-      setDark(true);
-      document.documentElement.classList.add('dark');
-    } else {
-      setDark(false);
-      document.documentElement.classList.remove('dark');
-    }
+    const isDark = readStoredTheme() === 'dark';
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial state must come from client-only storage; there is no render-time value to compute this from.
+    setDark(isDark);
+    document.documentElement.classList.toggle('dark', isDark);
   }, []);
 
   const toggleDark = () => {
     const next = !dark;
     setDark(next);
-    if (next) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
+    document.documentElement.classList.toggle('dark', next);
+    persistTheme(next ? 'dark' : 'light');
   };
 
   // Route detection from query params. Auth is intentionally bypassed for now.
-  useEffect(() => {
-    const tabParam = searchParams.get('tab');
+  // Adjusted during render (comparing against the previous `tab` param)
+  // instead of in an effect, so navigating with a new `?tab=` value updates
+  // `activeTab` in the same render pass rather than one render late.
+  const tabParam = searchParams.get('tab');
+  const [prevTabParam, setPrevTabParam] = useState(tabParam);
+  if (tabParam !== prevTabParam) {
+    setPrevTabParam(tabParam);
     const normalizedTab = tabParam === 'projects'
       ? 'project'
       : tabParam === 'meetings'
@@ -177,7 +176,7 @@ export default function ProfilePage() {
     if (normalizedTab && ['booking', 'project', 'notification', 'info', 'chat'].includes(normalizedTab)) {
       setActiveTab(normalizedTab as ProfileTab);
     }
-  }, [searchParams]);
+  }
 
   const tabs = [
     { id: 'booking', label: dir === 'rtl' ? 'الحجوزات' : 'Bookings', icon: Calendar },

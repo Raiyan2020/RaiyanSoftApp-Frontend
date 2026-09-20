@@ -50,6 +50,10 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
         {/* Details */}
         <div className="rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 py-2 flex flex-col gap-1.5">
           <div className="flex items-center justify-between text-xs">
+            <span className="text-[var(--text-muted)]">{translateMessage('Reference')}</span>
+            <span className="font-mono text-[var(--text)]">{project.referenceNumber || '—'}</span>
+          </div>
+          <div className="flex items-center justify-between text-xs">
             <span className="text-[var(--text-muted)]">{translateMessage('Owner')}</span>
             <span className="font-medium text-[var(--text)] truncate max-w-[60%]">{project.ownerName}</span>
           </div>
@@ -95,6 +99,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
 
   return (
       <tr className="hover:bg-white/[0.02] transition-colors group">
+        <td className="p-5 text-[var(--text-muted)] text-xs font-mono">{project.referenceNumber || '—'}</td>
         <td className="p-5">
           <Link href={detailHref} className="flex items-center gap-3 group/project">
             <div
@@ -117,6 +122,9 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
               </div>
             </div>
           </Link>
+        </td>
+        <td className="p-5 text-[var(--text-muted)] text-xs">
+          {project.industry ? (project.industry === 'Other' ? project.industryOther : project.industry) : '—'}
         </td>
         <td className="p-5">
           <span

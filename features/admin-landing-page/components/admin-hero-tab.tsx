@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Loader2, Save } from 'lucide-react';
 import { useAdminHero, useUpdateAdminHero } from '../hooks/use-admin-landing-page';
 import BilingualFieldInputs from './bilingual-field-inputs';
@@ -52,7 +52,11 @@ export default function AdminHeroTab() {
 
   const hero = heroes?.[0];
 
-  useEffect(() => {
+  // Repopulate the form whenever the fetched hero changes, adjusted during
+  // render (comparing against the previous value) instead of in an effect.
+  const [prevHero, setPrevHero] = useState(hero);
+  if (hero !== prevHero) {
+    setPrevHero(hero);
     if (hero) {
       setForm({
         title: hero.title,
@@ -70,7 +74,7 @@ export default function AdminHeroTab() {
         })) ?? [],
       });
     }
-  }, [hero]);
+  }
 
   function validateForm() {
     const nextErrors = {

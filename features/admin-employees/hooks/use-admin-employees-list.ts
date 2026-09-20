@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 import { fetchAdminEmployees } from '../services/admin-employees-api';
 import { AdminEmployee } from '../types/admin-employee.types';
 
@@ -17,7 +18,7 @@ export function useAdminEmployeesList() {
       const data = await fetchAdminEmployees();
       setEmployees(data);
     } catch (err: any) {
-      setError(err.message || 'Failed to load employees.');
+      setError(err.message || translateMessage('Failed to load employees.'));
       setEmployees([]);
     } finally {
       setLoading(false);
@@ -25,6 +26,9 @@ export function useAdminEmployeesList() {
   }, []);
 
   useEffect(() => {
+    // Genuine external synchronization: fetches the list from the API on
+    // mount; loading/data/error are set from the async lifecycle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
     reload();
   }, [reload]);
 

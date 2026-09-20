@@ -27,6 +27,10 @@ export function useAdminColorsList() {
   }, []);
 
   useEffect(() => {
+    // Genuine external synchronization: fetches the list from the API on
+    // mount; loading/data/error are set from the async lifecycle, not
+    // derived from render state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching on mount; see comment above.
     reload().catch(() => undefined);
   }, [reload]);
 

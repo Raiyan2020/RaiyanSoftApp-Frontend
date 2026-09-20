@@ -140,7 +140,7 @@ export default function ProfileEditDialog({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>Phone Number</FieldLabel>
+                    <FieldLabel>{translateMessage('Phone Number')}</FieldLabel>
                     <PhoneInput
                       value={field.value}
                       onChange={field.onChange}

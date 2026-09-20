@@ -44,6 +44,7 @@ export default function DesktopHeader() {
             className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(29,183,240,0.5)]"
           />
         </div>
+        {/* i18n-ignore-next-line: brand name, never translated */}
         <span className="text-lg font-bold text-[var(--text)] tracking-tight">Raiyansoft</span>
       </button>
 

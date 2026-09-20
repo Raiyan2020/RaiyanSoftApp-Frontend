@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 import { fetchAdminLeads } from '../services/admin-leads-api';
 import {
   AdminLeadListItem,
@@ -23,7 +24,7 @@ export function useAdminLeadsList(filters: AdminLeadsFilters, language: string) 
       setLeads(result.leads);
       setPagination(result.pagination);
     } catch (err: any) {
-      setError(err.message || 'Failed to load leads.');
+      setError(err.message || translateMessage('Failed to load leads.'));
       setLeads([]);
       setPagination(null);
     } finally {
@@ -32,6 +33,9 @@ export function useAdminLeadsList(filters: AdminLeadsFilters, language: string) 
   }, [filters, language]);
 
   useEffect(() => {
+    // Genuine external synchronization: fetches the list from the API on
+    // mount/filter change; loading/data/error are set from the async lifecycle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
     reload();
   }, [reload]);
 

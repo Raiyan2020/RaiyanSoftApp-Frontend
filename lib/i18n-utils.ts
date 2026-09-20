@@ -1,17 +1,18 @@
 import { translations } from './translations';
+import { readStoredLanguage } from './language';
 
 export type AppLanguage = 'en' | 'ar';
 
+/** Reuses the shared, try/catch-wrapped storage reader from `lib/language.ts`. */
 export function getStoredLanguage(): AppLanguage {
-  if (typeof window === 'undefined') return 'ar';
-  const language = window.localStorage.getItem('rs_lang');
-  return language === 'en' || language === 'ar' ? language : 'ar';
+  return readStoredLanguage();
 }
 
 const messageTranslations: Record<string, string> = {
   'An error occurred.': 'حدث خطأ.',
   'Network error occurred.': 'حدث خطأ في الاتصال.',
   'Request failed.': 'فشل الطلب.',
+  'Error loading projects:': 'خطأ في تحميل المشاريع:',
   'An unexpected error occurred.': 'حدث خطأ غير متوقع.',
   'Action execution failed.': 'فشل تنفيذ الإجراء.',
   'Unable to load this project.': 'تعذر تحميل هذا المشروع.',
@@ -254,6 +255,11 @@ const messageTranslations: Record<string, string> = {
   'English Label': 'التسمية الإنجليزية',
   'Arabic Label': 'التسمية العربية',
   'Question Type': 'نوع السؤال',
+  'Section': 'القسم',
+  'Basics': 'الأساسيات',
+  'Technical': 'تقني',
+  'Business': 'الأعمال',
+  'Branding': 'الهوية البصرية',
   'Options': 'الخيارات',
   'Question Order': 'ترتيب الأسئلة',
   'No project questions yet.': 'لا توجد أسئلة مشاريع بعد.',
@@ -308,6 +314,8 @@ const messageTranslations: Record<string, string> = {
   'Meeting Details': 'تفاصيل الاجتماع',
   'Schedule': 'الجدول',
   'Meeting Type': 'نوع الاجتماع',
+  'Online': 'عن بُعد',
+  'In Person': 'حضوري',
   'Notes': 'الملاحظات',
   'No notes were added.': 'لم تتم إضافة ملاحظات.',
   'Weekly Availability': 'التوفر الأسبوعي',
@@ -1373,6 +1381,9 @@ const messageTranslations: Record<string, string> = {
   'The names of real partners will be added here once approved.': 'تضاف أسماء الشركاء الحقيقيين بعد اعتمادها.',
   'Product and Development Team': 'فريق المنتج والتطوير',
   'This page will be updated with approved team member names later.': 'يتم تحديث هذه الصفحة بأسماء الفريق المعتمدة لاحقا.',
+  'Client': 'العميل',
+  'WhatsApp': 'واتساب',
+  'No phone number': 'لا يوجد رقم هاتف',
 };
 
 export function translateMessage(message: string, language: AppLanguage = getStoredLanguage()) {

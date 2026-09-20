@@ -2,6 +2,8 @@ import React from 'react';
 import { Phone, MessageCircle, Eye, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
 import Avatar from '@/components/ui/avatar';
+import { TableRow, TableCell } from '@/components/ui/table';
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
 import { AdminLeadListItem, LEAD_STATUS, LeadStatusCode } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusCode, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
 import { LEAD_APPROVAL_WHATSAPP_MESSAGE } from '../utils/whatsapp-template';
@@ -33,10 +35,16 @@ export default function LeadsTableRow({
   const statusCode = getLeadStatusCode(lead.status);
   const statusLabel = formatLeadStatusLabel(statusCode, language);
   const canChangeStatus = isLeadPending(lead.status);
+  const typeLabel = !lead.type
+    ? ''
+    : typeof lead.type === 'string'
+    ? lead.type
+    : lead.type.name || lead.type.key || lead.type.value || '';
 
   return (
-    <tr className="hover:bg-white/[0.02] transition-colors group">
-      <td className="p-5">
+    <TableRow className="hover:bg-white/[0.02] group">
+      <TableCell className="p-5 text-start text-[var(--text-muted)] text-xs font-mono">{lead.request_id || '—'}</TableCell>
+      <TableCell className="p-5 text-start">
         <div className="flex items-center gap-3">
           <Avatar name={lead.user.full_name} size="md" className="w-10 h-10 text-sm" />
           <div>
@@ -46,28 +54,35 @@ export default function LeadsTableRow({
             </div>
           </div>
         </div>
-      </td>
-      <td className="p-5">
+      </TableCell>
+      <TableCell className="p-5 text-start">
         <div className="font-medium text-[var(--text)]">{lead.project_name}</div>
         <div className="text-xs text-[var(--text-muted)] truncate max-w-[220px]">{lead.description}</div>
-      </td>
-      <td className="p-5">
+      </TableCell>
+      <TableCell className="p-5 text-start text-[var(--text-muted)] text-xs">{typeLabel || '—'}</TableCell>
+      <TableCell className="p-5 text-start">
         <div className="flex items-center gap-2">
           <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${statusTone.badgeClass}`}>
             {statusLabel}
           </span>
           <div className="relative">
-            <select
-              value={statusCode}
+            <Select
+              value={String(statusCode)}
               disabled={!canChangeStatus || isUpdatingStatus}
-              onChange={(event) => onChangeStatus(lead, Number(event.target.value) as LeadStatusCode)}
-              className="h-9 min-w-32 rounded-lg border border-[var(--border)] bg-[var(--surface-3)] px-3 pe-8 text-xs font-bold text-[var(--text)] outline-none transition-colors hover:border-primary/40 focus:border-primary disabled:cursor-not-allowed disabled:opacity-55"
-              title={canChangeStatus ? t('admin.leads.change_status') : t('admin.leads.status_locked')}
+              onValueChange={(nextValue) => onChangeStatus(lead, Number(nextValue) as LeadStatusCode)}
             >
-              <option value={LEAD_STATUS.PENDING}>{formatLeadStatusLabel(LEAD_STATUS.PENDING, language)}</option>
-              <option value={LEAD_STATUS.APPROVED}>{formatLeadStatusLabel(LEAD_STATUS.APPROVED, language)}</option>
-              <option value={LEAD_STATUS.REJECTED}>{formatLeadStatusLabel(LEAD_STATUS.REJECTED, language)}</option>
-            </select>
+              <SelectTrigger
+                className="h-9 w-auto min-w-32 rounded-lg border border-[var(--border)] bg-[var(--surface-3)] px-3 py-0 pe-8 text-xs font-bold text-[var(--text)] outline-none transition-colors hover:border-primary/40 focus:border-primary disabled:cursor-not-allowed disabled:opacity-55"
+                title={canChangeStatus ? t('admin.leads.change_status') : t('admin.leads.status_locked')}
+              >
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value={String(LEAD_STATUS.PENDING)}>{formatLeadStatusLabel(LEAD_STATUS.PENDING, language)}</SelectItem>
+                <SelectItem value={String(LEAD_STATUS.APPROVED)}>{formatLeadStatusLabel(LEAD_STATUS.APPROVED, language)}</SelectItem>
+                <SelectItem value={String(LEAD_STATUS.REJECTED)}>{formatLeadStatusLabel(LEAD_STATUS.REJECTED, language)}</SelectItem>
+              </SelectContent>
+            </Select>
             {isUpdatingStatus ? (
               <Loader2
                 size={14}
@@ -76,9 +91,9 @@ export default function LeadsTableRow({
             ) : null}
           </div>
         </div>
-      </td>
-      <td className="p-5 text-[var(--text-muted)] text-xs">{lead.date}</td>
-      <td className="p-5 text-end">
+      </TableCell>
+      <TableCell className="p-5 text-start text-[var(--text-muted)] text-xs">{lead.date}</TableCell>
+      <TableCell className="p-5 text-end">
         <div className="flex items-center justify-end gap-2">
           <a
             href={waUrl || undefined}
@@ -105,7 +120,7 @@ export default function LeadsTableRow({
             <Eye size={16} />
           </button>
         </div>
-      </td>
-    </tr>
+      </TableCell>
+    </TableRow>
   );
 }

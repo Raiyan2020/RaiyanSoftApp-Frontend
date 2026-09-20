@@ -39,6 +39,9 @@ export function useAdminTimeSlots() {
   }, []);
 
   useEffect(() => {
+    // Genuine external synchronization: fetches the record from the API on
+    // mount; loading/data/error are set from the async lifecycle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
     reload();
   }, [reload]);
 

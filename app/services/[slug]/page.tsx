@@ -41,8 +41,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
   const { slug } = await params;
   const language = await getServerLanguage();
   const tt = (message: string) => translateMessage(message, language);
-  const services = await getServices(language);
-  const publicFaqs = await getFaqs();
+  const [services, publicFaqs] = await Promise.all([getServices(language), getFaqs()]);
   const service = services.find((item) => item.slug === slug);
   if (!service) notFound();
 

@@ -54,6 +54,7 @@ export default function Footer({ homeData }: FooterProps) {
               </div>
               <div>
                 <p className="text-lg font-bold text-white">{siteName}</p>
+                {/* i18n-ignore-next-line: brand name, never translated */}
                 <p className="text-xs text-slate-500">Raiyansoft</p>
               </div>
             </div>

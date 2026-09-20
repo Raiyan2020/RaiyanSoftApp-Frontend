@@ -1,21 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
-import { ProjectWizard } from '@/features/projects';
+import { LeadProjectWizard, LeadContactChoiceModal } from '@/features/lead-project';
 import { translateMessage } from '@/lib/i18n-utils';
 import { useLeadCapture } from '../hooks/use-lead-capture';
 
 export default function LeadCapturePage() {
-  const {
-    source,
-    isCompleted,
-    requestId,
-    dir,
-    language,
-    handleComplete,
-    getWhatsAppLink,
-    handleWizardClose,
-  } = useLeadCapture();
+  const { isCompleted, requestId, dir, language, handleComplete, handleWizardClose } = useLeadCapture();
+  const [showContactChoice, setShowContactChoice] = useState(false);
+
+  const onComplete = (id?: string) => {
+    handleComplete(id);
+    setShowContactChoice(true);
+  };
 
   if (isCompleted) {
     return (
@@ -37,28 +34,17 @@ export default function LeadCapturePage() {
               language
             )}
           </p>
-
-          {requestId ? (
-            <a
-              href={getWhatsAppLink()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center w-full bg-[#25D366] text-white font-bold py-4 px-6 rounded-xl shadow-[0_0_20px_rgba(37,211,102,0.3)] hover:shadow-[0_0_25px_rgba(37,211,102,0.5)] transition-all"
-            >
-              {translateMessage('Click here to confirm your request', language)}
-            </a>
-          ) : null}
         </motion.div>
+
+        {showContactChoice ? (
+          <LeadContactChoiceModal
+            requestId={requestId || undefined}
+            onClose={() => setShowContactChoice(false)}
+          />
+        ) : null}
       </div>
     );
   }
 
-  return (
-    <ProjectWizard
-      onClose={handleWizardClose}
-      onComplete={handleComplete}
-      isLeadMode={true}
-      source={source}
-    />
-  );
+  return <LeadProjectWizard onClose={handleWizardClose} onComplete={onComplete} isLeadMode />;
 }

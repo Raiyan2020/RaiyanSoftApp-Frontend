@@ -13,8 +13,7 @@ export const metadata: Metadata = getPageMetadata('home');
 export default async function Page() {
   const homeSeo = pageSeo.home;
   const language = await getServerLanguage();
-  const blogPosts = await fetchPublicBlogs(language);
-  const landingHome = await fetchLandingHome(language);
+  const [blogPosts, landingHome] = await Promise.all([fetchPublicBlogs(language), fetchLandingHome(language)]);
 
   return (
     <>

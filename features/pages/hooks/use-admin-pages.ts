@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { AboutUsForm, PageSlug, SimplePageForm } from '../types/page.types';
 import { usePrivacyPolicy } from './use-privacy-policy';
@@ -43,38 +43,52 @@ export function useAdminPages() {
   const termsUpdate = useUpdatePage('terms-conditions');
   const aboutUpdate = useUpdatePage('about-us');
 
-  useEffect(() => {
+  // The four blocks below adjust state during render (comparing against the
+  // previous value of the relevant dependency) instead of using effects, per
+  // https://react.dev/learn/you-might-not-need-an-effect#adjusting-some-state-when-a-prop-changes.
+  const [prevTabParam, setPrevTabParam] = useState(tabParam);
+  if (tabParam !== prevTabParam) {
+    setPrevTabParam(tabParam);
     if (tabParam && validTabs.includes(tabParam)) {
       setActiveTab(tabParam);
     }
-  }, [tabParam]);
+  }
 
-  useEffect(() => {
-    if (!privacy.data) return;
-    setPrivacyForm({
-      title: privacy.data.title || '',
-      description: privacy.data.description || '',
-    });
-  }, [privacy.data]);
+  const [prevPrivacyData, setPrevPrivacyData] = useState(privacy.data);
+  if (privacy.data !== prevPrivacyData) {
+    setPrevPrivacyData(privacy.data);
+    if (privacy.data) {
+      setPrivacyForm({
+        title: privacy.data.title || '',
+        description: privacy.data.description || '',
+      });
+    }
+  }
 
-  useEffect(() => {
-    if (!terms.data) return;
-    setTermsForm({
-      title: terms.data.title || translateMessage('Terms and Conditions'),
-      description: terms.data.description || '',
-    });
-  }, [terms.data]);
+  const [prevTermsData, setPrevTermsData] = useState(terms.data);
+  if (terms.data !== prevTermsData) {
+    setPrevTermsData(terms.data);
+    if (terms.data) {
+      setTermsForm({
+        title: terms.data.title || translateMessage('Terms and Conditions'),
+        description: terms.data.description || '',
+      });
+    }
+  }
 
-  useEffect(() => {
-    if (!about.data) return;
-    setAboutForm({
-      title: about.data.title || '',
-      caption: about.data.caption || '',
-      description: about.data.description || '',
-      email: about.data.email || '',
-      url: about.data.url || '',
-    });
-  }, [about.data]);
+  const [prevAboutData, setPrevAboutData] = useState(about.data);
+  if (about.data !== prevAboutData) {
+    setPrevAboutData(about.data);
+    if (about.data) {
+      setAboutForm({
+        title: about.data.title || '',
+        caption: about.data.caption || '',
+        description: about.data.description || '',
+        email: about.data.email || '',
+        url: about.data.url || '',
+      });
+    }
+  }
 
   const activeState = useMemo(() => {
     if (activeTab === 'privacy-policy') {

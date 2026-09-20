@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Box, Plus, ChevronRight, ChevronLeft } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
 import EmptyState from '@/components/ui/empty-state';
-import { ProjectWizard } from '@/features/projects';
+import { LeadProjectWizard } from '@/features/lead-project';
 import { useTranslation } from '@/lib/i18nContext';
 import { translateMessage } from '@/lib/i18n-utils';
 import { useHome } from '../hooks/use-home';
@@ -142,7 +142,7 @@ export default function HomePage() {
 
       <AnimatePresence>
         {isWizardOpen ? (
-          <ProjectWizard
+          <LeadProjectWizard
             onClose={() => setIsWizardOpen(false)}
             onComplete={() => router.push('/profile?tab=project')}
           />

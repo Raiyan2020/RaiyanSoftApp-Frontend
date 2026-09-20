@@ -29,7 +29,7 @@ export default function RolePermissionList({
                   type="button"
                   key={value}
                   onClick={() => onTogglePermission(value)}
-                  className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all text-left ${
+                  className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer transition-all text-start ${
                     isSelected
                       ? 'bg-primary/10 border-primary/40 text-[var(--text)]'
                       : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border)]'

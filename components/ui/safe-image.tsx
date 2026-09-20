@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { translateMessage } from '@/lib/i18n-utils';
 
@@ -29,10 +29,14 @@ export default function SafeImage({
   ...props
 }: SafeImageProps) {
   const [hasError, setHasError] = useState(false);
-
-  useEffect(() => {
+  // Reset the error flag during render when `src` changes, instead of in an
+  // effect, so a failing image doesn't briefly show the fallback for one
+  // extra render pass after a new `src` is passed in.
+  const [prevSrc, setPrevSrc] = useState(src);
+  if (src !== prevSrc) {
+    setPrevSrc(src);
     setHasError(false);
-  }, [src]);
+  }
 
   const handleError = () => {
     setHasError(true);

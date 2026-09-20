@@ -52,12 +52,21 @@ export function useMeetingBookingFlow(options?: { onBooked?: () => void | Promis
 
   const { submitBooking, loading: isSubmitting, error: bookingError } = useBookMeeting();
 
-  useEffect(() => {
-    if (!selectedDate) return;
-    setSelectedTime(null);
-  }, [selectedDate]);
+  // Reset the selected time whenever the selected date changes (including
+  // when a consumer sets `selectedDate` directly via the exported setter,
+  // bypassing `selectDate`). Adjusted during render instead of in an effect.
+  const [prevSelectedDate, setPrevSelectedDate] = useState(selectedDate);
+  if (selectedDate !== prevSelectedDate) {
+    setPrevSelectedDate(selectedDate);
+    if (selectedDate) setSelectedTime(null);
+  }
 
   useEffect(() => {
+    // Genuine external synchronization: merges error state from the two
+    // child hooks (availability + booking) into the locally-settable
+    // errorMsg, which is also cleared/overridden directly by this hook's
+    // own handlers (handleBook, resetFlow).
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- syncing errors from child hooks; see comment above.
     setErrorMsg(availabilityError || bookingError);
   }, [availabilityError, bookingError]);
 

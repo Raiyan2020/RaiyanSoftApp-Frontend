@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ErrorAlert from '@/components/ui/error-alert';
@@ -36,14 +36,19 @@ function BannerEditor({
   const [buttonUrl, setButtonUrl] = useState('');
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (!banner) return;
-    setCaption(banner.caption || EMPTY_BI);
-    setHeading(banner.title);
-    setDescription(banner.description);
-    setButtonText(banner.button_text || EMPTY_BI);
-    setButtonUrl(banner.button_url || '');
-  }, [banner]);
+  // Repopulate the form when the `banner` prop changes, adjusted during
+  // render (comparing against the previous value) instead of in an effect.
+  const [prevBanner, setPrevBanner] = useState(banner);
+  if (banner !== prevBanner) {
+    setPrevBanner(banner);
+    if (banner) {
+      setCaption(banner.caption || EMPTY_BI);
+      setHeading(banner.title);
+      setDescription(banner.description);
+      setButtonText(banner.button_text || EMPTY_BI);
+      setButtonUrl(banner.button_url || '');
+    }
+  }
 
   const save = async () => {
     if (!heading.ar || !heading.en || !description.ar || !description.en || !buttonText.ar || !buttonText.en) {

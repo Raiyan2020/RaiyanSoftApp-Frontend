@@ -1,21 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useReducedMotion, type Variants } from 'framer-motion';
+import { persistTheme, readStoredTheme } from '@/lib/theme';
 
 export function useLanding() {
   const [dark, setDark] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
   const shouldReduceMotion = useReducedMotion();
 
-  // Persist theme preference, defaulting to light mode
+  // Persist theme preference, defaulting to light mode. Genuine mount-time
+  // sync: the persisted theme lives in localStorage, which isn't available
+  // on the server, so it can only be read once the component mounts.
   useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark') {
-      setDark(true);
-      document.documentElement.classList.add('dark');
-    } else {
-      setDark(false);
-      document.documentElement.classList.remove('dark');
-    }
+    const isDark = readStoredTheme() === 'dark';
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial state must come from client-only storage; there is no render-time value to compute this from.
+    setDark(isDark);
+    document.documentElement.classList.toggle('dark', isDark);
   }, []);
 
   useEffect(() => {
@@ -36,13 +35,8 @@ export function useLanding() {
   const toggleDark = () => {
     const next = !dark;
     setDark(next);
-    if (next) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
+    document.documentElement.classList.toggle('dark', next);
+    persistTheme(next ? 'dark' : 'light');
   };
 
   const pageVariants: Variants | undefined = shouldReduceMotion

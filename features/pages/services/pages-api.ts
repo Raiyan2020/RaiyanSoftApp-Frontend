@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { apiService, ApiResponse, getApiBaseUrl } from '@/lib/api-service';
 import type { AppLanguage } from '@/lib/language';
 import { translateMessage } from '@/lib/i18n-utils';
@@ -25,7 +26,7 @@ export function getPageApiSlug(slug: PageSlug) {
 async function fetchPageJson<T>(path: string, language: AppLanguage = 'ar'): Promise<T> {
   const response = await fetch(`${getApiBaseUrl()}/${path.replace(/^\//, '')}`, {
     headers: { Accept: 'application/json', 'Accept-Language': language },
-    cache: 'no-store',
+    next: { revalidate: 300 },
   });
 
   const data = (await response.json()) as ApiResponse<T>;
@@ -73,17 +74,17 @@ export async function fetchAboutUs() {
   return response.data;
 }
 
-export function fetchPrivacyPolicyServer(language: AppLanguage = 'ar') {
+export const fetchPrivacyPolicyServer = cache(function fetchPrivacyPolicyServer(language: AppLanguage = 'ar') {
   return fetchPageJson<PrivacyPolicyPage>('user/pages/privacy-policy', language);
-}
+});
 
-export function fetchTermsConditionsServer(language: AppLanguage = 'ar') {
+export const fetchTermsConditionsServer = cache(function fetchTermsConditionsServer(language: AppLanguage = 'ar') {
   return fetchPageJson<TermsConditionsPage>(`user/pages/${getPageApiSlug('terms-conditions')}`, language);
-}
+});
 
-export function fetchAboutUsServer(language: AppLanguage = 'ar') {
+export const fetchAboutUsServer = cache(function fetchAboutUsServer(language: AppLanguage = 'ar') {
   return fetchPageJson<AboutUsPage>('user/pages/about-us', language);
-}
+});
 
 type AdminPageResponse = {
   slug: PageSlug;

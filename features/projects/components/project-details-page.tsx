@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo, useState } from 'react';
-import { ChevronLeft, ChevronRight, Clock3, ExternalLink, FileText, Globe, LayoutGrid, ListChecks, MessageSquareText, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Clock3, ExternalLink, FileText, Globe, LayoutGrid, ListChecks, Sparkles } from 'lucide-react';
 import EmptyState from '@/components/ui/empty-state';
 import Button from '@/components/ui/button';
 import Badge from '@/components/ui/badge';
@@ -9,7 +9,8 @@ import ProjectHeader from './project-header';
 import ProjectStatusCard from './project-status-card';
 import ProjectInfoGrid from './project-info-grid';
 import { useProjectDetails } from '../hooks/use-project-details';
-import type { UserProjectStage, UserProjectWeeklyReport } from '@/features/lead-project';
+import type { UserProjectStage } from '@/features/lead-project';
+import type { ClientProjectPhase, ClientProjectReport } from '../types';
 
 type ProjectTab = 'overview' | 'steps' | 'reports';
 
@@ -75,14 +76,48 @@ function TimelineDot({ status }: { status: string }) {
   return <span className={`mt-1 h-3 w-3 rounded-full ring-4 ring-[var(--surface)] ${dotClass}`} />;
 }
 
+function PhaseIndicatorCard({ phase, rejectionReason, dir }: { phase: ClientProjectPhase | null; rejectionReason: string | null; dir: string }) {
+  if (!phase && !rejectionReason) return null;
+
+  return (
+    <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_10px_30px_rgba(8,38,58,0.05)]">
+      {phase ? (
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+            {dir === 'rtl' ? 'مرحلة التسليم الحالية' : 'Current delivery phase'}
+          </p>
+          <p className="mt-2 inline-flex items-center rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-sm font-bold text-primary">
+            {phase.name || phase.value}
+          </p>
+        </div>
+      ) : null}
+
+      {rejectionReason ? (
+        <div className={phase ? 'mt-4' : ''}>
+          <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
+            {dir === 'rtl' ? 'سبب الإلغاء' : 'Cancellation reason'}
+          </p>
+          <p className="mt-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+            {rejectionReason}
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
 function OverviewSection({
   project,
+  phase,
+  rejectionReason,
   handleOpenUrl,
   t,
   language,
   dir,
 }: {
   project: NonNullable<ReturnType<typeof useProjectDetails>['project']>;
+  phase: ClientProjectPhase | null;
+  rejectionReason: string | null;
   handleOpenUrl: () => void;
   t: ReturnType<typeof useProjectDetails>['t'];
   language: ReturnType<typeof useProjectDetails>['language'];
@@ -122,6 +157,8 @@ function OverviewSection({
           t={t}
           language={language}
         />
+
+        <PhaseIndicatorCard phase={phase} rejectionReason={rejectionReason} dir={dir} />
 
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_10px_30px_rgba(8,38,58,0.05)]">
           <div className="flex items-center justify-between gap-3">
@@ -267,9 +304,6 @@ function StepsSection({
                         <span className="rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-3 py-1">
                           {stage.assignedTo || t('Unassigned')}
                         </span>
-                        <span className="rounded-full border border-[var(--border)] bg-[var(--surface-2)] px-3 py-1">
-                          {stage.estimatedDays ? `${stage.estimatedDays} ${t('days')}` : t('No estimate')}
-                        </span>
                       </div>
                     </div>
                   </div>
@@ -304,72 +338,71 @@ function StepsSection({
 function ReportsSection({
   reports,
   dir,
-  t,
 }: {
-  reports: UserProjectWeeklyReport[];
+  reports: ClientProjectReport[];
   dir: string;
-  t: (key: string) => string;
 }) {
+  const [selectedReportId, setSelectedReportId] = useState<number | null>(null);
+  const selectedReport = reports.find((report) => report.id === selectedReportId) || null;
+
+  if (selectedReport) {
+    return (
+      <div className="space-y-4">
+        <button
+          type="button"
+          onClick={() => setSelectedReportId(null)}
+          className="inline-flex items-center gap-1 text-sm font-semibold text-[var(--text-muted)] hover:text-[var(--text)]"
+        >
+          {dir === 'rtl' ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+          {dir === 'rtl' ? 'الرجوع لقائمة التقارير' : 'Back to reports list'}
+        </button>
+
+        <article className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_10px_30px_rgba(8,38,58,0.05)]">
+          <h3 className="text-lg font-bold text-[var(--text)]">
+            {selectedReport.title || (dir === 'rtl' ? 'تقرير المشروع' : 'Project report')}
+          </h3>
+          {selectedReport.date ? (
+            <p className="mt-1 text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">{selectedReport.date}</p>
+          ) : null}
+          <p className="mt-4 whitespace-pre-wrap text-sm leading-relaxed text-[var(--text-muted)]">
+            {selectedReport.reportText || (dir === 'rtl' ? 'لا يوجد محتوى بعد.' : 'No report content yet.')}
+          </p>
+        </article>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-2">
         <StatCard
           icon={FileText}
           label={dir === 'rtl' ? 'إجمالي التقارير' : 'Total reports'}
           value={`${reports.length}`}
           hint={dir === 'rtl' ? 'التقارير الأسبوعية للمشروع' : 'Weekly project reports'}
         />
-        <StatCard
-          icon={MessageSquareText}
-          label={dir === 'rtl' ? 'مرئية للعميل' : 'Client visible'}
-          value={`${reports.filter((report) => report.clientVisible).length}`}
-          hint={dir === 'rtl' ? 'تقارير يمكن للعميل قراءتها' : 'Reports visible to the client'}
-        />
-        <StatCard
-          icon={Sparkles}
-          label={dir === 'rtl' ? 'مرسلة' : 'Sent'}
-          value={`${reports.filter((report) => report.status === 'sent').length}`}
-          hint={dir === 'rtl' ? 'التقارير التي تم إرسالها' : 'Reports already sent'}
-        />
       </div>
 
       <div className="space-y-3">
         {reports.length > 0 ? (
-          reports
-            .slice()
-            .sort((a, b) => b.weekStart - a.weekStart)
-            .map((report) => (
-              <article
-                key={report.id}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-[0_10px_30px_rgba(8,38,58,0.05)]"
-              >
-                <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                  <div className="min-w-0">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="text-base font-bold text-[var(--text)]">
-                        {formatDate(report.weekStart, dir)} - {formatDate(report.weekEnd, dir)}
-                      </h3>
-                      <Badge className={report.status === 'sent' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : ''}>
-                        {t(capitalize(report.status))}
-                      </Badge>
-                      {report.clientVisible ? (
-                        <Badge variant="info">{dir === 'rtl' ? 'مرئية للعميل' : 'Client visible'}</Badge>
-                      ) : (
-                        <Badge variant="neutral">{dir === 'rtl' ? 'داخلي' : 'Internal'}</Badge>
-                      )}
-                    </div>
-                    <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-[var(--text-muted)]">
-                      {report.content || (dir === 'rtl' ? 'لا يوجد محتوى بعد.' : 'No report content yet.')}
-                    </p>
-                  </div>
-                  <div className="min-w-[12rem] rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-4 text-sm text-[var(--text-muted)]">
-                    <p className="font-semibold text-[var(--text)]">{report.createdByName || t('Team')}</p>
-                    <p className="mt-1">{dir === 'rtl' ? 'أنشئ' : 'Created'} {formatDate(report.createdAt, dir)}</p>
-                    <p className="mt-1">{dir === 'rtl' ? 'أرسل' : 'Sent'} {formatDate(report.sentAt, dir)}</p>
-                  </div>
-                </div>
-              </article>
-            ))
+          reports.map((report) => (
+            <button
+              key={report.id}
+              type="button"
+              onClick={() => setSelectedReportId(report.id)}
+              className="w-full rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 text-start shadow-[0_10px_30px_rgba(8,38,58,0.05)] transition-colors hover:border-primary/30"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <h3 className="text-base font-bold text-[var(--text)]">
+                  {report.title || (dir === 'rtl' ? 'تقرير المشروع' : 'Project report')}
+                </h3>
+                {report.date ? <Badge>{report.date}</Badge> : null}
+              </div>
+              {report.summary ? (
+                <p className="mt-2 text-sm leading-relaxed text-[var(--text-muted)]">{report.summary}</p>
+              ) : null}
+            </button>
+          ))
         ) : (
           <EmptyState
             icon={<FileText size={22} />}
@@ -383,7 +416,7 @@ function ReportsSection({
 }
 
 export default function ProjectDetailsPage({ id }: { id?: string }) {
-  const { router, t, dir, language, project, loading, error, handleOpenUrl } = useProjectDetails(id);
+  const { router, t, dir, language, project, extras, loading, error, handleOpenUrl } = useProjectDetails(id);
   const [activeTab, setActiveTab] = useState<ProjectTab>('overview');
 
   const tabs = useMemo(
@@ -501,6 +534,8 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
         {activeTab === 'overview' ? (
           <OverviewSection
             project={project}
+            phase={extras.phase}
+            rejectionReason={extras.rejectionReason}
             handleOpenUrl={handleOpenUrl}
             t={t}
             language={language}
@@ -510,7 +545,7 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
 
         {activeTab === 'steps' ? <StepsSection stages={project.stages || []} dir={dir} t={t} /> : null}
 
-        {activeTab === 'reports' ? <ReportsSection reports={project.weeklyReports || []} dir={dir} t={t} /> : null}
+        {activeTab === 'reports' ? <ReportsSection reports={extras.reports} dir={dir} /> : null}
       </div>
     </div>
   );
