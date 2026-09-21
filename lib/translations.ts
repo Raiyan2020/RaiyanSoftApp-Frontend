@@ -119,10 +119,18 @@ export const translations = {
     "lead_contact.title": "Almost Done!",
     "lead_contact.subtitle": "Enter your details so our team can contact you about your project.",
     "lead_contact.fullname": "Full Name",
+    "lead_contact.fullname_placeholder": "John Doe",
     "lead_contact.phone": "Phone Number",
     "lead_contact.email_opt": "Email (Optional)",
     "lead_contact.review_btn": "Review",
     "lead_contact.submit_btn": "Submit Request",
+
+    // Contact choice modal (F-LEAD-03)
+    "contact_choice.title": "Request Sent",
+    "contact_choice.subtitle": "How would you like us to follow up with you?",
+    "contact_choice.book": "Book an appointment",
+    "contact_choice.whatsapp": "Chat on WhatsApp",
+    "contact_choice.close": "I'll decide later",
     
     // Wizard Data
     "platform.Website": "Website",
@@ -153,6 +161,10 @@ export const translations = {
     "industry.Logistics & Shipping": "Logistics & Shipping",
     "industry.Other": "Other",
     "ref.None": "None",
+    "ref.Talabat": "Talabat",
+    "ref.4Sale": "4Sale",
+    "ref.Sheeel": "Sheeel",
+    "ref.Careem": "Careem",
 
     // SEO / system pages
     "seo.not_found_title": "Page not found",
@@ -244,6 +256,7 @@ export const translations = {
     "admin.nav.meetings": "Meetings",
     "admin.nav.marketing": "Marketing",
     "admin.nav.users": "Users",
+    "admin.nav.dashboard": "Dashboard",
     "admin.nav.employees": "Employees",
     "admin.nav.roles": "Roles",
     "admin.nav.pages": "Pages",
@@ -301,6 +314,12 @@ export const translations = {
     "admin.leads.filter.all": "All",
     "admin.leads.filter.pending": "Pending",
     "admin.leads.filter.rejected": "Rejected",
+    "admin.leads.date_from": "From date",
+    "admin.leads.date_to": "To date",
+    "admin.leads.project_type": "Project Type",
+    "admin.leads.all_types": "All Types",
+    "admin.leads.reference": "Reference",
+    "admin.leads.type": "Type",
     "admin.leads.name": "Name",
     "admin.leads.project_info": "Project Info",
     "admin.leads.status": "Status",
@@ -425,7 +444,18 @@ export const translations = {
     "landing.nav.toggle_dark": "Toggle Dark Mode",
     "landing.nav.menu": "Menu",
     "landing.nav.language": "Language",
-    "profile.title": "Profile"
+    "landing.nav.projects_tab": "Projects",
+    "landing.nav.meetings_tab": "Meetings",
+    "landing.nav.notifications_hint": "Click any notification to open its details",
+    "landing.nav.mark_complete": "Mark complete",
+    "landing.nav.view_all_notifications": "View all notifications",
+    "landing.nav.user_menu": "User menu",
+    "landing.nav.mobile_menu_options": "Mobile Menu Options",
+    "profile.title": "Profile",
+    "admin.landing.faqs": "FAQs",
+    "admin.landing.add_faq": "Add FAQ",
+    "admin.landing.edit_faq": "Edit FAQ",
+    "admin.landing.delete_faq": "Delete this FAQ?"
   },
   ar: {
     // Auth
@@ -546,10 +576,18 @@ export const translations = {
     "lead_contact.title": "بقيت خطوة أخيرة",
     "lead_contact.subtitle": "أدخل بياناتك ليتواصل معك فريقنا بخصوص مشروعك.",
     "lead_contact.fullname": "الاسم الكامل",
+    "lead_contact.fullname_placeholder": "محمد أحمد",
     "lead_contact.phone": "رقم الهاتف",
     "lead_contact.email_opt": "البريد الإلكتروني (اختياري)",
     "lead_contact.review_btn": "مراجعة",
     "lead_contact.submit_btn": "إرسال الطلب",
+
+    // Contact choice modal (F-LEAD-03)
+    "contact_choice.title": "تم إرسال الطلب",
+    "contact_choice.subtitle": "كيف تفضّل أن نتواصل معك؟",
+    "contact_choice.book": "حجز موعد",
+    "contact_choice.whatsapp": "التواصل عبر واتساب",
+    "contact_choice.close": "سأقرر لاحقاً",
 
     // Wizard Data
     "platform.Website": "موقع إلكتروني",
@@ -580,6 +618,10 @@ export const translations = {
     "industry.Logistics & Shipping": "لوجستيات وشحن",
     "industry.Other": "أخرى",
     "ref.None": "لا يوجد",
+    "ref.Talabat": "طلبات",
+    "ref.4Sale": "4Sale",
+    "ref.Sheeel": "شيول",
+    "ref.Careem": "كريم",
 
     // SEO / system pages
     "seo.not_found_title": "الصفحة غير موجودة",
@@ -671,6 +713,7 @@ export const translations = {
     "admin.nav.meetings": "الاجتماعات",
     "admin.nav.marketing": "التسويق",
     "admin.nav.users": "المستخدمون",
+    "admin.nav.dashboard": "لوحة التحكم",
     "admin.nav.employees": "الموظفون",
     "admin.nav.roles": "الأدوار",
     "admin.nav.pages": "الصفحات",
@@ -733,6 +776,12 @@ export const translations = {
     "admin.leads.filter.all": "الكل",
     "admin.leads.filter.pending": "قيد الانتظار",
     "admin.leads.filter.rejected": "مرفوض",
+    "admin.leads.date_from": "من تاريخ",
+    "admin.leads.date_to": "إلى تاريخ",
+    "admin.leads.project_type": "نوع المشروع",
+    "admin.leads.all_types": "كل الأنواع",
+    "admin.leads.reference": "الرقم المرجعي",
+    "admin.leads.type": "النوع",
     "admin.leads.name": "الاسم",
     "admin.leads.project_info": "معلومات المشروع",
     "admin.leads.status": "الحالة",
@@ -857,6 +906,13 @@ export const translations = {
     "landing.nav.toggle_dark": "تبديل الوضع الليلي",
     "landing.nav.menu": "القائمة",
     "landing.nav.language": "اللغة",
+    "landing.nav.projects_tab": "المشاريع",
+    "landing.nav.meetings_tab": "المواعيد",
+    "landing.nav.notifications_hint": "اضغط على أي إشعار لفتح تفاصيله",
+    "landing.nav.mark_complete": "تمييز كمكتمل",
+    "landing.nav.view_all_notifications": "عرض كل الإشعارات",
+    "landing.nav.user_menu": "قائمة المستخدم",
+    "landing.nav.mobile_menu_options": "خيارات القائمة على الجوال",
     "profile.title": "الملف الشخصي"
   }
 };

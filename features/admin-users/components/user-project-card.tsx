@@ -3,6 +3,8 @@ import { LayoutGrid, ExternalLink } from 'lucide-react';
 import { UserProject } from '@/lib/userProjectsStore';
 import { translateMessage } from '@/lib/i18n-utils';
 
+const capitalize = (value: string) => (value ? value.charAt(0).toUpperCase() + value.slice(1) : value);
+
 interface UserProjectCardProps {
   project: UserProject;
   formatDate: (ts: number) => string;
@@ -32,7 +34,7 @@ export default function UserProjectCard({ project, formatDate }: UserProjectCard
               : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
           }`}
         >
-          {translateMessage(project.status || 'Draft')}
+          {project.status ? translateMessage(capitalize(project.status)) : translateMessage('Draft')}
         </span>
       </div>
 

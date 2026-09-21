@@ -18,6 +18,9 @@ function buildLeadsQuery(filters: AdminLeadsFilters) {
   if (filters.name?.trim()) params.set('name', filters.name.trim());
   if (filters.status) params.set('status', String(filters.status));
   if (filters.requestId?.trim()) params.set('requestId', filters.requestId.trim());
+  if (filters.dateFrom) params.set('date_from', filters.dateFrom);
+  if (filters.dateTo) params.set('date_to', filters.dateTo);
+  if (filters.type) params.set('type', filters.type);
   if (filters.page) params.set('page', String(filters.page));
 
   const query = params.toString();

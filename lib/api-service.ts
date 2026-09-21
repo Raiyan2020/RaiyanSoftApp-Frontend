@@ -1,5 +1,6 @@
 import { globalToast } from './toast-context';
 import { authService } from './auth-service';
+import { readStoredLanguage } from './language';
 
 export function getApiBaseUrl() {
   const url = process.env.NEXT_PUBLIC_API_URL || 'https://portal.raiyan.cc/api';
@@ -29,11 +30,7 @@ function handleUnauthorized(path: string) {
 
   if (isAdminApiPath(path)) {
     authService.clearAdminSession();
-    if (!window.location.pathname.startsWith('/')) {
-      window.location.replace('/');
-    } else {
-      window.location.replace('/');
-    }
+    window.location.replace('/admin/login');
     return;
   }
 
@@ -45,15 +42,18 @@ class ApiService {
   private getHeaders(isFormattedData: boolean, path: string): HeadersInit {
     const headers: Record<string, string> = {
       'Accept': 'application/json',
+      // The backend defaults to Arabic when this is absent, so every response
+      // must carry the selected language explicitly.
+      'Accept-Language': readStoredLanguage(),
     };
 
     if (!isFormattedData) {
       headers['Content-Type'] = 'application/json';
     }
 
-    // Determine token to use based on the path
-    const tokenKey = isAdminApiPath(path) ? 'admin_token' : 'user_token';
-    const token = typeof window !== 'undefined' ? localStorage.getItem(tokenKey) : null;
+    // Determine token to use based on the path. Reuses authService's
+    // try/catch-wrapped storage access instead of reading localStorage directly.
+    const token = isAdminApiPath(path) ? authService.getAdminToken() : authService.getUserToken();
 
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;

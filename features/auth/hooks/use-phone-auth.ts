@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useState } from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 import { useRouter } from 'next/navigation';
 import { parsePhoneNumberFromString } from 'libphonenumber-js';
 import { apiService } from '@/lib/api-service';
@@ -105,7 +106,7 @@ export function usePhoneAuth(options?: UsePhoneAuthOptions) {
     );
 
     if (!response.status) {
-      throw new Error(getApiMessage(response, 'Unable to send the verification code.'));
+      throw new Error(getApiMessage(response, translateMessage('Unable to send the verification code.')));
     }
 
     return response;
@@ -146,7 +147,7 @@ export function usePhoneAuth(options?: UsePhoneAuthOptions) {
       setStep('otp');
       setMessage(loginResponse.message || 'OTP sent successfully.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to verify this phone number.');
+      setError(err instanceof Error ? err.message : translateMessage('Unable to verify this phone number.'));
     } finally {
       setLoading(false);
     }
@@ -159,7 +160,7 @@ export function usePhoneAuth(options?: UsePhoneAuthOptions) {
 
     try {
       if (!phoneParts) {
-        throw new Error('Please enter your phone number again.');
+        throw new Error(translateMessage('Please enter your phone number again.'));
       }
 
       const password = createOneTimePassword(phone);
@@ -176,7 +177,7 @@ export function usePhoneAuth(options?: UsePhoneAuthOptions) {
       );
 
       if (!response.status) {
-        throw new Error(getApiMessage(response, 'Unable to create this account.'));
+        throw new Error(getApiMessage(response, translateMessage('Unable to create this account.')));
       }
 
       setIsNewUser(true);
@@ -184,7 +185,7 @@ export function usePhoneAuth(options?: UsePhoneAuthOptions) {
       setStep('otp');
       setMessage(response.message || 'OTP sent successfully.');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unable to create this account.');
+      setError(err instanceof Error ? err.message : translateMessage('Unable to create this account.'));
     } finally {
       setLoading(false);
     }
@@ -196,7 +197,7 @@ export function usePhoneAuth(options?: UsePhoneAuthOptions) {
 
     try {
       if (!phoneParts) {
-        throw new Error('Please enter your phone number again.');
+        throw new Error(translateMessage('Please enter your phone number again.'));
       }
 
       const response = await apiService.post<PhoneVerifyResponse>(
@@ -212,14 +213,14 @@ export function usePhoneAuth(options?: UsePhoneAuthOptions) {
       );
 
       if (!response.status) {
-        throw new Error(getApiMessage(response, 'Invalid verification code.'));
+        throw new Error(getApiMessage(response, translateMessage('Invalid verification code.')));
       }
 
       const token = response.data?.token || response.data?.access_token;
       const user = response.data?.user;
 
       if (!user || !token) {
-        throw new Error('Login response must include user and token.');
+        throw new Error(translateMessage('Login response must include user and token.'));
       }
 
       guestStore.setGuest(false);
@@ -234,7 +235,7 @@ export function usePhoneAuth(options?: UsePhoneAuthOptions) {
       guestStore.setIntendedPath(null);
       router.push(intendedPath || '/home');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Invalid verification code.');
+      setError(err instanceof Error ? err.message : translateMessage('Invalid verification code.'));
     } finally {
       setLoading(false);
     }

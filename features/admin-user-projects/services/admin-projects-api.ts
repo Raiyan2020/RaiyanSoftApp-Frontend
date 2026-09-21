@@ -1,7 +1,16 @@
 import { apiService, type ApiResponse } from '@/lib/api-service';
+import { translateMessage } from '@/lib/i18n-utils';
+
+export interface AdminProjectsFilters {
+  search?: string;
+  dateFrom?: string;
+  dateTo?: string;
+  type?: string;
+}
 
 export interface AdminProjectSummary {
   id: number | string;
+  request_id?: string;
   project_name?: string;
   description?: string;
   status?: string;
@@ -231,17 +240,24 @@ export async function fetchAdminProject(id: number | string) {
   const list = unwrapList<AdminProjectSummary>(response.data);
   if (list.length > 0) {
     const project = list.find((item) => String(item.id) === String(id)) || list[0];
-    if (!project) throw new Error('Project not found.');
+    if (!project) throw new Error(translateMessage('Project not found.'));
     return project;
   }
 
   const project = unwrapItem<AdminProjectSummary>(response.data);
-  if (!project) throw new Error('Project not found.');
+  if (!project) throw new Error(translateMessage('Project not found.'));
   return project;
 }
 
-export async function fetchAdminProjects() {
-  const response = await apiService.get<AdminProjectSummary[] | { data?: AdminProjectSummary[] }>('admin/projects', {
+export async function fetchAdminProjects(filters?: AdminProjectsFilters) {
+  const query = toQueryString({
+    name: filters?.search || undefined,
+    date_from: filters?.dateFrom || undefined,
+    date_to: filters?.dateTo || undefined,
+    type: filters?.type || undefined,
+  });
+
+  const response = await apiService.get<AdminProjectSummary[] | { data?: AdminProjectSummary[] }>(`admin/projects${query}`, {
     skipGlobalToast: true,
   });
 
@@ -273,8 +289,8 @@ export async function updateAdminProject(id: number | string, payload: AdminProj
   return unwrapItem<AdminProjectSummary>(response.data);
 }
 
-export async function fetchAdminStages() {
-  const response = await apiService.get<AdminStage[] | { data?: AdminStage[] }>('admin/stages', {
+export async function fetchAdminStages(params?: { project_id?: number | string; per_page?: number }) {
+  const response = await apiService.get<AdminStage[] | { data?: AdminStage[] }>(`admin/stages${toQueryString(params)}`, {
     skipGlobalToast: true,
   });
 
@@ -295,7 +311,7 @@ export async function fetchAdminStage(id: number | string) {
   }
 
   const stage = unwrapItem<AdminStage>(response.data);
-  if (!stage) throw new Error('Stage not found.');
+  if (!stage) throw new Error(translateMessage('Stage not found.'));
   return stage;
 }
 
@@ -393,6 +409,33 @@ export async function createAdminReport(payload: AdminReportPayload) {
   return response.data || null;
 }
 
+export async function updateAdminReport(id: number | string, payload: AdminReportPayload) {
+  const formData = buildReportFormData(payload);
+  formData.append('_method', 'PUT');
+
+  const response = await apiService.post<AdminProjectReport>(`admin/reports/${id}`, formData, {
+    skipGlobalToast: true,
+  });
+
+  if (!response.status) {
+    throw new Error(getApiErrorMessage(response));
+  }
+
+  return response.data || null;
+}
+
+export async function sendAdminReport(id: number | string) {
+  const response = await apiService.post<AdminProjectReport>(`admin/reports/${id}/send`, new FormData(), {
+    skipGlobalToast: true,
+  });
+
+  if (!response.status) {
+    throw new Error(getApiErrorMessage(response));
+  }
+
+  return response.data || null;
+}
+
 export async function fetchAdminReport(id: number | string) {
   const response = await apiService.get<AdminProjectReport | { data?: AdminProjectReport }>(`admin/reports/${id}`, {
     skipGlobalToast: true,
@@ -403,7 +446,7 @@ export async function fetchAdminReport(id: number | string) {
   }
 
   const report = unwrapItem<AdminProjectReport>(response.data);
-  if (!report) throw new Error('Report not found.');
+  if (!report) throw new Error(translateMessage('Report not found.'));
   return report;
 }
 
@@ -461,7 +504,7 @@ export async function fetchAdminStageAttachment(id: number | string) {
   }
 
   const attachment = unwrapItem<AdminStageAttachment>(response.data);
-  if (!attachment) throw new Error('Attachment not found.');
+  if (!attachment) throw new Error(translateMessage('Attachment not found.'));
   return attachment;
 }
 

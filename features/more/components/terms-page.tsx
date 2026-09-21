@@ -8,6 +8,7 @@ import { useTranslation } from '@/lib/i18nContext';
 import ErrorAlert from '@/components/ui/error-alert';
 import { useTermsConditions } from '@/features/pages';
 import { PageHtmlContent } from '@/features/pages';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export default function TermsPage() {
   const router = useRouter();
@@ -16,7 +17,7 @@ export default function TermsPage() {
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: dir === 'rtl' ? -20 : 20 }}
+      initial={false}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: dir === 'rtl' ? 20 : -20 }}
       className="app-page app-page-narrow"
@@ -39,12 +40,12 @@ export default function TermsPage() {
         {loading ? (
           <div className="flex items-center justify-center py-10 text-[var(--text-muted)]">
             <Loader2 className="me-2 animate-spin" size={18} />
-            Loading...
+            {translateMessage('Loading...')}
           </div>
         ) : (
           <>
             <ErrorAlert message={error} />
-            {!error ? <PageHtmlContent html={data?.description} emptyMessage="Terms and conditions content is not available yet." /> : null}
+            {!error ? <PageHtmlContent html={data?.description} emptyMessage={translateMessage('Terms and conditions content is not available yet.')} /> : null}
           </>
         )}
       </div>

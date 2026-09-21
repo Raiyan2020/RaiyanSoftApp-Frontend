@@ -6,6 +6,7 @@ import { guestStore } from '@/lib/guestStore';
 import { useAuthGuard } from '@/lib/authGuardContext';
 import { deleteUserAccount, logoutUser } from '@/features/auth';
 import { getUserDisplayName } from '@/lib/user-display';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export function useMore() {
   const router = useRouter();
@@ -23,8 +24,8 @@ export function useMore() {
   }, []);
 
   const isGuest = !user && guestStore.isGuest;
-  const userName = user ? getUserDisplayName(user) : (isGuest ? t('home.guest') : 'User');
-  const userEmail = user?.email || (isGuest ? 'Guest Access' : 'No Email');
+  const userName = user ? getUserDisplayName(user) : (isGuest ? t('home.guest') : translateMessage('User'));
+  const userEmail = user?.email || (isGuest ? translateMessage('Guest Access') : translateMessage('No Email'));
 
   const handleSignOut = async () => {
     try {

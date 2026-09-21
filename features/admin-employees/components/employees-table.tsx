@@ -1,6 +1,7 @@
 import React from 'react';
 import { Briefcase, Mail, Phone, Eye, Edit2, Trash2 } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
+import { Table, TableHeader, TableBody, TableRow, TableHead } from '@/components/ui/table';
 import { translateMessage } from '@/lib/i18n-utils';
 import { AdminEmployee } from '../types/admin-employee.types';
 import {
@@ -37,19 +38,19 @@ export default function EmployeesTable({
       ) : (
         <>
           {/* Desktop table */}
-          <div className="hidden md:block overflow-x-auto">
-            <table className="w-full text-left border-collapse">
-              <thead>
-                <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
-                  <th className="p-5 font-medium">{translateMessage('Name')}</th>
-                  <th className="p-5 font-medium">{translateMessage('Contact')}</th>
-                  <th className="p-5 font-medium">{translateMessage('Role')}</th>
-                  <th className="p-5 font-medium">{translateMessage('Status')}</th>
-                  <th className="p-5 font-medium">{translateMessage('Created')}</th>
-                  <th className="p-5 font-medium text-right">{translateMessage('Actions')}</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-[var(--border)] text-sm">
+          <div className="hidden md:block">
+            <Table className="text-start border-collapse">
+              <TableHeader>
+                <TableRow className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider hover:bg-transparent">
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Name')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Contact')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Role')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Status')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Created')}</TableHead>
+                  <TableHead className="p-5 font-medium text-end">{translateMessage('Actions')}</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody className="divide-y divide-[var(--border)] text-sm">
                 {employees.map((employee) => (
                   <EmployeeTableRow
                     key={employee.id}
@@ -59,15 +60,15 @@ export default function EmployeesTable({
                     onDeleteEmployee={onDeleteEmployee}
                   />
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
 
           {/* Mobile cards */}
           <div className="md:hidden grid gap-3 p-4">
             {employees.map((employee) => {
               const fullName = getEmployeeFullName(employee);
-              const statusLabel = getEmployeeStatusLabel(employee);
+              const statusLabel = translateMessage(getEmployeeStatusLabel(employee));
               const isBlocked = isEmployeeBlocked(employee);
 
               return (
@@ -79,7 +80,7 @@ export default function EmployeesTable({
                       <div className="min-w-0">
                         <p className="font-bold text-[var(--text)] truncate">{fullName}</p>
                         <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--surface-3)] text-[var(--text)] border border-[var(--border)]">
-                          {formatRoleLabel(employee.role)}
+                          {translateMessage(formatRoleLabel(employee.role))}
                         </span>
                       </div>
                     </div>

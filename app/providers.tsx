@@ -9,7 +9,13 @@ import { ThemeProvider } from '@/lib/themeContext';
 import { UserColorsProvider } from '@/features/colors';
 import { UserSettingsProvider } from '@/features/settings';
 
-export default function Providers({ children }: { children: React.ReactNode }) {
+export default function Providers({
+  children,
+  initialLanguage,
+}: {
+  children: React.ReactNode;
+  initialLanguage?: 'en' | 'ar';
+}) {
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
@@ -18,7 +24,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
           <ConfirmProvider>
             <UserSettingsProvider>
               <UserColorsProvider>
-                <I18nProvider>
+                <I18nProvider initialLanguage={initialLanguage}>
                   <AuthGuardProvider>{children}</AuthGuardProvider>
                 </I18nProvider>
               </UserColorsProvider>

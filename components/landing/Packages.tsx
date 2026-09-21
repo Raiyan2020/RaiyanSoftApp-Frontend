@@ -2,35 +2,37 @@
 import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import {
-  getLandingButtonScrollTarget,
-  shouldOpenLandingButtonInNewTab,
-  useLandingOffers,
-} from '@/features/landing-page';
+import { getLandingButtonScrollTarget, shouldOpenLandingButtonInNewTab } from '@/features/landing-page';
+import type { LandingPageContent } from '@/features/landing-page';
+import PageHtmlContent from '@/features/pages/components/page-html-content';
 
-export default function Packages() {
+type PackagesProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function Packages({ homeData }: PackagesProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
   const { content, textAlign } = useLandingContent();
   const { packages } = content;
-  const { data: apiData } = useLandingOffers();
+  const apiOffers = homeData?.offers;
 
-  const badge = apiData?.header?.caption || packages.badge;
-  const title = apiData?.header?.title || `${packages.title} ${packages.titleHighlight}`;
-  const description = apiData?.header?.description || packages.description;
-  const hasApiItems = (apiData?.offers?.length ?? 0) > 0;
+  const badge = apiOffers?.header?.caption || packages.badge;
+  const title = apiOffers?.header?.title || `${packages.title} ${packages.titleHighlight}`;
+  const description = apiOffers?.header?.description || packages.description;
+  const hasApiItems = (apiOffers?.offers?.length ?? 0) > 0;
 
   const gridClass = hasApiItems
-    ? apiData!.offers.length === 3
+    ? apiOffers!.offers.length === 3
       ? 'grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.2fr_0.9fr] lg:items-stretch'
       : 'grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 lg:items-stretch'
     : 'grid grid-cols-1 gap-6 lg:grid-cols-[0.9fr_1.2fr_0.9fr] lg:items-stretch';
 
   return (
     <section id="packages" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
-      <div className="pointer-events-none absolute left-0 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute start-0 top-20 h-96 w-96 rounded-full bg-primary/10 blur-3xl" />
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-10 grid gap-6 lg:mb-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-end`}>
+        <div className="reveal mb-10 lg:mb-12">
           <div className={`space-y-4 ${textAlign}`}>
             <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
               {badge}
@@ -39,14 +41,14 @@ export default function Packages() {
               {title}
             </h2>
           </div>
-          <p className={`mx-auto max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300 lg:mx-0 ${textAlign}`}>
+          <p className={`mt-5 max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300 ${textAlign}`}>
             {description}
           </p>
         </div>
 
         <div className={gridClass}>
           {hasApiItems
-            ? apiData!.offers.map((offer, i) => (
+            ? apiOffers!.offers.map((offer, i) => (
                 <article
                   key={offer.id}
                   className={`reveal rounded-[2rem] border p-6 shadow-sm transition-all duration-500 hover:-translate-y-2 sm:p-8 ${
@@ -66,9 +68,10 @@ export default function Packages() {
                     {offer.caption}
                   </p>
                   {offer.description ? (
-                    <p className={`mt-3 text-sm leading-relaxed ${offer.most_requested ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}>
-                      {offer.description}
-                    </p>
+                    <PageHtmlContent
+                      html={offer.description}
+                      className={`mt-3 text-sm leading-relaxed ${offer.most_requested ? 'text-slate-400' : 'text-slate-500 dark:text-slate-400'}`}
+                    />
                   ) : null}
                   <button
                     type="button"

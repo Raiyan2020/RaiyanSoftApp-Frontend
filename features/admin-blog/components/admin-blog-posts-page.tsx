@@ -6,6 +6,7 @@ import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ErrorAlert from '@/components/ui/error-alert';
 import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import BilingualFieldInputs from '@/features/admin-landing-page/components/bilingual-field-inputs';
 import { translateMessage } from '@/lib/i18n-utils';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
@@ -181,12 +182,16 @@ export default function AdminBlogPostsPage() {
         <div className="mt-5 grid gap-5">
           <label className="space-y-2">
             <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Category')}</span>
-            <select className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={String(categoryId)} onChange={(e) => setCategoryId(e.target.value ? Number(e.target.value) : '')}>
-              <option value="">{translateMessage('Select')}</option>
-              {categories.map((category) => (
-                <option key={category.id} value={category.id}>{category.title}</option>
-              ))}
-            </select>
+            <Select value={categoryId ? String(categoryId) : undefined} onValueChange={(value) => setCategoryId(value ? Number(value) : '')}>
+              <SelectTrigger>
+                <SelectValue placeholder={translateMessage('Select')} />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.id} value={String(category.id)}>{category.title}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </label>
           <BilingualFieldInputs label={translateMessage('Title')} value={title} onChange={setTitle} required />
           <label className="space-y-2"><span className="text-sm font-bold text-[var(--text)]">{translateMessage('Slug')}</span><input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={slug} onChange={(e) => setSlug(e.target.value)} /></label>

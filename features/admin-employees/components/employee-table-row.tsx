@@ -25,7 +25,7 @@ export default function EmployeeTableRow({
   onDeleteEmployee,
 }: EmployeeTableRowProps) {
   const fullName = getEmployeeFullName(employee);
-  const statusLabel = getEmployeeStatusLabel(employee);
+  const statusLabel = translateMessage(getEmployeeStatusLabel(employee));
   const isBlocked = isEmployeeBlocked(employee);
 
   return (
@@ -54,7 +54,7 @@ export default function EmployeeTableRow({
         </td>
         <td className="p-5">
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-[var(--surface-3)] text-[var(--text)] border border-[var(--border)]">
-            {formatRoleLabel(employee.role)}
+            {translateMessage(formatRoleLabel(employee.role))}
           </span>
         </td>
         <td className="p-5">
@@ -68,7 +68,7 @@ export default function EmployeeTableRow({
           </div>
         </td>
         <td className="p-5 text-[var(--text-muted)]">{formatEmployeeDate(employee.created_at)}</td>
-        <td className="p-5 text-right">
+        <td className="p-5 text-end">
           <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             <button
               type="button"
@@ -106,7 +106,7 @@ export default function EmployeeTableRow({
           <Avatar name={fullName} className="w-10 h-10 border border-[var(--border)] text-sm" />
           <div>
             <h3 className="text-sm font-medium text-[var(--text)]">{fullName}</h3>
-            <p className="text-xs text-[var(--text-muted)]">{formatRoleLabel(employee.role)}</p>
+            <p className="text-xs text-[var(--text-muted)]">{translateMessage(formatRoleLabel(employee.role))}</p>
           </div>
         </div>
         <MoreHorizontal size={20} className="text-[var(--text-muted)]" />

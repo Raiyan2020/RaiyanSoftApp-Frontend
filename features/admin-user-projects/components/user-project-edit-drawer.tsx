@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Briefcase, Activity, Link as LinkIcon, Loader2, Save } from 'lucide-react';
-import { UserProject, ProjectStatus } from '@/lib/userProjectsStore';
+import { UserProject } from '@/lib/userProjectsStore';
 import { INDUSTRIES, statusOptions } from '../hooks/use-admin-user-projects';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { userProjectEditSchema, UserProjectEditValues } from '../schemas/user-project-edit.schema';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface UserProjectEditDrawerProps {
@@ -22,7 +23,6 @@ export default function UserProjectEditDrawer({
   editingProject,
   onClose,
   formData,
-  setFormData,
   onSave,
   isSaving,
 }: UserProjectEditDrawerProps) {
@@ -44,7 +44,7 @@ export default function UserProjectEditDrawer({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
+        initial={false}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(event) => event.stopPropagation()}
@@ -64,7 +64,7 @@ export default function UserProjectEditDrawer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Project Name</FieldLabel>
+                  <FieldLabel>{translateMessage('Project Name')}</FieldLabel>
                   <input
                     {...field}
                     type="text"
@@ -83,21 +83,26 @@ export default function UserProjectEditDrawer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Industry</FieldLabel>
+                  <FieldLabel>{translateMessage('Industry')}</FieldLabel>
                   <div className="relative">
-                    <Briefcase size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
-                    <select
-                      {...field}
-                      aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors appearance-none ${
-                        fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
-                      }`}
-                    >
-                      <option value="">{translateMessage('Select Industry')}</option>
-                      {INDUSTRIES.map((ind) => (
-                        <option key={ind} value={ind}>{translateMessage(ind)}</option>
-                      ))}
-                    </select>
+                    <Briefcase size={14} className="absolute start-3 top-1/2 -translate-y-1/2 z-10 text-[var(--text-muted)]" />
+                    <Select value={field.value || undefined} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        ref={field.ref}
+                        name={field.name}
+                        onBlur={field.onBlur}
+                        error={fieldState.invalid}
+                        aria-invalid={fieldState.invalid}
+                        className="ps-9"
+                      >
+                        <SelectValue placeholder={translateMessage('Select Industry')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {INDUSTRIES.map((ind) => (
+                          <SelectItem key={ind} value={ind}>{translateMessage(ind)}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
@@ -110,7 +115,7 @@ export default function UserProjectEditDrawer({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel>Specify Industry</FieldLabel>
+                    <FieldLabel>{translateMessage('Specify Industry')}</FieldLabel>
                     <input
                       {...field}
                       type="text"
@@ -131,20 +136,26 @@ export default function UserProjectEditDrawer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Project Status</FieldLabel>
+                  <FieldLabel>{translateMessage('Project Status')}</FieldLabel>
                   <div className="relative">
-                    <Activity size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
-                    <select
-                      {...field}
-                      aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors appearance-none capitalize ${
-                        fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
-                      }`}
-                    >
-                      {statusOptions.map((s) => (
-                        <option key={s} value={s}>{translateMessage(s.charAt(0).toUpperCase() + s.slice(1))}</option>
-                      ))}
-                    </select>
+                    <Activity size={14} className="absolute start-3 top-1/2 -translate-y-1/2 z-10 text-[var(--text-muted)]" />
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger
+                        ref={field.ref}
+                        name={field.name}
+                        onBlur={field.onBlur}
+                        error={fieldState.invalid}
+                        aria-invalid={fieldState.invalid}
+                        className="ps-9 capitalize"
+                      >
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {statusOptions.map((s) => (
+                          <SelectItem key={s} value={s}>{translateMessage(s.charAt(0).toUpperCase() + s.slice(1))}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
                 </Field>
@@ -156,18 +167,18 @@ export default function UserProjectEditDrawer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Project URL</FieldLabel>
+                  <FieldLabel>{translateMessage('Project URL')}</FieldLabel>
                   <div className="relative">
-                    <LinkIcon size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
+                    <LinkIcon size={14} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                     <input
                       {...field}
                       type="url"
                       value={field.value ?? ''}
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-9 pr-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-9 pe-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
-                      placeholder="https://..."
+                      placeholder={translateMessage('https://...')}
                     />
                   </div>
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -180,7 +191,7 @@ export default function UserProjectEditDrawer({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Description</FieldLabel>
+                  <FieldLabel>{translateMessage('Description')}</FieldLabel>
                   <textarea
                     {...field}
                     maxLength={250}

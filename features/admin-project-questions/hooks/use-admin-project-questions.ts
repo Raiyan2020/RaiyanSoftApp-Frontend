@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 import {
   AdminFormQuestion,
   AdminFormQuestionOption,
@@ -19,10 +20,11 @@ export type ProjectQuestionType =
   | 'text'
   | 'textarea'
   | 'single_select'
-  | 'multi_select'
   | 'yes_no'
   | 'color'
   | 'reference_app';
+
+export type ProjectQuestionSection = 'basics' | 'technical' | 'business' | 'branding';
 
 export interface ProjectQuestionOption {
   id: string;
@@ -37,6 +39,7 @@ export interface ProjectQuestion {
   label: string;
   labelAr?: string;
   type: ProjectQuestionType;
+  section: ProjectQuestionSection;
   options: ProjectQuestionOption[];
   order: number;
   required: boolean;
@@ -50,6 +53,7 @@ export interface ProjectQuestionFormState {
   label: string;
   labelAr: string;
   type: ProjectQuestionType;
+  section: ProjectQuestionSection;
   options: ProjectQuestionOption[];
   required: boolean;
   active: boolean;
@@ -65,6 +69,7 @@ const emptyForm: ProjectQuestionFormState = {
   label: '',
   labelAr: '',
   type: 'single_select',
+  section: 'business',
   options: [],
   required: true,
   active: true,
@@ -76,7 +81,14 @@ const fallbackQuestionTypes: ProjectQuestionTypeOption[] = [
   { value: 'single_select', label: 'Single select' },
 ];
 
-const optionTypes: ProjectQuestionType[] = ['single_select', 'multi_select'];
+export const questionSections: { value: ProjectQuestionSection; label: string }[] = [
+  { value: 'basics', label: 'Basics' },
+  { value: 'technical', label: 'Technical' },
+  { value: 'business', label: 'Business' },
+  { value: 'branding', label: 'Branding' },
+];
+
+const optionTypes: ProjectQuestionType[] = ['single_select'];
 
 function readTranslatedValue(value: string | { en?: string; ar?: string } | undefined, locale: 'en' | 'ar') {
   if (!value) return '';
@@ -84,8 +96,14 @@ function readTranslatedValue(value: string | { en?: string; ar?: string } | unde
   return value[locale] || '';
 }
 
+function readTypeValue(type: AdminFormQuestion['type']) {
+  if (typeof type === 'object' && type !== null) return type.value ?? type.id ?? type.key;
+  return type;
+}
+
 function mapApiType(type: AdminFormQuestion['type'], options: AdminFormQuestionOption[] = []): ProjectQuestionType {
-  if (type === 2) return 'text';
+  const value = readTypeValue(type);
+  if (value === 2 || value === '2' || value === 'TEXT' || value === 'text') return 'text';
   return options.length > 0 ? 'single_select' : 'single_select';
 }
 
@@ -109,14 +127,15 @@ function normalizeQuestion(question: AdminFormQuestion, index: number): ProjectQ
 
   return {
     id: String(question.id),
-    label: readTranslatedValue(question.name, 'en') || 'Untitled question',
+    label: readTranslatedValue(question.name, 'en') || translateMessage('Untitled question'),
     labelAr: readTranslatedValue(question.name, 'ar'),
     type: mapApiType(question.type, question.options),
+    section: (question.section as ProjectQuestionSection) || 'business',
     options,
     order: typeof question.sort_order === 'number' ? question.sort_order : index,
     required: true,
     active: question.is_active !== false && question.is_active !== 0,
-    locked: false,
+    locked: Boolean(question.is_fixed),
     createdAt: Date.now(),
     updatedAt: Date.now(),
   };
@@ -152,6 +171,7 @@ function mapFormToPayload(form: ProjectQuestionFormState, sortOrder: number): Ad
     name_ar: form.labelAr.trim() || form.label.trim(),
     type: optionTypes.includes(form.type) ? 1 : 2,
     is_active: form.active,
+    section: form.section,
     sort_order: sortOrder,
     options,
   };
@@ -186,13 +206,16 @@ export function useAdminProjectQuestions() {
       setQuestions(nextQuestions);
     } catch (err: any) {
       console.error('Project questions load error:', err);
-      setError(err.message || 'Failed to load project questions.');
+      setError(err.message || translateMessage('Failed to load project questions.'));
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    // Genuine external synchronization: fetches questions from the API on
+    // mount; loading/data/error are set from the async lifecycle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
     loadQuestions().catch(() => undefined);
   }, [loadQuestions]);
 
@@ -217,14 +240,15 @@ export function useAdminProjectQuestions() {
         label: freshQuestion.label,
         labelAr: freshQuestion.labelAr || '',
         type: freshQuestion.type,
+        section: freshQuestion.section,
         options: normalizeOptions(freshQuestion.options),
         required: freshQuestion.required,
         active: freshQuestion.active,
         locked: freshQuestion.locked,
       });
     } catch (err: any) {
-      console.error('Failed to load project question:', err);
-      setError(err.message || 'Failed to load project question.');
+      console.error(translateMessage('Failed to load project question.'), err);
+      setError(err.message || translateMessage('Failed to load project question.'));
     } finally {
       setSaving(false);
     }
@@ -252,8 +276,8 @@ export function useAdminProjectQuestions() {
       setSelectedId(null);
       setForm(emptyForm);
     } catch (err: any) {
-      console.error('Failed to save project question:', err);
-      setError(err.message || 'Failed to save project question.');
+      console.error(translateMessage('Failed to save project question.'), err);
+      setError(err.message || translateMessage('Failed to save project question.'));
     } finally {
       setSaving(false);
     }
@@ -282,7 +306,7 @@ export function useAdminProjectQuestions() {
       await loadQuestions();
     } catch (err: any) {
       console.error('Failed to reorder project questions:', err);
-      setError(err.message || 'Failed to reorder project questions.');
+      setError(err.message || translateMessage('Failed to reorder project questions.'));
       await loadQuestions();
     } finally {
       setSaving(false);
@@ -315,7 +339,7 @@ export function useAdminProjectQuestions() {
       await loadQuestions();
     } catch (err: any) {
       console.error('Failed to reorder project questions:', err);
-      setError(err.message || 'Failed to reorder project questions.');
+      setError(err.message || translateMessage('Failed to reorder project questions.'));
       await loadQuestions();
     } finally {
       setSaving(false);
@@ -326,7 +350,7 @@ export function useAdminProjectQuestions() {
     if (!deleteId) return;
     const question = questions.find((item) => item.id === deleteId);
     if (question?.locked) {
-      setError('Locked questions cannot be deleted.');
+      setError(translateMessage('Locked questions cannot be deleted.'));
       setDeleteId(null);
       return;
     }
@@ -340,8 +364,8 @@ export function useAdminProjectQuestions() {
       setDeleteId(null);
       await loadQuestions();
     } catch (err: any) {
-      console.error('Failed to delete project question:', err);
-      setError(err.message || 'Failed to delete project question.');
+      console.error(translateMessage('Failed to delete project question.'), err);
+      setError(err.message || translateMessage('Failed to delete project question.'));
     } finally {
       setSaving(false);
     }
@@ -364,8 +388,8 @@ export function useAdminProjectQuestions() {
       }
       await loadQuestions();
     } catch (err: any) {
-      console.error('Failed to update question status:', err);
-      setError(err.message || 'Failed to update question status.');
+      console.error(translateMessage('Failed to update question status.'), err);
+      setError(err.message || translateMessage('Failed to update question status.'));
       await loadQuestions();
     } finally {
       setSaving(false);

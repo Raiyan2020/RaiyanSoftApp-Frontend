@@ -3,6 +3,7 @@ import { marketingStore, useMarketingHistory } from '@/lib/marketingNotification
 import { useUsers, User } from '@/lib/userStore';
 import { NotificationValues } from '../schemas/notification.schema';
 import { sendAdminNotification } from '../services/admin-notifications-api';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export function useAdminMarketing() {
   const { history } = useMarketingHistory();
@@ -88,8 +89,8 @@ export function useAdminMarketing() {
 
       setSuccessMessage(
         targetType === 'all'
-          ? 'Notification queued for all users'
-          : `Notification queued for ${selectedUser?.firstName}`
+          ? translateMessage('Notification queued for all users')
+          : translateMessage('Notification queued for {name}').replace('{name}', selectedUser?.firstName || '')
       );
 
       setFormData({

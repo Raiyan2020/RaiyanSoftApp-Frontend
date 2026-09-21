@@ -1,6 +1,9 @@
 "use client";
 
 import { apiService, type ApiResponse } from './api-service';
+import { translateMessage } from './i18n-utils';
+import { fetchFormQuestions } from '@/features/lead-project/services/lead-project-api';
+import { resolveQuestionType } from '@/features/lead-project/utils/question-helpers';
 
 export interface Lead {
   id: string;
@@ -54,18 +57,43 @@ function getApiErrorMessage(response: ApiResponse<unknown>) {
   return response.message || 'Request failed.';
 }
 
-function buildLegacyLeadFormData(data: SubmitLeadPayload) {
-  const projectPayload = data.projectPayload || {};
-  const formData = new FormData();
+// The API validates submissions against `answers[]` (see backend
+// StoreProjectRequest: `answers` is required and non-empty). The public
+// marketing contact/quote form (components/public/public-inquiry-form.tsx)
+// doesn't collect answers tied to real form_question ids, so we route its
+// free-text summary through whichever question the dynamic lead-project
+// wizard treats as free text (`resolveQuestionType`), keeping it compatible
+// with the same backend contract. The lead-project wizard itself submits
+// real structured `answers[]` directly via `storeProject` and does not use
+// this helper.
+async function findFreeTextQuestionId(): Promise<number | null> {
+  const response = await fetchFormQuestions('en');
+  if (!response.status || !Array.isArray(response.data)) return null;
+  const textQuestion = response.data.find((question) => resolveQuestionType(question) === 'text');
+  return textQuestion ? textQuestion.id : null;
+}
 
-  formData.append('name', String(projectPayload.name || projectPayload.service || data.name || 'New project').trim());
-  formData.append('project_name', String(projectPayload.name || projectPayload.service || data.name || 'New project').trim());
+async function buildLegacyLeadFormData(data: SubmitLeadPayload): Promise<FormData> {
+  const projectPayload = data.projectPayload || {};
+  const name = String(projectPayload.name || projectPayload.service || data.name || 'New project').trim();
+  const description = String(projectPayload.description || projectPayload.message || '');
+
+  const textQuestionId = await findFreeTextQuestionId();
+  if (!textQuestionId) {
+    throw new Error(translateMessage('Request failed.'));
+  }
+
+  const formData = new FormData();
+  formData.append('name', name);
+  formData.append('project_name', name);
   formData.append('color', String(projectPayload.brandColor || projectPayload.color || '#1DB7F0'));
-  formData.append('description', String(projectPayload.description || projectPayload.message || ''));
+  formData.append('description', description);
   formData.append('phone', data.phone);
   if (data.email) formData.append('email', data.email);
   if (data.source) formData.append('source', data.source);
   formData.append('payload', JSON.stringify(projectPayload));
+  formData.append('answers[0][form_question_id]', String(textQuestionId));
+  formData.append('answers[0][text_value]', [name, description].filter(Boolean).join(' — ').slice(0, 1000));
 
   return formData;
 }
@@ -95,9 +123,10 @@ class LeadStore {
   }
 
   async submitLead(data: SubmitLeadPayload): Promise<string> {
+    const formData = await buildLegacyLeadFormData(data);
     const response = await apiService.post<{ id?: string | number; request_id?: string } | []>(
       'user/store-projects',
-      buildLegacyLeadFormData(data),
+      formData,
       { skipGlobalToast: true }
     );
 

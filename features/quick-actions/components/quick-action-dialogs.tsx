@@ -1,12 +1,13 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Calendar, CheckCircle2, FolderPlus, Loader2, Phone, User, X } from 'lucide-react';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import PhoneInput from '@/components/ui/phone-input';
 import Textarea from '@/components/ui/textarea';
 import LeadProjectWizard from '@/features/lead-project/components/lead-project-wizard';
+import LeadContactChoiceModal from '@/features/lead-project/components/lead-contact-choice-modal';
 import BookingWizard from '@/features/appointments/components/booking-wizard';
 import { User as AuthUser } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
@@ -49,12 +50,16 @@ export function QuickBookingDialog({ isOpen, onClose }: Omit<QuickActionDialogPr
 }
 
 export function QuickLeadDialog({ isOpen, onClose }: Omit<QuickActionDialogProps, 'mode'>) {
-  const { dir, language } = useTranslation();
   const [requestId, setRequestId] = useState<string | null>(null);
 
-  useEffect(() => {
+  // Clear a stale request id whenever the dialog reopens, adjusted during
+  // render (comparing against the previous `isOpen`) instead of in an
+  // effect.
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (isOpen) setRequestId(null);
-  }, [isOpen]);
+  }
 
   if (!isOpen) return null;
 
@@ -65,32 +70,7 @@ export function QuickLeadDialog({ isOpen, onClose }: Omit<QuickActionDialogProps
 
   if (requestId !== null) {
     return (
-      <div
-        className="fixed inset-0 z-[160] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
-        dir={dir}
-        onClick={closeDialog}
-      >
-        <div
-          className="w-full max-w-sm rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-5 text-center shadow-2xl"
-          onClick={(event) => event.stopPropagation()}
-        >
-          <CheckCircle2 className="mx-auto mb-3 text-emerald-400" size={42} />
-          <h3 className="text-xl font-black text-[var(--text)]">
-            {language === 'ar' ? 'تم إرسال الطلب' : 'Request sent'}
-          </h3>
-          <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">
-            {language === 'ar'
-              ? 'شكراً لمشاركتك فكرتك. فريقنا سيراجع تفاصيل مشروعك ويتواصل معك قريباً.'
-              : 'Thank you for sharing your vision. Our team will review your project details and contact you shortly.'}
-          </p>
-          {requestId ? (
-            <p className="mt-4 font-mono text-sm font-bold text-emerald-400">{requestId}</p>
-          ) : null}
-          <Button type="button" onClick={closeDialog} className="mt-5 w-full">
-            {language === 'ar' ? 'إغلاق' : 'Close'}
-          </Button>
-        </div>
-      </div>
+      <LeadContactChoiceModal requestId={requestId || undefined} onClose={closeDialog} />
     );
   }
 
@@ -192,7 +172,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
         className="max-h-[86vh] w-full max-w-xl overflow-y-auto rounded-3xl border border-[var(--border)] bg-[var(--surface)] p-4 sm:p-5 shadow-2xl no-scrollbar"
         onClick={(event) => event.stopPropagation()}
       >
-        <div className={`mb-4 flex items-start justify-between gap-4 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+        <div className="mb-4 flex items-start justify-between gap-4 text-start">
           <div className="min-w-0 flex-1">
             <div className={`mb-3 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-black text-primary ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
               {mode === 'booking' ? <Calendar size={14} /> : <FolderPlus size={14} />}
@@ -224,7 +204,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5">
             {isLoggedIn ? (
-            <div className={`rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3.5 ${dir === 'rtl' ? 'text-right' : 'text-left'}`}>
+            <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-3.5 text-start">
                 <div className={`flex items-center gap-3 ${dir === 'rtl' ? 'flex-row-reverse' : ''}`}>
                   <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
                     <User size={18} />

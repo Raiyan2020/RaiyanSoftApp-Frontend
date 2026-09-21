@@ -27,7 +27,10 @@ import {
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import Textarea from '@/components/ui/textarea';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTranslation } from '@/lib/i18nContext';
+import { cn } from '@/lib/utils';
 import {
   getStatusLabel,
   getTypeLabel,
@@ -133,7 +136,6 @@ export default function ProfileTable({
   selectedRecordId,
   onOpenBookingDialog,
   onOpenLeadDialog,
-  onOpenProjectDetails,
 }: ProfileTableProps) {
   const { dir } = useTranslation();
   const [records, setRecords] = useState<ProfileRecord[]>(profileRecords);
@@ -266,7 +268,7 @@ export default function ProfileTable({
           </button>
         ),
         cell: ({ row }) => (
-          <div className={dir === 'rtl' ? 'text-right' : 'text-left'}>
+          <div className="text-start">
             <div className="font-bold text-[var(--text)] max-w-[18rem] truncate">{row.original.title}</div>
             <div className="text-[11px] text-[var(--text-muted)] font-mono">{row.original.id}</div>
           </div>
@@ -450,45 +452,50 @@ export default function ProfileTable({
         )}
       </div>
 
-      <div className="hidden overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] lg:block">
-        <table className="w-full min-w-[860px] text-sm" dir={dir}>
-          <thead className="border-b border-[var(--border)] bg-[var(--surface)] text-xs uppercase text-[var(--text-muted)]">
+      <div className="hidden lg:block">
+        <Table
+          className="min-w-[860px] text-sm"
+          wrapperClassName="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)]"
+          dir={dir}
+        >
+          <TableHeader className="border-b border-[var(--border)] bg-[var(--surface)] text-xs uppercase text-[var(--text-muted)]">
             {table.getHeaderGroups().map((headerGroup) => (
-              <tr key={headerGroup.id}>
+              <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
-                  <th key={header.id} className="px-5 py-4 font-bold text-center first:text-start">
+                  <TableHead key={header.id} className="px-5 py-4 text-center font-bold first:text-start">
                     {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
-                  </th>
+                  </TableHead>
                 ))}
-              </tr>
+              </TableRow>
             ))}
-          </thead>
-          <tbody className="divide-y divide-[var(--border)]">
+          </TableHeader>
+          <TableBody className="divide-y divide-[var(--border)]">
             {rows.length > 0 ? (
               rows.map((row) => (
-                <tr
+                <TableRow
                   key={row.id}
                   id={`profile-record-${row.original.id}`}
-                  className={`transition-colors hover:bg-[var(--surface)]/70 ${
+                  className={cn(
+                    'transition-colors hover:bg-[var(--surface)]/70',
                     selectedRecordId === row.original.id ? 'bg-primary/10 ring-1 ring-inset ring-primary/30' : ''
-                  }`}
+                  )}
                 >
                   {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-5 py-4 text-center text-[var(--text-muted)] first:text-start">
+                    <TableCell key={cell.id} className="px-5 py-4 text-center text-[var(--text-muted)] first:text-start">
                       {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
+                    </TableCell>
                   ))}
-                </tr>
+                </TableRow>
               ))
             ) : (
-              <tr>
-                <td colSpan={columns.length} className="px-5 py-12 text-center text-sm text-[var(--text-muted)]">
+              <TableRow>
+                <TableCell colSpan={columns.length} className="px-5 py-12 text-center text-sm text-[var(--text-muted)]">
                   {dir === 'rtl' ? 'لا توجد سجلات مطابقة.' : 'No matching records found.'}
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -586,33 +593,41 @@ export default function ProfileTable({
                 <label className="ms-1 block text-xs font-medium text-[var(--text-muted)]">
                   {dir === 'rtl' ? 'النوع' : 'Type'}
                 </label>
-                <select
+                <Select
                   value={formValues.type}
-                  onChange={(event) => setFormValues((current) => ({ ...current, type: event.target.value as ProfileRecordType }))}
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary"
+                  onValueChange={(value) => setFormValues((current) => ({ ...current, type: value as ProfileRecordType }))}
                 >
-                  {profileRecordTypes.map((type) => (
-                    <option key={type} value={type}>
-                      {getTypeLabel(type, dir)}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger dir={dir}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {profileRecordTypes.map((type) => (
+                      <SelectItem key={type} value={type}>
+                        {getTypeLabel(type, dir)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="space-y-2">
                 <label className="ms-1 block text-xs font-medium text-[var(--text-muted)]">
                   {dir === 'rtl' ? 'الحالة' : 'Status'}
                 </label>
-                <select
+                <Select
                   value={formValues.status}
-                  onChange={(event) => setFormValues((current) => ({ ...current, status: event.target.value as ProfileRecordStatus }))}
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary"
+                  onValueChange={(value) => setFormValues((current) => ({ ...current, status: value as ProfileRecordStatus }))}
                 >
-                  {(['active', 'pending', 'completed', 'cancelled', 'draft'] as ProfileRecordStatus[]).map((status) => (
-                    <option key={status} value={status}>
-                      {getStatusLabel(status, dir)}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger dir={dir}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(['active', 'pending', 'completed', 'cancelled', 'draft'] as ProfileRecordStatus[]).map((status) => (
+                      <SelectItem key={status} value={status}>
+                        {getStatusLabel(status, dir)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <Input
                 label={dir === 'rtl' ? 'التاريخ' : 'Date'}

@@ -8,3 +8,4 @@ export * from './hooks/use-form-questions';
 export * from './hooks/use-lead-project-wizard';
 export { default as LeadProjectWizard } from './components/lead-project-wizard';
 export { default as LeadProjectAuthGate } from './components/lead-project-auth-gate';
+export { default as LeadContactChoiceModal } from './components/lead-contact-choice-modal';

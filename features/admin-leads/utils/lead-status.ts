@@ -48,9 +48,9 @@ export function getLeadStatusTone(status: string | LeadStatusCode) {
 }
 
 export function isLeadPending(status: string | LeadStatusCode) {
-  if (typeof status === 'number') return status === LEAD_STATUS.PENDING;
+  if (typeof status === 'number') return status === LEAD_STATUS.PENDING || status === LEAD_STATUS.REJECTED;
   const lower = status.toLowerCase();
-  return lower.includes('pending') || status.includes('قيد') || status.includes('انتظار');
+  return lower.includes('pending') || lower.includes('reject') || status.includes('قيد') || status.includes('انتظار') || status.includes('مرفوض') || status.includes('رفض');
 }
 
 export function formatLeadStatusLabel(status: string | LeadStatusCode, language: string) {

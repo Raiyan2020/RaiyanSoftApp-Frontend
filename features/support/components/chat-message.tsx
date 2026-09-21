@@ -2,6 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Message } from '@/lib/chatStore';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface ChatMessageProps {
   msg: Message;
@@ -20,7 +21,7 @@ const safelyFormatTime = (timestamp: number) => {
 
 export default function ChatMessage({ msg, showName }: ChatMessageProps) {
   const isMe = msg.sender === 'customer';
-  const { t, dir } = useTranslation();
+  const { t, dir, language } = useTranslation();
 
   const alignClass = isMe
     ? dir === 'rtl' ? 'items-start' : 'items-end'
@@ -32,12 +33,12 @@ export default function ChatMessage({ msg, showName }: ChatMessageProps) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+      initial={false}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       className={`flex flex-col mb-4 ${alignClass}`}
     >
       {showName && !isMe ? (
-        <span className="text-[10px] text-[var(--text-muted)] mb-1 ms-3 font-medium">{msg.senderName || 'Support'}</span>
+        <span className="text-[10px] text-[var(--text-muted)] mb-1 ms-3 font-medium">{msg.senderName || translateMessage('Support', language)}</span>
       ) : null}
 
       <div className={`max-w-[85%] lg:max-w-[62%] px-4 py-3 text-sm relative shadow-md ${bubbleClass}`}>

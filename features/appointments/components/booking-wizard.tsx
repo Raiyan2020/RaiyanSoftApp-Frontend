@@ -45,7 +45,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
   } = useBookingWizard(onClose, onBooked);
 
   const calendarRows = getCalendarRows();
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map((d) => translateMessage(d));
   const monthLabel = viewDate.toLocaleDateString(dir === 'rtl' ? 'ar-KW' : 'en-US', { month: 'long', year: 'numeric' });
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -80,7 +80,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
           {errorMsg ? <ErrorAlert message={errorMsg} /> : null}
 
           {step === 1 ? (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+            <motion.div initial={false} animate={{ opacity: 1, x: 0 }} className="space-y-6">
               <div className="space-y-3">
                 <div className="flex items-center justify-between mb-1">
                   <button
@@ -152,7 +152,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
                 {selectedDate ? (
                   <motion.div
                     key="time-selection"
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={false}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, height: 0 }}
                     className="space-y-4"
@@ -202,7 +202,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
           ) : null}
 
           {step === 2 ? (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-5">
+            <motion.div initial={false} animate={{ opacity: 1, x: 0 }} className="space-y-5">
               <h3 className="text-lg font-bold text-[var(--text)] mb-2">{t('appt.step_details')}</h3>
 
               <div className="bg-primary/10 border border-primary/20 rounded-xl p-3.5 flex items-center justify-between">
@@ -217,7 +217,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
                   <p className="text-[var(--text)] text-lg font-bold">{selectedTime}</p>
                 </div>
                 <button type="button" onClick={() => setStep(1)} className="text-xs text-[var(--text-muted)] underline hover:text-[var(--text)]">
-                  Change
+                  {translateMessage('Change')}
                 </button>
               </div>
 
@@ -274,19 +274,19 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
           ) : null}
 
           {step === authStep && !isAuthenticated ? (
-            <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="h-full">
+            <motion.div initial={false} animate={{ opacity: 1, x: 0 }} className="h-full">
               <BookingAuthGate onAuthenticated={async () => { await handleBook(); }} submitError={errorMsg} />
             </motion.div>
           ) : null}
 
           {step === successStep ? (
-            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-10 space-y-6">
+            <motion.div initial={false} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-10 space-y-6">
               <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/30">
                 <CheckCircle size={48} />
               </div>
               <h2 className="text-2xl font-bold text-[var(--text)]">{t('appt.booking_success')}</h2>
               <button type="button" onClick={onClose} className="bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] px-8 py-3 rounded-xl font-bold transition-colors">
-                Done
+                {translateMessage('Done')}
               </button>
             </motion.div>
           ) : null}
@@ -317,7 +317,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
               {isSubmitting
                 ? <Loader2 className="animate-spin" />
                 : step === 2 && !isAuthenticated
-                  ? (dir === 'rtl' ? 'متابعة' : 'Continue')
+                  ? translateMessage('Continue')
                   : step === 2
                     ? t('appt.confirm_btn')
                     : t('wizard.next')}

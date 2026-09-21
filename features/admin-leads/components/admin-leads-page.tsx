@@ -27,6 +27,12 @@ export default function AdminLeadsPage() {
     setStatusFilter,
     searchQuery,
     setSearchQuery,
+    dateFrom,
+    setDateFrom,
+    dateTo,
+    setDateTo,
+    typeFilter,
+    setTypeFilter,
     language,
     openLead,
     closeLead,
@@ -54,6 +60,12 @@ export default function AdminLeadsPage() {
         setSearchQuery={setSearchQuery}
         statusFilter={statusFilter}
         setStatusFilter={setStatusFilter}
+        dateFrom={dateFrom}
+        setDateFrom={setDateFrom}
+        dateTo={dateTo}
+        setDateTo={setDateTo}
+        typeFilter={typeFilter}
+        setTypeFilter={setTypeFilter}
       />
 
       {statusError ? (

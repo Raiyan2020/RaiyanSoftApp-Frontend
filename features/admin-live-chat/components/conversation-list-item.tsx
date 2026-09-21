@@ -19,16 +19,16 @@ export default function ConversationListItem({
     <button
       type="button"
       onClick={() => onSelectConversation(conv.id)}
-      className={`w-full p-4 flex items-start gap-3 border-b border-[var(--border)] transition-colors text-left group relative ${
+      className={`w-full p-4 flex items-start gap-3 border-b border-[var(--border)] transition-colors text-start group relative ${
         selectedId === conv.id
-          ? 'bg-primary/10 border-l-4 border-l-primary'
-          : 'hover:bg-white/5 border-l-4 border-l-transparent'
+          ? 'bg-primary/10 border-s-4 border-s-primary'
+          : 'hover:bg-white/5 border-s-4 border-s-transparent'
       }`}
     >
       <div className="relative shrink-0">
         <Avatar name={conv.customerName} size="md" className="w-10 h-10 text-sm" />
         {conv.unreadForAdmin > 0 && selectedId !== conv.id ? (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[#0f172a]" />
+          <span className="absolute -top-1 -end-1 w-4 h-4 bg-red-500 rounded-full border-2 border-[#0f172a]" />
         ) : null}
       </div>
 
@@ -41,7 +41,7 @@ export default function ConversationListItem({
           >
             {conv.customerName}
           </h3>
-          <span className="text-[10px] text-[var(--text-muted)] shrink-0 ml-2">{formatTime(conv.lastMessageAt)}</span>
+          <span className="text-[10px] text-[var(--text-muted)] shrink-0 ms-2">{formatTime(conv.lastMessageAt)}</span>
         </div>
         <div className="flex justify-between items-center">
           <p

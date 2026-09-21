@@ -1,25 +1,48 @@
 "use client";
 
+function safeGetItem(key: string): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    return localStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function safeSetItem(key: string, value: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.setItem(key, value);
+  } catch {
+    // Ignore storage errors (e.g. private mode / quota exceeded).
+  }
+}
+
+function safeRemoveItem(key: string): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // Ignore storage errors (e.g. private mode).
+  }
+}
+
 export const guestStore = {
-  get isGuest() { 
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem('rs_is_guest') === 'true'; 
+  get isGuest() {
+    return safeGetItem('rs_is_guest') === 'true';
   },
-  
-  setGuest(val: boolean) { 
-    if (typeof window === 'undefined') return;
-    if(val) localStorage.setItem('rs_is_guest', 'true'); 
-    else localStorage.removeItem('rs_is_guest');
+
+  setGuest(val: boolean) {
+    if (val) safeSetItem('rs_is_guest', 'true');
+    else safeRemoveItem('rs_is_guest');
   },
-  
-  get intendedPath() { 
-    if (typeof window === 'undefined') return null;
-    return localStorage.getItem('rs_intended_path'); 
+
+  get intendedPath() {
+    return safeGetItem('rs_intended_path');
   },
-  
+
   setIntendedPath(val: string | null) {
-    if (typeof window === 'undefined') return;
-    if(val) localStorage.setItem('rs_intended_path', val);
-    else localStorage.removeItem('rs_intended_path');
+    if (val) safeSetItem('rs_intended_path', val);
+    else safeRemoveItem('rs_intended_path');
   }
 };

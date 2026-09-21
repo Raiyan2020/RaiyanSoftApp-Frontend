@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { AlertCircle, ArrowLeft, Phone, ShieldCheck, User, X } from 'lucide-react';
 import { isValidPhoneNumber } from 'react-phone-number-input';
@@ -10,6 +10,7 @@ import PhoneInput from '@/components/ui/phone-input';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 import { usePhoneAuth } from '../hooks/use-phone-auth';
 
 interface AuthDialogProps {
@@ -37,7 +38,11 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
   const [otp, setOtp] = useState('');
   const [localError, setLocalError] = useState<string | null>(null);
 
-  useEffect(() => {
+  // Clear all dialog state when it closes, adjusted during render
+  // (comparing against the previous `isOpen`) instead of in an effect.
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  if (isOpen !== prevIsOpen) {
+    setPrevIsOpen(isOpen);
     if (!isOpen) {
       reset();
       setPhoneValue('');
@@ -45,7 +50,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
       setOtp('');
       setLocalError(null);
     }
-  }, [isOpen, reset]);
+  }
 
   const handlePhoneSubmit = () => {
     setLocalError(null);
@@ -95,13 +100,13 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
 
   const activeError = localError || error;
   const needsNameBeforeOtp = Boolean(isNewUser && !newUserOtpSent);
-  const sendOtpLabel = dir === 'rtl' ? 'إنشاء الحساب وإرسال رمز التحقق' : 'Create account and send OTP';
+  const sendOtpLabel = translateMessage('Create account and send OTP');
 
   return (
     <AnimatePresence>
       {isOpen ? (
         <motion.div
-          initial={{ opacity: 0 }}
+          initial={false}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm"
@@ -109,7 +114,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
           onClick={onClose}
         >
           <motion.div
-            initial={{ scale: 0.94, opacity: 0, y: 18 }}
+            initial={false}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.94, opacity: 0, y: 18 }}
             transition={{ duration: 0.2 }}
@@ -119,7 +124,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
             <button
               type="button"
               onClick={onClose}
-              className="absolute top-4 right-4 rtl:right-auto rtl:left-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+              className="absolute top-4 end-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
               aria-label={t('auth.close')}
             >
               <X size={20} />
@@ -204,6 +209,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
                   {t('auth.change_phone')}
                 </button>
 
+                {/* i18n-ignore-next-line: raw phone number box is dir="ltr" by design */}
                 <div className="rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] px-4 py-3 text-sm font-mono text-[var(--text)] text-left" dir="ltr">
                   {phone}
                 </div>
@@ -222,9 +228,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
 
                 {needsNameBeforeOtp ? (
                   <div className="rounded-xl border border-primary/20 bg-primary/10 p-3 text-start text-xs font-medium leading-5 text-primary">
-                    {dir === 'rtl'
-                      ? 'بعد إدخال الاسم اضغط الزر بالأسفل وسنرسل رمز التحقق إلى هاتفك.'
-                      : 'After entering your name, press the button below and we will send the OTP to your phone.'}
+                    {translateMessage('After entering your name, press the button below and we will send the OTP to your phone.')}
                   </div>
                 ) : (
                   <Input

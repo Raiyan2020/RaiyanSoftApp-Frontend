@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Loader2, Save } from 'lucide-react';
 import { useAdminHero, useUpdateAdminHero } from '../hooks/use-admin-landing-page';
 import BilingualFieldInputs from './bilingual-field-inputs';
@@ -52,7 +52,11 @@ export default function AdminHeroTab() {
 
   const hero = heroes?.[0];
 
-  useEffect(() => {
+  // Repopulate the form whenever the fetched hero changes, adjusted during
+  // render (comparing against the previous value) instead of in an effect.
+  const [prevHero, setPrevHero] = useState(hero);
+  if (hero !== prevHero) {
+    setPrevHero(hero);
     if (hero) {
       setForm({
         title: hero.title,
@@ -70,7 +74,7 @@ export default function AdminHeroTab() {
         })) ?? [],
       });
     }
-  }, [hero]);
+  }
 
   function validateForm() {
     const nextErrors = {
@@ -133,7 +137,7 @@ export default function AdminHeroTab() {
           <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Primary Button Text')}</label>
           <div className="grid grid-cols-2 gap-2">
             <input dir="rtl" type="text" value={form.f_button_text.ar} onChange={(e) => setForm((p) => ({ ...p, f_button_text: { ...p.f_button_text, ar: e.target.value } }))} placeholder="عربي" className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
-            <input type="text" value={form.f_button_text.en} onChange={(e) => setForm((p) => ({ ...p, f_button_text: { ...p.f_button_text, en: e.target.value } }))} placeholder={translateMessage('English (placeholder)')} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
+            <input type="text" value={form.f_button_text.en} onChange={(e) => setForm((p) => ({ ...p, f_button_text: { ...p.f_button_text, en: e.target.value } }))} placeholder={translateMessage('Type in English')} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
           </div>
         </div>
         <div>
@@ -154,7 +158,7 @@ export default function AdminHeroTab() {
           <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Secondary Button Text')}</label>
           <div className="grid grid-cols-2 gap-2">
             <input dir="rtl" type="text" value={form.l_button_text.ar} onChange={(e) => setForm((p) => ({ ...p, l_button_text: { ...p.l_button_text, ar: e.target.value } }))} placeholder="عربي" className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
-            <input type="text" value={form.l_button_text.en} onChange={(e) => setForm((p) => ({ ...p, l_button_text: { ...p.l_button_text, en: e.target.value } }))} placeholder={translateMessage('English (placeholder)')} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
+            <input type="text" value={form.l_button_text.en} onChange={(e) => setForm((p) => ({ ...p, l_button_text: { ...p.l_button_text, en: e.target.value } }))} placeholder={translateMessage('Type in English')} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
           </div>
         </div>
         <div>

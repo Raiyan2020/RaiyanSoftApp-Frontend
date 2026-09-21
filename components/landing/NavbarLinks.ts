@@ -6,7 +6,6 @@ export interface NavLink {
 export const sectionLinks: NavLink[] = [
   { key: 'landing.nav.home', href: '#home' },
   { key: 'landing.nav.services', href: '#services' },
-  { key: 'landing.nav.sectors', href: '#sectors' },
   { key: 'landing.nav.works', href: '#works' },
   { key: 'landing.nav.packages', href: '#packages' },
   { key: 'landing.nav.faq', href: '#faq' },
@@ -28,5 +27,5 @@ export const pageLinks: NavLink[] = [
 ];
 
 export const headerPageLinks: NavLink[] = [
-  { key: 'landing.nav.packages', href: '/pricing' },
+  { key: 'landing.nav.pricing', href: '/pricing' },
 ];

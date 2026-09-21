@@ -1,26 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle } from 'lucide-react';
-import { ProjectWizard } from '@/features/projects';
+import { LeadProjectWizard, LeadContactChoiceModal } from '@/features/lead-project';
+import { translateMessage } from '@/lib/i18n-utils';
 import { useLeadCapture } from '../hooks/use-lead-capture';
 
 export default function LeadCapturePage() {
-  const {
-    source,
-    isCompleted,
-    requestId,
-    dir,
-    language,
-    handleComplete,
-    getWhatsAppLink,
-    handleWizardClose,
-  } = useLeadCapture();
+  const { isCompleted, requestId, dir, language, handleComplete, handleWizardClose } = useLeadCapture();
+  const [showContactChoice, setShowContactChoice] = useState(false);
+
+  const onComplete = (id?: string) => {
+    handleComplete(id);
+    setShowContactChoice(true);
+  };
 
   if (isCompleted) {
     return (
       <div className="flex flex-col items-center justify-center h-full min-h-screen bg-[var(--bg)] text-[var(--text)] p-6" dir={dir}>
         <motion.div
-          initial={{ scale: 0.9, opacity: 0 }}
+          initial={false}
           animate={{ scale: 1, opacity: 1 }}
           className="bg-[var(--surface-3)] border border-[var(--border)] rounded-3xl p-8 max-w-sm w-full text-center"
         >
@@ -28,35 +26,25 @@ export default function LeadCapturePage() {
             <CheckCircle size={40} className="text-emerald-500" />
           </div>
           <h1 className="text-2xl font-bold mb-4">
-            {language === 'ar' ? 'تم استلام طلبك' : 'Request Received'}
+            {translateMessage('Request Received', language)}
           </h1>
           <p className="text-[var(--text-muted)] text-sm leading-relaxed mb-6">
-            {language === 'ar'
-              ? 'شكراً لمشاركتك فكرتك. فريقنا يراجع تفاصيل مشروعك الآن وسيتواصل معك قريباً.'
-              : 'Thank you for sharing your vision. Our team is reviewing your project details and will contact you shortly.'}
+            {translateMessage(
+              'Thank you for sharing your vision. Our team is reviewing your project details and will contact you shortly.',
+              language
+            )}
           </p>
-
-          {requestId ? (
-            <a
-              href={getWhatsAppLink()}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center justify-center w-full bg-[#25D366] text-white font-bold py-4 px-6 rounded-xl shadow-[0_0_20px_rgba(37,211,102,0.3)] hover:shadow-[0_0_25px_rgba(37,211,102,0.5)] transition-all"
-            >
-              {language === 'ar' ? 'اضغط هنا لتأكيد الطلب' : 'Click here to confirm your request'}
-            </a>
-          ) : null}
         </motion.div>
+
+        {showContactChoice ? (
+          <LeadContactChoiceModal
+            requestId={requestId || undefined}
+            onClose={() => setShowContactChoice(false)}
+          />
+        ) : null}
       </div>
     );
   }
 
-  return (
-    <ProjectWizard
-      onClose={handleWizardClose}
-      onComplete={handleComplete}
-      isLeadMode={true}
-      source={source}
-    />
-  );
+  return <LeadProjectWizard onClose={handleWizardClose} onComplete={onComplete} isLeadMode />;
 }

@@ -1,5 +1,4 @@
 // projects — public API
-export { default as ProjectWizard } from './components/project-wizard';
 export { default as ProjectDetailsPage } from './components/project-details-page';
 export { default as ProjectsListPage } from './components/projects-list-page';
 export { default as ProjectListItem } from './components/project-list-item';

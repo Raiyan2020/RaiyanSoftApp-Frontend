@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ErrorAlert from '@/components/ui/error-alert';
@@ -27,18 +27,24 @@ export default function AdminSettingsTab() {
   const [favicon, setFavicon] = useState<ImageUploadValue | null>(null);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (!query.data) return;
-    const settings = query.data as AdminSiteSettings;
-    setForm({
-      site_name: settings.site_name || EMPTY_BI,
-      site_description: settings.site_description || EMPTY_BI,
-      site_email: settings.site_email || '',
-      site_phone: settings.site_phone || '',
-      first_footer_text: settings.first_footer_text || EMPTY_BI,
-      second_footer_text: settings.second_footer_text || EMPTY_BI,
-    });
-  }, [query.data]);
+  // Repopulate the form whenever the fetched settings change, adjusted
+  // during render (comparing against the previous value) instead of in an
+  // effect.
+  const [prevQueryData, setPrevQueryData] = useState(query.data);
+  if (query.data !== prevQueryData) {
+    setPrevQueryData(query.data);
+    if (query.data) {
+      const settings = query.data as AdminSiteSettings;
+      setForm({
+        site_name: settings.site_name || EMPTY_BI,
+        site_description: settings.site_description || EMPTY_BI,
+        site_email: settings.site_email || '',
+        site_phone: settings.site_phone || '',
+        first_footer_text: settings.first_footer_text || EMPTY_BI,
+        second_footer_text: settings.second_footer_text || EMPTY_BI,
+      });
+    }
+  }
 
   const save = async () => {
     if (!form.site_name.ar || !form.site_name.en) return setError(translateMessage('Site name is required.'));

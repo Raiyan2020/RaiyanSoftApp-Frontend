@@ -55,7 +55,7 @@ export default function AppStateScreen({
           href="/"
           className="mt-6 inline-flex items-center gap-2 text-xs font-bold text-[var(--text-muted)] transition-colors hover:text-primary"
         >
-          <ArrowLeft size={14} />
+          <ArrowLeft size={14} className="rtl:rotate-180" />
           {backLabel}
         </Link>
       </section>

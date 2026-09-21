@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Edit2, Loader2, Plus, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
@@ -40,7 +40,12 @@ export default function AdminAboutUsTab() {
   const [imageError, setImageError] = useState('');
   const [pendingDelete, setPendingDelete] = useState<AdminAboutUsCard | null>(null);
 
-  useEffect(() => {
+  // Repopulate the header form whenever the fetched header data changes,
+  // adjusted during render (comparing against the previous value) instead of
+  // in an effect.
+  const [prevHeaderData, setPrevHeaderData] = useState(headerQuery.data);
+  if (headerQuery.data !== prevHeaderData) {
+    setPrevHeaderData(headerQuery.data);
     if (headerQuery.data) {
       setHeader({
         title: headerQuery.data.title,
@@ -48,16 +53,23 @@ export default function AdminAboutUsTab() {
         description: headerQuery.data.description,
       });
     }
-  }, [headerQuery.data]);
+  }
 
-  useEffect(() => {
+  // Default to the first card whenever nothing is selected yet and the list
+  // changes, adjusted during render instead of in an effect.
+  const [prevCardSelectSync, setPrevCardSelectSync] = useState<{
+    selected: AdminAboutUsCard | null;
+    data: AdminAboutUsCard[] | undefined;
+  }>({ selected, data: cardsQuery.data });
+  if (selected !== prevCardSelectSync.selected || cardsQuery.data !== prevCardSelectSync.data) {
+    setPrevCardSelectSync({ selected, data: cardsQuery.data });
     if (!selected && cardsQuery.data?.[0]) {
       const next = cardsQuery.data[0];
       setSelected(next);
       setCardTitle(next.title);
       setCardDescription(next.description);
     }
-  }, [cardsQuery.data, selected]);
+  }
 
   const cards = cardsQuery.data ?? [];
 

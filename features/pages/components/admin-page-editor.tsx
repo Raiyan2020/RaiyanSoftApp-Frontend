@@ -1,12 +1,18 @@
 'use client';
 
 import React from 'react';
+import dynamic from 'next/dynamic';
 import { Loader2 } from 'lucide-react';
-import RichTextEditor from '@/components/ui/rich-text-editor';
 import { AboutUsForm, PageSlug, SimplePageForm } from '../types/page.types';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
+import Loader from '@/components/ui/loader';
 import { translateMessage } from '@/lib/i18n-utils';
+
+const RichTextEditor = dynamic(() => import('@/components/ui/rich-text-editor'), {
+  ssr: false,
+  loading: () => <Loader />,
+});
 
 interface AdminPageEditorProps {
   slug: PageSlug;

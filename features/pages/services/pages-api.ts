@@ -1,4 +1,7 @@
+import { cache } from 'react';
 import { apiService, ApiResponse, getApiBaseUrl } from '@/lib/api-service';
+import type { AppLanguage } from '@/lib/language';
+import { translateMessage } from '@/lib/i18n-utils';
 import {
   AboutUsPage,
   PrivacyPolicyPage,
@@ -16,10 +19,14 @@ function getApiErrorMessage(response: ApiResponse<unknown>) {
   return response.message || 'Request failed.';
 }
 
-async function fetchPageJson<T>(path: string): Promise<T> {
+export function getPageApiSlug(slug: PageSlug) {
+  return slug === 'terms-conditions' ? 'terms-and-conditions' : slug;
+}
+
+async function fetchPageJson<T>(path: string, language: AppLanguage = 'ar'): Promise<T> {
   const response = await fetch(`${getApiBaseUrl()}/${path.replace(/^\//, '')}`, {
-    headers: { Accept: 'application/json' },
-    next: { revalidate: 60 },
+    headers: { Accept: 'application/json', 'Accept-Language': language },
+    next: { revalidate: 300 },
   });
 
   const data = (await response.json()) as ApiResponse<T>;
@@ -44,7 +51,7 @@ export async function fetchPrivacyPolicy() {
 }
 
 export async function fetchTermsConditions() {
-  const response = await apiService.get<TermsConditionsPage>('user/pages/terms-conditions', {
+  const response = await apiService.get<TermsConditionsPage>(`user/pages/${getPageApiSlug('terms-conditions')}`, {
     skipGlobalToast: true,
   });
 
@@ -67,17 +74,17 @@ export async function fetchAboutUs() {
   return response.data;
 }
 
-export function fetchPrivacyPolicyServer() {
-  return fetchPageJson<PrivacyPolicyPage>('user/pages/privacy-policy');
-}
+export const fetchPrivacyPolicyServer = cache(function fetchPrivacyPolicyServer(language: AppLanguage = 'ar') {
+  return fetchPageJson<PrivacyPolicyPage>('user/pages/privacy-policy', language);
+});
 
-export function fetchTermsConditionsServer() {
-  return fetchPageJson<TermsConditionsPage>('user/pages/terms-conditions');
-}
+export const fetchTermsConditionsServer = cache(function fetchTermsConditionsServer(language: AppLanguage = 'ar') {
+  return fetchPageJson<TermsConditionsPage>(`user/pages/${getPageApiSlug('terms-conditions')}`, language);
+});
 
-export function fetchAboutUsServer() {
-  return fetchPageJson<AboutUsPage>('user/pages/about-us');
-}
+export const fetchAboutUsServer = cache(function fetchAboutUsServer(language: AppLanguage = 'ar') {
+  return fetchPageJson<AboutUsPage>('user/pages/about-us', language);
+});
 
 type AdminPageResponse = {
   slug: PageSlug;
@@ -93,7 +100,7 @@ function readLocalizedValue(value: Record<string, string> | string | undefined) 
 }
 
 export async function fetchAdminPage(slug: PageSlug): Promise<AdminPageResponse> {
-  const response = await apiService.get<AdminPageResponse>(`admin/pages/${slug}`, {
+  const response = await apiService.get<AdminPageResponse>(`admin/pages/${getPageApiSlug(slug)}`, {
     skipGlobalToast: true,
   });
 
@@ -115,7 +122,7 @@ export async function fetchAdminPrivacyPolicy(): Promise<SimplePageForm> {
 export async function fetchAdminTermsConditions(): Promise<SimplePageForm> {
   const page = await fetchAdminPage('terms-conditions');
   return {
-    title: readLocalizedValue(page.title) || 'Terms and Conditions',
+    title: readLocalizedValue(page.title) || translateMessage('Terms and Conditions'),
     description: readLocalizedValue(page.description),
   };
 }

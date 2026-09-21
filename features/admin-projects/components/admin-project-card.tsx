@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Edit2, Trash2, ExternalLink } from 'lucide-react';
 import SafeImage from '@/components/ui/safe-image';
 import { Project } from '@/lib/projectStore';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface AdminProjectCardProps {
   project: Project;
@@ -14,7 +15,7 @@ export default function AdminProjectCard({ project, onOpenModal, onDeleteProject
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, scale: 0.95 }}
+      initial={false}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0, scale: 0.95 }}
       className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-4 shadow-lg hover:border-[var(--border)] transition-colors group relative overflow-hidden"
@@ -28,7 +29,7 @@ export default function AdminProjectCard({ project, onOpenModal, onDeleteProject
             type="button"
             onClick={() => onOpenModal(project)}
             className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
-            title="Edit"
+            title={translateMessage('Edit')}
           >
             <Edit2 size={16} />
           </button>
@@ -36,7 +37,7 @@ export default function AdminProjectCard({ project, onOpenModal, onDeleteProject
             type="button"
             onClick={() => onDeleteProject(project.id)}
             className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
-            title="Delete"
+            title={translateMessage('Delete')}
           >
             <Trash2 size={16} />
           </button>
@@ -53,7 +54,7 @@ export default function AdminProjectCard({ project, onOpenModal, onDeleteProject
           rel="noopener noreferrer"
           className="flex items-center hover:text-primary transition-colors truncate max-w-full"
         >
-          <ExternalLink size={12} className="mr-1" />
+          <ExternalLink size={12} className="me-1" />
           <span className="truncate">{project.link}</span>
         </a>
       </div>

@@ -47,7 +47,7 @@ export default function RoleFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
+        initial={false}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(event) => event.stopPropagation()}
@@ -69,7 +69,7 @@ export default function RoleFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Role Name <span className="text-red-400">*</span></FieldLabel>
+                  <FieldLabel>{translateMessage('Role Name')} <span className="text-red-400">*</span></FieldLabel>
                   <input
                     {...field}
                     type="text"
@@ -91,7 +91,7 @@ export default function RoleFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>Description</FieldLabel>
+                  <FieldLabel>{translateMessage('Description')}</FieldLabel>
                   <textarea
                     {...field}
                     aria-invalid={fieldState.invalid}

@@ -103,6 +103,53 @@ export interface LandingFaqsData {
   faqs: LandingFaq[];
 }
 
+export interface LandingPageContent {
+  heroes: LandingHero[];
+  services: LandingServicesData;
+  capabilities: LandingCapabilitiesData;
+  offers: LandingOffersData;
+  testimonials: LandingTestimonialsData;
+  faqs: LandingFaqsData;
+  about_us: {
+    header: LandingSectionHeader | null;
+    cards: LandingAboutCard[];
+  };
+  banners: {
+    idea: LandingBanner | null;
+    project: LandingBanner | null;
+    footer: LandingBanner | null;
+  };
+}
+
+export interface LandingAboutCard {
+  id: number;
+  title: string;
+  description: string;
+  image: string | null;
+}
+
+export interface LandingBanner {
+  id: number;
+  slug: string;
+  title: string | null;
+  caption: string | null;
+  description: string | null;
+  button_text: string | null;
+  button_url: string | null;
+}
+
+export interface LandingAboutUsData {
+  header: LandingSectionHeader | null;
+  cards: LandingAboutCard[];
+}
+
+export interface LandingAboutUsFormPayload {
+  full_name: string;
+  email: string;
+  phone: string;
+  project_details: string;
+}
+
 // ---------------------------------------------------------------------------
 // Admin form payload types (bilingual: title[ar], title[en], …)
 // ---------------------------------------------------------------------------
@@ -156,6 +203,7 @@ export interface AdminCapabilityPayload {
 export interface AdminOfferPayload {
   title: BilingualField;
   caption: BilingualField;
+  description: BilingualField;
   button_text: BilingualField;
   button_url: string;
   most_requested: 0 | 1;

@@ -55,7 +55,7 @@ export default function EmployeeFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
+        initial={false}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(event) => event.stopPropagation()}
@@ -172,7 +172,7 @@ export default function EmployeeFormModal({
                   control={form.control}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
-                      <FieldLabel>Phone</FieldLabel>
+                      <FieldLabel>{translateMessage('Phone')}</FieldLabel>
                       <PhoneInput value={field.value || ''} onChange={(value) => field.onChange(value || '')} />
                       {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
                     </Field>
@@ -190,11 +190,11 @@ export default function EmployeeFormModal({
                         </FieldLabel>
                         <div className="flex gap-2">
                           <div className="relative flex-1">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={16} />
+                            <Lock className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={16} />
                             <input
                               {...field}
                               type="text"
-                              className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl pl-10 pr-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none font-mono ${
+                              className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none font-mono ${
                                 fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                               }`}
                               placeholder={translateMessage('Min 8 characters')}
@@ -227,7 +227,7 @@ export default function EmployeeFormModal({
                         {...field}
                         type="text"
                         readOnly
-                        value="Super Admin"
+                        value={translateMessage('Super Admin')}
                         className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text-muted)] cursor-not-allowed"
                       />
                       <p className="text-xs text-[var(--text-muted)]">{translateMessage('Only this role is available for now.')}</p>

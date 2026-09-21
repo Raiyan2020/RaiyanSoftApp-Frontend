@@ -2,11 +2,14 @@ export type EmployeeRole = 'staff' | 'admin' | string;
 
 export type AdminEmployee = {
   id: number;
-  first_name: string;
-  last_name: string;
-  email: string;
+  first_name?: string;
+  last_name?: string;
+  full_name?: string;
+  email?: string;
   phone?: string | null;
+  admin_code?: string;
   role: EmployeeRole;
+  is_block?: boolean;
   is_blocked?: boolean;
   blocked?: boolean;
   created_at?: string;

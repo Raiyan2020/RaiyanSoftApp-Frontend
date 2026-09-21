@@ -27,7 +27,7 @@ export default function LeadContactForm({ formData, onChange }: LeadContactFormP
           value={formData.firstName}
           onChange={(e) => onChange('firstName', e.target.value)}
           icon={<User size={16} />}
-          placeholder="John Doe"
+          placeholder={t('lead_contact.fullname_placeholder')}
           dir={dir}
         />
 

@@ -3,24 +3,39 @@ import { useRef, useState } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 import PhoneInput from '@/components/ui/phone-input';
+import { useSubmitLandingAboutUsForm, type LandingPageContent } from '@/features/landing-page';
+import PageHtmlContent from '@/features/pages/components/page-html-content';
 
-export default function Contact() {
+type ContactProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function Contact({ homeData }: ContactProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
   const { content, contactMethods, textAlign } = useLandingContent();
   const { contact } = content;
+  const banner = homeData?.banners?.project;
 
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [phone, setPhone] = useState('');
   const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const submitForm = useSubmitLandingAboutUsForm();
+  const loading = submitForm.isPending;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
-    await new Promise((r) => setTimeout(r, 1200));
-    setLoading(false);
-    setSubmitted(true);
+    try {
+      await submitForm.mutateAsync({
+        full_name: form.name,
+        email: form.email,
+        phone,
+        project_details: form.message,
+      });
+      setSubmitted(true);
+    } catch {
+      // The shared API client already shows the backend validation/network toast.
+    }
   };
 
   const inputClass =
@@ -29,18 +44,18 @@ export default function Contact() {
   return (
     <section id="contact" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-      <div className="pointer-events-none absolute right-10 top-20 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-10 left-10 h-64 w-64 rounded-full bg-emerald-300/10 blur-3xl" />
+      <div className="pointer-events-none absolute end-10 top-20 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute bottom-10 start-10 h-64 w-64 rounded-full bg-emerald-300/10 blur-3xl" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-10 text-center lg:mb-12 ${textAlign}`}>
+        <div className={`reveal mb-10 text-start lg:mb-12 ${textAlign}`}>
           <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
             {contact.badge}
           </div>
           <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
             {contact.title} <span className="gradient-text">{contact.titleHighlight}</span>
           </h2>
-          <p className="mx-auto mt-5 max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300">
+          <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300">
             {contact.description}
           </p>
         </div>
@@ -49,9 +64,14 @@ export default function Contact() {
           <aside className="reveal space-y-5 lg:col-span-2">
             <div className="overflow-hidden rounded-[2rem] bg-slate-950 p-7 text-white shadow-2xl shadow-cyan-950/20">
               <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-emerald-400 text-2xl font-black">
-                24h
+                {banner?.caption ? banner.caption.slice(0, 2) : '24h'}
               </div>
-              <h3 className="text-2xl font-bold">{contact.sidebarTitle}</h3>
+              <h3 className="text-2xl font-bold">{banner?.title || contact.sidebarTitle}</h3>
+              {banner?.description ? (
+                <PageHtmlContent html={banner.description} className="mt-3 text-sm leading-relaxed text-slate-300" />
+              ) : (
+                <p className="mt-3 text-sm leading-relaxed text-slate-300">{contact.description}</p>
+              )}
               <div className="mt-6 space-y-4">
                 {contact.sidebarSteps.map((step, i) => (
                   <div key={step} className="flex gap-3">
@@ -107,6 +127,7 @@ export default function Contact() {
                         required
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        placeholder={contact.form.name}
                         className={inputClass}
                       />
                     </div>
@@ -120,6 +141,7 @@ export default function Contact() {
                         required
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        placeholder={contact.form.email}
                         className={inputClass}
                         dir="ltr"
                       />
@@ -130,7 +152,7 @@ export default function Contact() {
                     <label htmlFor="contact-phone" className="text-sm font-bold text-slate-700 dark:text-slate-200">
                       {contact.form.phone}
                     </label>
-                    <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} required />
+                    <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} placeholder={contact.form.phone} required />
                   </div>
 
                   <div className="space-y-2">
@@ -143,6 +165,7 @@ export default function Contact() {
                       rows={5}
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      placeholder={contact.form.message}
                       className={`${inputClass} resize-none`}
                     />
                   </div>

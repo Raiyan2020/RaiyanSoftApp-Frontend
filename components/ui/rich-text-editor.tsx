@@ -133,7 +133,7 @@ function RichTextToolbar({ editor, compact = false }: { editor: Editor; compact?
 
   const setLink = useCallback(() => {
     const previousUrl = editor.getAttributes('link').href as string | undefined;
-    const url = window.prompt('Link URL', previousUrl ?? 'https://');
+    const url = window.prompt(translateMessage('Link URL'), previousUrl ?? 'https://');
 
     if (url === null) return;
 
@@ -146,15 +146,15 @@ function RichTextToolbar({ editor, compact = false }: { editor: Editor; compact?
   }, [editor]);
 
   const addImage = useCallback(() => {
-    const url = window.prompt('Image URL');
+    const url = window.prompt(translateMessage('Image URL'));
     if (!url?.trim()) return;
 
-    const alt = window.prompt('Alt text') ?? '';
+    const alt = window.prompt(translateMessage('Alt text')) ?? '';
     editor.chain().focus().setImage({ src: url.trim(), alt }).run();
   }, [editor]);
 
   const addYoutube = useCallback(() => {
-    const url = window.prompt('YouTube URL');
+    const url = window.prompt(translateMessage('YouTube URL'));
     if (!url?.trim()) return;
     editor.chain().focus().setYoutubeVideo({ src: url.trim() }).run();
   }, [editor]);
@@ -165,70 +165,70 @@ function RichTextToolbar({ editor, compact = false }: { editor: Editor; compact?
 
   return (
     <div className={cx('flex flex-wrap items-center gap-1', compact && 'max-w-[340px]')}>
-      <ToolbarButton label="Paragraph" isActive={editor.isActive('paragraph')} disabled={disabled} onClick={() => editor.chain().focus().setParagraph().run()}>
+      <ToolbarButton label={translateMessage('Paragraph')} isActive={editor.isActive('paragraph')} disabled={disabled} onClick={() => editor.chain().focus().setParagraph().run()}>
         <Pilcrow size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Heading 1" isActive={editor.isActive('heading', { level: 1 })} disabled={disabled} onClick={() => editor.chain().focus().toggleHeading({ level: 1 as HeadingLevel }).run()}>
+      <ToolbarButton label={translateMessage('Heading 1')} isActive={editor.isActive('heading', { level: 1 })} disabled={disabled} onClick={() => editor.chain().focus().toggleHeading({ level: 1 as HeadingLevel }).run()}>
         <Heading1 size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Heading 2" isActive={editor.isActive('heading', { level: 2 })} disabled={disabled} onClick={() => editor.chain().focus().toggleHeading({ level: 2 as HeadingLevel }).run()}>
+      <ToolbarButton label={translateMessage('Heading 2')} isActive={editor.isActive('heading', { level: 2 })} disabled={disabled} onClick={() => editor.chain().focus().toggleHeading({ level: 2 as HeadingLevel }).run()}>
         <Heading2 size={17} />
       </ToolbarButton>
 
       <Divider />
 
-      <ToolbarButton label="Bold" isActive={editor.isActive('bold')} disabled={disabled} onClick={() => editor.chain().focus().toggleBold().run()}>
+      <ToolbarButton label={translateMessage('Bold')} isActive={editor.isActive('bold')} disabled={disabled} onClick={() => editor.chain().focus().toggleBold().run()}>
         <Bold size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Italic" isActive={editor.isActive('italic')} disabled={disabled} onClick={() => editor.chain().focus().toggleItalic().run()}>
+      <ToolbarButton label={translateMessage('Italic')} isActive={editor.isActive('italic')} disabled={disabled} onClick={() => editor.chain().focus().toggleItalic().run()}>
         <Italic size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Underline" isActive={editor.isActive('underline')} disabled={disabled} onClick={() => editor.chain().focus().toggleUnderline().run()}>
+      <ToolbarButton label={translateMessage('Underline')} isActive={editor.isActive('underline')} disabled={disabled} onClick={() => editor.chain().focus().toggleUnderline().run()}>
         <Underline size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Strike" isActive={editor.isActive('strike')} disabled={disabled} onClick={() => editor.chain().focus().toggleStrike().run()}>
+      <ToolbarButton label={translateMessage('Strike')} isActive={editor.isActive('strike')} disabled={disabled} onClick={() => editor.chain().focus().toggleStrike().run()}>
         <Strikethrough size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Inline code" isActive={editor.isActive('code')} disabled={disabled} onClick={() => editor.chain().focus().toggleCode().run()}>
+      <ToolbarButton label={translateMessage('Inline code')} isActive={editor.isActive('code')} disabled={disabled} onClick={() => editor.chain().focus().toggleCode().run()}>
         <Code size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Superscript" isActive={editor.isActive('superscript')} disabled={disabled} onClick={() => editor.chain().focus().toggleSuperscript().run()}>
+      <ToolbarButton label={translateMessage('Superscript')} isActive={editor.isActive('superscript')} disabled={disabled} onClick={() => editor.chain().focus().toggleSuperscript().run()}>
         <Superscript size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Subscript" isActive={editor.isActive('subscript')} disabled={disabled} onClick={() => editor.chain().focus().toggleSubscript().run()}>
+      <ToolbarButton label={translateMessage('Subscript')} isActive={editor.isActive('subscript')} disabled={disabled} onClick={() => editor.chain().focus().toggleSubscript().run()}>
         <Subscript size={17} />
       </ToolbarButton>
 
       <Divider />
 
-      <ToolbarButton label="Bullet list" isActive={editor.isActive('bulletList')} disabled={disabled} onClick={() => editor.chain().focus().toggleBulletList().run()}>
+      <ToolbarButton label={translateMessage('Bullet list')} isActive={editor.isActive('bulletList')} disabled={disabled} onClick={() => editor.chain().focus().toggleBulletList().run()}>
         <List size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Ordered list" isActive={editor.isActive('orderedList')} disabled={disabled} onClick={() => editor.chain().focus().toggleOrderedList().run()}>
+      <ToolbarButton label={translateMessage('Ordered list')} isActive={editor.isActive('orderedList')} disabled={disabled} onClick={() => editor.chain().focus().toggleOrderedList().run()}>
         <ListOrdered size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Task list" isActive={editor.isActive('taskList')} disabled={disabled} onClick={() => editor.chain().focus().toggleTaskList().run()}>
+      <ToolbarButton label={translateMessage('Task list')} isActive={editor.isActive('taskList')} disabled={disabled} onClick={() => editor.chain().focus().toggleTaskList().run()}>
         <CheckSquare size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Blockquote" isActive={editor.isActive('blockquote')} disabled={disabled} onClick={() => editor.chain().focus().toggleBlockquote().run()}>
+      <ToolbarButton label={translateMessage('Blockquote')} isActive={editor.isActive('blockquote')} disabled={disabled} onClick={() => editor.chain().focus().toggleBlockquote().run()}>
         <Quote size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Horizontal rule" disabled={disabled} onClick={() => editor.chain().focus().setHorizontalRule().run()}>
+      <ToolbarButton label={translateMessage('Horizontal rule')} disabled={disabled} onClick={() => editor.chain().focus().setHorizontalRule().run()}>
         <Minus size={17} />
       </ToolbarButton>
 
       <Divider />
 
-      <ToolbarButton label="Align left" isActive={editor.isActive({ textAlign: 'left' })} disabled={disabled} onClick={() => editor.chain().focus().setTextAlign('left').run()}>
+      <ToolbarButton label={translateMessage('Align left')} isActive={editor.isActive({ textAlign: 'left' })} disabled={disabled} onClick={() => editor.chain().focus().setTextAlign('left').run()}>
         <AlignLeft size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Align center" isActive={editor.isActive({ textAlign: 'center' })} disabled={disabled} onClick={() => editor.chain().focus().setTextAlign('center').run()}>
+      <ToolbarButton label={translateMessage('Align center')} isActive={editor.isActive({ textAlign: 'center' })} disabled={disabled} onClick={() => editor.chain().focus().setTextAlign('center').run()}>
         <AlignCenter size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Align right" isActive={editor.isActive({ textAlign: 'right' })} disabled={disabled} onClick={() => editor.chain().focus().setTextAlign('right').run()}>
+      <ToolbarButton label={translateMessage('Align right')} isActive={editor.isActive({ textAlign: 'right' })} disabled={disabled} onClick={() => editor.chain().focus().setTextAlign('right').run()}>
         <AlignRight size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Justify" isActive={editor.isActive({ textAlign: 'justify' })} disabled={disabled} onClick={() => editor.chain().focus().setTextAlign('justify').run()}>
+      <ToolbarButton label={translateMessage('Justify')} isActive={editor.isActive({ textAlign: 'justify' })} disabled={disabled} onClick={() => editor.chain().focus().setTextAlign('justify').run()}>
         <AlignJustify size={17} />
       </ToolbarButton>
 
@@ -269,43 +269,43 @@ function RichTextToolbar({ editor, compact = false }: { editor: Editor; compact?
 
       <Divider />
 
-      <ToolbarButton label="Link" isActive={editor.isActive('link')} disabled={disabled} onClick={setLink}>
+      <ToolbarButton label={translateMessage('Link')} isActive={editor.isActive('link')} disabled={disabled} onClick={setLink}>
         <Link size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Remove link" disabled={disabled || !editor.isActive('link')} onClick={() => editor.chain().focus().unsetLink().run()}>
+      <ToolbarButton label={translateMessage('Remove link')} disabled={disabled || !editor.isActive('link')} onClick={() => editor.chain().focus().unsetLink().run()}>
         <Unlink size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Image" disabled={disabled} onClick={addImage}>
+      <ToolbarButton label={translateMessage('Image')} disabled={disabled} onClick={addImage}>
         <ImageIcon size={17} />
       </ToolbarButton>
-      <ToolbarButton label="YouTube" disabled={disabled} onClick={addYoutube}>
+      <ToolbarButton label={translateMessage('YouTube')} disabled={disabled} onClick={addYoutube}>
         <Youtube size={17} />
       </ToolbarButton>
 
       <Divider />
 
-      <ToolbarButton label="Insert table" disabled={disabled} onClick={insertTable}>
+      <ToolbarButton label={translateMessage('Insert table')} disabled={disabled} onClick={insertTable}>
         <Table size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Add row" disabled={disabled || !editor.can().addRowAfter()} onClick={() => editor.chain().focus().addRowAfter().run()}>
+      <ToolbarButton label={translateMessage('Add row')} disabled={disabled || !editor.can().addRowAfter()} onClick={() => editor.chain().focus().addRowAfter().run()}>
         <Rows3 size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Add column" disabled={disabled || !editor.can().addColumnAfter()} onClick={() => editor.chain().focus().addColumnAfter().run()}>
+      <ToolbarButton label={translateMessage('Add column')} disabled={disabled || !editor.can().addColumnAfter()} onClick={() => editor.chain().focus().addColumnAfter().run()}>
         <Columns3 size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Delete table" disabled={disabled || !editor.can().deleteTable()} onClick={() => editor.chain().focus().deleteTable().run()}>
+      <ToolbarButton label={translateMessage('Delete table')} disabled={disabled || !editor.can().deleteTable()} onClick={() => editor.chain().focus().deleteTable().run()}>
         <Trash2 size={17} />
       </ToolbarButton>
 
       <Divider />
 
-      <ToolbarButton label="Clear formatting" disabled={disabled} onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}>
+      <ToolbarButton label={translateMessage('Clear formatting')} disabled={disabled} onClick={() => editor.chain().focus().unsetAllMarks().clearNodes().run()}>
         <RemoveFormatting size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Undo" disabled={disabled || !editor.can().undo()} onClick={() => editor.chain().focus().undo().run()}>
+      <ToolbarButton label={translateMessage('Undo')} disabled={disabled || !editor.can().undo()} onClick={() => editor.chain().focus().undo().run()}>
         <Undo2 size={17} />
       </ToolbarButton>
-      <ToolbarButton label="Redo" disabled={disabled || !editor.can().redo()} onClick={() => editor.chain().focus().redo().run()}>
+      <ToolbarButton label={translateMessage('Redo')} disabled={disabled || !editor.can().redo()} onClick={() => editor.chain().focus().redo().run()}>
         <Redo2 size={17} />
       </ToolbarButton>
     </div>
@@ -405,10 +405,10 @@ export default function RichTextEditor({
           <div className="flex items-center justify-end gap-2 border-t border-[var(--border)] px-3 py-2 text-[11px] font-medium text-[var(--text-muted)]">
             {characterLimit ? (
               <span>
-                {characterCount.characters()}/{characterLimit} characters
+                {characterCount.characters()}/{characterLimit} {translateMessage('characters')}
               </span>
             ) : (
-              <span>{characterCount.words()} words</span>
+              <span>{characterCount.words()} {translateMessage('words')}</span>
             )}
           </div>
         ) : null}

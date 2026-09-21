@@ -44,7 +44,7 @@ export default function AdminProfileForm({
               size="xl" 
               className="w-full h-full text-3xl" 
             />
-            <div className="absolute bottom-0 right-0 bg-[var(--surface-3)] rounded-full p-1 border border-[var(--border)]">
+            <div className="absolute bottom-0 end-0 bg-[var(--surface-3)] rounded-full p-1 border border-[var(--border)]">
               <div className="bg-emerald-500 w-4 h-4 rounded-full border-2 border-[var(--border)]" title={translateMessage('Active')} />
             </div>
           </div>
@@ -69,7 +69,7 @@ export default function AdminProfileForm({
                       {...field}
                       type="text"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     />
@@ -93,7 +93,7 @@ export default function AdminProfileForm({
                       {...field}
                       type="text"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
+                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
                         fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                       }`}
                     />
@@ -132,7 +132,7 @@ export default function AdminProfileForm({
                     {...field}
                     type="email"
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                   />
@@ -158,7 +158,7 @@ export default function AdminProfileForm({
                     type="password"
                     placeholder="••••••••"
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 pl-10 pr-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
+                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
                       fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
                     }`}
                   />

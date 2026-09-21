@@ -24,14 +24,14 @@ export default function Splash() {
 
   return (
     <motion.div
-      initial={{ opacity: 0 }}
+      initial={false}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.8 }}
       className="flex flex-col items-center justify-center h-full w-full bg-gradient-to-b from-[#0f172a] to-[#020617]"
     >
       <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
+        initial={false}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="relative w-32 h-32 mb-12"

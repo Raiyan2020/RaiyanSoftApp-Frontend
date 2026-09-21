@@ -44,6 +44,7 @@ export default function DesktopHeader() {
             className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(29,183,240,0.5)]"
           />
         </div>
+        {/* i18n-ignore-next-line: brand name, never translated */}
         <span className="text-lg font-bold text-[var(--text)] tracking-tight">Raiyansoft</span>
       </button>
 
@@ -67,7 +68,7 @@ export default function DesktopHeader() {
                   }`}
                 />
                 {tab.badge > 0 ? (
-                  <span className="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[9px] font-bold px-1 min-w-[14px] h-[14px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm">
+                  <span className="absolute -top-1.5 -end-1.5 bg-red-500 text-white text-[9px] font-bold px-1 min-w-[14px] h-[14px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm">
                     {tab.badge > 99 ? '99+' : tab.badge}
                   </span>
                 ) : null}
@@ -103,7 +104,7 @@ export default function DesktopHeader() {
             language === 'ar' ? 'bg-primary text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
           }`}
         >
-          ???????
+          العربية
         </button>
       </div>
     </div>

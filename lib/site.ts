@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { translateMessage } from './i18n-utils';
 
 export const siteConfig = {
   name: 'ريان سوفت',
@@ -6,7 +7,7 @@ export const siteConfig = {
   defaultTitle: 'ريان سوفت | تطوير تطبيقات ومواقع ومتاجر إلكترونية',
   description:
     'ريان سوفت وكالة تقنية تبني تطبيقات الجوال، المواقع الإلكترونية، المتاجر الرقمية، والهويات البصرية بتجربة مستخدم واضحة وأداء جاهز للنمو.',
-  ogImage: '/opengraph-image',
+  ogImage: '/og-image.svg',
   ogImageWidth: 1200,
   ogImageHeight: 630,
   locale: 'ar_SA',
@@ -55,6 +56,7 @@ export const publicRoutes = [
   '/careers',
   '/privacy',
   '/terms',
+  '/pages',
 ] as const;
 
 export type PublicRoute = (typeof publicRoutes)[number];
@@ -140,6 +142,7 @@ export function createOrganizationJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
+    '@id': `${getCanonicalUrl('/')}#organization`,
     name: siteConfig.name,
     alternateName: siteConfig.englishName,
     description: siteConfig.description,
@@ -157,6 +160,7 @@ export function createWebSiteJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${getCanonicalUrl('/')}#website`,
     name: siteConfig.name,
     alternateName: siteConfig.englishName,
     description: siteConfig.description,
@@ -164,6 +168,7 @@ export function createWebSiteJsonLd() {
     inLanguage: siteConfig.language,
     publisher: {
       '@type': 'Organization',
+      '@id': `${getCanonicalUrl('/')}#organization`,
       name: siteConfig.name,
       url: getCanonicalUrl('/'),
     },
@@ -212,39 +217,29 @@ export function createServiceJsonLd(service: { title: string; description: strin
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
+    '@id': `${getCanonicalUrl(`/services/${service.slug}`)}#service`,
     name: service.title,
     description: service.description,
     provider: {
       '@type': 'ProfessionalService',
+      '@id': `${getCanonicalUrl('/')}#organization`,
       name: siteConfig.name,
       url: getCanonicalUrl('/'),
     },
     areaServed: siteConfig.country,
     url: getCanonicalUrl(`/services/${service.slug}`),
-    hasOfferCatalog: service.deliverables?.length
-      ? {
-          '@type': 'OfferCatalog',
-          name: service.title,
-          itemListElement: service.deliverables.map((item) => ({
-            '@type': 'Offer',
-            itemOffered: {
-              '@type': 'Service',
-              name: item,
-            },
-          })),
-        }
-      : undefined,
+    serviceType: service.title,
   };
 }
 
-export function createServiceCollectionJsonLd(services: { title: string; description: string; slug: string }[]) {
+export function createServiceCollectionJsonLd(services: { title: string; description: string; slug: string }[], language: 'ar' | 'en' = 'ar') {
   return createItemListJsonLd(
     services.map((service) => ({
       name: service.title,
       description: service.description,
       url: getCanonicalUrl(`/services/${service.slug}`),
     })),
-    'خدمات ريان سوفت',
+    translateMessage('Raiyan Soft services', language),
   );
 }
 
@@ -264,15 +259,18 @@ export function createFaqJsonLd(items: { question: string; answer: string }[]) {
 }
 
 export function createWebPageJsonLd(page: { title: string; description: string; path: string }) {
+  const url = getCanonicalUrl(page.path);
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
+    '@id': `${url}#webpage`,
     name: page.title,
     description: page.description,
-    url: getCanonicalUrl(page.path),
+    url,
     inLanguage: siteConfig.language,
     isPartOf: {
       '@type': 'WebSite',
+      '@id': `${getCanonicalUrl('/')}#website`,
       name: siteConfig.name,
       url: getCanonicalUrl('/'),
     },
@@ -321,11 +319,11 @@ export function createLegalPageJsonLd(page: { title: string; description: string
   };
 }
 
-export function createOfferCatalogJsonLd(items: { name: string; description: string; features?: string[] }[]) {
+export function createOfferCatalogJsonLd(items: { name: string; description: string; features?: string[] }[], language: 'ar' | 'en' = 'ar') {
   return {
     '@context': 'https://schema.org',
     '@type': 'OfferCatalog',
-    name: 'باقات ريان سوفت',
+    name: translateMessage('Raiyan Soft packages', language),
     itemListElement: items.map((item) => ({
       '@type': 'Offer',
       name: item.name,
@@ -339,48 +337,51 @@ export function createOfferCatalogJsonLd(items: { name: string; description: str
   };
 }
 
-export function createReviewListJsonLd(items: { quote: string; author: string; role?: string; company?: string }[]) {
+export function createReviewListJsonLd(items: { quote: string; author: string; role?: string; company?: string }[], language: 'ar' | 'en' = 'ar') {
   return createItemListJsonLd(
     items.map((item) => ({
       name: item.author,
       description: item.quote,
       url: getCanonicalUrl('/testimonials'),
     })),
-    'آراء عملاء ريان سوفت',
+    translateMessage('Raiyan Soft customer reviews', language),
   );
 }
 
-export function createPeopleListJsonLd(items: { name?: string; title?: string; role?: string; bio?: string }[]) {
+export function createPeopleListJsonLd(items: { name?: string; title?: string; role?: string; bio?: string }[], language: 'ar' | 'en' = 'ar') {
   return createItemListJsonLd(
     items.map((item) => ({
       name: item.name || item.title || siteConfig.name,
       description: [item.role, item.bio].filter(Boolean).join(' - '),
       url: getCanonicalUrl('/team'),
     })),
-    'فريق ريان سوفت',
+    translateMessage('Raiyan Soft team', language),
   );
 }
 
-export function createJobPostingListJsonLd(items: { title: string; department?: string; location?: string; workType?: string; description: string }[]) {
+export function createJobPostingListJsonLd(items: { title: string; department?: string; location?: string; workType?: string; description: string }[], language: 'ar' | 'en' = 'ar') {
   return createItemListJsonLd(
     items.map((item) => ({
       name: item.title,
       description: [item.department, item.location, item.workType, item.description].filter(Boolean).join(' - '),
       url: getCanonicalUrl('/careers'),
     })),
-    'وظائف ريان سوفت',
+    translateMessage('Raiyan Soft jobs', language),
   );
 }
 
 export function createCreativeWorkJsonLd(item: { slug: string; title: string; summary: string }) {
+  const url = getCanonicalUrl(`/portfolio/${item.slug}`);
   return {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
+    '@id': `${url}#work`,
     name: item.title,
     description: item.summary,
-    url: getCanonicalUrl(`/portfolio/${item.slug}`),
+    url,
     creator: {
       '@type': 'Organization',
+      '@id': `${getCanonicalUrl('/')}#organization`,
       name: siteConfig.name,
       url: getCanonicalUrl('/'),
     },
@@ -388,19 +389,37 @@ export function createCreativeWorkJsonLd(item: { slug: string; title: string; su
   };
 }
 
-export function createArticleJsonLd(post: { title: string; excerpt: string; slug: string; category?: string }) {
+export function createArticleJsonLd(post: {
+  title: string;
+  excerpt: string;
+  slug: string;
+  category?: string;
+  image?: string | null;
+  published_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}) {
+  const url = getCanonicalUrl(`/blogs/${post.slug}`);
+  const datePublished = post.published_at || post.created_at || undefined;
+  const dateModified = post.updated_at || undefined;
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
+    '@id': `${url}#article`,
     headline: post.title,
     description: post.excerpt,
-    url: getCanonicalUrl(`/blogs/${post.slug}`),
+    url,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${url}#webpage` },
+    ...(datePublished ? { datePublished } : {}),
+    ...(dateModified ? { dateModified } : {}),
     author: {
       '@type': 'Organization',
+      '@id': `${getCanonicalUrl('/')}#organization`,
       name: siteConfig.name,
     },
     publisher: {
       '@type': 'Organization',
+      '@id': `${getCanonicalUrl('/')}#organization`,
       name: siteConfig.name,
       logo: {
         '@type': 'ImageObject',

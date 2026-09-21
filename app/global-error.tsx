@@ -1,6 +1,8 @@
 'use client';
 
 import { RotateCcw, TriangleAlert } from 'lucide-react';
+import { getDirection, readStoredLanguage } from '@/lib/language';
+import { translateMessage } from '@/lib/i18n-utils';
 import './globals.css';
 
 export default function GlobalError({
@@ -9,8 +11,15 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  // This boundary replaces the entire root <html> document, including whatever
+  // rendered <I18nProvider>, so React context cannot be relied on here. Read the
+  // language directly from localStorage/cookie (client-only helper) instead.
+  const language = readStoredLanguage();
+  const dir = getDirection(language);
+  const t = (message: string) => translateMessage(message, language);
+
   return (
-    <html lang="ar" dir="rtl">
+    <html lang={language} dir={dir}>
       <body>
         <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--bg)] px-4 py-12 text-[var(--text)]">
           <div className="premium-grid absolute inset-0 opacity-70" />
@@ -20,12 +29,12 @@ export default function GlobalError({
             <div className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-[0_0_40px_rgba(18,169,217,0.24)]">
               <TriangleAlert size={30} />
             </div>
-            <p className="mb-2 text-xs font-black uppercase tracking-[0.24em] text-primary">Application Error</p>
+            <p className="mb-2 text-xs font-black uppercase tracking-[0.24em] text-primary">{t('Application Error')}</p>
             <h1 className="text-3xl font-black tracking-tight text-[var(--text)] sm:text-4xl">
-              Something went wrong
+              {t('Something went wrong.')}
             </h1>
             <p className="mx-auto mt-4 max-w-md text-sm leading-7 text-[var(--text-muted)]">
-              The app hit a root-level error. Try refreshing this screen to reload the interface.
+              {t('The app hit a root-level error. Try refreshing this screen to reload the interface.')}
             </p>
             <button
               type="button"
@@ -33,7 +42,7 @@ export default function GlobalError({
               className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-[0_0_24px_rgba(18,169,217,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(18,169,217,0.42)]"
             >
               <RotateCcw size={17} />
-              Try again
+              {t('Try again')}
             </button>
           </section>
         </main>

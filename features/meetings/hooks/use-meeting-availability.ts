@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 import { fetchMeetingAvailability } from '../services/user-meetings-api';
 import { formatDateKey } from '../utils/meeting-helpers';
 
@@ -31,7 +32,7 @@ export function useMeetingAvailability(referenceDate: Date | null, enabled = tru
       setAvailableDays(availableDays);
       setAvailableSlots(availableSlots);
     } catch (err: any) {
-      setError(err.message || 'Failed to load availability.');
+      setError(err.message || translateMessage('Failed to load availability.'));
       setAvailableDays([]);
       setAvailableSlots([]);
     } finally {
@@ -40,7 +41,12 @@ export function useMeetingAvailability(referenceDate: Date | null, enabled = tru
   }, []);
 
   useEffect(() => {
+    // Genuine external synchronization: fetches availability from the API
+    // whenever the reference date changes; loading/data/error (including the
+    // "disabled" reset branch below) are set from this effect's lifecycle,
+    // not derived from render state.
     if (!enabled || !referenceDate) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- see comment above.
       setAvailableDays([]);
       setAvailableSlots([]);
       return;

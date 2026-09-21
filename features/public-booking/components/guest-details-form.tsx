@@ -35,7 +35,7 @@ export default function GuestDetailsForm({
   });
 
   return (
-    <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-6">
+    <motion.div initial={false} animate={{ opacity: 1, x: 0 }} className="space-y-6">
       <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center justify-between">
         <div>
           <p className="text-primary font-bold text-sm">
@@ -54,7 +54,7 @@ export default function GuestDetailsForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel>Full Name <span className="text-red-400">*</span></FieldLabel>
+              <FieldLabel>{translateMessage('Full Name')} <span className="text-red-400">*</span></FieldLabel>
               <div className="relative">
                 <User size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
@@ -76,7 +76,7 @@ export default function GuestDetailsForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel>Phone Number <span className="text-red-400">*</span></FieldLabel>
+              <FieldLabel>{translateMessage('Phone Number')} <span className="text-red-400">*</span></FieldLabel>
               <PhoneInput value={field.value} onChange={field.onChange} required />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -88,7 +88,7 @@ export default function GuestDetailsForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel>Email Address (Optional)</FieldLabel>
+              <FieldLabel>{translateMessage('Email Address (Optional)')}</FieldLabel>
               <div className="relative">
                 <Mail size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
@@ -110,7 +110,7 @@ export default function GuestDetailsForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel>Topic <span className="text-red-400">*</span></FieldLabel>
+              <FieldLabel>{translateMessage('Topic')} <span className="text-red-400">*</span></FieldLabel>
               <input
                 {...field}
                 type="text"
@@ -130,7 +130,7 @@ export default function GuestDetailsForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel>Notes (Optional)</FieldLabel>
+              <FieldLabel>{translateMessage('Notes (Optional)')}</FieldLabel>
               <textarea
                 {...field}
                 aria-invalid={fieldState.invalid}

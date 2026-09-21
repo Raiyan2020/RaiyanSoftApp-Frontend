@@ -1,5 +1,6 @@
 import { apiService } from '@/lib/api-service';
 import { AboutUsForm, PageSlug, SimplePageForm } from '../types/page.types';
+import { getPageApiSlug } from './pages-api';
 
 export function getAdminPageSaveUnavailableMessage() {
   return 'About Us editing is not fully supported yet because the backend only stores title and description for these pages.';
@@ -12,7 +13,7 @@ export async function updateAdminPage(slug: PageSlug, payload: SimplePageForm | 
   formData.append('description[ar]', payload.description || '');
   formData.append('description[en]', payload.description || '');
 
-  const response = await apiService.post<unknown>(`admin/pages/${slug}`, formData, {
+  const response = await apiService.post<unknown>(`admin/pages/${getPageApiSlug(slug)}`, formData, {
     skipGlobalToast: true,
     skipSuccessToast: true,
   });

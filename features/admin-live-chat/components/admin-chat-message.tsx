@@ -1,5 +1,6 @@
 import React from 'react';
 import { Message } from '../hooks/use-admin-live-chat';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface AdminChatMessageProps {
   msg: Message;
@@ -18,7 +19,7 @@ export default function AdminChatMessage({
     <div className={`flex flex-col ${isStaff ? 'items-end' : 'items-start'}`}>
       {showName ? (
         <span className="text-[10px] text-[var(--text-muted)] mb-1 px-1">
-          {isStaff ? msg.senderName || 'You' : customerName}
+          {isStaff ? msg.senderName || translateMessage('You') : customerName}
         </span>
       ) : null}
       <div

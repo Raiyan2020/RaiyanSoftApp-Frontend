@@ -1,4 +1,5 @@
 import React from 'react';
+import { Table, TableHeader, TableBody, TableRow, TableHead } from '@/components/ui/table';
 import { translateMessage } from '@/lib/i18n-utils';
 import { AdminUser } from '../types/admin-user.types';
 import UsersTableRow from './users-table-row';
@@ -19,19 +20,19 @@ export default function UsersTable({
   onDeleteUser,
 }: UsersTableProps) {
   return (
-    <div className="hidden md:block overflow-x-auto">
-      <table className="w-full text-left border-collapse">
-        <thead>
-          <tr className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider">
-            <th className="p-5 font-medium">{translateMessage('User')}</th>
-            <th className="p-5 font-medium">{translateMessage('Contact')}</th>
-            <th className="p-5 font-medium">{translateMessage('Role')}</th>
-            <th className="p-5 font-medium">{translateMessage('Status')}</th>
-            <th className="p-5 font-medium">{translateMessage('Registered')}</th>
-            <th className="p-5 font-medium text-right">{translateMessage('Actions')}</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-[var(--border)] text-sm">
+    <div className="hidden md:block">
+      <Table className="text-start border-collapse">
+        <TableHeader>
+          <TableRow className="border-b border-[var(--border)] text-xs text-[var(--text-muted)] uppercase tracking-wider hover:bg-transparent">
+            <TableHead className="p-5 font-medium text-start">{translateMessage('User')}</TableHead>
+            <TableHead className="p-5 font-medium text-start">{translateMessage('Contact')}</TableHead>
+            <TableHead className="p-5 font-medium text-start">{translateMessage('Role')}</TableHead>
+            <TableHead className="p-5 font-medium text-start">{translateMessage('Status')}</TableHead>
+            <TableHead className="p-5 font-medium text-start">{translateMessage('Registered')}</TableHead>
+            <TableHead className="p-5 font-medium text-end">{translateMessage('Actions')}</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="divide-y divide-[var(--border)] text-sm">
           {filteredUsers.map((user) => (
             <UsersTableRow
               key={user.id}
@@ -42,8 +43,8 @@ export default function UsersTable({
               onDeleteUser={onDeleteUser}
             />
           ))}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   );
 }

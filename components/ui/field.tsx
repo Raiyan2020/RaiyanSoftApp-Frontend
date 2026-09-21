@@ -71,7 +71,7 @@ export const FieldDescription = React.forwardRef<HTMLParagraphElement, FieldDesc
       className={`text-xs text-[var(--text-muted)] ms-1 mt-0.5 ${className}`}
       {...props}
     >
-      {children}
+      {translateChildren(children)}
     </p>
   )
 );

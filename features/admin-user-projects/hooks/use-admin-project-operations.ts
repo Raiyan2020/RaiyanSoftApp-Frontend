@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { authService } from '@/lib/auth-service';
 import { globalToast } from '@/lib/toast-context';
 import { globalConfirm } from '@/lib/confirm-dialog';
+import { translateMessage } from '@/lib/i18n-utils';
 import { useAdminEmployeesList } from '@/features/admin-employees';
 import {
   ProjectAttachment,
@@ -18,6 +19,8 @@ import {
   AdminStageAttachment,
   AdminStageProgress,
   createAdminReport,
+  updateAdminReport,
+  sendAdminReport,
   createAdminStage,
   createAdminStageAttachment,
   createAdminStageProgress,
@@ -367,7 +370,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const loadProject = useCallback(async () => {
     if (!isApiProject || !projectId) {
       setProject(null);
-      setError('This admin project page now requires a Laravel API project.');
+      setError(translateMessage('This admin project page now requires a Laravel API project.'));
       setLoading(false);
       return;
     }
@@ -378,7 +381,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     try {
       const [apiProject, apiStages, apiProgress, apiReports, apiAttachments] = await Promise.all([
         fetchAdminProject(projectId),
-        fetchAdminStages(),
+        fetchAdminStages({ project_id: projectId, per_page: 100 }),
         optionalList(() => fetchAdminStageProgress({ project_id: projectId, per_page: 100 })),
         optionalList(() => fetchAdminReports({ project_id: projectId })),
         optionalList(() => fetchAdminStageAttachments({ project_id: projectId, per_page: 100 })),
@@ -447,13 +450,16 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       }
     } catch (err: any) {
       console.error('Failed to load project operations:', err);
-      setError(err.message || 'Failed to load project.');
+      setError(err.message || translateMessage('Failed to load project.'));
     } finally {
       setLoading(false);
     }
   }, [isApiProject, projectId]);
 
   useEffect(() => {
+    // Genuine external synchronization: fetches the project from the API on
+    // mount/id change; loading/data/error are set from the async lifecycle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
     loadProject();
   }, [loadProject]);
 
@@ -476,11 +482,16 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     ? Math.round(stages.reduce((sum, stage) => sum + (stage.progress || 0), 0) / stages.length)
     : 0;
 
-  useEffect(() => {
+  // Reset the progress slider to the newly-selected stage's value, adjusted
+  // during render (comparing against the previous selected stage id)
+  // instead of in an effect.
+  const [prevSelectedStageId, setPrevSelectedStageId] = useState(selectedStage?.id);
+  if (selectedStage?.id !== prevSelectedStageId) {
+    setPrevSelectedStageId(selectedStage?.id);
     if (selectedStage) {
       setProgressValue(selectedStage.progress || 0);
     }
-  }, [selectedStage?.id]);
+  }
 
   const resetStageForm = () => {
     setStageForm(emptyStageForm);
@@ -576,10 +587,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const deleteStage = async (stageId: string) => {
     if (!project) return;
     const confirmed = await globalConfirm.confirm({
-      title: 'Delete stage?',
-      message: 'Delete this stage? Progress updates will remain in history.',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: translateMessage('Delete stage?'),
+      message: translateMessage('Delete this stage? Progress updates will remain in history.'),
+      confirmText: translateMessage('Delete'),
+      cancelText: translateMessage('Cancel'),
       destructive: true,
     });
     if (!confirmed) return;
@@ -592,8 +603,8 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       }
       globalToast.error('This project is not available from the Laravel API.');
     } catch (err: any) {
-      console.error('Failed to delete stage:', err);
-      setError(err.message || 'Failed to delete stage.');
+      console.error(translateMessage('Failed to delete stage.'), err);
+      setError(err.message || translateMessage('Failed to delete stage.'));
     } finally {
       setSaving(false);
     }
@@ -602,7 +613,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const saveProgressUpdate = async () => {
     if (!project || !selectedStage) return;
     if (!progressNote.trim()) {
-      setError('Add a progress note before saving the update.');
+      setError(translateMessage('Add a progress note before saving the update.'));
       return;
     }
 
@@ -614,10 +625,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       const nextValue = Math.max(0, Math.min(100, Number(progressValue) || 0));
       if (nextValue >= 100 && selectedStage.progress < 100) {
         const confirmed = await globalConfirm.confirm({
-          title: 'Mark stage complete?',
-          message: 'Mark this stage complete at 100% progress?',
-          confirmText: 'Mark complete',
-          cancelText: 'Cancel',
+          title: translateMessage('Mark stage complete?'),
+          message: translateMessage('Mark this stage complete at 100% progress?'),
+          confirmText: translateMessage('Mark complete'),
+          cancelText: translateMessage('Cancel'),
         });
         if (!confirmed) {
           setSaving(false);
@@ -639,8 +650,8 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       await loadProject();
       setProgressNote('');
     } catch (err: any) {
-      console.error('Failed to save progress update:', err);
-      setError(err.message || 'Failed to save progress update.');
+      console.error(translateMessage('Failed to save progress update.'), err);
+      setError(err.message || translateMessage('Failed to save progress update.'));
     } finally {
       setSaving(false);
     }
@@ -649,16 +660,16 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const saveAttachment = async () => {
     if (!project || !ownerId || !projectId) return;
     if (!attachmentForm.stageId || !attachmentForm.title.trim() || !attachmentForm.description.trim() || !attachmentForm.reason.trim()) {
-      setError('Attachment requires a stage, title, description, and reason.');
+      setError(translateMessage('Attachment requires a stage, title, description, and reason.'));
       return;
     }
     if (!attachmentFile) {
-      setError('Choose a document file before saving the attachment.');
+      setError(translateMessage('Choose a document file before saving the attachment.'));
       return;
     }
     const allowedExtensions = /\.(pdf|doc|docx|xls|xlsx|ppt|pptx|txt|csv|zip|rar)$/i;
     if (!allowedExtensions.test(attachmentFile.name)) {
-      setError('Only document files are allowed (PDF, Word, Excel, PowerPoint, ZIP, etc.). Photos and videos are not permitted.');
+      setError(translateMessage('Only document files are allowed (PDF, Word, Excel, PowerPoint, ZIP, etc.). Photos and videos are not permitted.'));
       return;
     }
 
@@ -684,8 +695,8 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       setAttachmentForm({ ...emptyAttachmentForm, stageId: attachmentForm.stageId });
       setAttachmentFile(null);
     } catch (err: any) {
-      console.error('Failed to save attachment:', err);
-      setError(err.message || 'Failed to save attachment.');
+      console.error(translateMessage('Failed to save attachment.'), err);
+      setError(err.message || translateMessage('Failed to save attachment.'));
     } finally {
       setSaving(false);
     }
@@ -696,10 +707,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     const attachment = attachments.find((item) => item.id === attachmentId);
     if (!attachment) return;
     const confirmed = await globalConfirm.confirm({
-      title: 'Delete attachment?',
-      message: 'Delete this attachment?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: translateMessage('Delete attachment?'),
+      message: translateMessage('Delete this attachment?'),
+      confirmText: translateMessage('Delete'),
+      cancelText: translateMessage('Cancel'),
       destructive: true,
     });
     if (!confirmed) return;
@@ -717,8 +728,8 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       await deleteAdminStageAttachment(attachmentId);
       await loadProject();
     } catch (err: any) {
-      console.error('Failed to delete attachment:', err);
-      setError(err.message || 'Failed to delete attachment.');
+      console.error(translateMessage('Failed to delete attachment.'), err);
+      setError(err.message || translateMessage('Failed to delete attachment.'));
     } finally {
       setSaving(false);
     }
@@ -727,7 +738,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const saveInternalNote = async () => {
     if (!project) return;
     if (!noteStageId || !noteText.trim()) {
-      setError('Choose a stage and write a note before saving.');
+      setError(translateMessage('Choose a stage and write a note before saving.'));
       return;
     }
 
@@ -739,8 +750,8 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       setError(message);
       globalToast.info(message);
     } catch (err: any) {
-      console.error('Failed to save internal note:', err);
-      setError(err.message || 'Failed to save internal note.');
+      console.error(translateMessage('Failed to save internal note.'), err);
+      setError(err.message || translateMessage('Failed to save internal note.'));
     } finally {
       setSaving(false);
     }
@@ -749,10 +760,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const deleteInternalNote = async (noteId: string) => {
     if (!project) return;
     const confirmed = await globalConfirm.confirm({
-      title: 'Delete note?',
-      message: 'Delete this internal note?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: translateMessage('Delete note?'),
+      message: translateMessage('Delete this internal note?'),
+      confirmText: translateMessage('Delete'),
+      cancelText: translateMessage('Cancel'),
       destructive: true,
     });
     if (!confirmed) return;
@@ -765,8 +776,8 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       setError(message);
       globalToast.info(message);
     } catch (err: any) {
-      console.error('Failed to delete internal note:', err);
-      setError(err.message || 'Failed to delete internal note.');
+      console.error(translateMessage('Failed to delete internal note.'), err);
+      setError(err.message || translateMessage('Failed to delete internal note.'));
     } finally {
       setSaving(false);
     }
@@ -809,8 +820,8 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
           content: content || prev.content,
         }));
       } catch (err: any) {
-        console.error('Failed to generate report draft:', err);
-        setError(err.message || 'Failed to generate report draft.');
+        console.error(translateMessage('Failed to generate report draft.'), err);
+        setError(err.message || translateMessage('Failed to generate report draft.'));
       } finally {
         setSaving(false);
       }
@@ -853,10 +864,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     }));
   };
 
-  const saveWeeklyReport = async (_markSent = false) => {
+  const saveWeeklyReport = async (markSent = false) => {
     if (!project) return;
     if (!reportForm.weekStart || !reportForm.weekEnd || !reportForm.content.trim()) {
-      setError('Choose a week range and write report content before saving.');
+      setError(translateMessage('Choose a week range and write report content before saving.'));
       return;
     }
 
@@ -870,17 +881,48 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
         globalToast.error(message);
         return;
       }
-      await createAdminReport({
+      const payload = {
         project_id: projectId || project.id,
         start_date: reportForm.weekStart,
         end_date: reportForm.weekEnd,
         report_text: reportForm.content.trim(),
-      });
+      };
+      const saved = editingReportId
+        ? await updateAdminReport(editingReportId, payload)
+        : await createAdminReport(payload);
+
+      if (markSent) {
+        const reportId = saved?.id ?? editingReportId;
+        if (reportId) await sendAdminReport(reportId);
+      }
+
       await loadProject();
       resetReportForm();
     } catch (err: any) {
-      console.error('Failed to save weekly report:', err);
-      setError(err.message || 'Failed to save weekly report.');
+      console.error(translateMessage('Failed to save weekly report.'), err);
+      setError(err.message || translateMessage('Failed to save weekly report.'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const sendWeeklyReport = async (reportId: string) => {
+    if (!project) return;
+    setSaving(true);
+    setError(null);
+
+    try {
+      if (!isApiProject) {
+        const message = 'This project is not available from the Laravel API.';
+        setError(message);
+        globalToast.error(message);
+        return;
+      }
+      await sendAdminReport(reportId);
+      await loadProject();
+    } catch (err: any) {
+      console.error(translateMessage('Failed to send weekly report.'), err);
+      setError(err.message || translateMessage('Failed to send weekly report.'));
     } finally {
       setSaving(false);
     }
@@ -889,10 +931,10 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
   const deleteWeeklyReport = async (reportId: string) => {
     if (!project) return;
     const confirmed = await globalConfirm.confirm({
-      title: 'Delete report?',
-      message: 'Delete this weekly report?',
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      title: translateMessage('Delete report?'),
+      message: translateMessage('Delete this weekly report?'),
+      confirmText: translateMessage('Delete'),
+      cancelText: translateMessage('Cancel'),
       destructive: true,
     });
     if (!confirmed) return;
@@ -911,8 +953,8 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       await loadProject();
       if (editingReportId === reportId) resetReportForm();
     } catch (err: any) {
-      console.error('Failed to delete weekly report:', err);
-      setError(err.message || 'Failed to delete weekly report.');
+      console.error(translateMessage('Failed to delete weekly report.'), err);
+      setError(err.message || translateMessage('Failed to delete weekly report.'));
     } finally {
       setSaving(false);
     }
@@ -987,7 +1029,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
 
   const saveFinalReport = async () => {
     if (!project || !finalReportContent.trim()) {
-      setError('Generate or write a final report before saving.');
+      setError(translateMessage('Generate or write a final report before saving.'));
       return;
     }
 
@@ -1016,8 +1058,8 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
       });
       await loadProject();
     } catch (err: any) {
-      console.error('Failed to save final report:', err);
-      setError(err.message || 'Failed to save final report.');
+      console.error(translateMessage('Failed to save final report.'), err);
+      setError(err.message || translateMessage('Failed to save final report.'));
     } finally {
       setSaving(false);
     }
@@ -1091,6 +1133,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
     deleteInternalNote,
     generateWeeklyDraft,
     saveWeeklyReport,
+    sendWeeklyReport,
     deleteWeeklyReport,
     startEditReport,
     resetReportForm,

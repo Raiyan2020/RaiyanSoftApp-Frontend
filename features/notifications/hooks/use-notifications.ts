@@ -4,6 +4,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authService } from '@/lib/auth-service';
 import { globalConfirm } from '@/lib/confirm-dialog';
 import { useTranslation } from '@/lib/i18nContext';
+import { translateMessage } from '@/lib/i18n-utils';
 import {
   deleteAllNotifications,
   deleteNotification,
@@ -54,8 +55,8 @@ export function useNotifications() {
   });
 
   const notifications = useMemo(
-    () => (notificationsQuery.data?.data ?? []).map(mapApiNotification),
-    [notificationsQuery.data?.data],
+    () => (notificationsQuery.data?.data ?? []).map((notification) => mapApiNotification(notification, language)),
+    [notificationsQuery.data?.data, language],
   );
 
   const invalidateNotifications = async () => {
@@ -117,10 +118,10 @@ export function useNotifications() {
 
   const handleDeleteAll = async () => {
     const confirmed = await globalConfirm.confirm({
-      title: 'Delete all notifications?',
+      title: t('notif.confirm_delete_all'),
       message: t('notif.confirm_delete_all'),
-      confirmText: 'Delete',
-      cancelText: 'Cancel',
+      confirmText: translateMessage('Delete', language),
+      cancelText: translateMessage('Cancel', language),
       destructive: true,
     });
     if (!confirmed || notifications.length === 0) return;

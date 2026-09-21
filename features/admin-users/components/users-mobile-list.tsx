@@ -39,7 +39,7 @@ export default function UsersMobileList({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500'}`} />
-                <span className={`text-xs font-medium ${isActive ? 'text-emerald-400' : 'text-red-400'}`}>{user.status}</span>
+                <span className={`text-xs font-medium ${isActive ? 'text-emerald-400' : 'text-red-400'}`}>{translateMessage(user.status)}</span>
               </div>
             </div>
 
@@ -57,7 +57,7 @@ export default function UsersMobileList({
               ) : null}
               <div className="flex items-center justify-between pt-1 border-t border-[var(--border)]">
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${user.role === 'Admin' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
-                  {user.role}
+                  {translateMessage(user.role)}
                 </span>
                 <span className="text-[10px] text-[var(--text-muted)]">{formatDate(user.registeredAt)}</span>
               </div>

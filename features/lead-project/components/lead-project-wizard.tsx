@@ -53,6 +53,7 @@ export default function LeadProjectWizard({
     isLoading,
     nextStep,
     prevStep,
+    goToStepFromReview,
     handleSubmit,
     selectSingleAnswerAndContinue,
     setTextAnswer,
@@ -132,6 +133,10 @@ export default function LeadProjectWizard({
           answersByQuestionId={answersByQuestionId}
           getAnswerLabel={getAnswerLabel}
           t={t}
+          dir={dir}
+          nameStep={nameStep}
+          colorStep={colorStep}
+          onEditStep={goToStepFromReview}
         />
       );
     }

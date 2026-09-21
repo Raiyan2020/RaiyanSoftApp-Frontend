@@ -8,6 +8,7 @@ import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
 import { AdminLeadDetail, AdminLeadListItem } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
+import { LEAD_APPROVAL_WHATSAPP_MESSAGE } from '../utils/whatsapp-template';
 import LeadProjectSummary from './lead-project-summary';
 
 interface LeadDetailDrawerProps {
@@ -41,16 +42,14 @@ export default function LeadDetailDrawer({
 }: LeadDetailDrawerProps) {
   const { t } = useTranslation();
   const phone = lead?.user.phone || listItem.user.full_phone;
-  const displayName = lead?.user.name || listItem.user.full_name;
+  const displayName = lead?.user.name || lead?.user.full_name || listItem.user.full_name;
   const projectName = lead?.project_name || listItem.project_name;
   const statusLabel = formatLeadStatusLabel(lead?.status ?? listItem.status, language);
   const statusTone = getLeadStatusTone(lead?.status ?? listItem.status);
   const canChangeStatus = lead ? isLeadPending(lead.status) : isLeadPending(listItem.status);
 
   const waDigits = toWhatsAppDigits(phone);
-  const waMessage =
-    'السلام عليكم ورحمة الله وبركاته\nحضرتك قدمت عندنا طلب تطبيق ، طلبك مقبول ان شاء الله ممكن تفاصيل اكثر عن المشروع';
-  const encodedWaMessage = encodeURIComponent(waMessage);
+  const encodedWaMessage = encodeURIComponent(LEAD_APPROVAL_WHATSAPP_MESSAGE);
   const waUrl = waDigits
     ? `https://web.whatsapp.com/send/?phone=${waDigits}&text=${encodedWaMessage}&type=phone_number&app_absent=0`
     : null;
@@ -60,7 +59,7 @@ export default function LeadDetailDrawer({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
-        initial={{ scale: 0.95, opacity: 0 }}
+        initial={false}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.95, opacity: 0 }}
         onClick={(event) => event.stopPropagation()}

@@ -1,79 +1,52 @@
 import { useState, useEffect } from 'react';
-import { useReducedMotion, type Variants } from 'framer-motion';
+import { persistTheme, readStoredTheme } from '@/lib/theme';
 
 export function useLanding() {
   const [dark, setDark] = useState(false);
-  const [scrollProgress, setScrollProgress] = useState(0);
-  const shouldReduceMotion = useReducedMotion();
 
-  // Persist theme preference, defaulting to light mode
+  // Persist theme preference, defaulting to light mode. Genuine mount-time
+  // sync: the persisted theme lives in localStorage, which isn't available
+  // on the server, so it can only be read once the component mounts.
   useEffect(() => {
-    const saved = localStorage.getItem('theme');
-    if (saved === 'dark') {
-      setDark(true);
-      document.documentElement.classList.add('dark');
-    } else {
-      setDark(false);
-      document.documentElement.classList.remove('dark');
-    }
+    const isDark = readStoredTheme() === 'dark';
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial state must come from client-only storage; there is no render-time value to compute this from.
+    setDark(isDark);
+    document.documentElement.classList.toggle('dark', isDark);
   }, []);
 
   useEffect(() => {
+    let frameId: number | null = null;
+
     const updateProgress = () => {
       const scrollable = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0);
+      const progress = scrollable > 0 ? Math.min(100, Math.max(0, (window.scrollY / scrollable) * 100)) : 0;
+      document.documentElement.style.setProperty('--scroll-progress', `${progress}%`);
+      frameId = null;
     };
 
-    updateProgress();
-    window.addEventListener('scroll', updateProgress, { passive: true });
-    window.addEventListener('resize', updateProgress);
+    const scheduleProgressUpdate = () => {
+      if (frameId === null) frameId = window.requestAnimationFrame(updateProgress);
+    };
+
+    scheduleProgressUpdate();
+    window.addEventListener('scroll', scheduleProgressUpdate, { passive: true });
+    window.addEventListener('resize', scheduleProgressUpdate);
     return () => {
-      window.removeEventListener('scroll', updateProgress);
-      window.removeEventListener('resize', updateProgress);
+      window.removeEventListener('scroll', scheduleProgressUpdate);
+      window.removeEventListener('resize', scheduleProgressUpdate);
+      if (frameId !== null) window.cancelAnimationFrame(frameId);
     };
   }, []);
 
   const toggleDark = () => {
     const next = !dark;
     setDark(next);
-    if (next) {
-      document.documentElement.classList.add('dark');
-      localStorage.setItem('theme', 'dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      localStorage.setItem('theme', 'light');
-    }
+    document.documentElement.classList.toggle('dark', next);
+    persistTheme(next ? 'dark' : 'light');
   };
-
-  const pageVariants: Variants | undefined = shouldReduceMotion
-    ? undefined
-    : {
-        hidden: {},
-        visible: {
-          transition: {
-            staggerChildren: 0.08,
-            delayChildren: 0.05,
-          },
-        },
-      };
-
-  const sectionVariants: Variants | undefined = shouldReduceMotion
-    ? undefined
-    : {
-        hidden: { opacity: 0, y: 18 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.45, ease: [0.22, 1, 0.36, 1] },
-        },
-      };
 
   return {
     dark,
-    scrollProgress,
-    shouldReduceMotion,
     toggleDark,
-    pageVariants,
-    sectionVariants,
   };
 }

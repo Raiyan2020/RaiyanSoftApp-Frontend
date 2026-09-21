@@ -6,14 +6,18 @@ import { fetchTermsConditionsServer } from '@/features/pages/services/pages-api'
 import type { TermsConditionsPage } from '@/features/pages/types/page.types';
 import { getPageMetadata, pageSeo } from '@/lib/page-seo';
 import { createLegalPageJsonLd } from '@/lib/site';
+import { translateMessage } from '@/lib/i18n-utils';
+import { getServerLanguage } from '@/lib/language.server';
 
 export const metadata: Metadata = getPageMetadata('terms');
 
 export default async function TermsPage() {
+  const language = await getServerLanguage();
+  const tt = (message: string) => translateMessage(message, language);
   let page: TermsConditionsPage | null = null;
 
   try {
-    page = await fetchTermsConditionsServer();
+    page = await fetchTermsConditionsServer(language);
   } catch {
     page = null;
   }
@@ -21,15 +25,15 @@ export default async function TermsPage() {
   return (
     <PublicSimplePage
       seoKey="terms"
-      eyebrow="قانوني"
-      title={page?.title || 'الشروط والأحكام'}
-      description="الشروط والأحكام لاستخدام خدماتنا."
+      eyebrow={tt('Legal')}
+      title={page?.title || tt('Terms & Conditions')}
+      description={tt('Terms and conditions for using our services.')}
     >
       <JsonLd id="terms-page-schema" data={createLegalPageJsonLd(pageSeo.terms)} />
       <article className="mx-auto max-w-3xl">
         <PageHtmlContent
           html={page?.description}
-          emptyMessage="Terms and conditions content is not available yet."
+          emptyMessage={tt('Terms and conditions content is not available yet.')}
         />
       </article>
     </PublicSimplePage>

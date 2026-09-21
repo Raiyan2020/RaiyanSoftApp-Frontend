@@ -2,8 +2,8 @@
 import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import { useLandingCapabilities } from '@/features/landing-page';
 import SafeImage from '@/components/ui/safe-image';
+import type { LandingPageContent } from '@/features/landing-page';
 
 const workGradients = [
   'from-sky-500 to-cyan-500',
@@ -14,25 +14,28 @@ const workGradients = [
   'from-rose-500 to-pink-500',
 ];
 
-export default function Works() {
+type WorksProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function Works({ homeData }: WorksProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
   const { content, dir, textAlign } = useLandingContent();
   const { works } = content;
-  const { data: apiData } = useLandingCapabilities();
-
-  const badge = apiData?.header?.caption || works.badge;
-  const title = apiData?.header?.title || `${works.title} ${works.titleHighlight}`;
-  const description = apiData?.header?.description || works.description;
-  const hasApiItems = (apiData?.capabilities?.length ?? 0) > 0;
+  const apiCapabilities = homeData?.capabilities;
+  const badge = apiCapabilities?.header?.caption || works.badge;
+  const title = apiCapabilities?.header?.title || `${works.title} ${works.titleHighlight}`;
+  const description = apiCapabilities?.header?.description || works.description;
+  const hasApiItems = (apiCapabilities?.capabilities?.length ?? 0) > 0;
 
   return (
     <section id="works" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
       <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
-      <div className="pointer-events-none absolute -right-32 top-32 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
+      <div className="pointer-events-none absolute -end-32 top-32 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-10 flex flex-col gap-4 text-center lg:mb-12 lg:flex-row lg:items-end lg:justify-between ${textAlign}`}>
+        <div className={`reveal mb-10 text-start lg:mb-12 ${textAlign}`}>
           <div className="space-y-4">
             <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
               {badge}
@@ -41,14 +44,14 @@ export default function Works() {
               {title}
             </h2>
           </div>
-          <p className="mx-auto max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg lg:mx-0">
+          <p className="mt-5 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg">
             {description}
           </p>
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-2 lg:gap-6">
           {hasApiItems
-            ? apiData!.capabilities.map((cap, i) => (
+            ? apiCapabilities!.capabilities.map((cap, i) => (
                 <article
                   key={cap.id}
                   id={`work-${cap.id}`}
@@ -57,7 +60,7 @@ export default function Works() {
                 >
                   <div className={`relative flex h-36 items-end overflow-hidden bg-gradient-to-br ${workGradients[i % workGradients.length]} p-6 sm:h-40`}>
                     {cap.image ? (
-                      <SafeImage src={cap.image} alt={cap.title} className="absolute inset-0 h-full w-full opacity-50" />
+                      <SafeImage src={cap.image} alt={cap.title} sizes="(max-width: 640px) 100vw, 50vw" className="absolute inset-0 h-full w-full opacity-50" />
                     ) : null}
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_45%)]" />
                     <span className="relative rounded-full bg-slate-950/75 px-3 py-1.5 text-xs font-bold text-white backdrop-blur ring-1 ring-white/10">

@@ -51,6 +51,189 @@ interface AdminLayoutProps {
   children: React.ReactNode;
 }
 
+interface SidebarItem {
+  id: string;
+  label: string;
+  path: string;
+  icon: React.ComponentType<{ size?: number; className?: string }>;
+  badge?: number;
+}
+
+interface SidebarSection {
+  id: string;
+  label: string;
+  items: SidebarItem[];
+}
+
+interface SidebarContentProps {
+  t: ReturnType<typeof useTranslation>['t'];
+  pathname: string;
+  isSidebarCollapsed: boolean;
+  sidebarSections: readonly SidebarSection[];
+  filteredNavItems: Array<{ id: string }>;
+  filteredWebsiteNavItems: Array<{ id: string }>;
+  sidebarSearch: string;
+  setSidebarSearch: React.Dispatch<React.SetStateAction<string>>;
+  setIsCommandOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  navigateToAdminPath: (path: string) => void;
+  collapsedSections: Record<string, boolean>;
+  setCollapsedSections: React.Dispatch<React.SetStateAction<Record<string, boolean>>>;
+}
+
+function SidebarContent({
+  t,
+  pathname,
+  isSidebarCollapsed,
+  sidebarSections,
+  filteredNavItems,
+  filteredWebsiteNavItems,
+  sidebarSearch,
+  setSidebarSearch,
+  setIsCommandOpen,
+  navigateToAdminPath,
+  collapsedSections,
+  setCollapsedSections,
+}: SidebarContentProps) {
+  const toggleSection = (sectionId: string) => {
+    setCollapsedSections((current) => ({
+      ...current,
+      [sectionId]: !current[sectionId],
+    }));
+  };
+
+  const renderItem = (item: SidebarItem) => {
+    const isActive = item.path === '/admin' ? pathname === '/admin' : pathname.includes(item.path);
+    const badge = item.badge ?? 0;
+
+    return (
+      <button
+        key={item.id}
+        type="button"
+        onClick={() => navigateToAdminPath(item.path)}
+        title={isSidebarCollapsed ? item.label : undefined}
+        className={`group relative w-full overflow-hidden rounded-xl border px-3 py-2 text-start transition-all duration-200 ${
+          isSidebarCollapsed ? 'flex justify-center px-2.5' : 'flex items-center gap-2.5'
+        } ${
+          isActive
+            ? 'border-primary/25 bg-primary/10 text-primary shadow-[0_6px_18px_rgba(29,183,240,0.1)]'
+            : 'border-transparent bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
+        }`}
+      >
+        {isActive ? <span className="absolute inset-y-2 start-1 w-0.5 rounded-full bg-primary" /> : null}
+        <div className="relative grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[var(--surface-2)] text-[var(--text-muted)] transition-colors group-hover:bg-[var(--surface)] group-hover:text-[var(--text)]">
+          <item.icon size={16} />
+          {badge > 0 ? (
+            <span className="absolute -top-2 -end-2 bg-red-500 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm z-10">
+              {badge > 99 ? '99+' : badge}
+            </span>
+          ) : null}
+        </div>
+        {!isSidebarCollapsed ? (
+          <span className="min-w-0 flex-1 truncate text-[13px] font-semibold tracking-tight">{item.label}</span>
+        ) : null}
+      </button>
+    );
+  };
+
+  return (
+    <div className="flex flex-col h-full">
+      <div className={`p-3 flex items-center border-b border-[var(--border)] ${isSidebarCollapsed ? 'justify-center' : 'gap-2.5'}`}>
+        <div className="grid h-8 w-8 place-items-center rounded-xl bg-primary/10 ring-1 ring-primary/15 relative overflow-hidden">
+          <SafeImage
+            src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
+            alt="Raiyansoft"
+            className="h-5 w-5 object-contain"
+          />
+        </div>
+        <div className={isSidebarCollapsed ? 'hidden' : ''}>
+          {/* i18n-ignore-next-line: brand name, never translated */}
+          <h1 className="text-[var(--text)] font-extrabold text-sm leading-none tracking-tight">Raiyansoft</h1>
+          <span className="mt-0.5 inline-flex rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-primary">
+            {t('admin.panel')}
+          </span>
+        </div>
+      </div>
+
+      {!isSidebarCollapsed ? (
+        <div className="border-b border-[var(--border)] p-2.5 space-y-2">
+          <button
+            type="button"
+            onClick={() => setIsCommandOpen(true)}
+            className="flex w-full items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-start text-[13px] text-[var(--text-muted)] transition-all hover:border-primary/30 hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
+          >
+            <Search size={16} className="shrink-0" />
+            <span className="flex-1 font-medium">{t('admin.search.links')}</span>
+            <kbd className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
+              {t('admin.search.shortcut')}
+            </kbd>
+          </button>
+          <div className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 shadow-inner">
+            <Search size={15} className="text-[var(--text-muted)] shrink-0" />
+            <input
+              value={sidebarSearch}
+              onChange={(event) => setSidebarSearch(event.target.value)}
+              placeholder={t('admin.search.sidebar')}
+              className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none"
+            />
+          </div>
+        </div>
+      ) : null}
+
+      <div className="flex-1 overflow-y-auto no-scrollbar px-2.5 py-2.5">
+        <div className="space-y-2">
+          {sidebarSections.map((section) => {
+            if (section.items.length === 0) return null;
+            const isCollapsed = collapsedSections[section.id];
+
+            return (
+              <div key={section.id} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-1">
+                {!isSidebarCollapsed ? (
+                  <button
+                    type="button"
+                    onClick={() => toggleSection(section.id)}
+                    className="flex w-full items-center justify-between rounded-xl px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+                    aria-expanded={!isCollapsed}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="h-1 w-1 rounded-full bg-primary/70" />
+                      {section.label}
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[9px] font-semibold normal-case tracking-normal text-[var(--text-muted)]">
+                        {section.items.length}
+                      </span>
+                      <ChevronDown
+                        size={13}
+                        className={`transition-transform duration-200 ${isCollapsed ? '-rotate-90' : 'rotate-0'}`}
+                      />
+                    </span>
+                  </button>
+                ) : null}
+
+                {!isCollapsed || isSidebarCollapsed ? (
+                  <div className="space-y-1 p-0.5 pt-1">
+                    {section.items.map(renderItem)}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
+
+          {!isSidebarCollapsed && sidebarSearch && filteredNavItems.length === 0 && filteredWebsiteNavItems.length === 0 ? (
+            <div className="px-4 py-8 text-center text-xs font-medium text-[var(--text-muted)]">
+              {t('admin.search.no_results')}
+            </div>
+          ) : null}
+        </div>
+      </div>
+
+      <div className={`p-2 border-t border-[var(--border)] text-center ${isSidebarCollapsed ? 'hidden' : ''}`}>
+        <p className="text-[10px] text-[var(--text-muted)]">{t('admin.version')}</p>
+      </div>
+    </div>
+  );
+}
+
 export default function AdminLayout({ children }: AdminLayoutProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -156,6 +339,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
 
   const navItems = [
+    { id: 'dashboard', label: t('admin.nav.dashboard'), icon: Home, path: '/admin/dashboard', badge: 0, permission: '*' },
     { id: 'leads', label: t('admin.nav.leads'), icon: Inbox, path: '/admin/leads', badge: 0, permission: 'leads.view' },
     { id: 'project-questions', label: t('admin.nav.project_questions'), icon: ListChecks, path: '/admin/project-questions', badge: 0, permission: 'lead_questions.manage' },
     ...(FEATURES.portfolioProjects ? [{ id: 'projects', label: t('admin.nav.portfolio'), icon: FolderKanban, path: '/admin/projects', badge: 0, permission: 'portfolio.manage' }] : []),
@@ -234,7 +418,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     {
       id: 'operations',
       label: dir === 'rtl' ? 'العمليات' : 'Operations',
-      items: filteredNavItems.filter((item) => ['leads', 'appointments', 'marketing', 'live-chat'].includes(item.id)),
+      items: filteredNavItems.filter((item) => ['dashboard', 'leads', 'appointments', 'marketing', 'live-chat'].includes(item.id)),
     },
     {
       id: 'content',
@@ -271,149 +455,23 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     setCommandQuery('');
   };
 
-  function SidebarContent() {
-    const toggleSection = (sectionId: string) => {
-      setCollapsedSections((current) => ({
-        ...current,
-        [sectionId]: !current[sectionId],
-      }));
-    };
-
-    const renderItem = (item: (typeof navItems)[number] | (typeof websiteNavItems)[number]) => {
-      const isActive = pathname.includes(item.path);
-      const badge = 'badge' in item ? item.badge : 0;
-      return (
-        <button
-          key={item.id}
-          type="button"
-          onClick={() => navigateToAdminPath(item.path)}
-          title={isSidebarCollapsed ? item.label : undefined}
-          className={`group relative w-full overflow-hidden rounded-xl border px-3 py-2 text-start transition-all duration-200 ${
-            isSidebarCollapsed ? 'flex justify-center px-2.5' : 'flex items-center gap-2.5'
-          } ${
-            isActive
-              ? 'border-primary/25 bg-primary/10 text-primary shadow-[0_6px_18px_rgba(29,183,240,0.1)]'
-              : 'border-transparent bg-[var(--surface)] text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
-          }`}
-        >
-          {isActive ? <span className="absolute inset-y-2 left-1 w-0.5 rounded-full bg-primary" /> : null}
-          <div className="relative grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-[var(--surface-2)] text-[var(--text-muted)] transition-colors group-hover:bg-[var(--surface)] group-hover:text-[var(--text)]">
-            <item.icon size={16} />
-            {badge > 0 ? (
-              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm z-10">
-                {badge > 99 ? '99+' : badge}
-              </span>
-            ) : null}
-          </div>
-          {!isSidebarCollapsed ? (
-            <span className="min-w-0 flex-1 truncate text-[13px] font-semibold tracking-tight">{item.label}</span>
-          ) : null}
-        </button>
-      );
-    };
-
-    return (
-      <div className="flex flex-col h-full">
-        <div className={`p-3 flex items-center border-b border-[var(--border)] ${isSidebarCollapsed ? 'justify-center' : 'gap-2.5'}`}>
-          <div className="grid h-8 w-8 place-items-center rounded-xl bg-primary/10 ring-1 ring-primary/15 relative overflow-hidden">
-            <SafeImage
-              src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
-              alt="Raiyansoft"
-              className="h-5 w-5 object-contain"
-            />
-          </div>
-          <div className={isSidebarCollapsed ? 'hidden' : ''}>
-            <h1 className="text-[var(--text)] font-extrabold text-sm leading-none tracking-tight">Raiyansoft</h1>
-            <span className="mt-0.5 inline-flex rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-primary">
-              {t('admin.panel')}
-            </span>
-          </div>
-        </div>
-
-        {!isSidebarCollapsed ? (
-          <div className="border-b border-[var(--border)] p-2.5 space-y-2">
-            <button
-              type="button"
-              onClick={() => setIsCommandOpen(true)}
-              className="flex w-full items-center gap-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-start text-[13px] text-[var(--text-muted)] transition-all hover:border-primary/30 hover:bg-[var(--surface-2)] hover:text-[var(--text)]"
-            >
-              <Search size={16} className="shrink-0" />
-              <span className="flex-1 font-medium">{t('admin.search.links')}</span>
-              <kbd className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-[10px] font-bold text-[var(--text-muted)]">
-                {t('admin.search.shortcut')}
-              </kbd>
-            </button>
-            <div className="flex items-center gap-2 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 shadow-inner">
-              <Search size={15} className="text-[var(--text-muted)] shrink-0" />
-              <input
-                value={sidebarSearch}
-                onChange={(event) => setSidebarSearch(event.target.value)}
-                placeholder={t('admin.search.sidebar')}
-                className="min-w-0 flex-1 bg-transparent text-[13px] text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none"
-              />
-            </div>
-          </div>
-        ) : null}
-
-        <div className="flex-1 overflow-y-auto no-scrollbar px-2.5 py-2.5">
-          <div className="space-y-2">
-            {sidebarSections.map((section) => {
-              if (section.items.length === 0) return null;
-              const isCollapsed = collapsedSections[section.id];
-
-              return (
-                <div key={section.id} className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-1">
-                  {!isSidebarCollapsed ? (
-                    <button
-                      type="button"
-                      onClick={() => toggleSection(section.id)}
-                      className="flex w-full items-center justify-between rounded-xl px-2 py-1 text-[9px] font-bold uppercase tracking-[0.12em] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
-                      aria-expanded={!isCollapsed}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span className="h-1 w-1 rounded-full bg-primary/70" />
-                        {section.label}
-                      </span>
-                      <span className="flex items-center gap-2">
-                        <span className="rounded-full bg-[var(--surface)] px-1.5 py-0.5 text-[9px] font-semibold normal-case tracking-normal text-[var(--text-muted)]">
-                          {section.items.length}
-                        </span>
-                        <ChevronDown
-                          size={13}
-                          className={`transition-transform duration-200 ${isCollapsed ? '-rotate-90' : 'rotate-0'}`}
-                        />
-                      </span>
-                    </button>
-                  ) : null}
-
-                  {!isCollapsed || isSidebarCollapsed ? (
-                    <div className="space-y-1 p-0.5 pt-1">
-                      {section.items.map(renderItem)}
-                    </div>
-                  ) : null}
-                </div>
-              );
-            })}
-
-          {!isSidebarCollapsed && sidebarSearch && filteredNavItems.length === 0 && filteredWebsiteNavItems.length === 0 ? (
-            <div className="px-4 py-8 text-center text-xs font-medium text-[var(--text-muted)]">
-              {t('admin.search.no_results')}
-            </div>
-          ) : null}
-          </div>
-        </div>
-
-        <div className={`p-2 border-t border-[var(--border)] text-center ${isSidebarCollapsed ? 'hidden' : ''}`}>
-          <p className="text-[10px] text-[var(--text-muted)]">{t('admin.version')}</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="h-screen w-full bg-[var(--bg)] text-[var(--text)] flex overflow-hidden font-sans" dir={dir}>
       <aside className={`hidden md:block ${isSidebarCollapsed ? 'w-16' : 'w-60'} bg-[var(--surface)] border-r border-[var(--border)] shadow-2xl z-[60] shrink-0 transition-all duration-300`}>
-        <SidebarContent />
+        <SidebarContent
+          t={t}
+          pathname={pathname}
+          isSidebarCollapsed={isSidebarCollapsed}
+          sidebarSections={sidebarSections}
+          filteredNavItems={filteredNavItems}
+          filteredWebsiteNavItems={filteredWebsiteNavItems}
+          sidebarSearch={sidebarSearch}
+          setSidebarSearch={setSidebarSearch}
+          setIsCommandOpen={setIsCommandOpen}
+          navigateToAdminPath={navigateToAdminPath}
+          collapsedSections={collapsedSections}
+          setCollapsedSections={setCollapsedSections}
+        />
       </aside>
 
       <div className="flex-1 flex flex-col relative w-full h-full overflow-hidden min-h-0">
@@ -480,12 +538,12 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <button
               type="button"
               onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-              className="flex items-center gap-3 p-1.5 pr-3 rounded-full hover:bg-[var(--surface-2)] border border-transparent hover:border-[var(--border)] transition-all group"
+              className="flex items-center gap-3 p-1.5 pe-3 rounded-full hover:bg-[var(--surface-2)] border border-transparent hover:border-[var(--border)] transition-all group"
             >
               <div className="w-8 h-8 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center overflow-hidden">
                 <Avatar name={currentUser?.displayName || t('admin.mobile_title')} size="sm" className="w-full h-full text-xs" />
               </div>
-              <div className="hidden sm:block text-left">
+              <div className="hidden sm:block text-start">
                 <p className="text-xs font-bold text-[var(--text)] leading-none">{currentUser?.displayName || t('admin.account.default_user')}</p>
                 <p className="text-[10px] text-[var(--text-muted)] leading-none mt-1 group-hover:text-primary transition-colors">
                   {t('admin.account.view')}
@@ -500,11 +558,11 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
             <AnimatePresence>
               {isUserMenuOpen ? (
                 <motion.div
-                  initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                  initial={false}
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 10, scale: 0.95 }}
                   transition={{ duration: 0.1 }}
-                  className="absolute right-0 top-full mt-2 w-56 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-2xl py-2 z-50 overflow-hidden"
+                  className="absolute end-0 top-full mt-2 w-56 bg-[var(--surface)] border border-[var(--border)] rounded-xl shadow-2xl py-2 z-50 overflow-hidden"
                 >
                   <div className="px-4 py-3 border-b border-[var(--border)] mb-1">
                     <p className="text-sm font-bold text-[var(--text)] truncate">{currentUser?.displayName}</p>
@@ -517,7 +575,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                       setIsUserMenuOpen(false);
                       router.push('/admin/account');
                     }}
-                    className="w-full text-left px-4 py-2.5 text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] flex items-center gap-2 transition-colors"
+                    className="w-full text-start px-4 py-2.5 text-sm text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface-2)] flex items-center gap-2 transition-colors"
                   >
                     <User size={16} />
                     <span>{t('admin.account.edit')}</span>
@@ -528,7 +586,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2 transition-colors"
+                    className="w-full text-start px-4 py-2.5 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 flex items-center gap-2 transition-colors"
                   >
                     <LogOut size={16} />
                     <span>{t('admin.account.signout')}</span>
@@ -544,24 +602,37 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           {isMobileMenuOpen ? (
             <>
               <motion.div
-                initial={{ opacity: 0 }}
+                initial={false}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
               />
               <motion.div
-                initial={{ x: '-100%' }}
+                initial={{ x: dir === 'rtl' ? '100%' : '-100%' }}
                 animate={{ x: 0 }}
-                exit={{ x: '-100%' }}
+                exit={{ x: dir === 'rtl' ? '100%' : '-100%' }}
                 transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                className="fixed inset-y-0 left-0 w-60 bg-[var(--surface)] border-r border-[var(--border)] z-50 md:hidden shadow-2xl"
+                className={`fixed inset-y-0 start-0 w-60 bg-[var(--surface)] z-50 md:hidden shadow-2xl ${dir === 'rtl' ? 'border-s' : 'border-e'} border-[var(--border)]`}
               >
-                <SidebarContent />
+                <SidebarContent
+                  t={t}
+                  pathname={pathname}
+                  isSidebarCollapsed={isSidebarCollapsed}
+                  sidebarSections={sidebarSections}
+                  filteredNavItems={filteredNavItems}
+                  filteredWebsiteNavItems={filteredWebsiteNavItems}
+                  sidebarSearch={sidebarSearch}
+                  setSidebarSearch={setSidebarSearch}
+                  setIsCommandOpen={setIsCommandOpen}
+                  navigateToAdminPath={navigateToAdminPath}
+                  collapsedSections={collapsedSections}
+                  setCollapsedSections={setCollapsedSections}
+                />
                 <button
                   type="button"
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="absolute top-4 right-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)]"
+                  className="absolute top-4 end-4 p-2 text-[var(--text-muted)] hover:text-[var(--text)]"
                 >
                   <X size={20} />
                 </button>
@@ -573,14 +644,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         <AnimatePresence>
           {isCommandOpen ? (
             <motion.div
-              initial={{ opacity: 0 }}
+              initial={false}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               className="fixed inset-0 z-[80] flex items-start justify-center bg-black/70 px-4 pt-24 backdrop-blur-sm"
               onClick={() => setIsCommandOpen(false)}
             >
               <motion.div
-                initial={{ opacity: 0, y: -12, scale: 0.98 }}
+                initial={false}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -12, scale: 0.98 }}
                 onClick={(event) => event.stopPropagation()}
@@ -636,7 +707,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
         <main className="flex-1 min-h-0 overflow-y-auto bg-[var(--bg)] p-4 md:p-8 relative">
           <div className="absolute inset-0 opacity-20 pointer-events-none">
-            <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-primary/5 to-transparent" />
+            <div className="absolute top-0 start-0 w-full h-[500px] bg-gradient-to-b from-primary/5 to-transparent" />
           </div>
 
           <div className="max-w-6xl mx-auto relative z-10 h-full pb-20">{children}</div>

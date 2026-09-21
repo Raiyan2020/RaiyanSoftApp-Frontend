@@ -1,4 +1,5 @@
 import React from 'react';
+import { translateMessage } from '@/lib/i18n-utils';
 
 interface AvatarProps {
   name?: string;
@@ -26,7 +27,7 @@ export default function Avatar({ name, size = 'md', className = '' }: AvatarProp
   return (
     <div
       className={`flex items-center justify-center bg-primary text-white font-bold rounded-full select-none shadow-[0_0_15px_rgba(29,183,240,0.4)] border border-[var(--border)] relative overflow-hidden ${sizeClasses[size]} ${className}`}
-      aria-label={name || 'User Avatar'}
+      aria-label={name || translateMessage('User Avatar')}
     >
       <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-black/10 pointer-events-none" />
       <span className="relative z-10 font-sans">{getInitial(name)}</span>

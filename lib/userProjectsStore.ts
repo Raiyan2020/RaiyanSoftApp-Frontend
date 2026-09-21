@@ -89,6 +89,8 @@ export interface UserProject {
   ownerId: string;
   ownerName: string;
   ownerEmail: string;
+  ownerPhone?: string;
+  referenceNumber?: string;
   name: string;
   description: string;
   estimatedPrice: number | null;

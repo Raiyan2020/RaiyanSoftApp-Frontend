@@ -29,6 +29,7 @@ import markdown from 'highlight.js/lib/languages/markdown';
 import typescript from 'highlight.js/lib/languages/typescript';
 import xml from 'highlight.js/lib/languages/xml';
 import { createLowlight } from 'lowlight';
+import { translateMessage } from '@/lib/i18n-utils';
 
 const lowlight = createLowlight({
   bash,
@@ -46,9 +47,11 @@ export interface RichTextEditorExtensionOptions {
 }
 
 export function createRichTextEditorExtensions({
-  placeholder = 'Start writing...',
+  placeholder,
   characterLimit = null,
 }: RichTextEditorExtensionOptions = {}): AnyExtension[] {
+  const resolvedPlaceholder = placeholder ?? translateMessage('Start writing...');
+
   return [
     StarterKit.configure({
       codeBlock: false,
@@ -111,7 +114,7 @@ export function createRichTextEditorExtensions({
       lowlight,
     }),
     Placeholder.configure({
-      placeholder,
+      placeholder: resolvedPlaceholder,
     }),
     CharacterCount.configure({
       limit: characterLimit ?? undefined,

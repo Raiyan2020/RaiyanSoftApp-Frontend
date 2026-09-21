@@ -7,7 +7,7 @@ export default async function AdminIndexPage() {
   const adminToken = cookieStore.get('admin_token')?.value;
 
   if (adminToken) {
-    redirect('/admin/projects');
+    redirect('/admin/dashboard');
   }
 
   return <AdminIndexRedirect />;

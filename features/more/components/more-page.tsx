@@ -35,7 +35,7 @@ export default function MorePage() {
 
       <div className="grid gap-6 lg:grid-cols-[24rem_minmax(0,1fr)]">
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           className="app-card p-5 rounded-2xl flex items-center gap-4 relative overflow-hidden group lg:self-start"
         >
@@ -60,7 +60,7 @@ export default function MorePage() {
 
         <div className="space-y-6">
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
           className="rounded-2xl border border-[var(--border)] overflow-hidden shadow-lg"
@@ -93,7 +93,7 @@ export default function MorePage() {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={false}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           className="space-y-3"

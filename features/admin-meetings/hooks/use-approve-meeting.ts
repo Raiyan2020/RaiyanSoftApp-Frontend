@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from 'react';
 import { approveAdminMeeting } from '../services/admin-meetings-api';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export function useApproveMeeting() {
   const [loading, setLoading] = useState(false);
@@ -15,7 +16,7 @@ export function useApproveMeeting() {
       return await approveAdminMeeting(id);
     } catch (err: any) {
       const message = err.message || 'Failed to approve meeting.';
-      setError(message);
+      setError(translateMessage(message));
       throw err;
     } finally {
       setLoading(false);

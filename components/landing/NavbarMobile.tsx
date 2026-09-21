@@ -48,9 +48,9 @@ export default function NavbarMobile({
       </SheetTrigger>
       <SheetContent side="start" dir={dir} className="bg-[#0b0f19]/95 backdrop-blur-2xl border-white/5 p-6 max-h-screen overflow-y-auto no-scrollbar">
         <SheetTitle className="sr-only">{t('landing.nav.menu')}</SheetTitle>
-        <SheetDescription className="sr-only">Mobile Menu Options</SheetDescription>
+        <SheetDescription className="sr-only">{t('landing.nav.mobile_menu_options')}</SheetDescription>
         
-        <div className="space-y-6 pt-4 text-right">
+        <div className="space-y-6 pt-4 text-start">
           <div className="flex items-center justify-between gap-3 px-2">
             <p className="text-xs font-black text-slate-400">{t('landing.nav.language')}</p>
             <div className="flex items-center rounded-2xl border border-white/10 bg-white/5 p-1">
@@ -77,7 +77,7 @@ export default function NavbarMobile({
                 <button
                   key={link.href}
                   onClick={() => scrollTo(link.href)}
-                  className={`rounded-2xl px-4 py-3 text-right text-sm font-bold transition-colors hover:bg-primary/10 hover:text-primary ${
+                  className={`rounded-2xl px-4 py-3 text-start text-sm font-bold transition-colors hover:bg-primary/10 hover:text-primary ${
                     activeHref === link.href ? 'bg-primary/10 text-primary' : 'text-slate-700 dark:text-slate-200'
                   }`}
                 >
@@ -95,7 +95,7 @@ export default function NavbarMobile({
                   key={link.href}
                   href={link.href}
                   onClick={() => setMenuOpen(false)}
-                  className="rounded-2xl px-4 py-3 text-right text-sm font-bold text-slate-700 transition-colors hover:bg-primary/10 hover:text-primary dark:text-slate-200"
+                  className="rounded-2xl px-4 py-3 text-start text-sm font-bold text-slate-700 transition-colors hover:bg-primary/10 hover:text-primary dark:text-slate-200"
                 >
                   {t(link.key)}
                 </Link>

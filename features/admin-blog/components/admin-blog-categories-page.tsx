@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Edit2, Loader2, Plus, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
@@ -50,17 +50,18 @@ export default function AdminBlogCategoriesPage() {
   const [error, setError] = useState('');
   const [pendingDelete, setPendingDelete] = useState<BlogCategoryWithCount | null>(null);
 
-  useEffect(() => {
-    if (!selected && query.data?.[0]) {
-      setSelected(query.data[0]);
-      const item = query.data[0];
-      setTitle({ ar: item.title, en: item.title });
-      setDescription({ ar: item.description || '', en: item.description || '' });
-      setSlug(item.slug);
-      setIsActive(item.is_active ?? true);
-      setSortOrder(item.sort_order || 0);
-    }
-  }, [query.data, selected]);
+  // Initialize the form from the first loaded category, adjusted during
+  // render instead of in an effect (guarded by `selected` so it only runs
+  // once, until `reset()` clears the selection again).
+  if (!selected && query.data?.[0]) {
+    const item = query.data[0];
+    setSelected(item);
+    setTitle({ ar: item.title, en: item.title });
+    setDescription({ ar: item.description || '', en: item.description || '' });
+    setSlug(item.slug);
+    setIsActive(item.is_active ?? true);
+    setSortOrder(item.sort_order || 0);
+  }
 
   const reset = () => {
     setSelected(null);

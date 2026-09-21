@@ -12,6 +12,12 @@ export default function AdminUserProjectsPage() {
     error,
     searchTerm,
     setSearchTerm,
+    dateFrom,
+    setDateFrom,
+    dateTo,
+    setDateTo,
+    typeFilter,
+    setTypeFilter,
     editingProject,
     setEditingProject,
     formData,
@@ -37,7 +43,16 @@ export default function AdminUserProjectsPage() {
 
       {error ? <ErrorAlert message={error} /> : null}
 
-      <UserProjectsFilter searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+      <UserProjectsFilter
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        dateFrom={dateFrom}
+        setDateFrom={setDateFrom}
+        dateTo={dateTo}
+        setDateTo={setDateTo}
+        typeFilter={typeFilter}
+        setTypeFilter={setTypeFilter}
+      />
 
       <UserProjectsTable
         loading={loading}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Loader2, Mail, MessageSquareText, Phone, Trash2, UserRound } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
@@ -65,24 +65,21 @@ export default function AdminAboutUsSubmissionsTab() {
   const [pendingDelete, setPendingDelete] = useState<AdminAboutUsSubmission | null>(null);
 
   const listQuery = useAdminAboutUsSubmissions(page, 15);
-  const detailQuery = useAdminAboutUsSubmission(selectedId);
-  const deleteMutation = useDeleteAdminAboutUsSubmission();
-
   const submissions = listQuery.data?.submissions ?? [];
   const pagination = listQuery.data?.pagination ?? null;
+
+  // Fall back to the first submission whenever nothing is selected yet, or the
+  // selected id no longer exists in the current page of results — computed
+  // during render instead of synced back into state via an effect.
+  const effectiveSelectedId =
+    selectedId && submissions.some((item) => item.id === selectedId)
+      ? selectedId
+      : submissions[0]?.id ?? null;
+
+  const detailQuery = useAdminAboutUsSubmission(effectiveSelectedId);
+  const deleteMutation = useDeleteAdminAboutUsSubmission();
+
   const selectedSubmission = detailQuery.data ?? null;
-
-  useEffect(() => {
-    if (!selectedId && submissions[0]) {
-      setSelectedId(submissions[0].id);
-    }
-  }, [selectedId, submissions]);
-
-  useEffect(() => {
-    if (selectedId && !submissions.some((item) => item.id === selectedId) && submissions[0]) {
-      setSelectedId(submissions[0].id);
-    }
-  }, [selectedId, submissions]);
 
   const selectSubmission = (submission: AdminAboutUsSubmission) => {
     setSelectedId(submission.id);
@@ -144,7 +141,7 @@ export default function AdminAboutUsSubmissionsTab() {
                 <SubmissionCard
                   key={submission.id}
                   submission={submission}
-                  active={submission.id === selectedId}
+                  active={submission.id === effectiveSelectedId}
                   onSelect={() => selectSubmission(submission)}
                 />
               ))}

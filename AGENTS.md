@@ -82,6 +82,9 @@ Run `npm run lint` after code changes that touch TypeScript, forms, data contrac
 - Keep persistent project instructions concise and specific. Avoid broad motivational rules.
 - Put always-on project guidance in this file.
 - Put tool-specific local rules in `.cursor/` only when they are useful for that tool.
+- Project skill: `.claude/skills/i18n/` — bilingual copy, translation helpers, and RTL/LTR layout rules. Use it for any user-facing text change.
+- React/Next performance guidance: the `vercel-react-best-practices` skill.
+- shadcn registry access is configured in `.mcp.json` + `components.json`. Use it to read component source; do not run `shadcn init` (it would rewrite `app/globals.css` and `tailwind.config.ts`).
 - Create a skill only for a repeated workflow with a clear trigger, explicit inputs/outputs, and focused steps. Prefer instructions over scripts unless deterministic tooling is required.
 
 ## Compatibility Entrypoints

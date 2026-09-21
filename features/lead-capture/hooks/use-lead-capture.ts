@@ -1,10 +1,8 @@
 import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/lib/i18nContext';
 
 export function useLeadCapture() {
-  const router = useRouter();
   const searchParams = useSearchParams();
   const source = searchParams?.get('source') || 'direct';
   const [isCompleted, setIsCompleted] = useState(false);
@@ -13,14 +11,7 @@ export function useLeadCapture() {
 
   const handleComplete = (id?: string) => {
     if (id) setRequestId(id);
-    router.push('/profile?tab=project');
-  };
-
-  const getWhatsAppLink = () => {
-    if (!requestId) return '';
-    const text = language === 'ar' ? `تأكيد طلب رقم ${requestId}` : `Confirm request #${requestId}`;
-    const encodedText = encodeURIComponent(text);
-    return `https://wa.me/96560070353?text=${encodedText}`;
+    setIsCompleted(true);
   };
 
   const handleWizardClose = () => {
@@ -34,7 +25,6 @@ export function useLeadCapture() {
     dir,
     language,
     handleComplete,
-    getWhatsAppLink,
     handleWizardClose,
   };
 }

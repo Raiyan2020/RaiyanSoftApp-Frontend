@@ -4,6 +4,7 @@ import { useCallback, useState } from 'react';
 import { updateAdminMeetingSettings } from '../services/admin-meetings-api';
 import { MeetingSettingsForm } from '@/features/meetings';
 import { defaultMeetingSettingsForm } from '@/features/meetings';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export function useAdminMeetingSettings() {
   const [settings, setSettings] = useState<MeetingSettingsForm>(defaultMeetingSettingsForm());
@@ -24,9 +25,9 @@ export function useAdminMeetingSettings() {
         booking_window_days: settings.maxWindowDays,
         daily_meeting_limit: settings.dailyLimit,
       });
-      setMessage('Settings saved successfully.');
+      setMessage(translateMessage('Settings saved successfully.'));
     } catch (err: any) {
-      setError(err.message || 'Failed to save settings.');
+      setError(translateMessage(err.message || 'Failed to save settings.'));
       throw err;
     } finally {
       setLoading(false);

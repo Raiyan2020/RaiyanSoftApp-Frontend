@@ -43,6 +43,10 @@ export function useLeadProjectWizard({
   >(savedDraft.answersByQuestionId || {});
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  // Set while the client jumps back to a question from the review screen to
+  // edit an answer; consumed by the next answer/step advance to send them
+  // straight back to review instead of continuing forward through the wizard.
+  const [editReturnStep, setEditReturnStep] = useState<number | null>(null);
 
   const { questions, loading: questionsLoading, error: questionsError } = useFormQuestions(
     language,
@@ -51,11 +55,13 @@ export function useLeadProjectWizard({
 
   const [colorsInitialized, setColorsInitialized] = useState(false);
 
-  useEffect(() => {
-    if (colorsInitialized || !presetColors.length) return;
+  // Initialize the brand color once the preset colors have loaded, adjusted
+  // during render instead of in an effect (guarded by colorsInitialized so
+  // it only runs once).
+  if (!colorsInitialized && presetColors.length) {
     if (!brandColor) setBrandColor(presetColors[0].hex);
     setColorsInitialized(true);
-  }, [brandColor, colorsInitialized, presetColors]);
+  }
 
   useEffect(() => {
     saveLeadProjectDraft({
@@ -86,12 +92,28 @@ export function useLeadProjectWizard({
   const selectSingleAnswerAndContinue = (questionId: number, optionId: number) => {
     setErrors([]);
     setAnswersByQuestionId((current) => ({ ...current, [questionId]: optionId }));
+    if (editReturnStep !== null) {
+      const target = editReturnStep;
+      setEditReturnStep(null);
+      setDirection(1);
+      setStep(target);
+      return;
+    }
     setDirection(1);
     setStep((current) => {
       const question = questions[current - 1];
       if (!question || question.id !== questionId) return current;
       return Math.min(current + 1, reviewStep);
     });
+  };
+
+  // Jump back to a specific step from the review screen; the next answer or
+  // "next" press returns here instead of advancing normally.
+  const goToStepFromReview = (targetStep: number) => {
+    setErrors([]);
+    setEditReturnStep(reviewStep);
+    setDirection(-1);
+    setStep(targetStep);
   };
 
   const setTextAnswer = (questionId: number, value: string) => {
@@ -131,6 +153,13 @@ export function useLeadProjectWizard({
 
   const nextStep = () => {
     if (!validateStep(step)) return;
+    if (editReturnStep !== null) {
+      const target = editReturnStep;
+      setEditReturnStep(null);
+      setDirection(1);
+      setStep(target);
+      return;
+    }
     setDirection(1);
     setStep((current) => Math.min(current + 1, isAuthenticated ? reviewStep : authStep));
   };
@@ -160,7 +189,7 @@ export function useLeadProjectWizard({
       const data = response.data as { request_id?: string } | [];
       const requestId = Array.isArray(data) ? undefined : data?.request_id;
       await queryClient.invalidateQueries({ queryKey: leadProjectKeys.all });
-      globalToast.success(response.message || (dir === 'rtl' ? 'تم إنشاء الطلب بنجاح.' : 'Lead created successfully.'));
+      globalToast.success(response.message || 'Lead created successfully.');
       clearLeadProjectDraft();
       onComplete(requestId);
     } catch (err: any) {
@@ -215,6 +244,7 @@ export function useLeadProjectWizard({
     isLoading,
     nextStep,
     prevStep,
+    goToStepFromReview,
     handleSubmit,
     selectSingleAnswerAndContinue,
     setTextAnswer,

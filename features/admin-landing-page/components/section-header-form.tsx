@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Save, Loader2 } from 'lucide-react';
 import BilingualFieldInputs from './bilingual-field-inputs';
 import ErrorAlert from '@/components/ui/error-alert';
@@ -33,13 +33,17 @@ export default function SectionHeaderForm({ header, loading, onSave }: Props) {
     description?: BilingualFieldErrors;
   }>({});
 
-  useEffect(() => {
+  // Repopulate the form when the `header` prop changes, adjusted during
+  // render (comparing against the previous value) instead of in an effect.
+  const [prevHeader, setPrevHeader] = useState(header);
+  if (header !== prevHeader) {
+    setPrevHeader(header);
     if (header) {
       setTitle(header.title);
       setCaption(header.caption);
       setDescription(header.description);
     }
-  }, [header]);
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();

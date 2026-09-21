@@ -1,13 +1,20 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { translations } from './translations';
 import { translateMessage } from './i18n-utils';
+import { queryClient } from './query-client';
+import {
+  DEFAULT_LANGUAGE,
+  getDirection,
+  persistLanguage,
+  readStoredLanguage,
+} from './language';
 
 import { DirectionProvider } from '@radix-ui/react-direction';
 
 type Language = 'en' | 'ar';
-type TranslationKey = keyof typeof translations.en;
 
 interface I18nContextProps {
   language: Language;
@@ -18,31 +25,46 @@ interface I18nContextProps {
 
 const I18nContext = createContext<I18nContextProps | undefined>(undefined);
 
-export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  // Match the server-rendered default first, then apply the saved preference
-  // after mount to avoid hydration mismatches between Arabic and English text.
-  const [language, setLanguageState] = useState<Language>('ar');
+export const I18nProvider: React.FC<{ children: ReactNode; initialLanguage?: Language }> = ({
+  children,
+  initialLanguage,
+}) => {
+  const router = useRouter();
+  // The server resolves the language from the cookie, so the first client render
+  // already matches and there is no Arabic flash for English users.
+  const [language, setLanguageState] = useState<Language>(initialLanguage ?? DEFAULT_LANGUAGE);
 
   useEffect(() => {
-    try {
-      const storedLang = localStorage.getItem('rs_lang') as Language;
-      if (storedLang && (storedLang === 'en' || storedLang === 'ar')) {
-        setLanguageState(storedLang);
-      }
-    } catch (e) {
-      // Ignore localStorage errors (e.g. private mode)
-    }
+    // Reconcile with localStorage for visitors whose preference predates the cookie.
+    // Genuine external synchronization, deliberately left as an effect: this
+    // is a one-time, client-only read of legacy localStorage (unavailable on
+    // the server, so it cannot be computed during the initial render without
+    // causing a hydration mismatch) that backfills the cookie. Do not
+    // restructure — ~182 files depend on the <Fragment key={effectiveLanguage}>
+    // remount behaviour this reconciliation feeds into.
+    const stored = readStoredLanguage();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time client-only storage reconciliation; see comment above.
+    if (stored !== language) setLanguageState(stored);
+    persistLanguage(stored);
+    // Runs once: this only backfills the cookie from a legacy localStorage value.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('rs_lang', lang);
-    }
+    persistLanguage(lang);
+    // Server components read the language from the cookie, so the rendered
+    // server output must be refetched for the new language to take effect.
+    router.refresh();
+    // React Query caches server data client-side independent of the server
+    // render tree (e.g. providers mounted above this one, like settings/colors),
+    // so those cached responses must be invalidated explicitly or they keep
+    // showing content fetched under the previous language until they go stale.
+    queryClient.invalidateQueries();
   };
 
   const effectiveLanguage = language;
-  const dir = effectiveLanguage === 'ar' ? 'rtl' : 'ltr';
+  const dir = getDirection(effectiveLanguage);
 
   // Apply direction to HTML element immediately
   useEffect(() => {
@@ -58,7 +80,13 @@ export const I18nProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   return (
     <I18nContext.Provider value={{ language: effectiveLanguage, setLanguage, t, dir }}>
       <DirectionProvider dir={dir}>
-        {children}
+        {/*
+          Most call sites use `translateMessage(msg)` without a language argument,
+          which resolves the language at render time rather than subscribing to
+          this context. Keying on the language remounts them on a switch so they
+          re-resolve instead of keeping the previous language's text.
+        */}
+        <React.Fragment key={effectiveLanguage}>{children}</React.Fragment>
       </DirectionProvider>
     </I18nContext.Provider>
   );

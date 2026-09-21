@@ -28,7 +28,7 @@ export default function PublicFaq({ items }: PublicFaqProps) {
                 aria-expanded={open}
                 aria-controls={`public-faq-panel-${index}`}
                 onClick={() => setOpenIndex(open ? -1 : index)}
-                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-right text-base font-black text-slate-950 dark:text-white"
+                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-base font-black text-slate-950 dark:text-white"
               >
                 <span>{item.question}</span>
                 <ChevronDown className={`shrink-0 text-primary transition ${open ? 'rotate-180' : ''}`} size={20} />

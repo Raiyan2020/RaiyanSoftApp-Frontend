@@ -10,7 +10,7 @@ export default function AdminAccountPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-full text-[var(--text-muted)] min-h-[50vh]">
-        <Loader2 className="animate-spin mr-2" /> {translateMessage('Loading profile...')}
+        <Loader2 className="animate-spin me-2" /> {translateMessage('Loading profile...')}
       </div>
     );
   }

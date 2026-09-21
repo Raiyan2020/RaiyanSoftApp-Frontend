@@ -1,4 +1,5 @@
 import { apiService, type ApiResponse } from '@/lib/api-service';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export type ApiNotificationType =
   | 'ad_approved'
@@ -49,7 +50,7 @@ export interface NotificationQueryParams {
 
 function assertNotificationResponse<T>(response: ApiResponse<T>) {
   if (!response.status) {
-    throw new Error(response.message || 'Notification request failed.');
+    throw new Error(response.message || translateMessage('Notification request failed.'));
   }
 
   return response;

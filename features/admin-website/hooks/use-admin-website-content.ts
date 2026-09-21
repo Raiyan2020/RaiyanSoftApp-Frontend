@@ -85,6 +85,10 @@ export function useAdminWebsiteContent(config: WebsiteContentConfig) {
   const [error, setError] = useState('');
 
   useEffect(() => {
+    // Genuine external synchronization: subscribes to the website-content
+    // store; the callbacks below update state from the subscription, and
+    // this initial setIsLoading(true) marks the subscribe-in-flight state.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- subscription setup; see comment above.
     setIsLoading(true);
     return subscribeWebsiteContent(
       config,

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
-import { MEETING_STATUS, MeetingStatusCode } from '@/features/meetings';
+import { MEETING_STATUS, MeetingStatusCode, MeetingTypeCode } from '@/features/meetings';
 import { useAdminMeetingsList } from '@/features/admin-meetings';
 import { useApproveMeeting } from '@/features/admin-meetings';
 import { useRejectMeeting } from '@/features/admin-meetings';
@@ -12,6 +12,7 @@ import { AdminMeeting } from '@/features/meetings';
 export const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 export type AdminMeetingStatusFilter = 'all' | 'pending' | 'approved' | 'rejected' | 'canceled';
+export type AdminMeetingTypeFilter = '' | MeetingTypeCode;
 
 const STATUS_FILTER_MAP: Record<Exclude<AdminMeetingStatusFilter, 'all'>, MeetingStatusCode> = {
   pending: MEETING_STATUS.PENDING,
@@ -23,6 +24,9 @@ const STATUS_FILTER_MAP: Record<Exclude<AdminMeetingStatusFilter, 'all'>, Meetin
 export function useAdminAppointments() {
   const [activeTab, setActiveTab] = useState<'schedule' | 'settings' | 'bookings'>('bookings');
   const [bookingStatusFilter, setBookingStatusFilter] = useState<AdminMeetingStatusFilter>('all');
+  const [bookingTypeFilter, setBookingTypeFilter] = useState<AdminMeetingTypeFilter>('');
+  const [bookingDateFrom, setBookingDateFrom] = useState('');
+  const [bookingDateTo, setBookingDateTo] = useState('');
   const [bookingSearch, setBookingSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [page, setPage] = useState(1);
@@ -34,17 +38,29 @@ export function useAdminAppointments() {
     return () => window.clearTimeout(timer);
   }, [bookingSearch]);
 
-  useEffect(() => {
+  // Reset to page 1 whenever the effective filters change. Adjusted during
+  // render (comparing against the previous filter values) instead of in an
+  // effect, so the filter change and the page reset land in the same
+  // render pass.
+  const [prevFilterKey, setPrevFilterKey] = useState(
+    `${debouncedSearch}|${bookingStatusFilter}|${bookingTypeFilter}|${bookingDateFrom}|${bookingDateTo}`
+  );
+  const filterKey = `${debouncedSearch}|${bookingStatusFilter}|${bookingTypeFilter}|${bookingDateFrom}|${bookingDateTo}`;
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
     setPage(1);
-  }, [debouncedSearch, bookingStatusFilter]);
+  }
 
   const filters = useMemo(
     () => ({
       name: debouncedSearch || undefined,
       status: bookingStatusFilter === 'all' ? undefined : STATUS_FILTER_MAP[bookingStatusFilter],
+      type: bookingTypeFilter || undefined,
+      dateFrom: bookingDateFrom || undefined,
+      dateTo: bookingDateTo || undefined,
       page,
     }),
-    [bookingStatusFilter, debouncedSearch, page]
+    [bookingStatusFilter, bookingTypeFilter, bookingDateFrom, bookingDateTo, debouncedSearch, page]
   );
 
   const {
@@ -106,6 +122,12 @@ export function useAdminAppointments() {
     filteredBookings: meetings,
     bookingStatusFilter,
     setBookingStatusFilter,
+    bookingTypeFilter,
+    setBookingTypeFilter,
+    bookingDateFrom,
+    setBookingDateFrom,
+    bookingDateTo,
+    setBookingDateTo,
     bookingSearch,
     setBookingSearch,
     selectedBooking,

@@ -1,17 +1,19 @@
 import React from 'react';
-import { Calendar, CheckCircle, ChevronLeft, ChevronRight, Clock, Loader2, Search, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle, ChevronLeft, ChevronRight, Clock, Loader2, MessageCircle, Search, XCircle } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ErrorAlert from '@/components/ui/error-alert';
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
 import SuccessToast from '@/components/ui/success-toast';
+import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
 import { translateMessage } from '@/lib/i18n-utils';
 import {
   AdminMeeting,
   MEETING_STATUS,
+  MEETING_TYPE,
   MeetingsPagination,
 } from '@/features/meetings';
 import { getMeetingStatusTone, parseMeetingDateTime } from '@/features/meetings';
-import { AdminMeetingStatusFilter } from '../hooks/use-admin-appointments';
+import { AdminMeetingStatusFilter, AdminMeetingTypeFilter } from '../hooks/use-admin-appointments';
 
 interface AdminBookingsTabProps {
   bookings: AdminMeeting[];
@@ -19,11 +21,17 @@ interface AdminBookingsTabProps {
   error: string | null;
   pagination: MeetingsPagination | null;
   statusFilter: AdminMeetingStatusFilter;
+  typeFilter: AdminMeetingTypeFilter;
+  dateFrom: string;
+  dateTo: string;
   searchQuery: string;
   actionMessage: string | null;
   actionError: string | null;
   actionLoading: boolean;
   onStatusFilterChange: (value: AdminMeetingStatusFilter) => void;
+  onTypeFilterChange: (value: AdminMeetingTypeFilter) => void;
+  onDateFromChange: (value: string) => void;
+  onDateToChange: (value: string) => void;
   onSearchQueryChange: (value: string) => void;
   selectedBooking: AdminMeeting | null;
   onOpenBooking: (booking: AdminMeeting) => void;
@@ -41,14 +49,50 @@ const STATUS_OPTIONS: { value: AdminMeetingStatusFilter; label: string }[] = [
   { value: 'canceled', label: 'Canceled' },
 ];
 
-const inputClasses =
-  'w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
-
 function StatusPill({ label, status }: { label: string; status: number }) {
   return (
     <span className={`inline-flex px-2 py-1 rounded-full text-xs font-bold border ${getMeetingStatusTone(status)}`}>
       {label}
     </span>
+  );
+}
+
+function canApprove(status: number) {
+  return status === MEETING_STATUS.PENDING || status === MEETING_STATUS.REJECTED;
+}
+
+// Same digit-normalization rule as admin-leads' toWhatsAppDigits (Kuwait 8-digit numbers get the 965 prefix).
+function toWhatsAppDigits(phone: string): string | null {
+  if (!phone) return null;
+  const digits = phone.replace(/\D/g, '');
+  if (digits.length === 8) return `965${digits}`;
+  if (digits.length < 8) return null;
+  return digits;
+}
+
+function MeetingWhatsAppButton({ phone }: { phone?: string | null }) {
+  const waDigits = phone ? toWhatsAppDigits(phone) : null;
+  const waUrl = waDigits
+    ? `https://web.whatsapp.com/send/?phone=${waDigits}&type=phone_number&app_absent=0`
+    : null;
+
+  return (
+    <a
+      href={waUrl || undefined}
+      target="_blank"
+      rel="noopener noreferrer"
+      onClick={(event) => {
+        if (!waUrl) event.preventDefault();
+      }}
+      className={`p-2 rounded-lg transition-colors flex items-center justify-center ${
+        waUrl
+          ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'
+          : 'bg-[var(--surface-3)] text-[var(--text-muted)] cursor-not-allowed opacity-50'
+      }`}
+      title={waUrl ? translateMessage('WhatsApp') : translateMessage('No phone number')}
+    >
+      <MessageCircle size={16} />
+    </a>
   );
 }
 
@@ -58,11 +102,17 @@ export default function AdminBookingsTab({
   error,
   pagination,
   statusFilter,
+  typeFilter,
+  dateFrom,
+  dateTo,
   searchQuery,
   actionMessage,
   actionError,
   actionLoading,
   onStatusFilterChange,
+  onTypeFilterChange,
+  onDateFromChange,
+  onDateToChange,
   onSearchQueryChange,
   selectedBooking,
   onOpenBooking,
@@ -76,14 +126,14 @@ export default function AdminBookingsTab({
 
   return (
     <>
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={17} />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={17} />
           <input
             value={searchQuery}
             onChange={(event) => onSearchQueryChange(event.target.value)}
             placeholder={translateMessage('Search by name...')}
-            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 pl-10 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary"
+            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary"
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -98,10 +148,37 @@ export default function AdminBookingsTab({
                   : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)] hover:text-[var(--text)]'
               }`}
             >
-              {status.label}
+              {translateMessage(status.label)}
             </button>
           ))}
         </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2 mb-5">
+        <input
+          type="date"
+          value={dateFrom}
+          onChange={(event) => onDateFromChange(event.target.value)}
+          aria-label={translateMessage('From date')}
+          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
+        />
+        <input
+          type="date"
+          value={dateTo}
+          onChange={(event) => onDateToChange(event.target.value)}
+          aria-label={translateMessage('To date')}
+          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
+        />
+        <select
+          value={typeFilter}
+          onChange={(event) => onTypeFilterChange(event.target.value ? (Number(event.target.value) as typeof MEETING_TYPE.ONLINE | typeof MEETING_TYPE.OFFLINE) : '')}
+          aria-label={translateMessage('Meeting Type')}
+          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
+        >
+          <option value="">{translateMessage('All Types')}</option>
+          <option value={MEETING_TYPE.ONLINE}>{translateMessage('Online')}</option>
+          <option value={MEETING_TYPE.OFFLINE}>{translateMessage('In Person')}</option>
+        </select>
       </div>
 
       {error ? (
@@ -120,6 +197,11 @@ export default function AdminBookingsTab({
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
                   <p className="font-bold text-[var(--text)] break-words">{meeting.subject || '—'}</p>
+                  {meeting.user ? (
+                    <p className="text-xs text-[var(--text-muted)] mt-1 break-words">
+                      {meeting.user.full_name} · {meeting.user.full_phone}
+                    </p>
+                  ) : null}
                   <p className="text-xs text-[var(--text-muted)] mt-1">{formatDateTime(meeting.date_time)}</p>
                 </div>
                 <StatusPill label={meeting.status_label} status={meeting.status} />
@@ -128,14 +210,13 @@ export default function AdminBookingsTab({
                 <Button type="button" variant="outline" size="sm" onClick={() => onOpenBooking(meeting)}>
                   {translateMessage('Details')}
                 </Button>
-                {meeting.status === MEETING_STATUS.PENDING ? (
+                <MeetingWhatsAppButton phone={meeting.user?.full_phone} />
+                {canApprove(meeting.status) ? (
                   <>
                     <Button type="button" size="sm" onClick={() => onApproveBooking(meeting.id)} disabled={actionLoading}>
                       {translateMessage('Approve')}
                     </Button>
-                    <Button type="button" variant="destructive" size="sm" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading}>
-                      {translateMessage('Reject')}
-                    </Button>
+                    {meeting.status === MEETING_STATUS.PENDING ? <Button type="button" variant="destructive" size="sm" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading}>{translateMessage('Reject')}</Button> : null}
                   </>
                 ) : null}
               </div>
@@ -146,40 +227,46 @@ export default function AdminBookingsTab({
           ) : null}
         </div>
 
-        <div className="hidden md:block overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="text-xs text-[var(--text-muted)] uppercase border-b border-[var(--border)]">
-                <th className="pb-3 pl-2">{translateMessage('Date/Time')}</th>
-                <th className="pb-3">{translateMessage('Subject')}</th>
-                <th className="pb-3">{translateMessage('Type')}</th>
-                <th className="pb-3">{translateMessage('Status')}</th>
-                <th className="pb-3 text-right">{translateMessage('Actions')}</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-[var(--border)] text-sm">
+        <div className="hidden md:block">
+          <Table className="text-start">
+            <TableHeader>
+              <TableRow className="text-xs text-[var(--text-muted)] uppercase border-b border-[var(--border)] hover:bg-transparent">
+                <TableHead className="pb-3 ps-2 text-start">{translateMessage('Date/Time')}</TableHead>
+                <TableHead className="pb-3 text-start">{translateMessage('Client')}</TableHead>
+                <TableHead className="pb-3 text-start">{translateMessage('Subject')}</TableHead>
+                <TableHead className="pb-3 text-start">{translateMessage('Type')}</TableHead>
+                <TableHead className="pb-3 text-start">{translateMessage('Status')}</TableHead>
+                <TableHead className="pb-3 text-end">{translateMessage('Actions')}</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody className="divide-y divide-[var(--border)] text-sm">
               {bookings.map((meeting) => (
-                <tr key={meeting.id} className="group hover:bg-white/5 transition-colors">
-                  <td className="py-4 pl-2 text-[var(--text)]">
+                <TableRow key={meeting.id} className="group hover:bg-white/5">
+                  <TableCell className="py-4 ps-2 text-start text-[var(--text)]">
                     <div className="font-medium">{formatDateTime(meeting.date_time)}</div>
                     <div className="text-xs text-[var(--text-muted)]">{meeting.created_at}</div>
-                  </td>
-                  <td className="py-4 text-[var(--text)]">
-                    <button type="button" onClick={() => onOpenBooking(meeting)} className="text-left hover:text-primary">
+                  </TableCell>
+                  <TableCell className="py-4 text-start text-[var(--text)]">
+                    <div className="font-medium truncate max-w-[180px]">{meeting.user?.full_name || '—'}</div>
+                    <div className="text-xs text-[var(--text-muted)]">{meeting.user?.full_phone || '—'}</div>
+                  </TableCell>
+                  <TableCell className="py-4 text-start text-[var(--text)]">
+                    <button type="button" onClick={() => onOpenBooking(meeting)} className="text-start hover:text-primary">
                       <div className="truncate max-w-[220px]">{meeting.subject || '—'}</div>
                       {meeting.notes ? <div className="text-xs text-[var(--text-muted)] truncate max-w-[220px]">{meeting.notes}</div> : null}
                     </button>
-                  </td>
-                  <td className="py-4 text-[var(--text-muted)]">{meeting.type_label || '—'}</td>
-                  <td className="py-4">
+                  </TableCell>
+                  <TableCell className="py-4 text-start text-[var(--text-muted)]">{meeting.type_label || '—'}</TableCell>
+                  <TableCell className="py-4 text-start">
                     <StatusPill label={meeting.status_label} status={meeting.status} />
-                  </td>
-                  <td className="py-4 text-right">
+                  </TableCell>
+                  <TableCell className="py-4 text-end">
                     <div className="flex justify-end gap-2">
                       <Button type="button" variant="outline" size="sm" onClick={() => onOpenBooking(meeting)}>
                         {translateMessage('Details')}
                       </Button>
-                      {meeting.status === MEETING_STATUS.PENDING ? (
+                      <MeetingWhatsAppButton phone={meeting.user?.full_phone} />
+                      {canApprove(meeting.status) ? (
                         <>
                           <button
                             type="button"
@@ -190,30 +277,22 @@ export default function AdminBookingsTab({
                           >
                             <CheckCircle size={16} />
                           </button>
-                          <button
-                            type="button"
-                            onClick={() => onRejectBooking(meeting.id)}
-                            disabled={actionLoading}
-                            className="p-2 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors"
-                            title={translateMessage('Reject')}
-                          >
-                            <XCircle size={16} />
-                          </button>
+                          {meeting.status === MEETING_STATUS.PENDING ? <button type="button" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading} className="p-2 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors" title={translateMessage('Reject')}><XCircle size={16} /></button> : null}
                         </>
                       ) : null}
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
               {bookings.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="text-center py-10 text-[var(--text-muted)]">
+                <TableRow className="hover:bg-transparent">
+                  <TableCell colSpan={6} className="text-center py-10 text-[var(--text-muted)]">
                     {translateMessage('No bookings found.')}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ) : null}
-            </tbody>
-          </table>
+            </TableBody>
+          </Table>
         </div>
         </>
       )}
@@ -265,6 +344,15 @@ export default function AdminBookingsTab({
               </div>
 
               <div className="flex-1 overflow-y-auto p-6 space-y-6">
+                <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4 flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-xs text-[var(--text-muted)] mb-1">{translateMessage('Client')}</p>
+                    <p className="font-bold text-[var(--text)] truncate">{selectedBooking.user?.full_name || '—'}</p>
+                    <p className="text-sm text-[var(--text-muted)]">{selectedBooking.user?.full_phone || '—'}</p>
+                  </div>
+                  <MeetingWhatsAppButton phone={selectedBooking.user?.full_phone} />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
                     <p className="text-xs text-[var(--text-muted)] mb-1">{translateMessage('Schedule')}</p>
@@ -288,7 +376,7 @@ export default function AdminBookingsTab({
                 {actionError ? <ErrorAlert message={actionError} /> : null}
                 <SuccessToast message={actionMessage} />
 
-                {selectedBooking.status === MEETING_STATUS.PENDING ? (
+                {canApprove(selectedBooking.status) ? (
                   <div className="flex flex-wrap gap-3 pt-2">
                     <Button
                       type="button"
@@ -299,16 +387,7 @@ export default function AdminBookingsTab({
                       {actionLoading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle size={16} />}
                       {translateMessage('Approve')}
                     </Button>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      onClick={() => onRejectBooking(selectedBooking.id)}
-                      disabled={actionLoading}
-                      className="gap-2"
-                    >
-                      {actionLoading ? <Loader2 className="animate-spin" size={16} /> : <XCircle size={16} />}
-                      {translateMessage('Reject')}
-                    </Button>
+                    {selectedBooking.status === MEETING_STATUS.PENDING ? <Button type="button" variant="destructive" onClick={() => onRejectBooking(selectedBooking.id)} disabled={actionLoading} className="gap-2">{actionLoading ? <Loader2 className="animate-spin" size={16} /> : <XCircle size={16} />}{translateMessage('Reject')}</Button> : null}
                   </div>
                 ) : null}
 

@@ -19,7 +19,7 @@ export default function SentNotificationsList({
         <h2 className="text-lg font-bold text-[var(--text)] mb-4 flex items-center gap-2">
           <History size={20} /> {translateMessage('History')}
         </h2>
-        <div className="flex-1 overflow-y-auto space-y-4 custom-scrollbar pr-2">
+        <div className="flex-1 overflow-y-auto space-y-4 custom-scrollbar pe-2">
           {history.length > 0 ? (
             history.map((item) => (
               <SentNotificationItem key={item.id} item={item} formatHistoryDate={formatHistoryDate} />

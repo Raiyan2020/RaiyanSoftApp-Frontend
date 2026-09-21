@@ -5,6 +5,14 @@ export interface SocialMediaLinks {
   linkedin?: string | null;
   tiktok?: string | null;
   telegram?: string | null;
+  [platform: string]: string | null | undefined;
+}
+
+export interface ApiSocialMediaItem {
+  id: number;
+  platform: string;
+  link: string;
+  image: string | null;
 }
 
 export interface UserSettings {
@@ -15,7 +23,8 @@ export interface UserSettings {
   site_email: string;
   site_phone: string;
   site_address: string;
+  whatsapp_number?: string | null;
   social_media: SocialMediaLinks;
-  publish_ad_fees: string;
-  payment_live: number;
+  first_footer_text?: string;
+  second_footer_text?: string;
 }

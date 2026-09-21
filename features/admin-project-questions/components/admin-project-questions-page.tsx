@@ -16,18 +16,21 @@ import {
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ErrorAlert from '@/components/ui/error-alert';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { translateMessage } from '@/lib/i18n-utils';
 import {
   ProjectQuestion,
   ProjectQuestionOption,
+  ProjectQuestionSection,
   ProjectQuestionType,
+  questionSections,
   useAdminProjectQuestions,
 } from '../hooks/use-admin-project-questions';
 
 const inputClasses =
   'w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
 
-const optionTypes: ProjectQuestionType[] = ['single_select', 'multi_select'];
+const optionTypes: ProjectQuestionType[] = ['single_select'];
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
   <label className="text-xs text-[var(--text-muted)] font-medium ms-1">
@@ -101,7 +104,7 @@ function OptionRow({
       </div>
       <div className="grid gap-5 md:grid-cols-2">
         <div className="space-y-3">
-          <FieldLabel>English Label</FieldLabel>
+          <FieldLabel>{translateMessage('English Label')}</FieldLabel>
           <input
             value={option.label}
             onChange={(event) => onChange(index, { label: event.target.value })}
@@ -110,7 +113,7 @@ function OptionRow({
           />
         </div>
         <div className="space-y-3">
-          <FieldLabel>Arabic Label</FieldLabel>
+          <FieldLabel>{translateMessage('Arabic Label')}</FieldLabel>
           <input
             value={option.labelAr || ''}
             onChange={(event) => onChange(index, { labelAr: event.target.value })}
@@ -207,7 +210,7 @@ function QuestionRow({
         >
           <GripVertical size={16} />
         </button>
-        <button type="button" onClick={() => onEdit(question)} className="text-left min-w-0 flex-1">
+        <button type="button" onClick={() => onEdit(question)} className="text-start min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <h3 className="text-sm font-bold text-[var(--text)] break-words">{question.label}</h3>
             <span className="text-[10px] text-[var(--text)] bg-[var(--surface-3)] border border-[var(--border)] rounded-full px-2 py-0.5">
@@ -322,7 +325,7 @@ export default function AdminProjectQuestionsPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-3">
-                  <FieldLabel>English Label</FieldLabel>
+                  <FieldLabel>{translateMessage('English Label')}</FieldLabel>
                   <input
                     value={state.form.label}
                     onChange={(e) => state.setForm((prev) => ({ ...prev, label: e.target.value }))}
@@ -331,7 +334,7 @@ export default function AdminProjectQuestionsPage() {
                   />
                 </div>
                 <div className="space-y-3">
-                  <FieldLabel>Arabic Label</FieldLabel>
+                  <FieldLabel>{translateMessage('Arabic Label')}</FieldLabel>
                   <input
                     value={state.form.labelAr}
                     onChange={(e) => state.setForm((prev) => ({ ...prev, labelAr: e.target.value }))}
@@ -343,55 +346,82 @@ export default function AdminProjectQuestionsPage() {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-3">
-                  <FieldLabel>Question Type</FieldLabel>
-                  <select
+                  <FieldLabel>{translateMessage('Question Type')}</FieldLabel>
+                  <Select
                     value={state.form.type}
-                    onChange={(e) => state.setForm((prev) => ({ ...prev, type: e.target.value as ProjectQuestionType }))}
-                    className={inputClasses}
+                    onValueChange={(value) => state.setForm((prev) => ({ ...prev, type: value as ProjectQuestionType }))}
                   >
-                    {state.questionTypes.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {translateMessage(type.label)}
-                      </option>
-                    ))}
-                  </select>
+                    <SelectTrigger className={inputClasses}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {state.questionTypes.map((type) => (
+                        <SelectItem key={type.value} value={type.value}>
+                          {translateMessage(type.label)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:pt-7">
-                  {[
-                    ['required', 'Required'],
-                    ['active', 'Active'],
-                    ['locked', 'Locked'],
-                  ].map(([key, label]) => {
-                    const checked = state.form[key as 'required' | 'active' | 'locked'];
-                    return (
-                      <button
-                        key={key}
-                        type="button"
-                        onClick={() =>
-                          state.setForm((prev) => ({
-                            ...prev,
-                            [key]: !checked,
-                          }))
-                        }
-                        className={`rounded-xl border px-3 py-2 text-xs font-bold flex items-center justify-center gap-1 ${
-                          checked
-                            ? 'bg-primary/10 text-primary border-primary/20'
-                            : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)]'
-                        }`}
-                      >
-                        {checked ? <Check size={13} /> : <X size={13} />}
-                        {translateMessage(label)}
-                      </button>
-                    );
-                  })}
+                <div className="space-y-3">
+                  <FieldLabel>{translateMessage('Section')}</FieldLabel>
+                  <Select
+                    value={state.form.section}
+                    onValueChange={(value) => state.setForm((prev) => ({ ...prev, section: value as ProjectQuestionSection }))}
+                  >
+                    <SelectTrigger className={inputClasses}>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {questionSections.map((section) => (
+                        <SelectItem key={section.value} value={section.value}>
+                          {translateMessage(section.label)}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {[
+                  ['required', 'Required'],
+                  ['active', 'Active'],
+                ].map(([key, label]) => {
+                  const checked = state.form[key as 'required' | 'active'];
+                  return (
+                    <button
+                      key={key}
+                      type="button"
+                      onClick={() =>
+                        state.setForm((prev) => ({
+                          ...prev,
+                          [key]: !checked,
+                        }))
+                      }
+                      className={`rounded-xl border px-3 py-2 text-xs font-bold flex items-center justify-center gap-1 ${
+                        checked
+                          ? 'bg-primary/10 text-primary border-primary/20'
+                          : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)]'
+                      }`}
+                    >
+                      {checked ? <Check size={13} /> : <X size={13} />}
+                      {translateMessage(label)}
+                    </button>
+                  );
+                })}
+                {state.form.locked ? (
+                  <span className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs font-bold text-amber-400 flex items-center justify-center gap-1">
+                    {translateMessage('Locked')}
+                  </span>
+                ) : null}
               </div>
 
               {optionTypes.includes(state.form.type) ? (
                 <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-sm space-y-4">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div className="space-y-1.5">
-                      <FieldLabel>Options</FieldLabel>
+                      <FieldLabel>{translateMessage('Options')}</FieldLabel>
                       <p className="text-[11px] text-[var(--text-muted)]">
                         {translateMessage('Add rows, then fill the English and Arabic labels for each choice.')}
                       </p>

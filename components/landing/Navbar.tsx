@@ -1,11 +1,18 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import NavbarDesktop from './NavbarDesktop';
-import NavbarMobile from './NavbarMobile';
 import { useNavbar } from './use-navbar';
-import AuthDialog from '@/features/auth/components/auth-dialog';
-import { QuickBookingDialog, QuickLeadDialog } from '@/features/quick-actions/components/quick-action-dialogs';
+
+const NavbarMobile = dynamic(() => import('./NavbarMobile'));
+const AuthDialog = dynamic(() => import('@/features/auth/components/auth-dialog'));
+const QuickBookingDialog = dynamic(() =>
+  import('@/features/quick-actions/components/quick-action-dialogs').then((module) => module.QuickBookingDialog)
+);
+const QuickLeadDialog = dynamic(() =>
+  import('@/features/quick-actions/components/quick-action-dialogs').then((module) => module.QuickLeadDialog)
+);
 
 export default function Navbar({ dark, onToggleDark }: { dark: boolean; onToggleDark: () => void }) {
   const [authOpen, setAuthOpen] = useState(false);
@@ -27,7 +34,7 @@ export default function Navbar({ dark, onToggleDark }: { dark: boolean; onToggle
     : 'border-slate-200/70 bg-white/85 shadow-xl shadow-slate-900/10 ring-slate-200/60 dark:border-white/10 dark:bg-slate-950/40 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_18px_60px_rgba(8,20,36,0.22)] dark:ring-cyan-300/10';
 
   return (
-    <header className="fixed top-0 right-0 left-0 z-50 px-4 pt-3 transition-all duration-300 sm:px-6 lg:px-8">
+    <header className="fixed top-0 start-0 end-0 z-50 px-4 pt-3 transition-all duration-300 sm:px-6 lg:px-8">
       <div
         className={`mx-auto max-w-7xl rounded-3xl border backdrop-blur-2xl transition-all duration-300 ${glassBarClass}`}
       >

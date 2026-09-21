@@ -1,16 +1,33 @@
 'use client';
-import { useEffect } from 'react';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 
 export default function MetaPixelTracker() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const initialPathname = useRef(pathname);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && (window as any).fbq) {
-      (window as any).fbq('track', 'PageView');
+    if (!pathname || pathname === initialPathname.current) return;
+
+    const trackPageView = () => {
+      if (typeof window !== 'undefined' && typeof (window as any).fbq === 'function') {
+        (window as any).fbq('track', 'PageView');
+      }
+    };
+
+    const idleCallback = (window as Window & {
+      requestIdleCallback?: (callback: IdleRequestCallback, options?: IdleRequestOptions) => number;
+      cancelIdleCallback?: (handle: number) => void;
+    }).requestIdleCallback;
+
+    if (idleCallback) {
+      const idleId = idleCallback(trackPageView, { timeout: 2000 });
+      return () => window.cancelIdleCallback?.(idleId);
     }
-  }, [pathname, searchParams]);
+
+    const timeoutId = globalThis.setTimeout(trackPageView, 1000);
+    return () => globalThis.clearTimeout(timeoutId);
+  }, [pathname]);
 
   return null;
 }

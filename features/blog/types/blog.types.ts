@@ -34,7 +34,7 @@ export interface BlogListItem {
   excerpt: string;
   image: string | null;
   is_featured: boolean;
-  published_at: string | null;
+  published_at?: string | null;
   sort_order: number;
   created_at: string | null;
 }

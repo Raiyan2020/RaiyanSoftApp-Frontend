@@ -29,6 +29,7 @@ import {
   UserRound,
 } from 'lucide-react';
 import Button from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTranslation } from '@/lib/i18nContext';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getEmployeeFullName } from '@/features/admin-employees';
@@ -38,6 +39,9 @@ import {
   ProjectDetailTab,
   useAdminProjectOperations,
 } from '../hooks/use-admin-project-operations';
+
+/** Stands in for the empty value, which Radix Select does not allow as an item value. */
+const UNASSIGNED_VALUE = '__unassigned__';
 
 interface AdminUserProjectDetailPageProps {
   ownerId?: string;
@@ -410,22 +414,33 @@ export default function AdminUserProjectDetailPage({
               </div>
               <div className="space-y-2">
                 <FieldLabel>{tr('Responsible Person')}</FieldLabel>
-                <select
-                  value={ops.stageForm.assignedTo}
-                  onChange={(e) => ops.setStageForm((prev) => ({ ...prev, assignedTo: e.target.value }))}
-                  className={inputClasses}
+                <Select
+                  value={ops.stageForm.assignedTo || undefined}
+                  onValueChange={(value) =>
+                    ops.setStageForm((prev) => ({
+                      ...prev,
+                      // Radix forbids an empty SelectItem value, so "unassigned" travels as a
+                      // sentinel and is mapped back to '' at this boundary.
+                      assignedTo: value === UNASSIGNED_VALUE ? '' : value,
+                    }))
+                  }
                 >
-                  <option value="">{tr('Unassigned')}</option>
-                  {ops.employees.map((employee) => (
-                    <option key={employee.id} value={String(employee.id)}>
-                      {getEmployeeFullName(employee)}
-                    </option>
-                  ))}
-                  {ops.stageForm.assignedTo &&
-                  !ops.employees.some((employee) => String(employee.id) === ops.stageForm.assignedTo) ? (
-                    <option value={ops.stageForm.assignedTo}>{ops.stageForm.assignedTo}</option>
-                  ) : null}
-                </select>
+                  <SelectTrigger>
+                    <SelectValue placeholder={tr('Unassigned')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={UNASSIGNED_VALUE}>{tr('Unassigned')}</SelectItem>
+                    {ops.employees.map((employee) => (
+                      <SelectItem key={employee.id} value={String(employee.id)}>
+                        {getEmployeeFullName(employee)}
+                      </SelectItem>
+                    ))}
+                    {ops.stageForm.assignedTo &&
+                    !ops.employees.some((employee) => String(employee.id) === ops.stageForm.assignedTo) ? (
+                      <SelectItem value={ops.stageForm.assignedTo}>{ops.stageForm.assignedTo}</SelectItem>
+                    ) : null}
+                  </SelectContent>
+                </Select>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
@@ -441,18 +456,22 @@ export default function AdminUserProjectDetailPage({
                 </div>
                 <div className="space-y-2">
                   <FieldLabel>{tr('Status')}</FieldLabel>
-                  <select
+                  <Select
                     value={ops.stageForm.status}
-                    onChange={(e) =>
-                      ops.setStageForm((prev) => ({ ...prev, status: e.target.value as ProjectStageStatus }))
+                    onValueChange={(value) =>
+                      ops.setStageForm((prev) => ({ ...prev, status: value as ProjectStageStatus }))
                     }
-                    className={inputClasses}
                   >
-                    <option value="planned">{tr('Planned')}</option>
-                    <option value="active">{tr('Active')}</option>
-                    <option value="blocked">{tr('Blocked')}</option>
-                    <option value="completed">{tr('Completed')}</option>
-                  </select>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="planned">{tr('Planned')}</SelectItem>
+                      <SelectItem value="active">{tr('Active')}</SelectItem>
+                      <SelectItem value="blocked">{tr('Blocked')}</SelectItem>
+                      <SelectItem value="completed">{tr('Completed')}</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
               <Button
@@ -480,17 +499,18 @@ export default function AdminUserProjectDetailPage({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <FieldLabel>{tr('Stage')}</FieldLabel>
-                  <select
-                    value={ops.selectedStageId}
-                    onChange={(e) => ops.setSelectedStageId(e.target.value)}
-                    className={inputClasses}
-                  >
-                    {ops.stages.map((stage) => (
-                      <option key={stage.id} value={stage.id}>
-                        {stage.title}
-                      </option>
-                    ))}
-                  </select>
+                  <Select value={ops.selectedStageId || undefined} onValueChange={ops.setSelectedStageId}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ops.stages.map((stage) => (
+                        <SelectItem key={stage.id} value={stage.id}>
+                          {stage.title}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
@@ -704,6 +724,17 @@ export default function AdminUserProjectDetailPage({
                         >
                           <Copy size={15} />
                         </button>
+                        {report.status !== 'sent' ? (
+                          <button
+                            type="button"
+                            onClick={() => ops.sendWeeklyReport(report.id)}
+                            disabled={ops.saving}
+                            className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 hover:text-primary rounded-lg text-[var(--text-muted)] transition-colors"
+                            title={tr('Send to client')}
+                          >
+                            <Send size={15} />
+                          </button>
+                        ) : null}
                         <button
                           type="button"
                           onClick={() => ops.startEditReport(report)}
@@ -753,18 +784,21 @@ export default function AdminUserProjectDetailPage({
                 <div className="space-y-4">
                   <div className="space-y-2">
                     <FieldLabel>{tr('Stage')}</FieldLabel>
-                    <select
-                      value={ops.attachmentForm.stageId}
-                      onChange={(e) => ops.setAttachmentForm((prev) => ({ ...prev, stageId: e.target.value }))}
-                      className={inputClasses}
+                    <Select
+                      value={ops.attachmentForm.stageId || undefined}
+                      onValueChange={(value) => ops.setAttachmentForm((prev) => ({ ...prev, stageId: value }))}
                     >
-                      <option value="">{tr('Select stage')}</option>
-                      {ops.stages.map((stage) => (
-                        <option key={stage.id} value={stage.id}>
-                          {stage.title}
-                        </option>
-                      ))}
-                    </select>
+                      <SelectTrigger>
+                        <SelectValue placeholder={tr('Select stage')} />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ops.stages.map((stage) => (
+                          <SelectItem key={stage.id} value={stage.id}>
+                            {stage.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="space-y-2">
                     <FieldLabel>{tr('Title')}</FieldLabel>
@@ -855,18 +889,18 @@ export default function AdminUserProjectDetailPage({
                   <div className="space-y-4">
                     <div className="space-y-2">
                       <FieldLabel>{tr('Stage')}</FieldLabel>
-                      <select
-                        value={ops.noteStageId}
-                        onChange={(e) => ops.setNoteStageId(e.target.value)}
-                        className={inputClasses}
-                      >
-                        <option value="">{tr('Select stage')}</option>
-                        {ops.stages.map((stage) => (
-                          <option key={stage.id} value={stage.id}>
-                            {stage.title}
-                          </option>
-                        ))}
-                      </select>
+                      <Select value={ops.noteStageId || undefined} onValueChange={ops.setNoteStageId}>
+                        <SelectTrigger>
+                          <SelectValue placeholder={tr('Select stage')} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {ops.stages.map((stage) => (
+                            <SelectItem key={stage.id} value={stage.id}>
+                              {stage.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <FieldLabel>{tr('Note')}</FieldLabel>
@@ -1119,26 +1153,6 @@ export default function AdminUserProjectDetailPage({
           </div>
         </div>
       ) : null}
-    </div>
-  );
-}
-
-function PlaceholderPanel({
-  icon: Icon,
-  title,
-  text,
-}: {
-  icon: React.ElementType;
-  title: string;
-  text: string;
-}) {
-  return (
-    <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-10 text-center">
-      <div className="w-16 h-16 bg-[var(--surface-3)] rounded-2xl flex items-center justify-center mx-auto mb-5 border border-[var(--border)]">
-        <Icon size={28} className="text-[var(--text-muted)]" />
-      </div>
-      <h2 className="text-xl font-bold text-[var(--text)] mb-2">{title}</h2>
-      <p className="text-sm text-[var(--text-muted)] max-w-xl mx-auto leading-relaxed">{text}</p>
     </div>
   );
 }

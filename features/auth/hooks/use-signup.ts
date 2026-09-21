@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { translateMessage } from '@/lib/i18n-utils';
 import { apiService } from '@/lib/api-service';
 import { authService } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
@@ -55,7 +56,7 @@ export function useSignup() {
       router.push('/home');
     } catch (err: any) {
       console.error("Signup Error:", err);
-      setError({ message: err.message || 'Signup failed. Please try again.' });
+      setError({ message: err.message || translateMessage('Signup failed. Please try again.') });
     } finally {
       setLoading(false);
     }

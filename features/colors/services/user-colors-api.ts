@@ -24,7 +24,7 @@ export async function fetchUserColors() {
 export async function fetchUserColorsServer() {
   const response = await fetch(`${getApiBaseUrl()}/user/colors`, {
     headers: { Accept: 'application/json' },
-    next: { revalidate: 300 },
+    cache: 'no-store',
   });
 
   const data = (await response.json()) as ApiResponse<UserColor[]>;

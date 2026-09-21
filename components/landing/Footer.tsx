@@ -1,23 +1,36 @@
 'use client';
 import Image from 'next/image';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
+import type { LandingPageContent } from '@/features/landing-page';
 
 const footerAnchors = ['#home', '#services', '#works', '#partners', '#contact'];
 
-export default function Footer() {
+type FooterProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function Footer({ homeData }: FooterProps) {
   const { content, siteName, siteDescription, socialMedia } = useLandingContent();
   const { footer } = content;
+  const banner = homeData?.banners?.footer;
 
   const scrollTo = (href: string) => {
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const socialLinks = [
-    { key: 'twitter', label: 'X', href: socialMedia?.twitter },
-    { key: 'instagram', label: 'IG', href: socialMedia?.instagram },
-    { key: 'linkedin', label: 'in', href: socialMedia?.linkedin },
-  ].filter((item) => item.href);
+  const socialLabels: Record<string, string> = {
+    facebook: 'f',
+    twitter: 'X',
+    instagram: 'IG',
+    linkedin: 'in',
+    youtube: 'YT',
+    tiktok: 'TT',
+    snapchat: 'SC',
+  };
+  const socialLinks = Object.entries(socialMedia || {})
+    .filter(([, href]) => Boolean(href))
+    .map(([key, href]) => ({ key, label: socialLabels[key.toLowerCase()] || key.slice(0, 2).toUpperCase(), href }));
 
   return (
     <footer className="relative overflow-hidden border-t border-white/10 bg-slate-950 text-slate-300">
@@ -26,15 +39,16 @@ export default function Footer() {
         <div className="mb-12 rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-cyan-950/20 sm:p-8">
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="mb-3 text-sm font-bold text-primary">{footer.ctaBadge}</p>
-              <p className="text-2xl font-bold text-white sm:text-3xl">{footer.ctaTitle}</p>
+              <p className="mb-3 text-sm font-bold text-primary">{banner?.caption || footer.ctaBadge}</p>
+              <p className="text-2xl font-bold text-white sm:text-3xl">{banner?.title || footer.ctaTitle}</p>
+              {banner?.description ? <p className="mt-3 text-sm leading-relaxed text-slate-300">{banner.description}</p> : null}
             </div>
             <button
               type="button"
               onClick={() => scrollTo('#contact')}
               className="premium-button touch-lift rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-8 py-4 text-lg font-bold text-white shadow-xl shadow-primary/25 transition-all duration-300 hover:-translate-y-1"
             >
-              {footer.ctaButton}
+              {banner?.button_text || footer.ctaButton}
             </button>
           </div>
         </div>
@@ -47,6 +61,7 @@ export default function Footer() {
               </div>
               <div>
                 <p className="text-lg font-bold text-white">{siteName}</p>
+                {/* i18n-ignore-next-line: brand name, never translated */}
                 <p className="text-xs text-slate-500">Raiyansoft</p>
               </div>
             </div>

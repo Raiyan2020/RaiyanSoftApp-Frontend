@@ -26,8 +26,10 @@ export interface AdminFormQuestion {
     en?: string;
     ar?: string;
   };
-  type: AdminFormQuestionTypeValue;
+  type: AdminFormQuestionTypeValue | AdminFormQuestionType | string;
   is_active?: boolean | number;
+  is_fixed?: boolean;
+  section?: string | null;
   sort_order?: number;
   options?: AdminFormQuestionOption[];
 }
@@ -45,6 +47,7 @@ export interface AdminFormQuestionPayload {
   name_ar?: string;
   type: AdminFormQuestionTypeValue;
   is_active: boolean;
+  section?: string;
   sort_order: number;
   options?: AdminFormQuestionOptionPayload[];
 }
@@ -77,6 +80,7 @@ export function buildAdminFormQuestionFormData(payload: AdminFormQuestionPayload
   formData.append('name[ar]', payload.name_ar || payload.name_en);
   formData.append('type', String(payload.type));
   appendBoolean(formData, 'is_active', payload.is_active);
+  if (payload.section) formData.append('section', payload.section);
   formData.append('sort_order', String(payload.sort_order));
 
   payload.options?.forEach((option, index) => {

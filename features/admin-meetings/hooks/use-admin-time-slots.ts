@@ -10,6 +10,7 @@ import {
 } from '@/features/meetings';
 import { globalToast } from '@/lib/toast-context';
 import { TimeSlotDayApiItem } from '@/features/meetings';
+import { translateMessage } from '@/lib/i18n-utils';
 
 export function useAdminTimeSlots() {
   const [weeklyAvailability, setWeeklyAvailability] = useState<WeeklyAvailability>(
@@ -31,13 +32,16 @@ export function useAdminTimeSlots() {
         setWeeklyAvailability(timeSlotsToWeeklyAvailability(data.days));
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to load time slots.');
+      setError(translateMessage(err.message || 'Failed to load time slots.'));
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    // Genuine external synchronization: fetches the record from the API on
+    // mount; loading/data/error are set from the async lifecycle.
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- data fetching; see comment above.
     reload();
   }, [reload]);
 
@@ -51,7 +55,7 @@ export function useAdminTimeSlots() {
       globalToast.success(response.message || 'Time slots saved successfully.');
     } catch (err: any) {
       const message = err.message || 'Failed to save time slots.';
-      setError(message);
+      setError(translateMessage(message));
       globalToast.error(message);
       throw err;
     } finally {

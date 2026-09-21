@@ -25,11 +25,33 @@ const publicRoutes = [
   '/terms',
 ];
 
+const schemaExpectations = {
+  '/': ['WebPage', 'WebSite', 'ProfessionalService'],
+  '/services': ['ItemList'],
+  '/services/mobile-app-development': ['Service', 'BreadcrumbList', 'FAQPage'],
+  '/faq': ['FAQPage'],
+  '/portfolio': ['ItemList'],
+  '/blogs': ['CollectionPage', 'ItemList'],
+  '/blogs/estimate-digital-product-cost': ['Article', 'BreadcrumbList'],
+};
+
 const privateRoutes = ['/admin', '/home', '/login', '/profile'];
 
 function countMatches(html, pattern) {
   const re = new RegExp(pattern, 'gi');
   return (html.match(re) || []).length;
+}
+
+function getJsonLdTypes(html) {
+  const scripts = [...html.matchAll(/<script[^>]*type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/gi)];
+  return scripts.flatMap((match) => {
+    try {
+      const value = JSON.parse(match[1]);
+      return Array.isArray(value) ? value.map((item) => item?.['@type']) : [value?.['@type']];
+    } catch {
+      return [];
+    }
+  }).filter(Boolean);
 }
 
 async function checkRoute(path) {
@@ -42,8 +64,9 @@ async function checkRoute(path) {
   const canonical = html.match(/<link rel="canonical" href="([^"]*)"/)?.[1] ?? '';
   const h1Count = countMatches(html, '<h1[\\s>]');
   const robots = html.match(/<meta name="robots" content="([^"]*)"/)?.[1] ?? '';
+  const jsonLdTypes = getJsonLdTypes(html);
 
-  return { path, status: res.status, title, description, ogTitle, canonical, h1Count, robots, ok: res.ok };
+  return { path, status: res.status, title, description, ogTitle, canonical, h1Count, robots, jsonLdTypes, ok: res.ok };
 }
 
 async function main() {
@@ -71,6 +94,11 @@ async function main() {
     if (!result.canonical) issues.push('missing canonical');
     if (result.h1Count !== 1) issues.push(`h1 count=${result.h1Count} (expected 1)`);
     if (result.robots.includes('noindex')) issues.push('unexpected noindex');
+    if (result.ok) {
+      const expectedSchemas = schemaExpectations[path] || [];
+      const missingSchemas = expectedSchemas.filter((type) => !result.jsonLdTypes.includes(type));
+      if (missingSchemas.length) issues.push(`missing JSON-LD: ${missingSchemas.join(', ')} (found: ${result.jsonLdTypes.join(', ') || 'none'})`);
+    }
 
     const status = issues.length ? 'FAIL' : 'OK';
     if (issues.length) failures += 1;

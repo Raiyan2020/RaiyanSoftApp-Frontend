@@ -2,20 +2,26 @@
 import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import { useLandingTestimonials } from '@/features/landing-page';
 import SafeImage from '@/components/ui/safe-image';
+import type { LandingPageContent } from '@/features/landing-page';
 
-export default function Partners() {
+type PartnersProps = {
+  homeData?: LandingPageContent | null;
+};
+
+export default function Partners({ homeData }: PartnersProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
   const { content, textAlign } = useLandingContent();
   const { partners } = content;
-  const { data: apiData } = useLandingTestimonials();
+  const apiTestimonials = homeData?.testimonials;
 
-  const badge = apiData?.header?.caption || partners.badge;
-  const title = apiData?.header?.title || `${partners.title} ${partners.titleHighlight}`;
-  const description = apiData?.header?.description || partners.description;
-  const hasApiTestimonials = (apiData?.testimonials?.length ?? 0) > 0;
+  // The About Us block is rendered by AboutUs. Reusing its API header here
+  // creates a duplicate section when the CMS has about_us content.
+  const badge = apiTestimonials?.header?.caption || partners.badge;
+  const title = apiTestimonials?.header?.title || `${partners.title} ${partners.titleHighlight}`;
+  const description = apiTestimonials?.header?.description || partners.description;
+  const hasApiTestimonials = (apiTestimonials?.testimonials?.length ?? 0) > 0;
 
   return (
     <section id="partners" className="relative overflow-hidden bg-white py-12 dark:bg-navy-950 sm:py-16 lg:py-20">
@@ -56,7 +62,7 @@ export default function Partners() {
         {/* Testimonials grid */}
         <div className={`${hasApiTestimonials ? '' : 'mt-8'} grid gap-6 ${hasApiTestimonials ? 'grid-cols-1 sm:grid-cols-2' : 'lg:grid-cols-2'}`}>
           {hasApiTestimonials
-            ? apiData!.testimonials.map((testimonial, i) => (
+            ? apiTestimonials!.testimonials.map((testimonial, i) => (
                 <article
                   key={testimonial.id}
                   className="reveal rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-6 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/15 dark:bg-white/8"
@@ -66,7 +72,7 @@ export default function Partners() {
                   <blockquote className="mt-2 text-lg font-semibold leading-relaxed">{testimonial.description}</blockquote>
                   <div className="mt-6 flex items-center gap-3">
                     {testimonial.image ? (
-                      <SafeImage src={testimonial.image} alt={testimonial.title} className="h-11 w-11 rounded-2xl" />
+                      <SafeImage src={testimonial.image} alt={testimonial.title} sizes="44px" className="h-11 w-11 rounded-2xl" />
                     ) : (
                       <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-primary to-emerald-400" />
                     )}

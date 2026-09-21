@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { translateMessage } from '@/lib/i18n-utils';
 import { leadStore } from '@/lib/leadStore';
 import { authService } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
@@ -19,7 +20,12 @@ export function useClaim() {
   const [leadId, setLeadId] = useState<string | null>(null);
 
   useEffect(() => {
+    // Genuine external synchronization: validates the claim token against
+    // the API on mount/token change; status/error are set from the async
+    // lifecycle (and the synchronous "missing token" branch below), not
+    // derived from render state.
     if (!token) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- see comment above.
       setStatus('invalid');
       setErrorMsg('Missing token.');
       return;
@@ -42,7 +48,7 @@ export function useClaim() {
     setStatus('claiming');
     try {
       if (!authService.getUser()) {
-        throw new Error('Please sign in before claiming this project.');
+        throw new Error(translateMessage('Please sign in before claiming this project.'));
       }
 
       await leadStore.claimProject(token, leadId);

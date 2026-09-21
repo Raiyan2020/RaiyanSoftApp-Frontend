@@ -2,12 +2,13 @@
 // @ts-nocheck
 import React from 'react';
 import { motion } from 'framer-motion';
+import { translateMessage } from '@/lib/i18n-utils';
 
 const Placeholder: React.FC<{ title: string }> = ({ title }) => {
   return (
     <div className="flex flex-col h-full items-center justify-center p-6 relative">
       <motion.div
-        initial={{ opacity: 0, scale: 0.9 }}
+        initial={false}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
         className="text-center"
@@ -17,7 +18,7 @@ const Placeholder: React.FC<{ title: string }> = ({ title }) => {
         </div>
         <h1 className="text-2xl font-bold text-white mb-2">{title}</h1>
         <div className="h-1 w-12 bg-primary rounded-full mx-auto mb-4"></div>
-        <p className="text-slate-400">Coming soon</p>
+        <p className="text-slate-400">{translateMessage('Coming soon')}</p>
       </motion.div>
     </div>
   );

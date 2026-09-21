@@ -65,6 +65,10 @@ export type AdminMeeting = {
   cancel_by?: number | null;
   cancel_by_name?: string | null;
   created_at: string;
+  user?: {
+    full_name: string;
+    full_phone: string;
+  } | null;
 };
 
 export type AdminMeetingsFilters = {
@@ -72,6 +76,9 @@ export type AdminMeetingsFilters = {
   email?: string;
   phone?: string;
   status?: MeetingStatusCode;
+  type?: MeetingTypeCode;
+  dateFrom?: string;
+  dateTo?: string;
   page?: number;
 };
 

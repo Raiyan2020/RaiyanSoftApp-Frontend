@@ -70,7 +70,7 @@ export default function BottomNav() {
   };
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 max-w-[430px] mx-auto z-50 px-2 pb-2 pointer-events-none lg:hidden">
+    <div className="fixed bottom-0 start-0 end-0 max-w-[430px] mx-auto z-50 px-2 pb-2 pointer-events-none lg:hidden">
       <div className="glass-panel rounded-2xl h-16 flex items-center justify-around px-1 shadow-lg shadow-black/40 pointer-events-auto overflow-visible">
         {tabs.map((tab) => {
           const isActive = pathname === tab.path;

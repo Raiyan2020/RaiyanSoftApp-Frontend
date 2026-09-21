@@ -69,11 +69,12 @@ export function useAdminEmployees() {
     setActionMessage(null);
 
     if (employee) {
+      const [fallbackFirstName = '', ...fallbackLastNameParts] = (employee.full_name || '').split(' ');
       setEditingEmployee(employee);
       setFormData({
-        firstName: employee.first_name,
-        lastName: employee.last_name,
-        email: employee.email,
+        firstName: employee.first_name || fallbackFirstName,
+        lastName: employee.last_name || fallbackLastNameParts.join(' '),
+        email: employee.email || '',
         phone: employee.phone || '',
         role: 'super_admin',
         password: '',
