@@ -34,7 +34,7 @@
 /* ── Base ──────────────────────────────────────────────── */
 html,
 body {
-  height: 100%;
+  min-height: 100%;
   width: 100%;
   margin: 0;
   padding: 0;
@@ -148,15 +148,17 @@ li {
 }
 
 /* ── Section reveal animation ──────────────────────────── */
+@keyframes reveal-in {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: none; }
+}
+/* The 1.2s delay is the no-JS / slow-hydration fallback: content becomes
+   visible even if the observer in use-section-reveal never runs. */
 .reveal {
-  opacity: 0;
-  transform: translateY(40px);
-  transition: opacity 0.75s cubic-bezier(0.22, 1, 0.36, 1), transform 0.75s cubic-bezier(0.22, 1, 0.36, 1);
-  will-change: opacity, transform;
+  animation: reveal-in 0.75s cubic-bezier(0.22, 1, 0.36, 1) 1.2s both;
 }
 .reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
+  animation-delay: 0s;
 }
 
 /* ── Gradient text ─────────────────────────────────────── */
@@ -550,6 +552,7 @@ li {
   }
 
   .reveal {
+    animation: none;
     opacity: 1;
     transform: none;
   }
