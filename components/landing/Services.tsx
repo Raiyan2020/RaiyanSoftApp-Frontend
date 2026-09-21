@@ -71,7 +71,7 @@ export default function Services({ homeData }: ServicesProps) {
                           <h3 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">{service.title}</h3>
                         </div>
                         {service.image ? (
-                          <SafeImage src={service.image} alt={service.title} className="h-14 w-14 rounded-2xl shadow-lg sm:h-16 sm:w-16" />
+                          <SafeImage src={service.image} alt={service.title} sizes="64px" className="h-14 w-14 rounded-2xl shadow-lg sm:h-16 sm:w-16" />
                         ) : (
                           <div className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${gradient} text-xl font-black text-white shadow-lg sm:h-16 sm:w-16`}>
                             {String(i + 1).padStart(2, '0')}

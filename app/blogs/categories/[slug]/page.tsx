@@ -25,6 +25,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
       title: translateMessage('Category Not Found', language),
       description: translateMessage('Category Not Found', language),
       path: '/blogs/categories',
+      noIndex: true,
     });
   }
 

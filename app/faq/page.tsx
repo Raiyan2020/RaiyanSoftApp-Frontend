@@ -26,7 +26,7 @@ export default async function FaqPage() {
       title={header?.title || tt('Answers before we begin')}
       description={header?.description || tt('Frequently asked questions about scope, timeline, delivery, and how we work together.')}
     >
-      <JsonLd id="faq-schema" data={createFaqJsonLd(publicFaqs)} />
+      {publicFaqs.length ? <JsonLd id="faq-schema" data={createFaqJsonLd(publicFaqs)} /> : null}
       <PublicFaq items={publicFaqs} />
     </PublicSimplePage>
   );

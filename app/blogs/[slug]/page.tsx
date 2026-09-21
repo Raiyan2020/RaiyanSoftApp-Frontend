@@ -28,6 +28,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: translateMessage('Article Not Found', language),
       description: translateMessage('We could not find this article on the Raiyan Soft blog.', language),
       path: '/blogs',
+      noIndex: true,
     });
   }
 

@@ -72,7 +72,7 @@ export default function Partners({ homeData }: PartnersProps) {
                   <blockquote className="mt-2 text-lg font-semibold leading-relaxed">{testimonial.description}</blockquote>
                   <div className="mt-6 flex items-center gap-3">
                     {testimonial.image ? (
-                      <SafeImage src={testimonial.image} alt={testimonial.title} className="h-11 w-11 rounded-2xl" />
+                      <SafeImage src={testimonial.image} alt={testimonial.title} sizes="44px" className="h-11 w-11 rounded-2xl" />
                     ) : (
                       <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-primary to-emerald-400" />
                     )}

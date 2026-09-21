@@ -73,7 +73,12 @@ export default function AboutUs({ homeData }: AboutUsProps) {
             >
               <div className="relative h-52 w-full overflow-hidden bg-slate-100 dark:bg-white/5">
                 {card.image ? (
-                  <SafeImage src={card.image} alt={card.title} className="absolute inset-0 h-full w-full object-cover" />
+                  <SafeImage
+                    src={card.image}
+                    alt={card.title}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1280px) 33vw, 384px"
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
                 ) : (
                   <div className="absolute inset-0 grid place-items-center text-6xl font-black text-primary/20">01</div>
                 )}

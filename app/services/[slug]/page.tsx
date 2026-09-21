@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const language = await getServerLanguage();
   const services = await getServices(language);
   const service = services.find((item) => item.slug === slug);
-  if (!service) return createPublicMetadata({ title: translateMessage('Service Not Found', language), path: '/services' });
+  if (!service) return createPublicMetadata({ title: translateMessage('Service Not Found', language), path: '/services', noIndex: true });
   return createPublicMetadata({ title: service.title, description: service.description, path: `/services/${service.slug}` });
 }
 
@@ -55,7 +55,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
           { name: service.title, url: getCanonicalUrl(`/services/${service.slug}`) },
         ])}
       />
-      <JsonLd id={`service-faq-${service.slug}`} data={createFaqJsonLd(publicFaqs)} />
+      {publicFaqs.length ? <JsonLd id={`service-faq-${service.slug}`} data={createFaqJsonLd(publicFaqs)} /> : null}
       <PageHero
         eyebrow={tt('Service Details')}
         title={tt(service.title)}

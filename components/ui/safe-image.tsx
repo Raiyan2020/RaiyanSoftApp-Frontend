@@ -25,6 +25,7 @@ export default function SafeImage({
   src,
   alt,
   className,
+  sizes = '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw',
   fallbackSrc = FALLBACK_URL,
   ...props
 }: SafeImageProps) {
@@ -55,7 +56,7 @@ export default function SafeImage({
         fill
         className="object-cover"
         onError={handleError}
-        sizes="(max-width: 768px) 100vw, 50vw"
+        sizes={sizes}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 'use client';
-import { motion, useReducedMotion, type Variants } from 'framer-motion';
+import { useState } from 'react';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 import { getLandingButtonScrollTarget, shouldOpenLandingButtonInNewTab } from '@/features/landing-page';
 import type { LandingPageContent } from '@/features/landing-page';
@@ -12,7 +12,7 @@ type HeroBannerProps = {
 };
 
 export default function HeroBanner({ homeData }: HeroBannerProps) {
-  const shouldReduceMotion = useReducedMotion();
+  const [videoLoaded, setVideoLoaded] = useState(false);
   const { content, siteName, textAlign, flexAlign } = useLandingContent();
   const { hero } = content;
 
@@ -33,41 +33,15 @@ export default function HeroBanner({ homeData }: HeroBannerProps) {
     return match ? match[1] : HERO_VIDEO_ID;
   })();
 
-  const parent: Variants | undefined = shouldReduceMotion
-    ? undefined
-    : {
-        hidden: {},
-        visible: {
-          transition: { staggerChildren: 0.09, delayChildren: 0.08 },
-        },
-      };
-
-  const item: Variants | undefined = shouldReduceMotion
-    ? undefined
-    : {
-        hidden: { opacity: 0, y: 24, filter: 'blur(8px)' },
-        visible: {
-          opacity: 1,
-          y: 0,
-          filter: 'blur(0px)',
-          transition: { duration: 0.65, ease: [0.22, 1, 0.36, 1] },
-        },
-      };
-
   return (
     <section id="home" className="relative isolate min-h-screen overflow-hidden bg-[#06111f] text-white">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_20%,rgba(18,169,217,0.28),transparent_32%),radial-gradient(circle_at_18%_58%,rgba(33,211,162,0.16),transparent_34%),linear-gradient(135deg,#020617_0%,#071827_52%,#06111f_100%)]" />
       <div className="premium-grid absolute inset-0 opacity-35" />
       <div className="noise-bg opacity-[0.06]" />
 
-      <motion.div
-        className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl items-center px-4 pb-10 pt-24 sm:px-6 sm:pb-14 sm:pt-28 lg:px-8 lg:pb-20 lg:pt-32"
-        variants={parent}
-        initial={false}
-        animate="visible"
-      >
+      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-7xl items-center px-4 pb-10 pt-24 sm:px-6 sm:pb-14 sm:pt-28 lg:px-8 lg:pb-20 lg:pt-32">
         <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
-          <motion.div variants={item} className={`order-2 text-center ${textAlign}`}>
+          <div className={`order-2 text-center ${textAlign}`}>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-bold text-cyan-200 shadow-2xl shadow-primary/10 backdrop-blur-xl">
               <span className="h-2 w-2 rounded-full bg-[var(--mint)] shadow-[0_0_18px_rgba(33,211,162,0.9)]" />
               {badge}
@@ -124,33 +98,46 @@ export default function HeroBanner({ homeData }: HeroBannerProps) {
               </button>
             </div>
 
-            <motion.div variants={parent} className={`mt-6 flex flex-wrap justify-center gap-2 sm:mt-8 ${flexAlign}`}>
+            <div className={`mt-6 flex flex-wrap justify-center gap-2 sm:mt-8 ${flexAlign}`}>
               {proofTags.map((label) => (
-                <motion.span key={label} variants={item} className="rounded-full border border-white/10 bg-white/7 px-4 py-2 text-xs font-bold text-slate-200 backdrop-blur">
+                <span key={label} className="rounded-full border border-white/10 bg-white/7 px-4 py-2 text-xs font-bold text-slate-200 backdrop-blur">
                   {label}
-                </motion.span>
+                </span>
               ))}
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
 
-          <motion.div variants={item} className="order-1 lg:order-2">
+          <div className="order-1 lg:order-2">
             <div className="relative mx-auto w-full max-w-[420px] sm:max-w-[540px] lg:max-w-[620px]">
               <div className="overflow-hidden rounded-2xl border border-white/15 shadow-lg shadow-black/25 sm:rounded-3xl">
                 <div className="relative aspect-[16/10] w-full min-h-[220px] sm:min-h-[300px] lg:min-h-[360px]">
-                  <iframe
-                    src={`https://www.youtube.com/embed/${videoId}?start=${HERO_VIDEO_START}&rel=0&modestbranding=1`}
-                    title={siteName || hero.videoTitle}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                    allowFullScreen
-                    loading="lazy"
-                    className="absolute inset-0 h-full w-full"
-                  />
+                  {videoLoaded ? (
+                    <iframe
+                      src={`https://www.youtube.com/embed/${videoId}?start=${HERO_VIDEO_START}&rel=0&modestbranding=1`}
+                      title={siteName || hero.videoTitle}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      className="absolute inset-0 h-full w-full"
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => setVideoLoaded(true)}
+                      aria-label={hero.videoTitle}
+                      className="group absolute inset-0 flex h-full w-full items-center justify-center bg-[linear-gradient(135deg,#0b2035_0%,#06111f_55%,#102b3c_100%)] text-white"
+                    >
+                      <span className="grid h-16 w-16 place-items-center rounded-full bg-primary text-2xl shadow-2xl shadow-cyan-950/50 transition-transform duration-300 group-hover:scale-110">
+                        <span className="ms-1" aria-hidden="true">▶</span>
+                      </span>
+                      <span className="sr-only">{hero.videoTitle}</span>
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }

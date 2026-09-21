@@ -60,7 +60,7 @@ export default function Works({ homeData }: WorksProps) {
                 >
                   <div className={`relative flex h-36 items-end overflow-hidden bg-gradient-to-br ${workGradients[i % workGradients.length]} p-6 sm:h-40`}>
                     {cap.image ? (
-                      <SafeImage src={cap.image} alt={cap.title} className="absolute inset-0 h-full w-full opacity-50" />
+                      <SafeImage src={cap.image} alt={cap.title} sizes="(max-width: 640px) 100vw, 50vw" className="absolute inset-0 h-full w-full opacity-50" />
                     ) : null}
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.22),transparent_45%)]" />
                     <span className="relative rounded-full bg-slate-950/75 px-3 py-1.5 text-xs font-bold text-white backdrop-blur ring-1 ring-white/10">

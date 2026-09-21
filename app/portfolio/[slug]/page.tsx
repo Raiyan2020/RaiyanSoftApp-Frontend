@@ -4,7 +4,7 @@ import PublicSimplePage from '@/components/public/public-page-section';
 import { BasicContentCard } from '@/components/public/content-cards';
 import JsonLd from '@/components/public/json-ld';
 import { portfolioItems } from '@/lib/public-content';
-import { createBreadcrumbJsonLd, createCreativeWorkJsonLd, createPublicMetadata, getCanonicalUrl } from '@/lib/site';
+import { createCreativeWorkJsonLd, createPublicMetadata } from '@/lib/site';
 import { getPublicWebsiteData } from '@/lib/websiteContentPublic';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const language = await getServerLanguage();
   const items = await getPortfolioItems(language);
   const item = items.find((entry) => entry.slug === slug);
-  if (!item) return createPublicMetadata({ title: translateMessage('Work Not Found', language), path: '/portfolio' });
+  if (!item) return createPublicMetadata({ title: translateMessage('Work Not Found', language), path: '/portfolio', noIndex: true });
   return createPublicMetadata({ title: item.title, description: item.summary, path: `/portfolio/${item.slug}` });
 }
 
@@ -39,13 +39,6 @@ export default async function PortfolioDetailPage({ params }: PageProps) {
 
   return (
     <PublicSimplePage path={`/portfolio/${item.slug}`} eyebrow={tt('Case Study')} title={tt(item.title)} description={tt(item.summary)}>
-      <JsonLd
-        id={`portfolio-breadcrumbs-${item.slug}`}
-        data={createBreadcrumbJsonLd([
-          { name: tt('Works'), url: getCanonicalUrl('/portfolio') },
-          { name: item.title, url: getCanonicalUrl(`/portfolio/${item.slug}`) },
-        ])}
-      />
       <JsonLd
         id={`portfolio-creative-work-${item.slug}`}
         data={createCreativeWorkJsonLd(item)}

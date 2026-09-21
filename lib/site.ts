@@ -7,7 +7,7 @@ export const siteConfig = {
   defaultTitle: 'ريان سوفت | تطوير تطبيقات ومواقع ومتاجر إلكترونية',
   description:
     'ريان سوفت وكالة تقنية تبني تطبيقات الجوال، المواقع الإلكترونية، المتاجر الرقمية، والهويات البصرية بتجربة مستخدم واضحة وأداء جاهز للنمو.',
-  ogImage: '/opengraph-image',
+  ogImage: '/og-image.svg',
   ogImageWidth: 1200,
   ogImageHeight: 630,
   locale: 'ar_SA',
@@ -142,6 +142,7 @@ export function createOrganizationJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'ProfessionalService',
+    '@id': `${getCanonicalUrl('/')}#organization`,
     name: siteConfig.name,
     alternateName: siteConfig.englishName,
     description: siteConfig.description,
@@ -159,6 +160,7 @@ export function createWebSiteJsonLd() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
+    '@id': `${getCanonicalUrl('/')}#website`,
     name: siteConfig.name,
     alternateName: siteConfig.englishName,
     description: siteConfig.description,
@@ -166,6 +168,7 @@ export function createWebSiteJsonLd() {
     inLanguage: siteConfig.language,
     publisher: {
       '@type': 'Organization',
+      '@id': `${getCanonicalUrl('/')}#organization`,
       name: siteConfig.name,
       url: getCanonicalUrl('/'),
     },
@@ -214,28 +217,18 @@ export function createServiceJsonLd(service: { title: string; description: strin
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',
+    '@id': `${getCanonicalUrl(`/services/${service.slug}`)}#service`,
     name: service.title,
     description: service.description,
     provider: {
       '@type': 'ProfessionalService',
+      '@id': `${getCanonicalUrl('/')}#organization`,
       name: siteConfig.name,
       url: getCanonicalUrl('/'),
     },
     areaServed: siteConfig.country,
     url: getCanonicalUrl(`/services/${service.slug}`),
-    hasOfferCatalog: service.deliverables?.length
-      ? {
-          '@type': 'OfferCatalog',
-          name: service.title,
-          itemListElement: service.deliverables.map((item) => ({
-            '@type': 'Offer',
-            itemOffered: {
-              '@type': 'Service',
-              name: item,
-            },
-          })),
-        }
-      : undefined,
+    serviceType: service.title,
   };
 }
 
@@ -266,15 +259,18 @@ export function createFaqJsonLd(items: { question: string; answer: string }[]) {
 }
 
 export function createWebPageJsonLd(page: { title: string; description: string; path: string }) {
+  const url = getCanonicalUrl(page.path);
   return {
     '@context': 'https://schema.org',
     '@type': 'WebPage',
+    '@id': `${url}#webpage`,
     name: page.title,
     description: page.description,
-    url: getCanonicalUrl(page.path),
+    url,
     inLanguage: siteConfig.language,
     isPartOf: {
       '@type': 'WebSite',
+      '@id': `${getCanonicalUrl('/')}#website`,
       name: siteConfig.name,
       url: getCanonicalUrl('/'),
     },
@@ -375,14 +371,17 @@ export function createJobPostingListJsonLd(items: { title: string; department?: 
 }
 
 export function createCreativeWorkJsonLd(item: { slug: string; title: string; summary: string }) {
+  const url = getCanonicalUrl(`/portfolio/${item.slug}`);
   return {
     '@context': 'https://schema.org',
     '@type': 'CreativeWork',
+    '@id': `${url}#work`,
     name: item.title,
     description: item.summary,
-    url: getCanonicalUrl(`/portfolio/${item.slug}`),
+    url,
     creator: {
       '@type': 'Organization',
+      '@id': `${getCanonicalUrl('/')}#organization`,
       name: siteConfig.name,
       url: getCanonicalUrl('/'),
     },
@@ -390,19 +389,37 @@ export function createCreativeWorkJsonLd(item: { slug: string; title: string; su
   };
 }
 
-export function createArticleJsonLd(post: { title: string; excerpt: string; slug: string; category?: string }) {
+export function createArticleJsonLd(post: {
+  title: string;
+  excerpt: string;
+  slug: string;
+  category?: string;
+  image?: string | null;
+  published_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
+}) {
+  const url = getCanonicalUrl(`/blogs/${post.slug}`);
+  const datePublished = post.published_at || post.created_at || undefined;
+  const dateModified = post.updated_at || undefined;
   return {
     '@context': 'https://schema.org',
     '@type': 'Article',
+    '@id': `${url}#article`,
     headline: post.title,
     description: post.excerpt,
-    url: getCanonicalUrl(`/blogs/${post.slug}`),
+    url,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `${url}#webpage` },
+    ...(datePublished ? { datePublished } : {}),
+    ...(dateModified ? { dateModified } : {}),
     author: {
       '@type': 'Organization',
+      '@id': `${getCanonicalUrl('/')}#organization`,
       name: siteConfig.name,
     },
     publisher: {
       '@type': 'Organization',
+      '@id': `${getCanonicalUrl('/')}#organization`,
       name: siteConfig.name,
       logo: {
         '@type': 'ImageObject',

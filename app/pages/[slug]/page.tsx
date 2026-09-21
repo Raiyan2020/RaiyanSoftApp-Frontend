@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { notFound } from 'next/navigation';
 import PublicSimplePage from '@/components/public/public-page-section';
 import { fetchLandingPageBySlug } from '@/features/landing-page';
-import { createBreadcrumbJsonLd, createPublicMetadata, getCanonicalUrl } from '@/lib/site';
+import { createPublicMetadata } from '@/lib/site';
 import JsonLd from '@/components/public/json-ld';
 import { getServerLanguage } from '@/lib/language.server';
 import { translateMessage } from '@/lib/i18n-utils';
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const page = await fetchLandingPageBySlug<LandingPageRecord>(slug, language);
 
   if (!page) {
-    return createPublicMetadata({ title: translateMessage('Page Not Found', language), path: `/pages/${slug}` });
+    return createPublicMetadata({ title: translateMessage('Page Not Found', language), path: `/pages/${slug}`, noIndex: true });
   }
 
   return createPublicMetadata({
@@ -47,14 +47,6 @@ export default async function LandingPageSlugPage({ params }: PageProps) {
 
   return (
     <PublicSimplePage seoKey="about" eyebrow={tt('Site Pages')} title={page.title} description={page.description}>
-      <JsonLd
-        id={`landing-page-breadcrumbs-${page.slug}`}
-        data={createBreadcrumbJsonLd([
-          { name: tt('Home'), url: getCanonicalUrl('/') },
-          { name: tt('Site Pages'), url: getCanonicalUrl('/pages') },
-          { name: page.title, url: getCanonicalUrl(`/pages/${page.slug}`) },
-        ])}
-      />
       <article className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/5">
         {page.image ? (
           <div className="relative aspect-[16/9] w-full">

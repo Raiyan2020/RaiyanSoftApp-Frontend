@@ -1,11 +1,18 @@
 'use client';
 
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import NavbarDesktop from './NavbarDesktop';
-import NavbarMobile from './NavbarMobile';
 import { useNavbar } from './use-navbar';
-import AuthDialog from '@/features/auth/components/auth-dialog';
-import { QuickBookingDialog, QuickLeadDialog } from '@/features/quick-actions/components/quick-action-dialogs';
+
+const NavbarMobile = dynamic(() => import('./NavbarMobile'));
+const AuthDialog = dynamic(() => import('@/features/auth/components/auth-dialog'));
+const QuickBookingDialog = dynamic(() =>
+  import('@/features/quick-actions/components/quick-action-dialogs').then((module) => module.QuickBookingDialog)
+);
+const QuickLeadDialog = dynamic(() =>
+  import('@/features/quick-actions/components/quick-action-dialogs').then((module) => module.QuickLeadDialog)
+);
 
 export default function Navbar({ dark, onToggleDark }: { dark: boolean; onToggleDark: () => void }) {
   const [authOpen, setAuthOpen] = useState(false);
