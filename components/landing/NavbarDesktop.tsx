@@ -176,17 +176,22 @@ export default function NavbarDesktop({
       </nav>
 
       <div className="hidden items-center gap-2 xl:flex">
+        {/* One primary action in the header. These two sat side by side as
+            near-equal buttons - a filled CTA next to a tinted, ringed,
+            bordered CTA - so neither read as the main next step. Booking stays
+            the filled action; the quote request is still one click away, now
+            as a quiet link. */}
         <button
           type="button"
           onClick={onOpenLead}
-          className="touch-lift rounded-2xl border border-primary/35 bg-primary/8 px-4 py-2.5 text-sm font-bold text-primary shadow-sm ring-1 ring-primary/15 transition-all duration-200 hover:border-primary hover:bg-primary hover:text-white dark:border-primary/25 dark:bg-primary/10"
+          className="rounded-xl px-3 py-2.5 text-sm font-bold text-[var(--text-muted)] underline-offset-4 transition-colors duration-200 hover:text-primary hover:underline"
         >
           {t('landing.nav.quote')}
         </button>
         <button
           type="button"
           onClick={onOpenBooking}
-          className="premium-button touch-lift rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-4 py-2.5 text-sm font-bold text-white shadow-md shadow-primary/25 transition-all duration-200 hover:-translate-y-0.5"
+          className="premium-button touch-lift rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-on-primary shadow-sm shadow-primary/25 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-md"
         >
           {t('landing.nav.book_consultation')}
         </button>
@@ -197,14 +202,14 @@ export default function NavbarDesktop({
           <button
             type="button"
             onClick={() => setLanguage('ar')}
-            className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition-colors ${language === 'ar' ? 'bg-primary text-white' : 'text-slate-600 dark:text-slate-300'}`}
+            className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition-colors ${language === 'ar' ? 'bg-primary text-on-primary' : 'text-slate-600 dark:text-slate-300'}`}
           >
             AR
           </button>
           <button
             type="button"
             onClick={() => setLanguage('en')}
-            className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition-colors ${language === 'en' ? 'bg-primary text-white' : 'text-slate-600 dark:text-slate-300'}`}
+            className={`rounded-xl px-2.5 py-1.5 text-xs font-bold transition-colors ${language === 'en' ? 'bg-primary text-on-primary' : 'text-slate-600 dark:text-slate-300'}`}
           >
             EN
           </button>
@@ -227,7 +232,7 @@ export default function NavbarDesktop({
           >
             <Bell size={18} />
             {unreadNotificationCount > 0 ? (
-              <span className="absolute -end-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[10px] font-black text-white ring-2 ring-[var(--surface)]">
+              <span className="absolute -end-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] font-black text-on-primary ring-2 ring-[var(--surface)]">
                 {unreadNotificationCount}
               </span>
             ) : null}
@@ -270,7 +275,7 @@ export default function NavbarDesktop({
                           type="button"
                           onClick={() => markNotificationComplete(record.id)}
                           disabled={isComplete}
-                          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition-colors hover:text-emerald-400 disabled:opacity-40"
+                          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition-colors hover:text-success disabled:opacity-40"
                           aria-label={t('landing.nav.mark_complete')}
                           title={t('landing.nav.mark_complete')}
                         >
@@ -329,7 +334,7 @@ export default function NavbarDesktop({
                 })}
                 <button
                   onClick={handleSignOut}
-                  className="flex w-full items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-red-500 hover:bg-red-500/10 transition-colors"
+                  className="flex w-full items-center justify-start gap-2 rounded-xl px-4 py-2.5 text-start text-sm font-semibold text-danger hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] transition-colors"
                 >
                   <LogOut size={16} />
                   <span>{t('more.signout')}</span>

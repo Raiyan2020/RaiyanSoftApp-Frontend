@@ -149,10 +149,10 @@ export default function AdminHeroTab() {
             placeholder="#contact"
             aria-invalid={Boolean(fieldErrors.f_button_url)}
             className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:outline-none ${
-              fieldErrors.f_button_url ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+              fieldErrors.f_button_url ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
             }`}
           />
-          {fieldErrors.f_button_url ? <p className="mt-1 text-xs font-medium text-red-400">{fieldErrors.f_button_url}</p> : null}
+          {fieldErrors.f_button_url ? <p className="mt-1 text-xs font-medium text-danger">{fieldErrors.f_button_url}</p> : null}
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Secondary Button Text')}</label>
@@ -170,10 +170,10 @@ export default function AdminHeroTab() {
             placeholder="#works"
             aria-invalid={Boolean(fieldErrors.l_button_url)}
             className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:outline-none ${
-              fieldErrors.l_button_url ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+              fieldErrors.l_button_url ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
             }`}
           />
-          {fieldErrors.l_button_url ? <p className="mt-1 text-xs font-medium text-red-400">{fieldErrors.l_button_url}</p> : null}
+          {fieldErrors.l_button_url ? <p className="mt-1 text-xs font-medium text-danger">{fieldErrors.l_button_url}</p> : null}
         </div>
       </div>
 
@@ -186,10 +186,10 @@ export default function AdminHeroTab() {
           placeholder="https://www.youtube.com/watch?v=..."
           aria-invalid={Boolean(fieldErrors.vedio_url)}
           className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:outline-none ${
-            fieldErrors.vedio_url ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+            fieldErrors.vedio_url ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
           }`}
         />
-        {fieldErrors.vedio_url ? <p className="mt-1 text-xs font-medium text-red-400">{fieldErrors.vedio_url}</p> : null}
+        {fieldErrors.vedio_url ? <p className="mt-1 text-xs font-medium text-danger">{fieldErrors.vedio_url}</p> : null}
       </div>
 
       {/* Tags — shared TagRepeater */}
@@ -212,7 +212,7 @@ export default function AdminHeroTab() {
       <ErrorAlert message={error} />
       <SuccessToast message={success ? 'Saved successfully!' : null} />
 
-      <button type="submit" disabled={updateMutation.isPending} className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white transition hover:bg-primary/90 disabled:opacity-50">
+      <button type="submit" disabled={updateMutation.isPending} className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-bold text-on-primary transition hover:bg-primary/90 disabled:opacity-50">
         {updateMutation.isPending ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
         {translateMessage('Save Hero')}
       </button>

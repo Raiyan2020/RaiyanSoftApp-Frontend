@@ -26,6 +26,10 @@ export default async function ContactPage() {
     <PublicLayout seo={pageSeo.contact}>
       <JsonLd id="contact-page-schema" data={createContactPageJsonLd(pageSeo.contact)} />
       <PageHero
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: tt('Contact Us'), href: '/contact' },
+        ]}
         eyebrow={tt('Contact Us')}
         title={tt('Start with a clear message and we will arrange the next step')}
         description={tt('Write a short summary of what you need and we will review it to respond with the best path forward.')}
@@ -33,13 +37,13 @@ export default async function ContactPage() {
       <SectionShell>
         <div className="grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
           <aside className="space-y-4">
-            <div className="rounded-lg border border-cyan-950/10 bg-white p-5 dark:border-white/10 dark:bg-white/5">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <p className="text-sm font-black text-primary">{tt('Email')}</p>
-              <p className="mt-2 font-bold text-slate-950 dark:text-white">{settings?.site_email || siteConfig.email}</p>
+              <p className="mt-2 font-bold text-[var(--text)]">{settings?.site_email || siteConfig.email}</p>
             </div>
-            <div className="rounded-lg border border-cyan-950/10 bg-white p-5 dark:border-white/10 dark:bg-white/5">
+            <div className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5">
               <p className="text-sm font-black text-primary">{tt('Phone')}</p>
-              <p className="mt-2 font-bold text-slate-950 dark:text-white" dir="ltr">{settings?.site_phone || siteConfig.phone}</p>
+              <p className="mt-2 font-bold text-[var(--text)]" dir="ltr">{settings?.site_phone || siteConfig.phone}</p>
             </div>
           </aside>
           <PublicInquiryForm mode="contact" />

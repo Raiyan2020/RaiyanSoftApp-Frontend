@@ -122,7 +122,7 @@ export default function MorePage() {
             <button
               type="button"
               onClick={() => setShowDelete(true)}
-              className="w-full py-4 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 font-medium text-sm flex items-center justify-center space-x-2 rtl:space-x-reverse hover:bg-red-500/20 transition-colors"
+              className="w-full py-4 rounded-2xl bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] border border-[color-mix(in_srgb,var(--danger)_20%,transparent)] text-danger font-medium text-sm flex items-center justify-center space-x-2 rtl:space-x-reverse hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] transition-colors"
             >
               <Trash2 size={18} />
               <span>{t('more.delete_account')}</span>

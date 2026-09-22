@@ -56,7 +56,7 @@ export default function AdminFormModal({
       >
         {/* Header */}
         <div className="mb-5 flex items-center justify-between gap-3">
-          <h3 className="text-lg font-bold text-[var(--text)]">{title}</h3>
+          <h2 className="text-lg font-bold text-[var(--text)]">{title}</h2>
           <button
             type="button"
             onClick={onClose}
@@ -85,7 +85,7 @@ export default function AdminFormModal({
             type="button"
             onClick={onSubmit}
             disabled={isSubmitting}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-white disabled:opacity-50 hover:bg-primary/90"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-on-primary disabled:opacity-50 hover:bg-primary/90"
           >
             {isSubmitting ? (
               <Loader2 size={14} className="animate-spin" />

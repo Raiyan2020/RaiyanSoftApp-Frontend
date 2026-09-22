@@ -26,7 +26,7 @@ function InfoBlock({
 }) {
   return (
     <div>
-      <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide font-bold block mb-1">
+      <span className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide font-bold block mb-1">
         {label}
       </span>
       {children}

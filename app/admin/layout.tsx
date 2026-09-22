@@ -3,7 +3,7 @@ import { createPublicMetadata } from '@/lib/site';
 
 export const metadata: Metadata = createPublicMetadata({
   title: 'لوحة الإدارة',
-  description: 'لوحة إدارة ريان سوفت — غير مخصصة للفهرسة العامة.',
+  description: 'لوحة إدارة ريان سوفت - غير مخصصة للفهرسة العامة.',
   path: '/admin',
   noIndex: true,
 });

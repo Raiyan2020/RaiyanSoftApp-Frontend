@@ -93,7 +93,7 @@ export const pageSeo: Record<PageSeoKey, PageSeoEntry> = {
   },
   careers: {
     title: 'الوظائف',
-    description: 'الوظائف المتاحة في ريان سوفت — انضم إلى فريق يبني منتجات رقمية واضحة.',
+    description: 'الوظائف المتاحة في ريان سوفت - انضم إلى فريق يبني منتجات رقمية واضحة.',
     path: '/careers',
   },
   privacy: {

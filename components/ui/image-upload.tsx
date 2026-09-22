@@ -356,7 +356,7 @@ export default function ImageUpload({
         </div>
       ) : null}
 
-      {error ? <p className="text-xs font-medium text-red-400">{error}</p> : null}
+      {error ? <p className="text-xs font-medium text-danger">{error}</p> : null}
     </div>
   );
 }

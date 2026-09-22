@@ -41,9 +41,9 @@ function ProfileProjectsPanel({
 
   const getStatusTone = (status: string) => {
     const lower = status.toLowerCase();
-    if (lower.includes('رفض') || lower.includes('reject')) return 'bg-red-500/10 text-red-400 border-red-500/20';
-    if (lower.includes('قبول') || lower.includes('approv')) return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
-    return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+    if (lower.includes('رفض') || lower.includes('reject')) return 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger border-[color-mix(in_srgb,var(--danger)_20%,transparent)]';
+    if (lower.includes('قبول') || lower.includes('approv')) return 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success border-[color-mix(in_srgb,var(--success)_20%,transparent)]';
+    return 'bg-[color-mix(in_srgb,var(--warning)_10%,transparent)] text-warning border-[color-mix(in_srgb,var(--warning)_20%,transparent)]';
   };
 
   if (loading) {
@@ -212,14 +212,14 @@ export default function ProfilePage() {
           
           <div className="mb-6 flex flex-col gap-4 border-b border-[var(--border)] pb-5 sm:mb-8 sm:pb-6 md:flex-row md:items-center md:justify-between">
             <div className="min-w-0 text-start">
-              <h1 className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-primary to-blue-500 bg-clip-text text-transparent sm:text-3xl">
+              <h1 className="text-2xl font-extrabold tracking-tight text-[var(--text)] sm:text-3xl">
                 {t('profile.title')}
               </h1>
               <p className="mt-2 break-words text-sm text-[var(--text-muted)]">
                 {currentUser.first_name} {currentUser.last_name} &bull; {currentUser.email}
               </p>
               {errorMessage ? (
-                <p className="mt-2 text-xs font-bold text-amber-400">
+                <p className="mt-2 text-xs font-bold text-warning">
                   {dir === 'rtl' ? 'تعذر تحديث بيانات الملف الشخصي من الخادم.' : 'Could not refresh profile data from the server.'}
                 </p>
               ) : null}
@@ -284,7 +284,7 @@ export default function ProfilePage() {
                       }}
                       className={`flex shrink-0 items-center justify-start gap-2 px-3 py-2.5 text-start text-sm font-bold rounded-xl transition-all whitespace-nowrap sm:gap-3 sm:px-4 sm:py-3 lg:w-full ${
                         isActive
-                          ? 'bg-primary text-white shadow-lg shadow-primary/25'
+                          ? 'bg-primary text-on-primary shadow-lg shadow-primary/25'
                           : 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
                       }`}
                     >
@@ -299,7 +299,7 @@ export default function ProfilePage() {
                 type="button"
                 onClick={() => setLogoutDialogOpen(true)}
                 disabled={isLoggingOut}
-                className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm font-black text-red-500 transition-colors hover:border-red-500/35 hover:bg-red-500/15 disabled:cursor-not-allowed disabled:opacity-60"
+                className="mt-3 flex w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_srgb,var(--danger)_20%,transparent)] bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] px-4 py-3 text-sm font-black text-danger transition-colors hover:border-[color-mix(in_srgb,var(--danger)_35%,transparent)] hover:bg-[color-mix(in_srgb,var(--danger)_15%,transparent)] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isLoggingOut ? (
                   <Loader2 size={17} className="animate-spin" />

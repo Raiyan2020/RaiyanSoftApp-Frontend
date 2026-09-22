@@ -41,7 +41,7 @@ export default function ConversationListItem({
           >
             {conv.customerName}
           </h3>
-          <span className="text-[10px] text-[var(--text-muted)] shrink-0 ms-2">{formatTime(conv.lastMessageAt)}</span>
+          <span className="text-[11px] text-[var(--text-muted)] shrink-0 ms-2">{formatTime(conv.lastMessageAt)}</span>
         </div>
         <div className="flex justify-between items-center">
           <p
@@ -54,7 +54,7 @@ export default function ConversationListItem({
             {conv.lastMessageText}
           </p>
           {conv.unreadForAdmin > 0 && selectedId !== conv.id ? (
-            <span className="bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+            <span className="bg-red-500 text-white text-[11px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
               {conv.unreadForAdmin}
             </span>
           ) : null}

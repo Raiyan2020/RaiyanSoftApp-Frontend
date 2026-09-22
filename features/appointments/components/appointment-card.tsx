@@ -32,7 +32,7 @@ export default function AppointmentCard({
             <div className="flex flex-wrap items-center gap-2 mb-3">
               <span
                 className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
-                  isOnline ? 'bg-blue-500/20 text-blue-400' : 'bg-emerald-500/20 text-emerald-400'
+                  isOnline ? 'bg-[color-mix(in_srgb,var(--info)_20%,transparent)] text-info' : 'bg-[color-mix(in_srgb,var(--success)_20%,transparent)] text-success'
                 }`}
               >
                 {isOnline ? t('appt.type_online') : t('appt.type_inperson')}
@@ -41,9 +41,9 @@ export default function AppointmentCard({
                 {meeting.status_label}
               </span>
             </div>
-            <h3 className="text-2xl font-bold text-[var(--text)] leading-tight">
+            <h2 className="text-2xl font-bold text-[var(--text)] leading-tight">
               {meeting.subject || t('appt.title')}
-            </h3>
+            </h2>
           </div>
           <div className="w-12 h-12 bg-[var(--surface-2)] rounded-2xl flex items-center justify-center text-primary border border-[var(--border)]">
             <Calendar size={24} />
@@ -70,7 +70,7 @@ export default function AppointmentCard({
           <button
             type="button"
             onClick={() => onCancel(meeting.id)}
-            className="w-full py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-bold transition-colors border border-red-500/20"
+            className="w-full py-3 bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] text-danger rounded-xl text-sm font-bold transition-colors border border-[color-mix(in_srgb,var(--danger)_20%,transparent)]"
           >
             {t('appt.cancel_btn')}
           </button>

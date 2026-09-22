@@ -17,7 +17,7 @@ export default function MobileLayoutClient({ children }: { children: React.React
   }
 
   return (
-    <MobileShell>
+    <MobileShell withBottomNav={showBottomNav}>
       <ErrorBoundary>
         {children}
       </ErrorBoundary>

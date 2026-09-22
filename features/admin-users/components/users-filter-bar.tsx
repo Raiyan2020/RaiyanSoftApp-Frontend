@@ -36,7 +36,7 @@ export default function UsersFilterBar({
             onClick={() => setFilterStatus(status)}
             className={`px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all border ${
               filterStatus === status
-                ? 'bg-primary/10 text-primary border-primary/30 shadow-[0_0_10px_rgba(29,183,240,0.2)]'
+                ? 'bg-primary/10 text-primary border-primary/30 shadow-[0_0_10px_rgb(var(--primary-glow-rgb) / 0.2)]'
                 : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)] hover:border-[var(--border)]'
             }`}
           >

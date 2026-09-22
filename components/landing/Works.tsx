@@ -5,14 +5,8 @@ import { useLandingContent } from '@/features/landing/hooks/use-landing-content'
 import SafeImage from '@/components/ui/safe-image';
 import type { LandingPageContent } from '@/features/landing-page';
 
-const workGradients = [
-  'from-sky-500 to-cyan-500',
-  'from-primary to-emerald-400',
-  'from-emerald-500 to-teal-500',
-  'from-amber-400 to-orange-500',
-  'from-violet-500 to-purple-500',
-  'from-rose-500 to-pink-500',
-];
+// Was six index-assigned rainbow gradients carrying no meaning; one brand ramp.
+const workGradients = ['from-primary to-primary-dark'];
 
 type WorksProps = {
   homeData?: LandingPageContent | null;
@@ -24,7 +18,6 @@ export default function Works({ homeData }: WorksProps) {
   const { content, dir, textAlign } = useLandingContent();
   const { works } = content;
   const apiCapabilities = homeData?.capabilities;
-  const badge = apiCapabilities?.header?.caption || works.badge;
   const title = apiCapabilities?.header?.title || `${works.title} ${works.titleHighlight}`;
   const description = apiCapabilities?.header?.description || works.description;
   const hasApiItems = (apiCapabilities?.capabilities?.length ?? 0) > 0;
@@ -37,9 +30,6 @@ export default function Works({ homeData }: WorksProps) {
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className={`reveal mb-10 text-start lg:mb-12 ${textAlign}`}>
           <div className="space-y-4">
-            <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-              {badge}
-            </div>
             <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
               {title}
             </h2>
@@ -142,7 +132,7 @@ export default function Works({ homeData }: WorksProps) {
           <button
             type="button"
             onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
-            className="premium-button touch-lift mt-5 rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3.5 text-base font-bold text-white shadow-xl shadow-primary/25 transition-all duration-300 hover:-translate-y-1 sm:mt-6 sm:px-8 sm:py-4 sm:text-lg"
+            className="premium-button touch-lift mt-5 rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3.5 text-base font-bold text-on-primary shadow-xl shadow-primary/25 transition-all duration-300 hover:-translate-y-1 sm:mt-6 sm:px-8 sm:py-4 sm:text-lg"
           >
             {works.ctaButton}
           </button>

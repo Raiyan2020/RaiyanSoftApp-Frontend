@@ -41,7 +41,7 @@ export default function PublicBookingPage() {
   if (!isAuthenticated) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center bg-[var(--bg)] p-6 text-center text-[var(--text)]">
-        <AlertTriangle className="mb-4 text-amber-400" size={36} />
+        <AlertTriangle className="mb-4 text-warning" size={36} />
         <h1 className="text-2xl font-bold">{t('auth.phone_dialog_title')}</h1>
         <p className="mt-2 max-w-md text-sm text-[var(--text-muted)]">
           {dir === 'rtl' ? 'يجب تسجيل الدخول لحجز موعد.' : 'You need to sign in to book a meeting.'}
@@ -49,7 +49,7 @@ export default function PublicBookingPage() {
         <button
           type="button"
           onClick={() => router.push('/login')}
-          className="mt-6 rounded-xl bg-primary px-6 py-3 font-bold text-white"
+          className="mt-6 rounded-xl bg-primary px-6 py-3 font-bold text-on-primary"
         >
           {dir === 'rtl' ? 'تسجيل الدخول' : 'Sign in'}
         </button>
@@ -120,7 +120,7 @@ export default function PublicBookingPage() {
             type="button"
             onClick={() => setStep(2)}
             disabled={!selectedDate || !selectedTime}
-            className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {translateMessage('Continue')} <ChevronRight size={18} className={dir === 'rtl' ? 'rotate-180' : ''} />
           </button>

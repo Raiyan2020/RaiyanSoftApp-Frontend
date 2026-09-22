@@ -85,7 +85,7 @@ export default function AdminColorsPage() {
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
                       <p className="truncate font-mono text-xs font-bold text-[var(--text)]">{color.hex_code}</p>
-                      <p className="mt-1 text-[10px] uppercase tracking-wider text-[var(--text-muted)]">
+                      <p className="mt-1 text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
                         ID {color.id} · {translateMessage(color.is_active === false || color.is_active === 0 ? 'Inactive' : 'Active')}
                       </p>
                     </div>
@@ -102,7 +102,7 @@ export default function AdminColorsPage() {
                         type="button"
                         onClick={() => handleDelete(color.id).catch(() => undefined)}
                         disabled={createLoading}
-                        className="rounded-lg bg-[var(--surface-3)] p-1.5 text-[var(--text-muted)] transition hover:text-red-400 disabled:opacity-50"
+                        className="rounded-lg bg-[var(--surface-3)] p-1.5 text-[var(--text-muted)] transition hover:text-danger disabled:opacity-50"
                         title={translateMessage('Delete color')}
                       >
                         <Trash2 size={13} />
@@ -171,7 +171,7 @@ export default function AdminColorsPage() {
             <button
               type="submit"
               disabled={createLoading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg transition hover:shadow-primary/20 disabled:opacity-50"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-on-primary shadow-lg transition hover:shadow-primary/20 disabled:opacity-50"
             >
               {createLoading ? <Loader2 className="animate-spin" size={18} /> : editingId ? <Save size={18} /> : <Plus size={18} />}
               {translateMessage(createLoading ? 'Saving...' : editingId ? 'Update Color' : 'Create Color')}

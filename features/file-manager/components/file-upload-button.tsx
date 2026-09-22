@@ -40,7 +40,7 @@ export default function FileUploadButton({
             <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
               <Upload size={24} className="text-primary" />
             </div>
-            <h3 className="text-[var(--text)] font-medium mb-1">{t('files.tap_upload')}</h3>
+            <h2 className="text-[var(--text)] font-medium mb-1">{t('files.tap_upload')}</h2>
             <p className="text-[var(--text-muted)] text-xs">{t('files.upload_types')}</p>
           </>
         )}

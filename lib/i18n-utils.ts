@@ -684,6 +684,9 @@ const messageTranslations: Record<string, string> = {
   'Profile sections': 'أقسام الملف الشخصي',
   'Support': 'دعم فني',
   'Close dialog': 'إغلاق النافذة',
+  'Back': 'رجوع',
+  'Start your project request': 'ابدأ طلب مشروعك',
+  'Signing in...': 'جارٍ تسجيل الدخول...',
   'Profile': 'الملف الشخصي',
   'Update profile': 'تحديث الملف الشخصي',
   'Close profile form': 'إغلاق نموذج الملف الشخصي',
@@ -1398,6 +1401,10 @@ const messageTranslations: Record<string, string> = {
   'Client': 'العميل',
   'WhatsApp': 'واتساب',
   'No phone number': 'لا يوجد رقم هاتف',
+  'No projects yet': 'لا توجد مشاريع بعد',
+  'Projects you add here appear on the mobile app home screen.': 'المشاريع التي تضيفها هنا تظهر على الصفحة الرئيسية لتطبيق الجوال.',
+  'No projects match your search': 'لا توجد مشاريع مطابقة لبحثك',
+  'Try a shorter term or clear the search.': 'جرّب كلمة أقصر أو امسح البحث.',
 };
 
 export function translateMessage(message: string, language: AppLanguage = getStoredLanguage()) {

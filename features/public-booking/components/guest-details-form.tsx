@@ -54,7 +54,7 @@ export default function GuestDetailsForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel>{translateMessage('Full Name')} <span className="text-red-400">*</span></FieldLabel>
+              <FieldLabel>{translateMessage('Full Name')} <span className="text-danger">*</span></FieldLabel>
               <div className="relative">
                 <User size={16} className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" />
                 <input
@@ -62,7 +62,7 @@ export default function GuestDetailsForm({
                   type="text"
                   aria-invalid={fieldState.invalid}
                   className={`w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] focus:outline-none transition-all ${
-                    fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'focus:border-primary'
+                    fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'focus:border-primary'
                   }`}
                 />
               </div>
@@ -76,7 +76,7 @@ export default function GuestDetailsForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel>{translateMessage('Phone Number')} <span className="text-red-400">*</span></FieldLabel>
+              <FieldLabel>{translateMessage('Phone Number')} <span className="text-danger">*</span></FieldLabel>
               <PhoneInput value={field.value} onChange={field.onChange} required />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
             </Field>
@@ -96,7 +96,7 @@ export default function GuestDetailsForm({
                   type="email"
                   aria-invalid={fieldState.invalid}
                   className={`w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] focus:outline-none transition-all ${
-                    fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'focus:border-primary'
+                    fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'focus:border-primary'
                   }`}
                 />
               </div>
@@ -110,13 +110,13 @@ export default function GuestDetailsForm({
           control={form.control}
           render={({ field, fieldState }) => (
             <Field data-invalid={fieldState.invalid}>
-              <FieldLabel>{translateMessage('Topic')} <span className="text-red-400">*</span></FieldLabel>
+              <FieldLabel>{translateMessage('Topic')} <span className="text-danger">*</span></FieldLabel>
               <input
                 {...field}
                 type="text"
                 aria-invalid={fieldState.invalid}
                 className={`w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none transition-all ${
-                  fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'focus:border-primary'
+                  fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'focus:border-primary'
                 }`}
                 placeholder={translateMessage('e.g. Project Consultation')}
               />
@@ -135,7 +135,7 @@ export default function GuestDetailsForm({
                 {...field}
                 aria-invalid={fieldState.invalid}
                 className={`w-full h-24 bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none transition-all resize-none ${
-                  fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'focus:border-primary'
+                  fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'focus:border-primary'
                 }`}
               />
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -146,7 +146,7 @@ export default function GuestDetailsForm({
         <button
           type="submit"
           disabled={isSubmitting}
-          className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+          className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl shadow-lg hover:shadow-primary/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
         >
           {isSubmitting ? <Loader2 className="animate-spin" /> : translateMessage('Confirm Booking')}
         </button>

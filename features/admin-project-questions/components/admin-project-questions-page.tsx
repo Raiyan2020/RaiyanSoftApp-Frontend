@@ -95,7 +95,7 @@ function OptionRow({
             type="button"
             onClick={() => onRemove(index)}
             disabled={!canRemove}
-            className="inline-flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition hover:border-red-200 hover:text-red-400 disabled:opacity-40"
+            className="inline-flex items-center gap-1 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2 text-xs font-medium text-[var(--text-muted)] transition hover:border-red-200 hover:text-danger disabled:opacity-40"
           >
             <Trash2 size={12} />
             {translateMessage('Remove')}
@@ -186,7 +186,7 @@ function QuestionRow({
       }}
       className={`rounded-2xl border p-4 transition-all ${
         isDragOver
-          ? 'border-primary bg-primary/10 shadow-[0_0_0_2px_rgba(29,183,240,0.16)]'
+          ? 'border-primary bg-primary/10 shadow-[0_0_0_2px_rgb(var(--primary-glow-rgb) / 0.16)]'
           : isActive
           ? 'bg-primary/10 border-primary/30'
           : 'bg-[var(--surface-2)] border-[var(--border)]'
@@ -213,18 +213,18 @@ function QuestionRow({
         <button type="button" onClick={() => onEdit(question)} className="text-start min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2 mb-1">
             <h3 className="text-sm font-bold text-[var(--text)] break-words">{question.label}</h3>
-            <span className="text-[10px] text-[var(--text)] bg-[var(--surface-3)] border border-[var(--border)] rounded-full px-2 py-0.5">
+            <span className="text-[11px] text-[var(--text)] bg-[var(--surface-3)] border border-[var(--border)] rounded-full px-2 py-0.5">
               {translateMessage(question.type.replace('_', ' '))}
             </span>
           </div>
-          <div className="flex flex-wrap gap-2 text-[10px]">
-            <span className={question.active ? 'text-emerald-400' : 'text-[var(--text-muted)]'}>
+          <div className="flex flex-wrap gap-2 text-[11px]">
+            <span className={question.active ? 'text-success' : 'text-[var(--text-muted)]'}>
               {translateMessage(question.active ? 'Active' : 'Inactive')}
             </span>
             <span className={question.required ? 'text-primary' : 'text-[var(--text-muted)]'}>
               {translateMessage(question.required ? 'Required' : 'Optional')}
             </span>
-            {question.locked ? <span className="text-amber-400">{translateMessage('Locked')}</span> : null}
+            {question.locked ? <span className="text-warning">{translateMessage('Locked')}</span> : null}
           </div>
         </button>
         <div className="flex items-center gap-1 shrink-0 sm:self-start self-end">
@@ -251,8 +251,8 @@ function QuestionRow({
             onClick={() => onToggleActive(question.id)}
             className={`p-2 rounded-lg transition ${
               question.active
-                ? 'bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20'
-                : 'bg-[var(--surface-3)] text-[var(--text-muted)] hover:text-emerald-400'
+                ? 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success hover:bg-[color-mix(in_srgb,var(--success)_20%,transparent)]'
+                : 'bg-[var(--surface-3)] text-[var(--text-muted)] hover:text-success'
             }`}
             title={translateMessage(question.active ? 'Deactivate question' : 'Activate question')}
           >
@@ -262,7 +262,7 @@ function QuestionRow({
             type="button"
             onClick={() => onDelete(question.id)}
             disabled={question.locked}
-            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10 disabled:opacity-40"
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-danger hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] disabled:opacity-40"
             title={translateMessage('Delete question')}
           >
             <Trash2 size={14} />
@@ -411,7 +411,7 @@ export default function AdminProjectQuestionsPage() {
                   );
                 })}
                 {state.form.locked ? (
-                  <span className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs font-bold text-amber-400 flex items-center justify-center gap-1">
+                  <span className="rounded-xl border border-amber-400/30 bg-amber-400/10 px-3 py-2 text-xs font-bold text-warning flex items-center justify-center gap-1">
                     {translateMessage('Locked')}
                   </span>
                 ) : null}

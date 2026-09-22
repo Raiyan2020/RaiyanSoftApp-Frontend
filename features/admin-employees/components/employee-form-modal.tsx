@@ -72,7 +72,7 @@ export default function EmployeeFormModal({
 
         {createdPassword ? (
           <div className="p-8 flex flex-col items-center text-center">
-            <div className="w-16 h-16 bg-emerald-500/10 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/20">
+            <div className="w-16 h-16 bg-[color-mix(in_srgb,var(--success)_10%,transparent)] rounded-full flex items-center justify-center text-success mb-4 border border-[color-mix(in_srgb,var(--success)_20%,transparent)]">
               <CheckCircle size={32} />
             </div>
             <h3 className="text-xl font-bold text-[var(--text)] mb-2">{translateMessage('Employee Created!')}</h3>
@@ -94,7 +94,7 @@ export default function EmployeeFormModal({
               </button>
             </div>
 
-            <button type="button" onClick={onClose} className="px-6 py-2.5 bg-primary text-white rounded-xl font-medium">
+            <button type="button" onClick={onClose} className="px-6 py-2.5 bg-primary text-on-primary rounded-xl font-medium">
               {translateMessage('Done')}
             </button>
           </div>
@@ -113,13 +113,13 @@ export default function EmployeeFormModal({
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel>
-                          First Name <span className="text-red-400">*</span>
+                          First Name <span className="text-danger">*</span>
                         </FieldLabel>
                         <input
                           {...field}
                           type="text"
                           className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
-                            fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                            fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                           }`}
                         />
                         {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
@@ -132,13 +132,13 @@ export default function EmployeeFormModal({
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel>
-                          Last Name <span className="text-red-400">*</span>
+                          Last Name <span className="text-danger">*</span>
                         </FieldLabel>
                         <input
                           {...field}
                           type="text"
                           className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
-                            fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                            fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                           }`}
                         />
                         {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
@@ -153,13 +153,13 @@ export default function EmployeeFormModal({
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel>
-                        Email <span className="text-red-400">*</span>
+                        Email <span className="text-danger">*</span>
                       </FieldLabel>
                       <input
                         {...field}
                         type="email"
                         className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
-                          fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                          fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                         }`}
                       />
                       {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
@@ -186,7 +186,7 @@ export default function EmployeeFormModal({
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel>
-                          Password <span className="text-red-400">*</span>
+                          Password <span className="text-danger">*</span>
                         </FieldLabel>
                         <div className="flex gap-2">
                           <div className="relative flex-1">
@@ -195,7 +195,7 @@ export default function EmployeeFormModal({
                               {...field}
                               type="text"
                               className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none font-mono ${
-                                fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                                fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                               }`}
                               placeholder={translateMessage('Min 8 characters')}
                             />
@@ -221,7 +221,7 @@ export default function EmployeeFormModal({
                   render={({ field }) => (
                     <Field>
                       <FieldLabel>
-                        Role <span className="text-red-400">*</span>
+                        Role <span className="text-danger">*</span>
                       </FieldLabel>
                       <input
                         {...field}
@@ -249,7 +249,7 @@ export default function EmployeeFormModal({
                 form="empForm"
                 type="submit"
                 disabled={isSubmitting}
-                className="px-5 py-2.5 rounded-xl bg-primary hover:bg-sky-400 text-white font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2 disabled:opacity-70"
+                className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-on-primary font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2 disabled:opacity-70"
               >
                 {isSubmitting ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                 <span>{translateMessage(editingEmployee ? 'Update Employee' : 'Create Employee')}</span>

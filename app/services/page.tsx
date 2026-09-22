@@ -23,6 +23,10 @@ export default async function ServicesPage() {
     <PublicLayout seo={pageSeo.services}>
       <JsonLd id="services-list-schema" data={createServiceCollectionJsonLd(services, language)} />
       <PageHero
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: tt('Services'), href: '/services' },
+        ]}
         eyebrow={tt('Services')}
         title={tt('Digital solutions built around a clear goal')}
         description={tt("Choose the service closest to your project stage, or start by requesting a quote and we'll suggest the right path.")}

@@ -16,6 +16,10 @@ export default async function ConsultationPage() {
   return (
     <PublicLayout seo={pageSeo.consultation}>
       <PageHero
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: tt('Book a Consultation'), href: '/consultation' },
+        ]}
         eyebrow={tt('Book a Consultation')}
         title={tt('Book a time to discuss your project')}
         description={tt(

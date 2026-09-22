@@ -13,9 +13,9 @@ import { useAdminWebsiteContent } from '../hooks/use-admin-website-content';
 import type { WebsiteContentField, WebsiteContentItem, WebsiteContentSection, WebsiteContentStatus } from '../types/website-content';
 
 const statusStyles: Record<WebsiteContentStatus, string> = {
-  draft: 'bg-slate-500/10 text-[var(--text)] border-slate-500/20',
-  published: 'bg-emerald-500/10 text-emerald-300 border-emerald-500/20',
-  archived: 'bg-amber-500/10 text-amber-300 border-amber-500/20',
+  draft: 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)]',
+  published: 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success border-[color-mix(in_srgb,var(--success)_34%,transparent)]',
+  archived: 'bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] text-warning border-[color-mix(in_srgb,var(--warning)_34%,transparent)]',
 };
 
 const listToTextarea = (value: any) => (Array.isArray(value) ? value.join('\n') : '');
@@ -275,7 +275,7 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
                   type="button"
                   onClick={() => manager.setStatusFilter(status)}
                   className={`rounded-xl border px-2 py-3 font-bold capitalize transition ${
-                    manager.statusFilter === status ? 'border-primary/50 bg-primary/10 text-primary' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-[var(--text)]'
+                    manager.statusFilter === status ? 'border-primary/50 bg-primary/5 text-primary' : 'border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] hover:text-[var(--text)]'
                   }`}
                 >
                   {translateMessage(status)}

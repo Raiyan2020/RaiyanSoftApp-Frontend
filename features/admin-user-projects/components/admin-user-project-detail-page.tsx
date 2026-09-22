@@ -62,8 +62,8 @@ const tabs = allTabs.filter((tab) => tab.enabled !== false);
 const stageStatusClasses: Record<ProjectStageStatus, string> = {
   planned: 'bg-slate-500/10 text-[var(--text)] border-slate-500/20',
   active: 'bg-primary/10 text-primary border-primary/20',
-  completed: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  blocked: 'bg-red-500/10 text-red-400 border-red-500/20',
+  completed: 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success border-[color-mix(in_srgb,var(--success)_20%,transparent)]',
+  blocked: 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger border-[color-mix(in_srgb,var(--danger)_20%,transparent)]',
 };
 
 const formatDate = (value?: number | null, language: 'ar' | 'en' = 'en') => {
@@ -92,9 +92,9 @@ const inputClasses =
 function StatusPill({ status, tr }: { status: string; tr: (message: string) => string }) {
   const color =
     status === 'completed'
-      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+      ? 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success border-[color-mix(in_srgb,var(--success)_20%,transparent)]'
       : status === 'cancelled' || status === 'blocked'
-      ? 'bg-red-500/10 text-red-400 border-red-500/20'
+      ? 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger border-[color-mix(in_srgb,var(--danger)_20%,transparent)]'
       : status === 'active'
       ? 'bg-primary/10 text-primary border-primary/20'
       : 'bg-slate-500/10 text-[var(--text)] border-slate-500/20';
@@ -136,7 +136,7 @@ function StageCard({
             <div className="flex flex-wrap items-center gap-2 mb-1">
               <h3 className="text-[var(--text)] font-bold break-words">{stage.title}</h3>
               <span
-                className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold capitalize border ${
+                className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold capitalize border ${
                   stageStatusClasses[stage.status]
                 }`}
               >
@@ -176,7 +176,7 @@ function StageCard({
             type="button"
             onClick={() => onDelete(stage.id)}
             disabled={!canDelete}
-            className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors disabled:opacity-40 disabled:hover:bg-[var(--surface-3)] disabled:hover:text-[var(--text-muted)]"
+            className="p-2 bg-[var(--surface-3)] hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] hover:text-danger rounded-lg text-[var(--text-muted)] transition-colors disabled:opacity-40 disabled:hover:bg-[var(--surface-3)] disabled:hover:text-[var(--text-muted)]"
             title={canDelete ? tr('Delete stage') : tr('Delete stage is unavailable for API-backed projects')}
           >
             <Trash2 size={15} />
@@ -218,7 +218,7 @@ export default function AdminUserProjectDetailPage({
   if (!ops.project) {
     return (
       <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-8 text-center">
-        <AlertTriangle className="mx-auto text-red-400 mb-4" size={32} />
+        <AlertTriangle className="mx-auto text-danger mb-4" size={32} />
         <h1 className="text-xl font-bold text-[var(--text)] mb-2">{tr('Project not found')}</h1>
         <p className="text-[var(--text-muted)] text-sm mb-6">{ops.error ? tr(ops.error) : tr('Unable to load this project.')}</p>
         <Button type="button" variant="outline" onClick={() => router.push('/admin/user-projects')}>
@@ -307,7 +307,7 @@ export default function AdminUserProjectDetailPage({
             key={tab.id}
             onClick={() => ops.setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all ${
-              ops.activeTab === tab.id ? 'bg-primary text-white shadow-lg' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+              ops.activeTab === tab.id ? 'bg-primary text-on-primary shadow-lg' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
           >
             <tab.icon size={16} />
@@ -696,16 +696,16 @@ export default function AdminUserProjectDetailPage({
                             {formatDate(report.weekStart, language)} - {formatDate(report.weekEnd, language)}
                           </h3>
                           <span
-                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold capitalize border ${
+                            className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold capitalize border ${
                               report.status === 'sent'
-                                ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
-                                : 'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                                ? 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success border-[color-mix(in_srgb,var(--success)_20%,transparent)]'
+                                : 'bg-[color-mix(in_srgb,var(--warning)_10%,transparent)] text-warning border-[color-mix(in_srgb,var(--warning)_20%,transparent)]'
                             }`}
                           >
                             {tr(report.status.charAt(0).toUpperCase() + report.status.slice(1))}
                           </span>
                           {report.clientVisible ? (
-                            <span className="text-[10px] text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5">
+                            <span className="text-[11px] text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5">
                               {tr('Client visible')}
                             </span>
                           ) : null}
@@ -746,7 +746,7 @@ export default function AdminUserProjectDetailPage({
                         <button
                           type="button"
                           onClick={() => ops.deleteWeeklyReport(report.id)}
-                          className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
+                          className="p-2 bg-[var(--surface-3)] hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] hover:text-danger rounded-lg text-[var(--text-muted)] transition-colors"
                           title={tr('Delete report')}
                         >
                           <Trash2 size={15} />
@@ -874,7 +874,7 @@ export default function AdminUserProjectDetailPage({
             {FEATURES.projectInternalNotes ? (
               <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5">
                 <div className="flex items-center gap-3 mb-5">
-                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                  <div className="w-10 h-10 rounded-xl bg-[color-mix(in_srgb,var(--warning)_10%,transparent)] border border-[color-mix(in_srgb,var(--warning)_20%,transparent)] flex items-center justify-center text-warning">
                     <StickyNote size={18} />
                   </div>
                   <div>
@@ -960,7 +960,7 @@ export default function AdminUserProjectDetailPage({
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-2">
                                 <h3 className="text-[var(--text)] font-bold break-words">{attachment.title}</h3>
-                                <span className="text-[10px] text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5">
+                                <span className="text-[11px] text-primary bg-primary/10 border border-primary/20 rounded-full px-2 py-0.5">
                                   {stage?.title || tr('Unknown stage')}
                                 </span>
                               </div>
@@ -988,7 +988,7 @@ export default function AdminUserProjectDetailPage({
                             <button
                               type="button"
                               onClick={() => ops.deleteAttachment(attachment.id)}
-                              className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
+                              className="p-2 bg-[var(--surface-3)] hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] hover:text-danger rounded-lg text-[var(--text-muted)] transition-colors"
                               title={tr('Delete attachment')}
                             >
                               <Trash2 size={15} />
@@ -1009,7 +1009,7 @@ export default function AdminUserProjectDetailPage({
                     <h2 className="text-lg font-bold text-[var(--text)]">{tr('Admin-Only Notes')}</h2>
                     <p className="text-xs text-[var(--text-muted)]">{tr('Internal notes are hidden from clients and non-admin views.')}</p>
                   </div>
-                  <span className="text-xs text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-3 py-1">
+                  <span className="text-xs text-warning bg-[color-mix(in_srgb,var(--warning)_10%,transparent)] border border-[color-mix(in_srgb,var(--warning)_20%,transparent)] rounded-full px-3 py-1">
                     {tr('Admin only')}
                   </span>
                 </div>
@@ -1029,7 +1029,7 @@ export default function AdminUserProjectDetailPage({
                           <div className="flex items-start justify-between gap-4">
                             <div className="min-w-0">
                               <div className="flex flex-wrap items-center gap-2 mb-2">
-                                <span className="text-[10px] text-amber-400 bg-amber-500/10 border border-amber-500/20 rounded-full px-2 py-0.5">
+                                <span className="text-[11px] text-warning bg-[color-mix(in_srgb,var(--warning)_10%,transparent)] border border-[color-mix(in_srgb,var(--warning)_20%,transparent)] rounded-full px-2 py-0.5">
                                   {stage?.title || tr('Unknown stage')}
                                 </span>
                                 <span className="text-xs text-[var(--text-muted)]">{formatDate(note.createdAt, language)}</span>
@@ -1040,7 +1040,7 @@ export default function AdminUserProjectDetailPage({
                             <button
                               type="button"
                               onClick={() => ops.deleteInternalNote(note.id)}
-                              className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors shrink-0"
+                              className="p-2 bg-[var(--surface-3)] hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] hover:text-danger rounded-lg text-[var(--text-muted)] transition-colors shrink-0"
                               title={tr('Delete note')}
                             >
                               <Trash2 size={15} />
@@ -1080,7 +1080,7 @@ export default function AdminUserProjectDetailPage({
                 <div key={String(label)} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-3 flex items-center gap-3">
                   <div
                     className={`w-7 h-7 rounded-lg flex items-center justify-center ${
-                      passed ? 'bg-emerald-500/10 text-emerald-400' : 'bg-[var(--surface-3)] text-[var(--text-muted)]'
+                      passed ? 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success' : 'bg-[var(--surface-3)] text-[var(--text-muted)]'
                     }`}
                   >
                     {passed ? <CheckCircle2 size={15} /> : <Lock size={15} />}
@@ -1115,7 +1115,7 @@ export default function AdminUserProjectDetailPage({
                 <p className="text-xs text-[var(--text-muted)]">{tr('Review and edit before approving project completion.')}</p>
               </div>
               {project.finalReport?.approvedAt ? (
-                <span className="text-xs text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-3 py-1">
+                <span className="text-xs text-success bg-[color-mix(in_srgb,var(--success)_10%,transparent)] border border-[color-mix(in_srgb,var(--success)_20%,transparent)] rounded-full px-3 py-1">
                   {tr('Approved')} {formatDate(project.finalReport.approvedAt, language)}
                 </span>
               ) : null}

@@ -40,15 +40,15 @@ export function getMeetingStatusTone(status: number | string) {
   const code = typeof status === 'number' ? status : Number(status);
 
   if (code === MEETING_STATUS.APPROVED) {
-    return 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+    return 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success border-[color-mix(in_srgb,var(--success)_20%,transparent)]';
   }
   if (code === MEETING_STATUS.REJECTED) {
-    return 'bg-red-500/10 text-red-400 border-red-500/20';
+    return 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger border-[color-mix(in_srgb,var(--danger)_20%,transparent)]';
   }
   if (code === MEETING_STATUS.CANCELED) {
     return 'bg-slate-500/10 text-[var(--text-muted)] border-slate-500/20';
   }
-  return 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+  return 'bg-[color-mix(in_srgb,var(--warning)_10%,transparent)] text-warning border-[color-mix(in_srgb,var(--warning)_20%,transparent)]';
 }
 
 /** API day 1=Mon … 7=Sun → UI index 0=Sun … 6=Sat */

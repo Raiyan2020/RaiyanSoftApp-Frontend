@@ -141,10 +141,10 @@ export interface LandingContent {
 }
 
 const sharedServiceMeta = [
-  { id: 'mobile', gradient: 'from-sky-500 to-cyan-500', metricAr: '4-8 أسابيع', metricEn: '4-8 weeks' },
-  { id: 'web', gradient: 'from-primary to-emerald-400', metricAr: '95+ أداء', metricEn: '95+ score' },
-  { id: 'ecommerce', gradient: 'from-emerald-500 to-teal-500', metricAr: 'جاهز للبيع', metricEn: 'Sales ready' },
-  { id: 'identity', gradient: 'from-amber-400 to-orange-500', metricAr: 'هوية موحدة', metricEn: 'Unified brand' },
+  { id: 'mobile', gradient: 'from-primary to-primary-dark', metricAr: '4-8 أسابيع', metricEn: '4-8 weeks' },
+  { id: 'web', gradient: 'from-primary to-primary-dark', metricAr: '95+ أداء', metricEn: '95+ score' },
+  { id: 'ecommerce', gradient: 'from-primary to-primary-dark', metricAr: 'جاهز للبيع', metricEn: 'Sales ready' },
+  { id: 'identity', gradient: 'from-primary to-primary-dark', metricAr: 'هوية موحدة', metricEn: 'Unified brand' },
 ] as const;
 
 export const landingContent: Record<LandingLanguage, LandingContent> = {

@@ -25,20 +25,20 @@ export default function ProjectStatusCard({
   return (
     <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-1 gap-3">
       <div className="app-card rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-        <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide font-bold mb-1">{t('project.est_price')}</span>
+        <span className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide font-bold mb-1">{t('project.est_price')}</span>
         <span className="text-[var(--text)] font-semibold text-sm leading-tight break-all">{formatPrice(estimatedPrice)}</span>
       </div>
 
       <div className="app-card rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-        <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide font-bold mb-1">{t('project.duration')}</span>
+        <span className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide font-bold mb-1">{t('project.duration')}</span>
         <span className="text-[var(--text)] font-semibold text-sm leading-tight">{formatDuration(estimatedDuration)}</span>
       </div>
 
       <div className="app-card rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-        <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wide font-bold mb-1">{t('project.status')}</span>
+        <span className="text-[11px] text-[var(--text-muted)] uppercase tracking-wide font-bold mb-1">{t('project.status')}</span>
         <span
           className={`text-xs font-bold px-2 py-0.5 rounded-full border border-[var(--border)] ${
-            status === 'cancelled' ? 'bg-red-500/10 text-red-400' : 'bg-primary/10 text-primary'
+            status === 'cancelled' ? 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger' : 'bg-primary/10 text-primary'
           }`}
         >
           {displayStatus}

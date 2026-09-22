@@ -126,7 +126,7 @@ export default function LeadsTable({
                   <div className="rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 py-2">
                     <div className="flex items-center justify-between text-xs mb-1">
                       <span className="text-[var(--text-muted)]">{t('admin.leads.reference')}</span>
-                      <span className="font-mono text-[var(--text)]">{lead.request_id || '—'}</span>
+                      <span className="font-mono text-[var(--text)]">{lead.request_id || '-'}</span>
                     </div>
                     <p className="text-sm font-medium text-[var(--text)]">{lead.project_name}</p>
                     {lead.description ? (
@@ -156,7 +156,7 @@ export default function LeadsTable({
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => { if (!waUrl) e.preventDefault(); }}
-                        className={`p-2 rounded-lg flex items-center justify-center transition-colors ${waUrl ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20' : 'bg-[var(--surface-3)] text-[var(--text-muted)] opacity-40 cursor-not-allowed'}`}
+                        className={`p-2 rounded-lg flex items-center justify-center transition-colors ${waUrl ? 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success hover:bg-[color-mix(in_srgb,var(--success)_20%,transparent)]' : 'bg-[var(--surface-3)] text-[var(--text-muted)] opacity-40 cursor-not-allowed'}`}
                       >
                         <MessageCircle size={16} />
                       </a>

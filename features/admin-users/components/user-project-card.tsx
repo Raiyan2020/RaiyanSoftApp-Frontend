@@ -28,10 +28,10 @@ export default function UserProjectCard({ project, formatDate }: UserProjectCard
           </div>
         </div>
         <span
-          className={`text-[10px] font-bold px-2 py-0.5 rounded-full capitalize ${
+          className={`text-[11px] font-bold px-2 py-0.5 rounded-full capitalize ${
             project.status === 'cancelled'
-              ? 'bg-red-500/10 text-red-400 border border-red-500/20'
-              : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+              ? 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger border border-[color-mix(in_srgb,var(--danger)_20%,transparent)]'
+              : 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success border border-[color-mix(in_srgb,var(--success)_20%,transparent)]'
           }`}
         >
           {project.status ? translateMessage(capitalize(project.status)) : translateMessage('Draft')}
@@ -40,11 +40,11 @@ export default function UserProjectCard({ project, formatDate }: UserProjectCard
 
       <div className="grid grid-cols-2 gap-2 mt-1">
         <div className="bg-[var(--surface-2)] p-2 rounded-lg border border-[var(--border)]">
-          <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wide">{translateMessage('Platform')}</span>
+          <span className="text-[11px] text-[var(--text-muted)] block uppercase tracking-wide">{translateMessage('Platform')}</span>
           <span className="text-xs text-[var(--text)] truncate block">{project.platforms?.join(', ') || translateMessage('Web & Mobile')}</span>
         </div>
         <div className="bg-[var(--surface-2)] p-2 rounded-lg border border-[var(--border)]">
-          <span className="text-[10px] text-[var(--text-muted)] block uppercase tracking-wide">{translateMessage('Updated')}</span>
+          <span className="text-[11px] text-[var(--text-muted)] block uppercase tracking-wide">{translateMessage('Updated')}</span>
           <span className="text-xs text-[var(--text)] truncate block">{formatDate(project.updatedAt)}</span>
         </div>
       </div>

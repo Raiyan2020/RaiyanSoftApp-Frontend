@@ -82,11 +82,11 @@ export default async function BlogCategoryPage({ params }: { params: { slug: str
             <Link
               key={post.slug}
             href={`/blogs/${post.slug}`}
-            className="rounded-2xl border border-cyan-950/10 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-primary/30 dark:border-white/10 dark:bg-white/5"
+            className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition hover:-translate-y-1 hover:border-primary/30"
           >
               <p className="text-xs font-black text-primary">{post.category?.title || category.title}</p>
-              <h2 className="mt-3 text-xl font-black text-slate-950 dark:text-white">{post.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-slate-600 dark:text-slate-300">{post.excerpt}</p>
+              <h2 className="mt-3 text-xl font-black text-[var(--text)]">{post.title}</h2>
+              <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{post.excerpt}</p>
             </Link>
           ))}
         </div>

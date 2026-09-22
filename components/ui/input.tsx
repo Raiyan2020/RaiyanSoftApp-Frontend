@@ -13,12 +13,19 @@ export default function Input({
   icon,
   className = '',
   dir,
+  id,
   ...props
 }: InputProps) {
+  // A generated id lets the label actually point at its control, so clicking
+  // the label focuses the field and screen readers announce the pairing.
+  const reactId = React.useId();
+  const inputId = id ?? `input-${reactId}`;
+  const errorId = `${inputId}-error`;
+
   return (
-    <div className="space-y-2 w-full">
+    <div className="space-y-1.5 w-full">
       {label ? (
-        <label className="text-xs text-[var(--text-muted)] ms-1 block font-medium">
+        <label htmlFor={inputId} className="text-xs font-bold text-[var(--text-muted)] ms-1 block">
           {translateMessage(label)}
         </label>
       ) : null}
@@ -29,19 +36,22 @@ export default function Input({
           </div>
         ) : null}
         <input
+          id={inputId}
           dir={dir}
-          className={`w-full app-input rounded-xl ${
+          aria-invalid={error ? true : undefined}
+          aria-describedby={error ? errorId : undefined}
+          className={`w-full app-input rounded-xl min-h-11 ${
             icon ? 'ps-10 pe-4' : 'px-4'
-          } py-3 focus:outline-none transition-all ${
-            error
-              ? 'border-red-500/50 focus:border-red-500'
-              : 'focus:border-primary'
+          } py-2.5 focus:outline-none transition-colors ${
+            error ? 'border-danger' : 'focus:border-primary'
           } ${className}`}
           {...props}
         />
       </div>
       {error ? (
-        <p className="text-[10px] text-red-400 ms-1 mt-0.5 font-medium">{translateMessage(error)}</p>
+        <p id={errorId} className="text-xs text-danger ms-1 font-bold">
+          {translateMessage(error)}
+        </p>
       ) : null}
     </div>
   );

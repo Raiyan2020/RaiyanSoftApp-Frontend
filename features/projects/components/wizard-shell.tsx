@@ -58,14 +58,26 @@ export default function WizardShell({
         className={`w-full h-full ${shellSizeClass} bg-[var(--surface)] text-[var(--text)] flex flex-col relative shadow-2xl overflow-hidden md:rounded-3xl border border-[var(--border)]`}
         onClick={(event) => event.stopPropagation()}
       >
+        {/* In lead mode the shell IS the /lead page, so the step <h2>s had no
+            <h1> above them. As a modal it sits under the host page's own h1. */}
+        {isLeadMode ? (
+          <h1 className="sr-only">{translateMessage('Start your project request', language === 'ar' ? 'ar' : 'en')}</h1>
+        ) : null}
         <div className="px-4 py-3 flex items-center justify-between border-b border-[var(--border)] bg-[var(--surface)]">
-          <button
-            type="button"
-            onClick={step === 0 ? onClose : onPrev}
-            className="p-2 -ms-2 text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
-          >
-            {step === 0 ? <X size={24} /> : dir === 'rtl' ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
-          </button>
+          {/* Step 0 used to render a second X here, identical to the close
+              button at the other end of the same header. */}
+          {step === 0 ? (
+            <div className="h-10 w-10" />
+          ) : (
+            <button
+              type="button"
+              onClick={onPrev}
+              aria-label={translateMessage('Back', language === 'ar' ? 'ar' : 'en')}
+              className="grid h-10 w-10 -ms-2 place-items-center rounded-xl text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+            >
+              {dir === 'rtl' ? <ChevronRight size={24} /> : <ChevronLeft size={24} />}
+            </button>
+          )}
           <div className="flex space-x-1.5 rtl:space-x-reverse">
             {Array.from({ length: totalSteps }).map((_, i) => (
               <div
@@ -113,7 +125,8 @@ export default function WizardShell({
               <motion.div
                 initial={false}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-xs font-medium text-center"
+                role="alert"
+                className="mb-4 p-3 bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] border border-[color-mix(in_srgb,var(--danger)_34%,transparent)] rounded-xl text-danger text-xs font-medium text-center"
               >
                 {errors[0]}
               </motion.div>
@@ -123,7 +136,7 @@ export default function WizardShell({
               type="button"
               onClick={onNext}
               disabled={isLoading}
-              className="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-[0_0_20px_rgba(29,183,240,0.3)] hover:shadow-[0_0_25px_rgba(29,183,240,0.5)] transition-all flex items-center justify-center space-x-2 rtl:space-x-reverse disabled:opacity-70 disabled:cursor-not-allowed"
+              className="w-full bg-primary text-on-primary font-bold py-3 rounded-xl shadow-[0_0_20px_rgb(var(--primary-glow-rgb) / 0.3)] hover:shadow-[0_0_25px_rgb(var(--primary-glow-rgb) / 0.5)] transition-all flex items-center justify-center space-x-2 rtl:space-x-reverse disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <Loader2 size={24} className="animate-spin" />

@@ -51,7 +51,7 @@ function TypeCard({
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-[var(--text)] font-bold break-words">{type.name}</h3>
-              <span className={type.active ? 'text-[10px] text-emerald-400' : 'text-[10px] text-[var(--text-muted)]'}>
+              <span className={type.active ? 'text-[11px] text-success' : 'text-[11px] text-[var(--text-muted)]'}>
                 {translateMessage(type.active ? 'Active' : 'Inactive')}
               </span>
             </div>
@@ -86,7 +86,7 @@ function TypeCard({
           <button
             type="button"
             onClick={() => onDelete(type.id)}
-            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-red-400 hover:bg-red-500/10"
+            className="p-2 bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-danger hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)]"
             title={translateMessage('Delete Type')}
           >
             <Trash2 size={14} />

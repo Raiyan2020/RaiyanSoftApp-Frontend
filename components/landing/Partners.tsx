@@ -18,7 +18,6 @@ export default function Partners({ homeData }: PartnersProps) {
 
   // The About Us block is rendered by AboutUs. Reusing its API header here
   // creates a duplicate section when the CMS has about_us content.
-  const badge = apiTestimonials?.header?.caption || partners.badge;
   const title = apiTestimonials?.header?.title || `${partners.title} ${partners.titleHighlight}`;
   const description = apiTestimonials?.header?.description || partners.description;
   const hasApiTestimonials = (apiTestimonials?.testimonials?.length ?? 0) > 0;
@@ -29,9 +28,6 @@ export default function Partners({ homeData }: PartnersProps) {
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className={`reveal mb-10 text-center lg:mb-12 ${textAlign}`}>
-          <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-            {badge}
-          </div>
           <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
             {title}
           </h2>
@@ -49,7 +45,7 @@ export default function Partners({ homeData }: PartnersProps) {
                 className="reveal rounded-[2rem] border border-cyan-950/10 bg-slate-50/80 p-6 shadow-sm transition-all duration-500 hover:-translate-y-2 hover:border-primary/30 hover:bg-white hover:shadow-[var(--shadow-glow)] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/8"
                 style={{ transitionDelay: `${i * 0.08}s` }}
               >
-                <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-dark text-lg font-black text-white shadow-lg shadow-primary/20">
+                <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-primary-dark text-lg font-black text-on-primary shadow-lg shadow-primary/20">
                   {card.stat}
                 </div>
                 <h3 className="mb-3 text-2xl font-bold text-slate-950 dark:text-white">{card.title}</h3>

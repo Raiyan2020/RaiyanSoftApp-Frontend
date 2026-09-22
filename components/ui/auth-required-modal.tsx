@@ -48,7 +48,7 @@ export default function AuthRequiredModal({ isOpen, onClose, redirectTo }: AuthR
                 <Lock size={32} className="text-primary" />
               </div>
 
-              <h3 className="text-xl font-bold text-[var(--text)] mb-2">{t('auth.login_required_title')}</h3>
+              <h2 className="text-xl font-bold text-[var(--text)] mb-2">{t('auth.login_required_title')}</h2>
               <p className="text-[var(--text-muted)] text-sm mb-8 leading-relaxed max-w-[260px] mx-auto">
                 {t('auth.login_required_body')}
               </p>
@@ -56,7 +56,7 @@ export default function AuthRequiredModal({ isOpen, onClose, redirectTo }: AuthR
               <button
                 type="button"
                 onClick={handleAuth}
-                className="w-full py-3.5 rounded-xl bg-primary text-white font-bold text-sm shadow-[0_0_20px_rgba(29,183,240,0.3)] hover:shadow-[0_0_25px_rgba(29,183,240,0.5)] transition-all flex items-center justify-center gap-2"
+                className="w-full py-3.5 rounded-xl bg-primary text-on-primary font-bold text-sm shadow-[0_0_20px_rgb(var(--primary-glow-rgb) / 0.3)] hover:shadow-[0_0_25px_rgb(var(--primary-glow-rgb) / 0.5)] transition-all flex items-center justify-center gap-2"
               >
                 <LogIn size={18} />
                 {t('auth.login_action')}

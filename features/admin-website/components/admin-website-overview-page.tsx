@@ -20,7 +20,7 @@ export default function AdminWebsiteOverviewPage() {
           <span className="inline-flex rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs font-bold uppercase tracking-[0.3em] text-primary">
             {translateMessage('Website CMS')}
           </span>
-          <h1 className="mt-5 text-3xl font-black text-[var(--text)] md:text-5xl">{translateMessage('Control every public website section from the admin dashboard.')}</h1>
+          <h1 className="mt-5 text-3xl font-black leading-tight text-[var(--text)] md:text-5xl md:leading-tight">{translateMessage('Control every public website section from the admin dashboard.')}</h1>
           <p className="mt-4 text-sm leading-7 text-[var(--text)] md:text-base">
             {translateMessage('Manage services, apps, blog posts, process steps, FAQs, pricing, testimonials, partners, team, careers, legal copy, and global settings without code changes.')}
           </p>
@@ -56,8 +56,8 @@ export default function AdminWebsiteOverviewPage() {
             </div>
             <div className="mt-4 flex flex-wrap gap-2 text-[11px] font-bold uppercase tracking-wider">
               <span className="rounded-full bg-[var(--surface-3)] px-3 py-1 text-[var(--text)]">{config.collection}</span>
-              {config.requiresSlug ? <span className="rounded-full bg-sky-500/10 px-3 py-1 text-sky-300">{translateMessage('Slug')}</span> : null}
-              {config.requiresApproval ? <span className="rounded-full bg-amber-500/10 px-3 py-1 text-amber-300">{translateMessage('Approval')}</span> : null}
+              {config.requiresSlug ? <span className="rounded-full bg-[color-mix(in_srgb,var(--info)_8%,transparent)] px-3 py-1 text-info">{translateMessage('Slug')}</span> : null}
+              {config.requiresApproval ? <span className="rounded-full bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] px-3 py-1 text-warning">{translateMessage('Approval')}</span> : null}
             </div>
           </Link>
         ))}

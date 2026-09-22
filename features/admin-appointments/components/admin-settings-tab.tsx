@@ -86,7 +86,7 @@ export default function AdminSettingsTab({
             type="button"
             onClick={onSaveSettings}
             disabled={loading}
-            className="w-full bg-primary text-white font-bold py-3 rounded-xl shadow-lg hover:shadow-primary/20 transition-all disabled:opacity-50"
+            className="w-full bg-primary text-on-primary font-bold py-3 rounded-xl shadow-lg hover:shadow-primary/20 transition-all disabled:opacity-50"
           >
             {translateMessage(loading ? 'Saving...' : 'Save Settings')}
           </button>

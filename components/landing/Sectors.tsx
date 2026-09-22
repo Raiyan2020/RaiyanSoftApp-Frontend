@@ -42,9 +42,6 @@ export default function Sectors() {
       >
         <div className="grid gap-8 lg:grid-cols-[0.82fr_1.18fr] lg:items-center">
           <motion.div variants={item} className="max-w-xl">
-            <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-              {translateMessage('Sectors')}
-            </div>
             <h2 className="text-2xl font-bold leading-[1.34] tracking-[-0.01em] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.2rem]">
               {translateMessage('We tailor the solution to')} <span className="gradient-text">{translateMessage('your industry and customer behavior')}</span>
             </h2>

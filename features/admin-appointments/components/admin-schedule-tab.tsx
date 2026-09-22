@@ -38,7 +38,7 @@ export default function AdminScheduleTab({
           type="button"
           onClick={onSave}
           disabled={saving}
-          className="bg-primary text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-sky-400 transition-colors disabled:opacity-60"
+          className="bg-primary text-on-primary px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 hover:bg-primary-dark transition-colors disabled:opacity-60"
         >
           <Save size={16} /> {translateMessage(saving ? 'Saving...' : 'Save Changes')}
         </button>
@@ -102,7 +102,7 @@ export default function AdminScheduleTab({
                         <button
                           type="button"
                           onClick={() => onRemoveRange(idx, rangeIdx)}
-                          className="p-2 text-red-400 hover:bg-red-500/10 rounded-lg"
+                          className="p-2 text-danger hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] rounded-lg"
                         >
                           <Trash2 size={16} />
                         </button>

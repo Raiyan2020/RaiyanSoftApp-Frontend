@@ -47,16 +47,17 @@ export default function LoginForm({
                 {...field}
                 type="email"
                 aria-invalid={fieldState.invalid}
+                aria-describedby={fieldState.invalid ? 'login-email-error' : undefined}
                 className={`w-full app-input rounded-xl ps-10 pe-4 py-3 focus:outline-none transition-all ${
                   fieldState.invalid
-                    ? 'border-red-500/50 focus:border-red-500'
+                    ? 'border-danger focus:border-danger'
                     : 'focus:border-primary'
                 }`}
                 placeholder="name@example.com"
                 dir={dir}
               />
             </div>
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            {fieldState.invalid && <FieldError id="login-email-error" errors={[fieldState.error]} />}
           </Field>
         )}
       />
@@ -71,11 +72,12 @@ export default function LoginForm({
               <PasswordInput
                 {...field}
                 aria-invalid={fieldState.invalid}
+                aria-describedby={fieldState.invalid ? 'login-password-error' : undefined}
                 icon={<Lock size={18} />}
                 placeholder="••••••"
                 dir={dir}
               />
-              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+              {fieldState.invalid && <FieldError id="login-password-error" errors={[fieldState.error]} />}
             </Field>
           )}
         />

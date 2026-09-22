@@ -53,7 +53,7 @@ export default function SignupForm({
                   aria-invalid={fieldState.invalid}
                   className={`w-full app-input rounded-xl ps-10 pe-4 py-3.5 focus:outline-none transition-all ${
                     fieldState.invalid
-                      ? 'border-red-500/50 focus:border-red-500'
+                      ? 'border-danger focus:border-danger'
                       : 'focus:border-primary'
                   }`}
                   dir={dir}
@@ -80,7 +80,7 @@ export default function SignupForm({
                   aria-invalid={fieldState.invalid}
                   className={`w-full app-input rounded-xl ps-10 pe-4 py-3.5 focus:outline-none transition-all ${
                     fieldState.invalid
-                      ? 'border-red-500/50 focus:border-red-500'
+                      ? 'border-danger focus:border-danger'
                       : 'focus:border-primary'
                   }`}
                   dir={dir}
@@ -124,7 +124,7 @@ export default function SignupForm({
                 aria-invalid={fieldState.invalid}
                 className={`w-full app-input rounded-xl ps-10 pe-4 py-3.5 focus:outline-none transition-all ${
                   fieldState.invalid
-                    ? 'border-red-500/50 focus:border-red-500'
+                    ? 'border-danger focus:border-danger'
                     : 'focus:border-primary'
                 }`}
                 dir="ltr"

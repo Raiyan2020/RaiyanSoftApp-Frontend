@@ -3,6 +3,7 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
 import { Toaster, toast as sonnerToast } from 'sonner';
 import { translateMessage } from './i18n-utils';
+import { useTheme } from './themeContext';
 
 type ToastFn = (message: string) => void;
 const ACTION_TOAST_ID = 'global-action-toast';
@@ -28,17 +29,29 @@ const toastApi: ToastContextType['toast'] = {
 };
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { theme } = useTheme();
   return (
     <ToastContext.Provider value={{ toast: toastApi }}>
       {children}
+      {/* Sonner defaulted to its light palette regardless of the app theme, so
+          toasts rendered as a light card over a dark UI, and richColors' error
+          text measured 4.35:1. Both now follow the app's own tokens. */}
       <Toaster
-        richColors
+        theme={theme}
         closeButton
         position="top-right"
         visibleToasts={1}
         toastOptions={{
           classNames: {
-            toast: 'font-sans',
+            toast:
+              'font-sans !bg-[var(--surface)] !text-[var(--text)] !border-[var(--border)] !shadow-[var(--shadow-soft)]',
+            description: '!text-[var(--text-muted)]',
+            error: '!text-danger !border-[color-mix(in_srgb,var(--danger)_38%,transparent)]',
+            success: '!text-success !border-[color-mix(in_srgb,var(--success)_38%,transparent)]',
+            info: '!text-info !border-[color-mix(in_srgb,var(--info)_38%,transparent)]',
+            // Sonner hardcodes the close button at 20x20 in its own CSS, below
+            // the 24px minimum target size; !h-6/!w-6 overrides it to 24x24.
+            closeButton: '!h-6 !w-6 !bg-[var(--surface-2)] !text-[var(--text)] !border-[var(--border)]',
           },
         }}
       />

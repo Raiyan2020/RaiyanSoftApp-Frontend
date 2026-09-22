@@ -36,7 +36,7 @@ export default function AdminProjectCard({ project, onOpenModal, onDeleteProject
           <button
             type="button"
             onClick={() => onDeleteProject(project.id)}
-            className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
+            className="p-2 bg-[var(--surface-3)] hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] hover:text-danger rounded-lg text-[var(--text-muted)] transition-colors"
             title={translateMessage('Delete')}
           >
             <Trash2 size={16} />

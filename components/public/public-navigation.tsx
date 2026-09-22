@@ -9,6 +9,7 @@ import { siteConfig } from '@/lib/site';
 import { trackPublicEvent } from '@/lib/analytics';
 import { translateMessage } from '@/lib/i18n-utils';
 import { persistTheme, readStoredTheme } from '@/lib/theme';
+import { useTranslation } from '@/lib/i18nContext';
 
 const navLinks = [
   { label: 'Home', href: '/' },
@@ -24,6 +25,7 @@ const navLinks = [
 
 export default function PublicNavigation() {
   const pathname = usePathname();
+  const { language, setLanguage } = useTranslation();
   const [open, setOpen] = useState(false);
   const [dark, setDark] = useState(false);
 
@@ -53,13 +55,13 @@ export default function PublicNavigation() {
   };
 
   return (
-    <header className="sticky top-0 z-50 border-b border-cyan-950/10 bg-white/90 backdrop-blur-xl dark:border-white/10 dark:bg-navy-950/90">
+    <header className="sticky top-0 z-50 border-b border-[var(--border)] bg-[var(--surface)]/90 backdrop-blur-xl dark:bg-navy-950/90">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:h-20 lg:px-8">
         <Link href="/" className="flex min-w-0 items-center gap-3">
           <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-xl ring-1 ring-primary/30">
             <Image src="/logo.webp" alt={siteConfig.name} fill className="object-cover" sizes="40px" priority />
           </span>
-          <span className="truncate text-base font-black text-slate-950 dark:text-white">{siteConfig.name}</span>
+          <span className="truncate text-base font-black text-[var(--text)]">{siteConfig.name}</span>
         </Link>
 
         <nav aria-label={translateMessage('Public Navigation')} className="hidden items-center gap-1 lg:flex">
@@ -70,10 +72,10 @@ export default function PublicNavigation() {
                 key={link.href}
                 href={link.href}
                 aria-current={active ? 'page' : undefined}
-                className={`rounded-lg px-3 py-2 text-sm font-bold transition ${
+                className={`rounded-xl px-3 py-2 text-sm font-bold transition ${
                   active
                     ? 'bg-primary/10 text-primary'
-                    : 'text-slate-600 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-white/10 dark:hover:text-white'
+                    : 'text-[var(--text-muted)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]'
                 }`}
               >
                 {translateMessage(link.label)}
@@ -83,16 +85,38 @@ export default function PublicNavigation() {
         </nav>
 
         <div className="flex items-center gap-2">
+          <div className="flex items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] p-1 dark:bg-white/5">
+            <button
+              type="button"
+              onClick={() => setLanguage('ar')}
+              aria-pressed={language === 'ar'}
+              className={`min-h-8 rounded-xl px-2.5 text-xs font-bold transition-colors ${
+                language === 'ar' ? 'bg-primary text-on-primary' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+              }`}
+            >
+              AR
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanguage('en')}
+              aria-pressed={language === 'en'}
+              className={`min-h-8 rounded-xl px-2.5 text-xs font-bold transition-colors ${
+                language === 'en' ? 'bg-primary text-on-primary' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+              }`}
+            >
+              EN
+            </button>
+          </div>
           <button
             type="button"
             onClick={toggleDark}
             aria-label={translateMessage('Toggle Dark Mode')}
-            className="grid h-10 w-10 place-items-center rounded-lg border border-cyan-950/10 bg-white text-slate-700 transition hover:border-primary hover:text-primary dark:border-white/10 dark:bg-white/5 dark:text-slate-200"
+            className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] transition hover:border-primary hover:text-primary"
           >
             {dark ? <Sun size={18} /> : <Moon size={18} />}
           </button>
           <Link
-            className="hidden rounded-lg bg-primary px-4 py-2 text-sm font-black text-white transition hover:bg-primary-dark sm:inline-flex"
+            className="hidden rounded-xl bg-primary px-4 py-2 text-sm font-black text-on-primary transition hover:bg-primary-dark sm:inline-flex"
             href="/quote"
             onClick={() => trackPublicEvent('cta_click', { location: 'public_navigation', href: '/quote', label: 'Get a Quote' })}
           >
@@ -104,14 +128,14 @@ export default function PublicNavigation() {
             aria-label={translateMessage('Menu')}
             aria-expanded={open}
             aria-controls="public-mobile-menu"
-            className="grid h-10 w-10 place-items-center rounded-lg border border-cyan-950/10 bg-white text-slate-700 transition hover:border-primary hover:text-primary dark:border-white/10 dark:bg-white/5 dark:text-slate-200 lg:hidden"
+            className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text)] transition hover:border-primary hover:text-primary lg:hidden"
           >
             {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
       </div>
 
-      <div id="public-mobile-menu" className={`border-t border-cyan-950/10 lg:hidden dark:border-white/10 ${open ? 'block' : 'hidden'}`}>
+      <div id="public-mobile-menu" className={`border-t border-[var(--border)] lg:hidden ${open ? 'block' : 'hidden'}`}>
         <nav aria-label={translateMessage('Public Mobile Navigation')} className="mx-auto grid max-w-7xl gap-1 px-4 py-4 sm:px-6">
           {navLinks.map((link) => {
             const active = link.href === '/' ? pathname === '/' : pathname.startsWith(link.href);
@@ -120,10 +144,10 @@ export default function PublicNavigation() {
                 key={link.href}
                 href={link.href}
                 aria-current={active ? 'page' : undefined}
-                className={`rounded-lg px-3 py-3 text-sm font-bold transition ${
+                className={`rounded-xl px-3 py-3 text-sm font-bold transition ${
                   active
                     ? 'bg-primary/10 text-primary'
-                    : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-white/10'
+                    : 'text-[var(--text)] hover:bg-[var(--surface-2)]'
                 }`}
               >
                 {translateMessage(link.label)}
@@ -131,7 +155,7 @@ export default function PublicNavigation() {
             );
           })}
           <Link
-            className="mt-2 rounded-lg bg-primary px-4 py-3 text-center text-sm font-black text-white transition hover:bg-primary-dark"
+            className="mt-2 rounded-xl bg-primary px-4 py-3 text-center text-sm font-black text-on-primary transition hover:bg-primary-dark"
             href="/quote"
             onClick={() => trackPublicEvent('cta_click', { location: 'public_mobile_navigation', href: '/quote', label: 'Get a Quote' })}
           >

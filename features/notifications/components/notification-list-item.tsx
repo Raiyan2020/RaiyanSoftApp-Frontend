@@ -13,11 +13,11 @@ interface NotificationListItemProps {
 const getIcon = (type: NotificationType) => {
   switch (type) {
     case 'success':
-      return <CheckCircle size={20} className="text-emerald-400" />;
+      return <CheckCircle size={20} className="text-success" />;
     case 'warning':
-      return <AlertTriangle size={20} className="text-amber-400" />;
+      return <AlertTriangle size={20} className="text-warning" />;
     case 'message':
-      return <MessageCircle size={20} className="text-blue-400" />;
+      return <MessageCircle size={20} className="text-info" />;
     case 'payment':
       return <CreditCard size={20} className="text-purple-400" />;
     case 'system':
@@ -52,7 +52,7 @@ export default function NotificationListItem({ notification, onClick, onDismiss 
       whileTap={{ scale: 0.98 }}
       onClick={() => onClick(notification)}
       className={`group relative p-4 rounded-2xl cursor-pointer border transition-all duration-300 ${
-        !read ? 'bg-primary/10 border-primary/30 shadow-[0_0_15px_rgba(29,183,240,0.1)]' : 'bg-[var(--surface)] border-[var(--border)] hover:bg-[var(--surface-2)]'
+        !read ? 'bg-primary/10 border-primary/30 shadow-[0_0_15px_rgb(var(--primary-glow-rgb) / 0.1)]' : 'bg-[var(--surface)] border-[var(--border)] hover:bg-[var(--surface-2)]'
       }`}
     >
       <div className="flex items-start gap-3">
@@ -69,13 +69,13 @@ export default function NotificationListItem({ notification, onClick, onDismiss 
             <h4 className={`text-sm truncate pe-2 rtl:pe-0 rtl:ps-2 ${!read ? 'text-[var(--text)] font-bold' : 'text-[var(--text)] font-medium'}`}>
               {title}
             </h4>
-            <span className="text-[10px] text-[var(--text-muted)] shrink-0 whitespace-nowrap">{createdAtDiff || getTimeLabel(timestamp)}</span>
+            <span className="text-[11px] text-[var(--text-muted)] shrink-0 whitespace-nowrap">{createdAtDiff || getTimeLabel(timestamp)}</span>
           </div>
           <p className="text-xs text-[var(--text-muted)] truncate leading-relaxed">{message}</p>
         </div>
 
         <div className="flex flex-col items-end gap-2 shrink-0 pt-1">
-          {!read ? <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgba(29,183,240,0.8)]" /> : null}
+          {!read ? <div className="w-2 h-2 rounded-full bg-primary shadow-[0_0_8px_rgb(var(--primary-glow-rgb) / 0.8)]" /> : null}
         </div>
       </div>
 
@@ -83,7 +83,7 @@ export default function NotificationListItem({ notification, onClick, onDismiss 
         type="button"
         onClick={(e) => onDismiss(e, id)}
         aria-label={t('notif.dismiss')}
-        className="absolute top-2 end-2 p-2 text-[var(--text-muted)] hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+        className="absolute top-2 end-2 p-2 text-[var(--text-muted)] hover:text-danger transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
       >
         <X size={14} />
       </button>

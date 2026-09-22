@@ -83,7 +83,7 @@ export default function LeadDetailDrawer({
                     }}
                     className={`p-1.5 rounded-lg transition-colors flex items-center justify-center ${
                       waUrl
-                        ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'
+                        ? 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success hover:bg-[color-mix(in_srgb,var(--success)_20%,transparent)]'
                         : 'bg-[var(--surface-3)] text-[var(--text-muted)] cursor-not-allowed opacity-50'
                     }`}
                     title={waUrl ? t('admin.leads.whatsapp') : t('admin.leads.no_phone')}
@@ -182,7 +182,7 @@ export default function LeadDetailDrawer({
                       type="button"
                       onClick={onReject}
                       disabled={statusLoading}
-                      className="flex-1 py-3 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl font-bold border border-red-500/20 flex items-center justify-center gap-2 disabled:opacity-60"
+                      className="flex-1 py-3 bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] text-danger rounded-xl font-bold border border-[color-mix(in_srgb,var(--danger)_20%,transparent)] flex items-center justify-center gap-2 disabled:opacity-60"
                     >
                       {statusLoading ? <Loader2 className="animate-spin" size={18} /> : <XCircle size={18} />}
                       <span>{t('admin.leads.reject')}</span>

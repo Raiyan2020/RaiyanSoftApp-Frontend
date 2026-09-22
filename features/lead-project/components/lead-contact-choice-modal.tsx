@@ -55,7 +55,7 @@ export default function LeadContactChoiceModal({ requestId, onClose }: LeadConta
           <X size={16} />
         </button>
 
-        <CheckCircle2 className="mx-auto mb-3 text-emerald-400" size={42} />
+        <CheckCircle2 className="mx-auto mb-3 text-success" size={42} />
         <h3 className="text-xl font-black text-[var(--text)]">{t('contact_choice.title')}</h3>
         <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{t('contact_choice.subtitle')}</p>
 

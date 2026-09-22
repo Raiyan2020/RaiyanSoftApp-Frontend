@@ -42,7 +42,7 @@ export default function AppCard({
           <Box className="text-[var(--text)] opacity-90" size={20} />
         </div>
         <div className="min-w-0">
-          <h3 className="text-[var(--text)] font-semibold text-base truncate pe-2 rtl:pe-0 rtl:ps-2">{name}</h3>
+          <h2 className="text-[var(--text)] font-semibold text-base truncate pe-2 rtl:pe-0 rtl:ps-2">{name}</h2>
           <p className="text-[var(--text-muted)] text-sm line-clamp-2">{description || version}</p>
         </div>
       </div>

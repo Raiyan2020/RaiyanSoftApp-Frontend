@@ -81,7 +81,7 @@ export default function NotificationSheet({ notification, onClose }: Notificatio
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3.5 rounded-xl bg-primary text-white font-medium text-sm shadow-[0_0_20px_rgba(29,183,240,0.3)] hover:shadow-[0_0_25px_rgba(29,183,240,0.5)] transition-all flex items-center justify-center space-x-2 rtl:space-x-reverse"
+              className="flex-1 py-3.5 rounded-xl bg-primary text-on-primary font-medium text-sm shadow-[0_0_20px_rgb(var(--primary-glow-rgb) / 0.3)] hover:shadow-[0_0_25px_rgb(var(--primary-glow-rgb) / 0.5)] transition-all flex items-center justify-center space-x-2 rtl:space-x-reverse"
             >
               <span>{t('notif.view_details')}</span>
               {dir === 'rtl' ? <ArrowLeft size={16} /> : <ArrowRight size={16} />}

@@ -161,7 +161,7 @@ export default function AdminPageEditor({
           type="button"
           onClick={onSave}
           disabled={readOnly || saveLoading}
-          className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-white shadow-lg transition hover:shadow-primary/20 disabled:opacity-50"
+          className="rounded-xl bg-primary px-6 py-3 text-sm font-bold text-on-primary shadow-lg transition hover:shadow-primary/20 disabled:opacity-50"
         >
           <span className="inline-flex items-center gap-2">
             {saveLoading ? <Loader2 size={14} className="animate-spin" /> : null}

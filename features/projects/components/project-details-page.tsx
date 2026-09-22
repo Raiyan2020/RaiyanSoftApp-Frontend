@@ -20,8 +20,8 @@ const tabButtonBase =
 const stageStatusClasses: Record<string, string> = {
   planned: 'bg-slate-500/10 text-[var(--text)] border-slate-500/20',
   active: 'bg-primary/10 text-primary border-primary/20',
-  completed: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  blocked: 'bg-red-500/10 text-red-400 border-red-500/20',
+  completed: 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success border-[color-mix(in_srgb,var(--success)_20%,transparent)]',
+  blocked: 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger border-[color-mix(in_srgb,var(--danger)_20%,transparent)]',
 };
 
 const formatDate = (value?: number | null, dir?: string) => {
@@ -97,7 +97,7 @@ function PhaseIndicatorCard({ phase, rejectionReason, dir }: { phase: ClientProj
           <p className="text-xs font-semibold uppercase tracking-[0.18em] text-[var(--text-muted)]">
             {dir === 'rtl' ? 'سبب الإلغاء' : 'Cancellation reason'}
           </p>
-          <p className="mt-2 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+          <p className="mt-2 rounded-2xl border border-[color-mix(in_srgb,var(--danger)_20%,transparent)] bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] px-4 py-3 text-sm text-danger">
             {rejectionReason}
           </p>
         </div>
@@ -518,7 +518,7 @@ export default function ProjectDetailsPage({ id }: { id?: string }) {
                 onClick={() => setActiveTab(tab.id)}
                 className={`${tabButtonBase} ${
                   active
-                    ? 'border-primary/25 bg-primary/10 text-primary shadow-[0_10px_30px_rgba(29,183,240,0.1)]'
+                    ? 'border-primary/25 bg-primary/10 text-primary shadow-[0_10px_30px_rgb(var(--primary-glow-rgb) / 0.1)]'
                     : 'border-transparent bg-[var(--surface-2)] text-[var(--text-muted)] hover:border-[var(--border)] hover:bg-[var(--surface)] hover:text-[var(--text)]'
                 }`}
               >

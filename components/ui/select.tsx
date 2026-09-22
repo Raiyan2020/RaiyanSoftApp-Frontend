@@ -18,7 +18,7 @@ const SelectTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       'app-input flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm text-[var(--text)] outline-none transition-all focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 [&>span]:line-clamp-1',
-      error ? 'border-red-500/50 focus:border-red-500' : 'focus:border-primary',
+      error ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'focus:border-primary',
       className
     )}
     {...props}

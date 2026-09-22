@@ -11,13 +11,13 @@ type FieldProps = {
 export function PublicField({ id, label, error, required, children }: FieldProps) {
   return (
     <div className="space-y-2">
-      <label htmlFor={id} className="block text-sm font-black text-slate-800 dark:text-slate-100">
+      <label htmlFor={id} className="block text-sm font-bold text-[var(--text)]">
         {translateMessage(label)}
         {required ? <span className="text-primary"> *</span> : null}
       </label>
       {children}
       {error ? (
-        <p id={`${id}-error`} className="text-sm font-bold text-red-600 dark:text-red-300">
+        <p id={`${id}-error`} role="alert" className="text-sm font-bold text-danger">
           {translateMessage(error)}
         </p>
       ) : null}
@@ -26,7 +26,7 @@ export function PublicField({ id, label, error, required, children }: FieldProps
 }
 
 export const publicInputClass =
-  'w-full rounded-lg border border-cyan-950/10 bg-white px-4 py-3 text-slate-950 transition focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white';
+  'w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-[var(--text)] transition focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 dark:bg-white/5 dark:text-white';
 
 export function PublicFormStatus({ type, message }: { type: 'success' | 'error' | 'loading'; message: string }) {
   const styles = {
@@ -36,7 +36,7 @@ export function PublicFormStatus({ type, message }: { type: 'success' | 'error' 
   };
 
   return (
-    <div role="status" className={`rounded-lg border px-4 py-3 text-sm font-bold ${styles[type]}`}>
+    <div role="status" className={`rounded-xl border px-4 py-3 text-sm font-bold ${styles[type]}`}>
       {translateMessage(message)}
     </div>
   );

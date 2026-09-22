@@ -149,7 +149,7 @@ export default function AdminBlogPostsPage() {
       <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-black text-[var(--text)]">{translateMessage('Blog')}</h3>
+            <h2 className="text-lg font-black text-[var(--text)]">{translateMessage('Blog')}</h2>
             <p className="text-sm text-[var(--text-muted)]">{translateMessage('Manage posts, categories, content, and SEO from the backend blog endpoints.')}</p>
           </div>
           <Button type="button" variant="outline" size="sm" onClick={reset}><Plus size={14} className="me-2" />{translateMessage('New')}</Button>
@@ -178,7 +178,7 @@ export default function AdminBlogPostsPage() {
       </section>
 
       <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
-        <h3 className="text-lg font-black text-[var(--text)]">{translateMessage(selected ? 'Edit Blog' : 'Create Blog')}</h3>
+        <h2 className="text-lg font-black text-[var(--text)]">{translateMessage(selected ? 'Edit Blog' : 'Create Blog')}</h2>
         <div className="mt-5 grid gap-5">
           <label className="space-y-2">
             <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Category')}</span>

@@ -29,21 +29,21 @@ export function getLeadStatusTone(status: string | LeadStatusCode) {
 
   if (normalized === LEAD_STATUS.APPROVED) {
     return {
-      badgeClass: 'bg-emerald-500/10 text-emerald-400',
-      textClass: 'text-emerald-400',
+      badgeClass: 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success',
+      textClass: 'text-success',
     };
   }
 
   if (normalized === LEAD_STATUS.REJECTED) {
     return {
-      badgeClass: 'bg-red-500/10 text-red-400',
-      textClass: 'text-red-400',
+      badgeClass: 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger',
+      textClass: 'text-danger',
     };
   }
 
   return {
-    badgeClass: 'bg-blue-500/10 text-blue-400',
-    textClass: 'text-blue-400',
+    badgeClass: 'bg-[color-mix(in_srgb,var(--info)_10%,transparent)] text-info',
+    textClass: 'text-info',
   };
 }
 

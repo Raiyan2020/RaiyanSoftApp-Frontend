@@ -86,10 +86,10 @@ export default function TagRepeater({
                   placeholder={translateMessage('Type in Arabic')}
                   aria-invalid={Boolean(errors[i]?.ar)}
                   className={`w-full rounded-lg border bg-[var(--surface)] px-2.5 py-2 text-sm focus:outline-none ${
-                    errors[i]?.ar ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+                    errors[i]?.ar ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
                   }`}
                 />
-                {errors[i]?.ar ? <p className="mt-1 text-xs font-medium text-red-400">{errors[i]?.ar}</p> : null}
+                {errors[i]?.ar ? <p className="mt-1 text-xs font-medium text-danger">{errors[i]?.ar}</p> : null}
               </div>
               {/* English */}
               <div className="flex-1">
@@ -100,10 +100,10 @@ export default function TagRepeater({
                   placeholder={translateMessage('Type in English')}
                   aria-invalid={Boolean(errors[i]?.en)}
                   className={`w-full rounded-lg border bg-[var(--surface)] px-2.5 py-2 text-sm focus:outline-none ${
-                    errors[i]?.en ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+                    errors[i]?.en ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
                   }`}
                 />
-                {errors[i]?.en ? <p className="mt-1 text-xs font-medium text-red-400">{errors[i]?.en}</p> : null}
+                {errors[i]?.en ? <p className="mt-1 text-xs font-medium text-danger">{errors[i]?.en}</p> : null}
               </div>
               {/* Optional URL */}
               {withUrl && (
@@ -115,17 +115,17 @@ export default function TagRepeater({
                     placeholder={translateMessage('URL (opt.)')}
                     aria-invalid={Boolean(errors[i]?.url)}
                     className={`w-full rounded-lg border bg-[var(--surface)] px-2.5 py-2 text-sm focus:outline-none ${
-                      errors[i]?.url ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+                      errors[i]?.url ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
                     }`}
                   />
-                  {errors[i]?.url ? <p className="mt-1 text-xs font-medium text-red-400">{errors[i]?.url}</p> : null}
+                  {errors[i]?.url ? <p className="mt-1 text-xs font-medium text-danger">{errors[i]?.url}</p> : null}
                 </div>
               )}
               {/* Remove */}
               <button
                 type="button"
                 onClick={() => removeRow(i)}
-                className="rounded-lg p-1.5 text-red-400 hover:bg-red-500/10"
+                className="rounded-lg p-1.5 text-danger hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)]"
                 aria-label={translateMessage('Delete')}
               >
                 <Trash2 size={13} />

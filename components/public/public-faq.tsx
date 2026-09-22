@@ -12,7 +12,7 @@ export default function PublicFaq({ items }: PublicFaqProps) {
   const [openIndex, setOpenIndex] = useState(0);
 
   if (!items.length) {
-    return <p className="rounded-lg border border-cyan-950/10 bg-white px-5 py-4 text-sm text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">{translateMessage('No FAQs yet.')}</p>;
+    return <p className="rounded-xl border border-[var(--border)] bg-[var(--surface)] px-5 py-4 text-sm text-[var(--text-muted)] dark:bg-white/5 dark:text-slate-300">{translateMessage('No FAQs yet.')}</p>;
   }
 
   return (
@@ -20,20 +20,20 @@ export default function PublicFaq({ items }: PublicFaqProps) {
       {items.map((item, index) => {
         const open = openIndex === index;
         return (
-          <div key={item.question} className="overflow-hidden rounded-lg border border-cyan-950/10 bg-white dark:border-white/10 dark:bg-white/5">
-            <h3 className="m-0">
+          <div key={item.question} className="overflow-hidden rounded-xl border border-[var(--border)] bg-[var(--surface)] dark:bg-white/5">
+            <h2 className="m-0">
               <button
                 type="button"
                 id={`public-faq-trigger-${index}`}
                 aria-expanded={open}
                 aria-controls={`public-faq-panel-${index}`}
                 onClick={() => setOpenIndex(open ? -1 : index)}
-                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-base font-black text-slate-950 dark:text-white"
+                className="flex w-full items-center justify-between gap-4 px-5 py-4 text-start text-base font-black text-[var(--text)]"
               >
                 <span>{item.question}</span>
                 <ChevronDown className={`shrink-0 text-primary transition ${open ? 'rotate-180' : ''}`} size={20} />
               </button>
-            </h3>
+            </h2>
             <div
               id={`public-faq-panel-${index}`}
               role="region"
@@ -41,7 +41,7 @@ export default function PublicFaq({ items }: PublicFaqProps) {
               className={`grid transition-all ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}
             >
               <div className="overflow-hidden">
-                <p className="px-5 pb-5 text-sm leading-8 text-slate-600 dark:text-slate-300">{item.answer}</p>
+                <p className="px-5 pb-5 text-sm leading-8 text-[var(--text-muted)]">{item.answer}</p>
               </div>
             </div>
           </div>

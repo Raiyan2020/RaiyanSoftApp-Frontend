@@ -95,7 +95,7 @@ export default function EmployeeDetailDrawer({
             <div className="grid grid-cols-2 gap-4">
               <div className="bg-[var(--surface-3)] p-4 rounded-xl border border-[var(--border)]">
                 <div className="text-xs text-[var(--text-muted)] mb-1">{translateMessage('Status')}</div>
-                <div className={isBlocked ? 'text-red-400' : 'text-emerald-400'}>
+                <div className={isBlocked ? 'text-danger' : 'text-success'}>
                   {translateMessage(getEmployeeStatusLabel(employee))}
                 </div>
               </div>
@@ -118,7 +118,7 @@ export default function EmployeeDetailDrawer({
             onClick={() => onToggleStatus(employee)}
             disabled={toggleLoading}
             className={`flex-1 py-3 rounded-xl font-medium text-sm flex items-center justify-center gap-2 disabled:opacity-60 ${
-              isBlocked ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
+              isBlocked ? 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success' : 'bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] text-warning'
             }`}
           >
             {toggleLoading ? (
@@ -133,7 +133,7 @@ export default function EmployeeDetailDrawer({
           <button
             type="button"
             onClick={() => onDeleteEmployee(employee.id)}
-            className="flex-1 py-3 rounded-xl bg-red-500/10 text-red-400 font-medium text-sm flex items-center justify-center gap-2"
+            className="flex-1 py-3 rounded-xl bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger font-medium text-sm flex items-center justify-center gap-2"
           >
             <Trash2 size={18} /> {translateMessage('Delete')}
           </button>

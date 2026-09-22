@@ -60,7 +60,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-center justify-between p-3.5 border-b border-[var(--border)] bg-[var(--surface)] backdrop-blur-md shrink-0">
-          <button type="button" onClick={onClose} className="p-2 -ms-2 text-[var(--text-muted)] hover:text-[var(--text)]">
+          <button type="button" onClick={onClose} aria-label={translateMessage('Close dialog')} className="grid h-10 w-10 -ms-2 place-items-center rounded-xl text-[var(--text-muted)] transition-colors hover:text-[var(--text)]">
             <X size={24} />
           </button>
           <h2 className="text-[var(--text)] font-bold text-lg">{t('appt.book_btn')}</h2>
@@ -130,7 +130,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
                               !isCurrentMonth
                                 ? 'border-transparent text-[var(--text-muted)] opacity-30 cursor-default'
                                 : isSelected
-                                ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20'
+                                ? 'bg-primary border-primary text-on-primary shadow-lg shadow-primary/20'
                                 : isClickable
                                 ? 'bg-[var(--surface-3)] text-[var(--text)] border-[var(--border)] hover:bg-[var(--surface-3)]'
                                 : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-transparent cursor-not-allowed'
@@ -185,7 +185,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
                               onClick={() => setSelectedTime(time)}
                               className={`py-2.5 rounded-xl border font-medium text-sm transition-all ${
                                 selectedTime === time
-                                  ? 'bg-primary text-white border-primary shadow-lg shadow-primary/20'
+                                  ? 'bg-primary text-on-primary border-primary shadow-lg shadow-primary/20'
                                   : 'bg-[var(--surface-3)] text-[var(--text)] border-[var(--border)] hover:bg-[var(--surface-3)]'
                               }`}
                             >
@@ -281,7 +281,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
 
           {step === successStep ? (
             <motion.div initial={false} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center justify-center py-10 space-y-6">
-              <div className="w-24 h-24 bg-emerald-500/20 rounded-full flex items-center justify-center text-emerald-500 mb-4 border border-emerald-500/30">
+              <div className="w-24 h-24 bg-[color-mix(in_srgb,var(--success)_20%,transparent)] rounded-full flex items-center justify-center text-success mb-4 border border-emerald-500/30">
                 <CheckCircle size={48} />
               </div>
               <h2 className="text-2xl font-bold text-[var(--text)]">{t('appt.booking_success')}</h2>
@@ -312,7 +312,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
                 (step === 2 && !formData.topic.trim()) ||
                 isSubmitting
               }
-              className="flex-1 bg-primary text-white font-bold py-3 rounded-xl shadow-[0_0_20px_rgba(29,183,240,0.3)] hover:shadow-[0_0_25px_rgba(29,183,240,0.5)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 bg-primary text-on-primary font-bold py-3 rounded-xl shadow-[0_0_20px_rgb(var(--primary-glow-rgb) / 0.3)] hover:shadow-[0_0_25px_rgb(var(--primary-glow-rgb) / 0.5)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting
                 ? <Loader2 className="animate-spin" />

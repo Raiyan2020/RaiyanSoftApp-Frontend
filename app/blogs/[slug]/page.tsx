@@ -80,30 +80,30 @@ export default async function BlogPostPage({ params }: PageProps) {
 
       <SectionShell>
         <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem] lg:items-start">
-          <article className="rounded-lg border border-cyan-950/10 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-white/5 sm:p-8">
+          <article className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm sm:p-8">
             {post.category ? (
               <Link href={categoryHref} className="inline-flex rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
                 {post.category.title}
               </Link>
             ) : null}
-            <div className="prose prose-slate max-w-none dark:prose-invert prose-p:leading-9 prose-p:text-slate-700 dark:prose-p:text-slate-200">
+            <div className="prose prose-slate max-w-none dark:prose-invert prose-p:leading-9 prose-p:text-[var(--text)] dark:prose-p:text-[var(--text)]">
               {paragraphs.map((paragraph) => (
                 <p key={paragraph}>{paragraph}</p>
               ))}
             </div>
           </article>
 
-          <aside className="rounded-lg border border-cyan-950/10 bg-slate-50 p-5 dark:border-white/10 dark:bg-white/5">
-            <p className="text-sm font-black text-slate-950 dark:text-white">{tt('Related Articles')}</p>
+          <aside className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
+            <p className="text-sm font-black text-[var(--text)]">{tt('Related Articles')}</p>
             <div className="mt-4 space-y-3">
               {relatedPosts.length > 0 ? (
                 relatedPosts.map((item) => (
-                  <Link key={item.slug} href={`/blogs/${item.slug}`} className="block rounded-lg bg-white p-4 text-sm font-bold leading-7 text-slate-700 transition hover:text-primary dark:bg-white/5 dark:text-slate-200">
+                  <Link key={item.slug} href={`/blogs/${item.slug}`} className="block rounded-xl bg-[var(--surface)] p-4 text-sm font-bold leading-7 text-[var(--text)] transition hover:text-primary dark:text-[var(--text)]">
                     {item.title}
                   </Link>
                 ))
               ) : (
-                <Link href="/blogs" className="block rounded-lg bg-white p-4 text-sm font-bold text-primary dark:bg-white/5">
+                <Link href="/blogs" className="block rounded-xl bg-[var(--surface)] p-4 text-sm font-bold text-primary">
                   {tt('Back to All Articles')}
                 </Link>
               )}

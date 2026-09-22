@@ -89,13 +89,13 @@ export default function ProjectFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>{translateMessage('Project Name')} <span className="text-red-400">*</span></FieldLabel>
+                  <FieldLabel>{translateMessage('Project Name')} <span className="text-danger">*</span></FieldLabel>
                   <input
                     {...field}
                     type="text"
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                     placeholder={translateMessage('e.g. Raiyan CRM')}
                   />
@@ -111,13 +111,13 @@ export default function ProjectFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>{translateMessage('Short Description')} <span className="text-red-400">*</span></FieldLabel>
+                  <FieldLabel>{translateMessage('Short Description')} <span className="text-danger">*</span></FieldLabel>
                   <textarea
                     {...field}
                     maxLength={120}
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors h-24 resize-none ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                     placeholder={translateMessage('Brief overview (max 120 chars)')}
                   />
@@ -127,7 +127,7 @@ export default function ProjectFormModal({
                     ) : (
                       <span />
                     )}
-                    <div className="text-[10px] text-[var(--text-muted)]">
+                    <div className="text-[11px] text-[var(--text-muted)]">
                       {(field.value || '').length}/120
                     </div>
                   </div>
@@ -140,13 +140,13 @@ export default function ProjectFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>{translateMessage('Project URL')} <span className="text-red-400">*</span></FieldLabel>
+                  <FieldLabel>{translateMessage('Project URL')} <span className="text-danger">*</span></FieldLabel>
                   <input
                     {...field}
                     type="url"
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                     placeholder={translateMessage('https://...')}
                   />
@@ -174,7 +174,7 @@ export default function ProjectFormModal({
                       setImageValue(null);
                     }}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors text-sm ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                     placeholder={translateMessage('Paste image URL...')}
                   />
@@ -210,7 +210,7 @@ export default function ProjectFormModal({
                         <Image src={field.value || '/logo.webp'} alt={translateMessage('Preview')} fill className="object-cover" />
                       </div>
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
-                        <span className="text-[10px] text-[var(--text)]">{translateMessage('Preview')}</span>
+                        <span className="text-[11px] text-[var(--text)]">{translateMessage('Preview')}</span>
                       </div>
                     </div>
                   ) : null}
@@ -231,7 +231,7 @@ export default function ProjectFormModal({
           <button
             form="projectForm"
             type="submit"
-            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-sky-400 text-white font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2 transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-on-primary font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2 transition-colors"
           >
             <Save size={16} />
             <span>{translateMessage('Save Project')}</span>

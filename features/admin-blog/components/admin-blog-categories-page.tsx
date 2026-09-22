@@ -134,7 +134,7 @@ export default function AdminBlogCategoriesPage() {
       <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
         <div className="mb-4 flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-black text-[var(--text)]">{translateMessage('Blog Categories')}</h3>
+            <h2 className="text-lg font-black text-[var(--text)]">{translateMessage('Blog Categories')}</h2>
             <p className="text-sm text-[var(--text-muted)]">{translateMessage('Manage categories used to organize public blogs.')}</p>
           </div>
           <Button type="button" variant="outline" size="sm" onClick={reset}>
@@ -170,7 +170,7 @@ export default function AdminBlogCategoriesPage() {
       </section>
 
       <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
-        <h3 className="text-lg font-black text-[var(--text)]">{translateMessage(selected ? 'Edit Category' : 'Create Category')}</h3>
+        <h2 className="text-lg font-black text-[var(--text)]">{translateMessage(selected ? 'Edit Category' : 'Create Category')}</h2>
         <div className="mt-5 grid gap-5">
           <BilingualFieldInputs label={translateMessage('Title')} value={title} onChange={setTitle} required />
           <label className="space-y-2">

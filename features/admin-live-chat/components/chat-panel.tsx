@@ -40,7 +40,7 @@ export default function ChatPanel({
                 </h2>
                 <div className="flex items-center gap-1.5">
                   <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                  <span className="text-xs text-emerald-400 font-medium">{translateMessage('Open Ticket')}</span>
+                  <span className="text-xs text-success font-medium">{translateMessage('Open Ticket')}</span>
                 </div>
               </div>
             </div>

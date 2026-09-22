@@ -79,14 +79,14 @@ export default function EmployeesTable({
                       <Avatar name={fullName} className="w-10 h-10 shrink-0 border border-[var(--border)] text-sm" />
                       <div className="min-w-0">
                         <p className="font-bold text-[var(--text)] truncate">{fullName}</p>
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-[var(--surface-3)] text-[var(--text)] border border-[var(--border)]">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium bg-[var(--surface-3)] text-[var(--text)] border border-[var(--border)]">
                           {translateMessage(formatRoleLabel(employee.role))}
                         </span>
                       </div>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                       <div className={`w-1.5 h-1.5 rounded-full ${isBlocked ? 'bg-red-500' : 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]'}`} />
-                      <span className={`text-xs font-medium ${isBlocked ? 'text-red-400' : 'text-emerald-400'}`}>{statusLabel}</span>
+                      <span className={`text-xs font-medium ${isBlocked ? 'text-danger' : 'text-success'}`}>{statusLabel}</span>
                     </div>
                   </div>
 
@@ -102,7 +102,7 @@ export default function EmployeesTable({
                         {employee.phone}
                       </span>
                     ) : null}
-                    <p className="text-[10px] text-[var(--text-muted)] pt-1 border-t border-[var(--border)]">
+                    <p className="text-[11px] text-[var(--text-muted)] pt-1 border-t border-[var(--border)]">
                       {translateMessage('Created')}: {formatEmployeeDate(employee.created_at)}
                     </p>
                   </div>
@@ -128,7 +128,7 @@ export default function EmployeesTable({
                     <button
                       type="button"
                       onClick={() => onDeleteEmployee(employee.id)}
-                      className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--text-muted)] hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 transition-colors"
+                      className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--text-muted)] hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] hover:text-danger hover:border-[color-mix(in_srgb,var(--danger)_20%,transparent)] transition-colors"
                     >
                       <Trash2 size={14} />
                     </button>

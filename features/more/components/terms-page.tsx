@@ -27,7 +27,7 @@ export default function TermsPage() {
           <button
             type="button"
             onClick={() => router.push('/more')}
-            className="text-[var(--text-muted)] hover:text-[var(--text)] mb-4 flex items-center gap-1"
+            className="-ms-2 mb-4 flex min-h-11 items-center gap-1 rounded-lg px-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
           >
             {dir === 'rtl' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
             <span className="text-sm">{t('auth.back')}</span>

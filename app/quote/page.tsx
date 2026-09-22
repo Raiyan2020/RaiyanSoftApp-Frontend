@@ -16,6 +16,10 @@ export default async function QuotePage() {
   return (
     <PublicLayout seo={pageSeo.quote}>
       <PageHero
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: tt('Get a Quote'), href: '/quote' },
+        ]}
         eyebrow={tt('Get a Quote')}
         title={tt('Describe your project so we can define a starting scope')}
         description={tt('Fill in the form with your project details and we will review it to respond with a suitable quote.')}

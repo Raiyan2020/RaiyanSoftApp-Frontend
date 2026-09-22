@@ -40,7 +40,7 @@ export default function NavbarMobile({
       <SheetTrigger asChild>
         <button
           id="mobile-menu-btn"
-          className="grid h-10 w-10 place-items-center rounded-2xl bg-white text-slate-800 shadow-sm ring-1 ring-slate-200/80 transition-colors hover:bg-slate-50 hover:text-primary dark:bg-white/10 dark:text-slate-200 dark:shadow-none dark:ring-white/10 dark:hover:bg-white/15 xl:hidden"
+          className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-white text-slate-800 shadow-sm ring-1 ring-slate-200/80 transition-colors hover:bg-slate-50 hover:text-primary dark:bg-white/10 dark:text-slate-200 dark:shadow-none dark:ring-white/10 dark:hover:bg-white/15 xl:hidden"
           aria-label={t('landing.nav.menu')}
         >
           <Menu size={22} />
@@ -57,14 +57,14 @@ export default function NavbarMobile({
               <button
                 type="button"
                 onClick={() => setLanguage('ar')}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold ${language === 'ar' ? 'bg-primary text-white' : 'text-slate-300'}`}
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold ${language === 'ar' ? 'bg-primary text-on-primary' : 'text-slate-300'}`}
               >
                 AR
               </button>
               <button
                 type="button"
                 onClick={() => setLanguage('en')}
-                className={`rounded-xl px-3 py-1.5 text-xs font-bold ${language === 'en' ? 'bg-primary text-white' : 'text-slate-300'}`}
+                className={`rounded-xl px-3 py-1.5 text-xs font-bold ${language === 'en' ? 'bg-primary text-on-primary' : 'text-slate-300'}`}
               >
                 EN
               </button>
@@ -112,7 +112,7 @@ export default function NavbarMobile({
                   setMenuOpen(false);
                   onOpenLead();
                 }}
-                className="touch-lift rounded-2xl border border-primary/25 bg-primary/10 px-4 py-3 text-center text-sm font-bold text-primary transition-all duration-200 hover:bg-primary hover:text-white"
+                className="touch-lift rounded-2xl border border-primary/25 bg-primary/10 px-4 py-3 text-center text-sm font-bold text-primary transition-all duration-200 hover:bg-primary hover:text-on-primary"
               >
                 {t('landing.nav.quote')}
               </button>
@@ -122,7 +122,7 @@ export default function NavbarMobile({
                   setMenuOpen(false);
                   onOpenBooking();
                 }}
-                className="premium-button touch-lift rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-4 py-3 text-center text-sm font-bold text-white shadow-md shadow-primary/25 transition-all duration-200"
+                className="premium-button touch-lift rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-4 py-3 text-center text-sm font-bold text-on-primary shadow-md shadow-primary/25 transition-all duration-200"
               >
                 {t('landing.nav.book_consultation')}
               </button>
@@ -183,7 +183,7 @@ export default function NavbarMobile({
                         window.location.href = '/';
                       }
                     }}
-                    className="flex items-center justify-center gap-2 rounded-2xl bg-red-500/10 border border-red-500/20 px-4 py-3 text-sm font-bold text-red-400 transition-colors hover:bg-red-500/20 col-span-2"
+                    className="flex items-center justify-center gap-2 rounded-2xl bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] border border-[color-mix(in_srgb,var(--danger)_20%,transparent)] px-4 py-3 text-sm font-bold text-danger transition-colors hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] col-span-2"
                   >
                     <span>{t('more.signout')}</span>
                   </button>

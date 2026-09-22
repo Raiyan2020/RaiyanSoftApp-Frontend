@@ -50,7 +50,8 @@ export const FieldError = React.forwardRef<HTMLParagraphElement, FieldErrorProps
     return (
       <p
         ref={ref}
-        className={`text-[10px] text-red-400 ms-1 mt-0.5 font-medium ${className}`}
+        role="alert"
+        className={`text-[11px] text-danger ms-1 mt-0.5 font-medium ${className}`}
         {...props}
       >
         {translateMessage(message)}
@@ -114,7 +115,7 @@ export const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputPro
             icon ? 'ps-10' : 'px-4'
           } pe-12 py-3 focus:outline-none transition-all ${
             isInvalid
-              ? 'border-red-500/50 focus:border-red-500'
+              ? 'border-danger focus:border-danger'
               : 'focus:border-primary'
           } ${className}`}
           {...props}

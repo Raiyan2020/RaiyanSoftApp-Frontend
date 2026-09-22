@@ -17,6 +17,9 @@ interface LeadsFilterBarProps {
   setTypeFilter: (val: string) => void;
 }
 
+const fieldClass =
+  'min-h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] transition-colors focus:outline-none focus:border-primary';
+
 const STATUS_OPTIONS: { value: LeadStatusFilter; label: string }[] = [
   { value: 'all', label: 'All' },
   { value: 'pending', label: 'Pending' },
@@ -61,7 +64,7 @@ export default function LeadsFilterBar({
               className={`px-4 py-2 rounded-xl text-sm font-medium capitalize border transition-all whitespace-nowrap ${
                 statusFilter === status.value
                   ? 'bg-primary/10 text-primary border-primary/30'
-                  : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)] hover:bg-[var(--surface-3)]'
+                  : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)] hover:border-[var(--border)] hover:text-[var(--text)]'
               }`}
             >
               {t(`admin.leads.filter.${status.value}`)}
@@ -69,34 +72,39 @@ export default function LeadsFilterBar({
           ))}
         </div>
       </div>
-      <div className="flex flex-wrap gap-2">
-        <input
-          type="date"
-          value={dateFrom}
-          onChange={(e) => setDateFrom(e.target.value)}
-          aria-label={t('admin.leads.date_from')}
-          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
-        />
-        <input
-          type="date"
-          value={dateTo}
-          onChange={(e) => setDateTo(e.target.value)}
-          aria-label={t('admin.leads.date_to')}
-          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
-        />
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value)}
-          aria-label={t('admin.leads.project_type')}
-          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
-        >
-          <option value="">{t('admin.leads.all_types')}</option>
-          {activeTypes.map((type) => (
-            <option key={type.id} value={type.slug || type.name}>
-              {type.name}
-            </option>
-          ))}
-        </select>
+      {/* Visible labels: the two date fields were adjacent, identically
+          styled boxes showing the same empty date mask, so nothing on screen
+          said which one was "from" and which was "to". */}
+      <div className="flex flex-wrap items-end gap-3">
+        <label className="flex min-w-0 flex-col gap-1">
+          <span className="text-xs font-bold text-[var(--text-muted)]">{t('admin.leads.date_from')}</span>
+          <input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => setDateFrom(e.target.value)}
+            className={fieldClass}
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1">
+          <span className="text-xs font-bold text-[var(--text-muted)]">{t('admin.leads.date_to')}</span>
+          <input
+            type="date"
+            value={dateTo}
+            onChange={(e) => setDateTo(e.target.value)}
+            className={fieldClass}
+          />
+        </label>
+        <label className="flex min-w-0 flex-col gap-1">
+          <span className="text-xs font-bold text-[var(--text-muted)]">{t('admin.leads.project_type')}</span>
+          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className={fieldClass}>
+            <option value="">{t('admin.leads.all_types')}</option>
+            {activeTypes.map((type) => (
+              <option key={type.id} value={type.slug || type.name}>
+                {type.name}
+              </option>
+            ))}
+          </select>
+        </label>
       </div>
     </div>
   );

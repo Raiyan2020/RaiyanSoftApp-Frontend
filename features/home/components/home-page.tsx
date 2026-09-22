@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Box, Plus, ChevronRight, ChevronLeft } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
 import EmptyState from '@/components/ui/empty-state';
+import Button from '@/components/ui/button';
 import { LeadProjectWizard } from '@/features/lead-project';
 import { useTranslation } from '@/lib/i18nContext';
 import { translateMessage } from '@/lib/i18n-utils';
@@ -33,7 +34,6 @@ export default function HomePage() {
         <div>
           <p className="text-sm font-semibold text-primary mb-2">{t('home.greeting')}, {userName}</p>
           <h1 className="app-title">{t('home.my_apps')}</h1>
-          <p className="app-subtitle">{projects.length > 0 ? t('home.create_another') : t('home.create_first')}</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -58,14 +58,14 @@ export default function HomePage() {
               <button
                 type="button"
                 onClick={() => router.push('/login')}
-                className="px-4 py-2 text-xs font-semibold text-[var(--text)] bg-[var(--surface)] border border-[var(--border)] rounded-xl transition-all hover:bg-[var(--surface-2)]"
+                className="min-h-9 px-4 py-2 text-xs font-bold text-[var(--text)] bg-[var(--surface)] border border-[var(--border)] rounded-xl transition-colors hover:bg-[var(--surface-2)]"
               >
                 {t('auth.login_action')}
               </button>
               <button
                 type="button"
                 onClick={() => router.push('/signup')}
-                className="px-4 py-2 text-xs font-semibold text-[var(--text)] bg-primary hover:bg-primary/80 rounded-xl transition-all shadow-[0_0_15px_rgba(29,183,240,0.3)]"
+                className="min-h-9 px-4 py-2 text-xs font-bold text-on-primary bg-primary hover:bg-primary-dark rounded-xl transition-colors"
               >
                 {t('auth.signup_action')}
               </button>
@@ -74,71 +74,77 @@ export default function HomePage() {
         </div>
       </header>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <section>
+      {/* One create action, not two. The screen previously ran a standing
+          gradient CTA in its own column *beside* an empty state that offered
+          the same action, and repeated `home.create_first` as the page
+          subtitle, the empty-state subtitle and the loading subtitle - the
+          same sentence three times. The action now lives inside the empty
+          state when there is nothing yet, and as the trailing tile of the
+          grid once projects exist. */}
+      <section>
+        {projectsLoading ? (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3" aria-busy="true" aria-live="polite">
+            <span className="sr-only">{translateMessage('Loading projects...')}</span>
+            {[0, 1, 2].map((key) => (
+              <div
+                key={key}
+                className="min-h-[11rem] animate-pulse rounded-2xl border border-[var(--border)] bg-[var(--surface-2)]"
+              />
+            ))}
+          </div>
+        ) : projectsError ? (
+          <EmptyState
+            icon={<Box size={24} />}
+            title={translateMessage("We couldn't load your projects")}
+            subtitle={projectsError}
+            action={
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                {translateMessage('Try again')}
+              </Button>
+            }
+          />
+        ) : projects.length > 0 ? (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            {projectsLoading ? (
-              <div className="sm:col-span-2 xl:col-span-3">
-                <EmptyState
-                  icon={<Box size={24} />}
-                  title={translateMessage('Loading projects...')}
-                  subtitle={t('home.create_first')}
-                />
-              </div>
-            ) : projectsError ? (
-              <div className="sm:col-span-2 xl:col-span-3">
-                <EmptyState
-                  icon={<Box size={24} />}
-                  title={projectsError}
-                  subtitle={t('project.back_home')}
-                />
-              </div>
-            ) : projects.length > 0 ? (
-              projects.map((app) => (
-                <AppCard
-                  key={app.id}
-                  id={app.id}
-                  name={app.name}
-                  version={app.version || 'v1.0.0'}
-                  description={app.description}
-                  iconBg={app.iconBg}
-                  brandColor={app.brandColor}
-                  onOpen={() => router.push(`/projects/${app.id}`)}
-                />
-              ))
-            ) : (
-              <div className="sm:col-span-2 xl:col-span-3">
-                <EmptyState
-                  icon={<Plus size={24} />}
-                  title={t('home.no_apps')}
-                  subtitle={t('home.create_first')}
-                />
-              </div>
-            )}
+            {projects.map((app) => (
+              <AppCard
+                key={app.id}
+                id={app.id}
+                name={app.name}
+                version={app.version || 'v1.0.0'}
+                description={app.description}
+                iconBg={app.iconBg}
+                brandColor={app.brandColor}
+                onOpen={() => router.push(`/projects/${app.id}`)}
+              />
+            ))}
+            <motion.button
+              onClick={handleCreateClick}
+              whileTap={{ scale: 0.98 }}
+              className="group flex min-h-[11rem] flex-col items-start justify-between rounded-2xl border border-dashed border-primary/40 bg-primary/[0.06] p-6 text-start transition-colors hover:border-primary hover:bg-primary/10"
+            >
+              <span className="grid h-12 w-12 place-items-center rounded-full bg-primary/15 text-primary">
+                <Plus size={24} />
+              </span>
+              <span className="flex w-full items-end justify-between gap-4">
+                <span className="text-base font-bold text-[var(--text)]">{t('home.create_another')}</span>
+                {dir === 'rtl' ? (
+                  <ChevronLeft size={20} className="shrink-0 text-primary transition-transform group-hover:-translate-x-1" />
+                ) : (
+                  <ChevronRight size={20} className="shrink-0 text-primary transition-transform group-hover:translate-x-1" />
+                )}
+              </span>
+            </motion.button>
           </div>
-        </section>
-
-        <motion.button
-          onClick={handleCreateClick}
-          whileHover={{ scale: 1.01 }}
-          whileTap={{ scale: 0.98 }}
-          className="min-h-[12rem] bg-gradient-to-br from-primary to-blue-500 rounded-2xl p-6 flex flex-col items-start justify-between shadow-[0_0_20px_rgba(29,183,240,0.22)] group text-start"
-        >
-          <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-            <Plus size={26} className="text-[var(--text)]" />
-          </div>
-          <div className="flex w-full items-end justify-between gap-4">
-            <span className="text-[var(--text)] text-lg font-semibold">
-              {projects.length > 0 ? t('home.create_another') : t('home.add_first')}
-            </span>
-            {dir === 'rtl' ? (
-              <ChevronLeft className="text-[var(--text)]/70 group-hover:-translate-x-1 transition-transform shrink-0" />
-            ) : (
-              <ChevronRight className="text-[var(--text)]/70 group-hover:translate-x-1 transition-transform shrink-0" />
-            )}
-          </div>
-        </motion.button>
-      </div>
+        ) : (
+          <EmptyState
+            icon={<Plus size={24} />}
+            title={t('home.no_apps')}
+            subtitle={t('home.create_first')}
+            className="py-14"
+            action={<Button onClick={handleCreateClick}>{t('home.add_first')}</Button>}
+          />
+        )}
+      </section>
 
       <AnimatePresence>
         {isWizardOpen ? (

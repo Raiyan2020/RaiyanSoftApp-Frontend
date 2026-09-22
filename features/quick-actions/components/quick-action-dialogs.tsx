@@ -192,11 +192,11 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
         </div>
 
         {submittedRef ? (
-            <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/10 p-4 sm:p-5 text-center">
-            <CheckCircle2 className="mx-auto mb-3 text-emerald-400" size={42} />
+            <div className="rounded-2xl border border-[color-mix(in_srgb,var(--success)_20%,transparent)] bg-[color-mix(in_srgb,var(--success)_10%,transparent)] p-4 sm:p-5 text-center">
+            <CheckCircle2 className="mx-auto mb-3 text-success" size={42} />
             <h3 className="text-xl font-black text-[var(--text)]">{copy.successTitle}</h3>
             <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{copy.successBody}</p>
-            <p className="mt-4 font-mono text-sm font-bold text-emerald-400">{submittedRef}</p>
+            <p className="mt-4 font-mono text-sm font-bold text-success">{submittedRef}</p>
             <Button type="button" onClick={closeDialog} className="mt-5">
               {copy.close}
             </Button>

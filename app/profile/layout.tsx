@@ -9,8 +9,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: language === 'ar' ? 'الملف الشخصي' : 'Profile',
     description:
       language === 'ar'
-        ? 'منطقة الملف الشخصي — غير مخصصة للفهرسة العامة.'
-        : 'Profile area — not intended for public indexing.',
+        ? 'منطقة الملف الشخصي - غير مخصصة للفهرسة العامة.'
+        : 'Profile area - not intended for public indexing.',
     path: '/profile',
     noIndex: true,
   });

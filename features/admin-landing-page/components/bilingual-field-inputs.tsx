@@ -33,7 +33,7 @@ export default function BilingualFieldInputs({ label, value, onChange, multiline
                 aria-invalid={Boolean(errors?.[lang])}
                 className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 ${
                   errors?.[lang]
-                    ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/15'
+                    ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger focus:ring-[color-mix(in_srgb,var(--danger)_15%,transparent)]'
                     : 'border-[var(--border)] focus:border-primary focus:ring-primary/20'
                 }`}
               />
@@ -47,13 +47,13 @@ export default function BilingualFieldInputs({ label, value, onChange, multiline
                 aria-invalid={Boolean(errors?.[lang])}
                 className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 ${
                   errors?.[lang]
-                    ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/15'
+                    ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger focus:ring-[color-mix(in_srgb,var(--danger)_15%,transparent)]'
                     : 'border-[var(--border)] focus:border-primary focus:ring-primary/20'
                 }`}
               />
             )}
             {errors?.[lang] ? (
-              <p className="mt-1 text-xs font-medium text-red-400">{errors[lang]}</p>
+              <p className="mt-1 text-xs font-medium text-danger">{errors[lang]}</p>
             ) : null}
           </div>
         ))}

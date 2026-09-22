@@ -66,7 +66,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       <SectionShell title={tt('Expected Outcomes')}>
         <div className="grid gap-4 md:grid-cols-3">
           {(service.outcomes || []).map((outcome) => (
-            <div key={outcome} className="rounded-lg border border-cyan-950/10 bg-white p-5 font-black dark:border-white/10 dark:bg-white/5">
+            <div key={outcome} className="rounded-xl border border-[var(--border)] bg-[var(--surface)] p-5 font-black">
               {tt(outcome)}
             </div>
           ))}
@@ -75,7 +75,7 @@ export default async function ServiceDetailPage({ params }: PageProps) {
       <SectionShell tone="muted" title={tt("What's included in the offer?")}>
         <ul className="grid gap-3 md:grid-cols-2">
           {(service.deliverables || []).map((item) => (
-            <li key={item} className="rounded-lg bg-white p-4 text-sm font-bold text-slate-700 shadow-sm dark:bg-white/5 dark:text-slate-200">
+            <li key={item} className="rounded-xl bg-[var(--surface)] p-4 text-sm font-bold text-[var(--text)] shadow-sm dark:text-[var(--text)]">
               {tt(item)}
             </li>
           ))}

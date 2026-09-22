@@ -70,7 +70,7 @@ export default function UserProjectEditDrawer({
                     type="text"
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -121,7 +121,7 @@ export default function UserProjectEditDrawer({
                       type="text"
                       aria-invalid={fieldState.invalid}
                       className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
-                        fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                       }`}
                       placeholder={translateMessage('e.g. Automotive')}
                     />
@@ -176,7 +176,7 @@ export default function UserProjectEditDrawer({
                       value={field.value ?? ''}
                       aria-invalid={fieldState.invalid}
                       className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-9 pe-4 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
-                        fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                       }`}
                       placeholder={translateMessage('https://...')}
                     />
@@ -197,7 +197,7 @@ export default function UserProjectEditDrawer({
                     maxLength={250}
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors h-24 resize-none ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                   />
                   {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
@@ -219,7 +219,7 @@ export default function UserProjectEditDrawer({
             form="editForm"
             type="submit"
             disabled={isSaving}
-            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-sky-400 text-white font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2 transition-colors disabled:opacity-70"
+            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-on-primary font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2 transition-colors disabled:opacity-70"
           >
             {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
             <span>{translateMessage('Save Changes')}</span>

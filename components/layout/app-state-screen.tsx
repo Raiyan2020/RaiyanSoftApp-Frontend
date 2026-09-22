@@ -29,7 +29,7 @@ export default function AppStateScreen({
       <div className="absolute inset-x-0 top-0 h-72 bg-gradient-to-b from-primary/18 to-transparent" />
 
       <section className="relative z-10 w-full max-w-xl rounded-[2rem] border border-white/10 bg-[var(--surface)]/82 p-6 text-center shadow-2xl shadow-cyan-950/15 backdrop-blur-2xl sm:p-8">
-        <div className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-[0_0_40px_rgba(18,169,217,0.24)]">
+        <div className="mx-auto mb-6 grid h-16 w-16 place-items-center rounded-2xl border border-primary/20 bg-primary/10 text-primary shadow-lg shadow-primary/20">
           {icon}
         </div>
 
@@ -41,7 +41,7 @@ export default function AppStateScreen({
           {primaryAction ? (
             <Link
               href={primaryAction.href}
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-white shadow-[0_0_24px_rgba(18,169,217,0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(18,169,217,0.42)]"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-3 text-sm font-bold text-on-primary shadow-[0_0_24px_rgb(var(--primary-glow-rgb) / 0.28)] transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgb(var(--primary-glow-rgb) / 0.42)]"
             >
               <Home size={17} />
               {primaryAction.label}

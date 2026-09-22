@@ -45,7 +45,7 @@ export default function ChatInputBar({
           onClick={onSend}
           disabled={!inputText.trim()}
           className={`p-3 rounded-xl transition-all duration-300 shrink-0 ${
-            inputText.trim() ? 'bg-primary text-white shadow-[0_0_15px_rgba(29,183,240,0.4)]' : 'bg-[var(--surface-2)] text-[var(--text-muted)]'
+            inputText.trim() ? 'bg-primary text-on-primary shadow-[0_0_15px_rgb(var(--primary-glow-rgb) / 0.4)]' : 'bg-[var(--surface-2)] text-[var(--text-muted)]'
           }`}
         >
           {dir === 'rtl' ? <Send size={20} className="scale-x-[-1]" /> : <Send size={20} />}

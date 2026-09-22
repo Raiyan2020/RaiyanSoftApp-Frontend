@@ -42,7 +42,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
               ) : null}
             </div>
           </div>
-          <span className={`shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize border ${isCancelled ? 'bg-red-500/10 text-red-400 border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'}`}>
+          <span className={`shrink-0 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize border ${isCancelled ? 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger border-[color-mix(in_srgb,var(--danger)_20%,transparent)]' : 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success border-[color-mix(in_srgb,var(--success)_20%,transparent)]'}`}>
             {translateMessage(capitalize(project.status))}
           </span>
         </div>
@@ -51,7 +51,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
         <div className="rounded-lg bg-[var(--surface)] border border-[var(--border)] px-3 py-2 flex flex-col gap-1.5">
           <div className="flex items-center justify-between text-xs">
             <span className="text-[var(--text-muted)]">{translateMessage('Reference')}</span>
-            <span className="font-mono text-[var(--text)]">{project.referenceNumber || '—'}</span>
+            <span className="font-mono text-[var(--text)]">{project.referenceNumber || '-'}</span>
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-[var(--text-muted)]">{translateMessage('Owner')}</span>
@@ -59,7 +59,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-[var(--text-muted)]">{translateMessage('Pricing')}</span>
-            <span className="font-medium text-[var(--text)]">{project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : '—'}</span>
+            <span className="font-medium text-[var(--text)]">{project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : '-'}</span>
           </div>
           {project.estimatedDuration ? (
             <div className="flex items-center justify-between text-xs">
@@ -99,7 +99,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
 
   return (
       <tr className="hover:bg-white/[0.02] transition-colors group">
-        <td className="p-5 text-[var(--text-muted)] text-xs font-mono">{project.referenceNumber || '—'}</td>
+        <td className="p-5 text-[var(--text-muted)] text-xs font-mono">{project.referenceNumber || '-'}</td>
         <td className="p-5">
           <Link href={detailHref} className="flex items-center gap-3 group/project">
             <div
@@ -124,14 +124,14 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
           </Link>
         </td>
         <td className="p-5 text-[var(--text-muted)] text-xs">
-          {project.industry ? (project.industry === 'Other' ? project.industryOther : project.industry) : '—'}
+          {project.industry ? (project.industry === 'Other' ? project.industryOther : project.industry) : '-'}
         </td>
         <td className="p-5">
           <span
             className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold capitalize ${
               project.status === 'cancelled'
-                ? 'bg-red-500/10 text-red-400 border border-red-500/20'
-                : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                ? 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger border border-[color-mix(in_srgb,var(--danger)_20%,transparent)]'
+                : 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success border border-[color-mix(in_srgb,var(--success)_20%,transparent)]'
             }`}
           >
             {translateMessage(capitalize(project.status))}
@@ -140,19 +140,19 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
         <td className="p-5">
           <div className="flex flex-col gap-0.5">
             <span className="text-[var(--text)] text-xs font-medium">
-              {project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : '—'}
+              {project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : '-'}
             </span>
-            <span className="text-[var(--text-muted)] text-[10px]">
-              {project.estimatedDuration ? `${project.estimatedDuration} ${translateMessage('days')}` : '—'}
+            <span className="text-[var(--text-muted)] text-[11px]">
+              {project.estimatedDuration ? `${project.estimatedDuration} ${translateMessage('days')}` : '-'}
             </span>
           </div>
         </td>
         <td className="p-5">
           <div className="flex items-center gap-2">
-            <Avatar name={project.ownerName} size="sm" className="w-6 h-6 text-[10px]" />
+            <Avatar name={project.ownerName} size="sm" className="w-6 h-6 text-[11px]" />
             <div>
               <div className="text-[var(--text)] text-xs font-medium">{project.ownerName}</div>
-              <div className="text-[var(--text-muted)] text-[10px]">{project.ownerEmail}</div>
+              <div className="text-[var(--text-muted)] text-[11px]">{project.ownerEmail}</div>
             </div>
           </div>
         </td>

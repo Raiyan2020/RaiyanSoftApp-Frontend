@@ -10,8 +10,8 @@ export async function generateMetadata(): Promise<Metadata> {
     title: language === 'ar' ? 'تطبيق العملاء' : 'Client App',
     description:
       language === 'ar'
-        ? 'منطقة العملاء والتطبيق — غير مخصصة للفهرسة العامة.'
-        : 'Client and app area — not intended for public indexing.',
+        ? 'منطقة العملاء والتطبيق - غير مخصصة للفهرسة العامة.'
+        : 'Client and app area - not intended for public indexing.',
     path: '/home',
     noIndex: true,
   });

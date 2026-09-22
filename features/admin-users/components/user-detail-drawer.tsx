@@ -113,8 +113,8 @@ export default function UserDetailDrawer({
                 onClick={() => onToggleStatus(selectedUser)}
                 className={`flex-1 py-3 rounded-xl font-medium text-sm transition-colors flex items-center justify-center gap-2 ${
                   selectedUser.status === 'Active'
-                    ? 'bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 border border-amber-500/20'
-                    : 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border border-emerald-500/20'
+                    ? 'bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] text-warning hover:bg-[color-mix(in_srgb,var(--warning)_20%,transparent)] border border-[color-mix(in_srgb,var(--warning)_20%,transparent)]'
+                    : 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success hover:bg-[color-mix(in_srgb,var(--success)_20%,transparent)] border border-[color-mix(in_srgb,var(--success)_20%,transparent)]'
                 }`}
               >
                 {selectedUser.status === 'Active' ? <Ban size={18} /> : <CheckCircle size={18} />}
@@ -124,7 +124,7 @@ export default function UserDetailDrawer({
                 <button
                   type="button"
                   onClick={() => onDeleteUser(selectedUser.id)}
-                  className="flex-1 py-3 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500/20 border border-red-500/20 font-medium text-sm transition-colors flex items-center justify-center gap-2"
+                  className="flex-1 py-3 rounded-xl bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] border border-[color-mix(in_srgb,var(--danger)_20%,transparent)] font-medium text-sm transition-colors flex items-center justify-center gap-2"
                 >
                   <Trash2 size={18} />
                   {translateMessage('Delete')}

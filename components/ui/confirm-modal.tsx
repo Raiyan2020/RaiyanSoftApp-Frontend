@@ -43,34 +43,35 @@ export default function ConfirmModal({
     <AnimatePresence>
       {isOpen ? (
         <motion.div
-          initial={false}
+          initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+          transition={{ duration: 0.15 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
           onClick={onCancel}
         >
           <motion.div
-            initial={false}
+            initial={{ scale: 0.96, opacity: 0, y: 12 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            exit={{ scale: 0.96, opacity: 0, y: 12 }}
+            transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
+            role="alertdialog"
+            aria-modal="true"
             onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 shadow-2xl overflow-hidden relative"
+            className="relative w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl"
           >
-            <div
-              className={`absolute top-0 start-0 w-full h-1 ${
-                isDestructive ? 'bg-red-500' : 'bg-primary'
-              } opacity-80`}
-            />
-
-            <h3 className="text-xl font-bold text-[var(--text)] mb-2">{translateMessage(title)}</h3>
+            <h2 className="text-xl font-bold text-[var(--text)] mb-2">{translateMessage(title)}</h2>
             <p className="text-[var(--text-muted)] text-sm mb-6 leading-relaxed">{translateMessage(message)}</p>
 
-            <div className="flex space-x-3 rtl:space-x-reverse">
+            {/* gap instead of space-x (which is margin-left only and inverts
+                under RTL), and the confirm button no longer stretches to the
+                same width as cancel - the two actions are not equivalent. */}
+            <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
                 type="button"
                 onClick={onCancel}
                 disabled={confirming}
-                className="flex-1 py-3 rounded-xl bg-[var(--surface-2)] text-[var(--text)] font-medium text-sm hover:opacity-90 transition-colors border border-[var(--border)]"
+                className="min-h-11 rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-5 text-sm font-bold text-[var(--text)] transition-colors hover:bg-[var(--surface-3)] disabled:opacity-60"
               >
                 {translateMessage(cancelText)}
               </button>
@@ -78,15 +79,23 @@ export default function ConfirmModal({
                 type="button"
                 onClick={handleConfirm}
                 disabled={confirming}
-                className={`flex-1 py-3 rounded-xl text-[var(--text)] font-medium text-sm transition-all shadow-lg ${
+                className={`min-h-11 rounded-xl border px-5 text-sm font-bold transition-colors disabled:cursor-not-allowed disabled:opacity-60 ${
                   isDestructive
-                    ? 'bg-red-500 hover:bg-red-600 shadow-red-500/20'
-                    : 'bg-primary hover:bg-sky-500 shadow-primary/20'
-                  } disabled:opacity-60 disabled:cursor-not-allowed`}
+                    ? // A hardcoded white label measured 2.77:1 on the dark theme's
+                      // --danger (#f87171). This stays a solid fill — it is the
+                      // modal's primary action — and takes its label from
+                      // --on-danger, which inverts with the theme like --on-primary.
+                      'border-transparent bg-danger text-on-danger hover:opacity-90'
+                    : 'border-transparent bg-primary text-on-primary hover:bg-primary-dark'
+                }`}
               >
-                <span className="inline-flex items-center gap-2">
-                  {confirming ? <Loader2 size={14} className="animate-spin" /> : null}
-                  {translateMessage(confirming ? 'Deleting...' : confirmText)}
+                <span className="inline-flex items-center justify-center gap-2">
+                  {confirming ? <Loader2 size={15} className="animate-spin" aria-hidden="true" /> : null}
+                  {/* The pending label used to read "Deleting..." for every
+                      confirm, including non-destructive ones. */}
+                  {confirming
+                    ? translateMessage(isDestructive ? 'Deleting...' : 'Saving...')
+                    : translateMessage(confirmText)}
                 </span>
               </button>
             </div>

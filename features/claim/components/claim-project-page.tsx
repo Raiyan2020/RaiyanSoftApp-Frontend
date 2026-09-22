@@ -27,8 +27,8 @@ export default function ClaimProjectPage() {
   if (status === 'invalid') {
     return (
       <div className="h-screen flex items-center justify-center bg-[var(--bg)] text-[var(--text)] p-6 text-center">
-        <div className="bg-red-500/10 border border-red-500/20 p-8 rounded-3xl max-w-sm">
-          <AlertTriangle size={40} className="text-red-500 mx-auto mb-4" />
+        <div className="bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] border border-[color-mix(in_srgb,var(--danger)_20%,transparent)] p-8 rounded-3xl max-w-sm">
+          <AlertTriangle size={40} className="text-danger mx-auto mb-4" />
           <h1 className="text-xl font-bold mb-2">{translateMessage('Invalid Link')}</h1>
           <p className="text-[var(--text-muted)] text-sm">{translateMessage(errorMsg)}</p>
           <button type="button" onClick={() => router.push('/')} className="mt-6 text-sm text-[var(--text)] underline">
@@ -42,8 +42,8 @@ export default function ClaimProjectPage() {
   if (status === 'success') {
     return (
       <div className="h-screen flex items-center justify-center bg-[var(--bg)] text-[var(--text)] p-6 text-center">
-        <div className="bg-emerald-500/10 border border-emerald-500/20 p-8 rounded-3xl max-w-sm">
-          <CheckCircle size={40} className="text-emerald-500 mx-auto mb-4" />
+        <div className="bg-[color-mix(in_srgb,var(--success)_10%,transparent)] border border-[color-mix(in_srgb,var(--success)_20%,transparent)] p-8 rounded-3xl max-w-sm">
+          <CheckCircle size={40} className="text-success mx-auto mb-4" />
           <h1 className="text-xl font-bold mb-2">{translateMessage('Welcome Aboard!')}</h1>
           <p className="text-[var(--text-muted)] text-sm">{translateMessage('Your project is ready. Redirecting you to your dashboard...')}</p>
         </div>

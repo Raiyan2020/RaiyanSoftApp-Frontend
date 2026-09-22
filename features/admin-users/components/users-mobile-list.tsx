@@ -39,7 +39,7 @@ export default function UsersMobileList({
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 <div className={`w-1.5 h-1.5 rounded-full ${isActive ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.4)]' : 'bg-red-500'}`} />
-                <span className={`text-xs font-medium ${isActive ? 'text-emerald-400' : 'text-red-400'}`}>{translateMessage(user.status)}</span>
+                <span className={`text-xs font-medium ${isActive ? 'text-success' : 'text-danger'}`}>{translateMessage(user.status)}</span>
               </div>
             </div>
 
@@ -56,10 +56,10 @@ export default function UsersMobileList({
                 </span>
               ) : null}
               <div className="flex items-center justify-between pt-1 border-t border-[var(--border)]">
-                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium border ${user.role === 'Admin' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-blue-500/10 text-blue-400 border-blue-500/20'}`}>
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ${user.role === 'Admin' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' : 'bg-[color-mix(in_srgb,var(--info)_10%,transparent)] text-info border-[color-mix(in_srgb,var(--info)_20%,transparent)]'}`}>
                   {translateMessage(user.role)}
                 </span>
-                <span className="text-[10px] text-[var(--text-muted)]">{formatDate(user.registeredAt)}</span>
+                <span className="text-[11px] text-[var(--text-muted)]">{formatDate(user.registeredAt)}</span>
               </div>
             </div>
 
@@ -78,8 +78,8 @@ export default function UsersMobileList({
                 onClick={() => onToggleStatus(user)}
                 className={`flex-1 flex items-center justify-center gap-1.5 py-2 rounded-lg border text-xs font-medium transition-colors ${
                   isActive
-                    ? 'bg-amber-500/10 border-amber-500/20 text-amber-400 hover:bg-amber-500/20'
-                    : 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20'
+                    ? 'bg-[color-mix(in_srgb,var(--warning)_10%,transparent)] border-[color-mix(in_srgb,var(--warning)_20%,transparent)] text-warning hover:bg-[color-mix(in_srgb,var(--warning)_20%,transparent)]'
+                    : 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] border-[color-mix(in_srgb,var(--success)_20%,transparent)] text-success hover:bg-[color-mix(in_srgb,var(--success)_20%,transparent)]'
                 }`}
               >
                 {isActive ? <Ban size={14} /> : <CheckCircle size={14} />}
@@ -89,7 +89,7 @@ export default function UsersMobileList({
                 <button
                   type="button"
                   onClick={() => onDeleteUser(user.id)}
-                  className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--text-muted)] hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20 transition-colors"
+                  className="p-2 rounded-lg bg-[var(--surface)] border border-[var(--border)] text-[var(--text-muted)] hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] hover:text-danger hover:border-[color-mix(in_srgb,var(--danger)_20%,transparent)] transition-colors"
                 >
                   <Trash2 size={14} />
                 </button>

@@ -93,7 +93,7 @@ async function buildLegacyLeadFormData(data: SubmitLeadPayload): Promise<FormDat
   if (data.source) formData.append('source', data.source);
   formData.append('payload', JSON.stringify(projectPayload));
   formData.append('answers[0][form_question_id]', String(textQuestionId));
-  formData.append('answers[0][text_value]', [name, description].filter(Boolean).join(' — ').slice(0, 1000));
+  formData.append('answers[0][text_value]', [name, description].filter(Boolean).join(' - ').slice(0, 1000));
 
   return formData;
 }

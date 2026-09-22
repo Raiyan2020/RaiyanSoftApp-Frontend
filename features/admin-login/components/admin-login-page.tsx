@@ -63,12 +63,13 @@ export default function AdminLoginPage() {
                       {...field}
                       type="email"
                       aria-invalid={fieldState.invalid}
+                      aria-describedby={fieldState.invalid ? 'admin-login-email-error' : undefined}
                       className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
                       placeholder="name@raiyansoft.com"
                     />
                   </div>
                   {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
+                    <FieldError id="admin-login-email-error" errors={[fieldState.error]} />
                   )}
                 </Field>
               )}
@@ -83,11 +84,12 @@ export default function AdminLoginPage() {
                   <PasswordInput
                     {...field}
                     aria-invalid={fieldState.invalid}
+                    aria-describedby={fieldState.invalid ? 'admin-login-password-error' : undefined}
                     icon={<Lock size={18} />}
                     placeholder="••••••"
                   />
                   {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
+                    <FieldError id="admin-login-password-error" errors={[fieldState.error]} />
                   )}
                 </Field>
               )}
@@ -100,21 +102,27 @@ export default function AdminLoginPage() {
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full bg-primary text-white font-semibold py-3.5 rounded-xl shadow-[0_0_20px_rgba(29,183,240,0.3)] hover:shadow-[0_0_25px_rgba(29,183,240,0.5)] transition-all duration-300 mt-1 flex items-center justify-center space-x-2 disabled:opacity-70 disabled:cursor-not-allowed group"
+              className="group mt-1 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary py-3.5 font-bold text-on-primary shadow-sm shadow-primary/25 transition-colors duration-200 hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-70"
             >
+              {/* The pending state used to replace the label with a bare
+                  spinner, so the button lost the only text saying what it was
+                  doing. */}
               {isLoading ? (
-                <Loader2 size={20} className="animate-spin" />
+                <>
+                  <Loader2 size={18} className="animate-spin" aria-hidden="true" />
+                  <span>{translateMessage('Signing in...')}</span>
+                </>
               ) : (
                 <>
                   <span>{translateMessage('Sign In')}</span>
-                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform rtl:rotate-180" />
+                  <ArrowRight size={18} aria-hidden="true" className="transition-transform group-hover:translate-x-1 rtl:rotate-180" />
                 </>
               )}
             </button>
           </form>
 
           <div className="mt-8 text-center space-y-4">
-            <p className="text-[10px] text-[var(--text-muted)] uppercase tracking-widest">{translateMessage('Secured Area • Raiyansoft® Admin')}</p>
+            <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-widest">{translateMessage('Secured Area • Raiyansoft® Admin')}</p>
 
             <button
               type="button"
@@ -126,7 +134,7 @@ export default function AdminLoginPage() {
                 }
               }}
               disabled={isBootstrapping}
-              className="text-[10px] text-[var(--text-muted)] hover:text-[var(--text-muted)] transition-colors flex items-center justify-center gap-1 mx-auto"
+              className="text-[11px] text-[var(--text-muted)] hover:text-[var(--text-muted)] transition-colors flex items-center justify-center gap-1 mx-auto"
             >
               {isBootstrapping ? <Loader2 size={10} className="animate-spin" /> : <Zap size={10} />}
               {translateMessage('Initialize / Recover Super Admin')}

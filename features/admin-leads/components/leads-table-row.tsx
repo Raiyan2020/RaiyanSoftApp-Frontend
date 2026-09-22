@@ -43,7 +43,7 @@ export default function LeadsTableRow({
 
   return (
     <TableRow className="hover:bg-white/[0.02] group">
-      <TableCell className="p-5 text-start text-[var(--text-muted)] text-xs font-mono">{lead.request_id || '—'}</TableCell>
+      <TableCell className="p-5 text-start text-[var(--text-muted)] text-xs font-mono">{lead.request_id || '-'}</TableCell>
       <TableCell className="p-5 text-start">
         <div className="flex items-center gap-3">
           <Avatar name={lead.user.full_name} size="md" className="w-10 h-10 text-sm" />
@@ -59,7 +59,7 @@ export default function LeadsTableRow({
         <div className="font-medium text-[var(--text)]">{lead.project_name}</div>
         <div className="text-xs text-[var(--text-muted)] truncate max-w-[220px]">{lead.description}</div>
       </TableCell>
-      <TableCell className="p-5 text-start text-[var(--text-muted)] text-xs">{typeLabel || '—'}</TableCell>
+      <TableCell className="p-5 text-start text-[var(--text-muted)] text-xs">{typeLabel || '-'}</TableCell>
       <TableCell className="p-5 text-start">
         <div className="flex items-center gap-2">
           <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-bold ${statusTone.badgeClass}`}>
@@ -104,7 +104,7 @@ export default function LeadsTableRow({
             }}
             className={`p-2 rounded-lg transition-colors flex items-center justify-center ${
               waUrl
-                ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'
+                ? 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success hover:bg-[color-mix(in_srgb,var(--success)_20%,transparent)]'
                 : 'bg-[var(--surface-3)] text-[var(--text-muted)] cursor-not-allowed opacity-50'
             }`}
             title={waUrl ? t('admin.leads.whatsapp') : t('admin.leads.no_phone')}

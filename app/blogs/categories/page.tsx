@@ -59,10 +59,10 @@ export default async function BlogCategoriesPage() {
             <Link
               key={category.slug}
               href={`/blogs/categories/${category.slug}`}
-              className="rounded-2xl border border-cyan-950/10 bg-white p-5 shadow-sm transition hover:-translate-y-1 hover:border-primary/30 dark:border-white/10 dark:bg-white/5"
+              className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm transition hover:-translate-y-1 hover:border-primary/30"
             >
               <p className="text-sm font-black text-primary">{articleCount(category.count)}</p>
-              <h2 className="mt-3 text-xl font-black text-slate-950 dark:text-white">{category.title}</h2>
+              <h2 className="mt-3 text-xl font-black text-[var(--text)]">{category.title}</h2>
             </Link>
           ))}
         </div>

@@ -71,7 +71,7 @@ export default function ProjectHeader({
                 autoFocus
               />
               <div className="flex gap-2">
-                <button type="button" onClick={onSaveName} className="bg-primary px-3 py-1 rounded text-xs text-white font-medium">
+                <button type="button" onClick={onSaveName} className="bg-primary px-3 py-1 rounded text-xs text-on-primary font-medium">
                   {t('project.save')}
                 </button>
                 <button type="button" onClick={onCancelEditName} className="bg-[var(--surface-2)] border border-[var(--border)] px-3 py-1 rounded text-xs text-[var(--text)]">

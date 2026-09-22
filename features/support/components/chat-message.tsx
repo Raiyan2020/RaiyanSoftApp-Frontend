@@ -28,7 +28,7 @@ export default function ChatMessage({ msg, showName }: ChatMessageProps) {
     : dir === 'rtl' ? 'items-end' : 'items-start';
 
   const bubbleClass = isMe
-    ? 'bg-primary text-white rounded-tr-sm rounded-tl-2xl rounded-bl-2xl rounded-br-2xl'
+    ? 'bg-primary text-on-primary rounded-tr-sm rounded-tl-2xl rounded-bl-2xl rounded-br-2xl'
     : 'bg-[var(--surface-2)] text-[var(--text)] rounded-tl-sm rounded-tr-2xl rounded-bl-2xl rounded-br-2xl border border-[var(--border)]';
 
   return (
@@ -38,17 +38,17 @@ export default function ChatMessage({ msg, showName }: ChatMessageProps) {
       className={`flex flex-col mb-4 ${alignClass}`}
     >
       {showName && !isMe ? (
-        <span className="text-[10px] text-[var(--text-muted)] mb-1 ms-3 font-medium">{msg.senderName || translateMessage('Support', language)}</span>
+        <span className="text-[11px] text-[var(--text-muted)] mb-1 ms-3 font-medium">{msg.senderName || translateMessage('Support', language)}</span>
       ) : null}
 
       <div className={`max-w-[85%] lg:max-w-[62%] px-4 py-3 text-sm relative shadow-md ${bubbleClass}`}>
         <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-        <div className={`text-[9px] mt-1 text-end w-full ${isMe ? 'text-blue-100' : 'text-[var(--text-muted)]'}`}>
+        <div className={`text-[11px] mt-1 text-end w-full ${isMe ? 'text-blue-100' : 'text-[var(--text-muted)]'}`}>
           {safelyFormatTime(msg.createdAt)}
         </div>
       </div>
 
-      {showName && isMe ? <span className="text-[10px] text-[var(--text-muted)] mt-1 me-2">{t('chat.delivered')}</span> : null}
+      {showName && isMe ? <span className="text-[11px] text-[var(--text-muted)] mt-1 me-2">{t('chat.delivered')}</span> : null}
     </motion.div>
   );
 }

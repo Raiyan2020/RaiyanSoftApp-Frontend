@@ -21,7 +21,7 @@ export default function EmptyState({
       <div className="w-16 h-16 bg-[var(--surface)] rounded-full flex items-center justify-center mb-4 border border-[var(--border)] text-[var(--text-muted)]">
         {icon}
       </div>
-      <h3 className="text-lg font-bold text-[var(--text)] mb-1">{translateMessage(title)}</h3>
+      <h2 className="text-lg font-bold text-[var(--text)] mb-1">{translateMessage(title)}</h2>
       {subtitle ? (
         <p className="text-[var(--text-muted)] text-sm max-w-xs mb-6">{translateMessage(subtitle)}</p>
       ) : null}

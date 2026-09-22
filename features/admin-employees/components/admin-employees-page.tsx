@@ -50,7 +50,7 @@ export default function AdminEmployeesPage() {
         <button
           type="button"
           onClick={() => handleOpenModal()}
-          className="bg-primary hover:bg-sky-400 text-white px-4 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shadow-lg shadow-primary/20"
+          className="bg-primary hover:bg-primary-dark text-on-primary px-4 py-2.5 rounded-xl font-medium flex items-center justify-center gap-2 transition-colors shadow-lg shadow-primary/20"
         >
           <Plus size={20} />
           <span>{translateMessage('Add Employee')}</span>

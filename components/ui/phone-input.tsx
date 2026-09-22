@@ -307,7 +307,7 @@ function CountrySelect({
                     <div className="flex-1 min-w-0">
                       <div className="text-xs text-[var(--text)] font-medium truncate">{country.label}</div>
                       {/* i18n-ignore-next-line: phone input is pinned dir="ltr"; calling codes must not mirror */}
-                      <div className="text-[10px] text-[var(--text-muted)] text-left">
+                      <div className="text-[11px] text-[var(--text-muted)] text-left">
                         {getDisplayCallingCode(country.value, callingCodes)}
                       </div>
                     </div>

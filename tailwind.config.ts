@@ -12,9 +12,23 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: '#1db7f0',
-        'primary-dark': '#0ea5d9',
+        // Wired to the CSS variables in app/globals.css so `primary` follows
+        // the active theme. The channel form keeps opacity modifiers working
+        // (`bg-primary/10`, `ring-primary/30`, …).
+        primary: 'rgb(var(--primary-rgb) / <alpha-value>)',
+        'primary-dark': 'var(--primary-dark)',
+        'on-primary': 'var(--on-primary)',
         navy: { 900: '#0f172a', 950: '#020617' },
+        // Semantic status colours. Light/dark values live on the tokens, so a
+        // single class reads correctly in both themes.
+        success: 'var(--success)',
+        warning: 'var(--warning)',
+        danger: 'var(--danger)',
+        'on-danger': 'var(--on-danger)',
+        info: 'var(--info)',
+      },
+      borderRadius: {
+        card: 'var(--radius-card)',
       },
       fontFamily: {
         sans: ['Cairo', 'sans-serif'],

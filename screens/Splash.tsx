@@ -39,14 +39,14 @@ export default function Splash() {
         <SafeImage
           src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
           alt="Raiyansoft Logo"
-          className="w-full h-full object-contain drop-shadow-[0_0_20px_rgba(29,183,240,0.3)]"
+          className="w-full h-full object-contain drop-shadow-[0_0_20px_rgb(var(--primary-glow-rgb) / 0.3)]"
         />
       </motion.div>
 
       <motion.div
         animate={{ rotate: 360 }}
         transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-        className="w-8 h-8 rounded-full border-2 border-slate-700 border-t-primary shadow-[0_0_10px_rgba(29,183,240,0.4)]"
+        className="w-8 h-8 rounded-full border-2 border-slate-700 border-t-primary shadow-[0_0_10px_rgb(var(--primary-glow-rgb) / 0.4)]"
       />
     </motion.div>
   );

@@ -85,19 +85,19 @@ export default function CrudItemList<T extends { id: number }>({
       <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-lg">
         {/* Header row */}
         <div className="mb-4 flex items-center justify-between gap-4">
-          <h3 className="text-base font-bold text-[var(--text)]">
+          <h2 className="text-base font-bold text-[var(--text)]">
             {title}
             {!isLoading && (
               <span className="ms-1.5 font-normal text-[var(--text-muted)]">
                 ({items.length})
               </span>
             )}
-          </h3>
+          </h2>
           {onAdd && (
             <button
               type="button"
               onClick={onAdd}
-              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-white hover:bg-primary/90"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-on-primary hover:bg-primary/90"
             >
               <Plus size={14} />
               {addLabel ?? translateMessage('Add')}
@@ -144,7 +144,7 @@ export default function CrudItemList<T extends { id: number }>({
                       type="button"
                       onClick={() => setPendingDeleteId(item.id)}
                       disabled={isDeleting || deleting}
-                      className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-red-500/10 hover:text-red-400 disabled:opacity-40 disabled:cursor-not-allowed"
+                      className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] hover:text-danger disabled:opacity-40 disabled:cursor-not-allowed"
                       aria-label={translateMessage('Delete')}
                     >
                       <Trash2 size={14} />

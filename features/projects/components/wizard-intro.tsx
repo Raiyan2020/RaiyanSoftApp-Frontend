@@ -25,15 +25,15 @@ export default function WizardIntro({ t, onStart }: WizardIntroProps) {
           <div className="grid grid-cols-3 gap-3 w-full">
             <div className="bg-[var(--surface-3)] border border-[var(--border)] p-3 rounded-xl flex flex-col items-center justify-center gap-2">
               <Timer size={20} className="text-primary" />
-              <span className="text-[10px] font-bold text-[var(--text)] leading-tight">{t('wizard.feat_time')}</span>
+              <span className="text-[11px] font-bold text-[var(--text)] leading-tight">{t('wizard.feat_time')}</span>
             </div>
             <div className="bg-[var(--surface-3)] border border-[var(--border)] p-3 rounded-xl flex flex-col items-center justify-center gap-2">
-              <BarChart2 size={20} className="text-emerald-400" />
-              <span className="text-[10px] font-bold text-[var(--text)] leading-tight">{t('wizard.feat_analysis')}</span>
+              <BarChart2 size={20} className="text-success" />
+              <span className="text-[11px] font-bold text-[var(--text)] leading-tight">{t('wizard.feat_analysis')}</span>
             </div>
             <div className="bg-[var(--surface-3)] border border-[var(--border)] p-3 rounded-xl flex flex-col items-center justify-center gap-2">
-              <MessageCircle size={20} className="text-blue-400" />
-              <span className="text-[10px] font-bold text-[var(--text)] leading-tight">{t('wizard.feat_reply')}</span>
+              <MessageCircle size={20} className="text-info" />
+              <span className="text-[11px] font-bold text-[var(--text)] leading-tight">{t('wizard.feat_reply')}</span>
             </div>
           </div>
 
@@ -44,28 +44,28 @@ export default function WizardIntro({ t, onStart }: WizardIntroProps) {
               <div className="w-8 h-8 rounded-full bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
                 <MousePointerClick size={14} />
               </div>
-              <span className="text-[10px] text-[var(--text-muted)] font-medium">{t('wizard.step_1_label')}</span>
+              <span className="text-[11px] text-[var(--text-muted)] font-medium">{t('wizard.step_1_label')}</span>
             </div>
             <div className="flex flex-col items-center gap-2 bg-[var(--bg)] px-2">
               <div className="w-8 h-8 rounded-full bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
                 <Edit3 size={14} />
               </div>
-              <span className="text-[10px] text-[var(--text-muted)] font-medium">{t('wizard.step_2_label')}</span>
+              <span className="text-[11px] text-[var(--text-muted)] font-medium">{t('wizard.step_2_label')}</span>
             </div>
             <div className="flex flex-col items-center gap-2 bg-[var(--bg)] px-2">
               <div className="w-8 h-8 rounded-full bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
                 <CheckCircle2 size={14} />
               </div>
-              <span className="text-[10px] text-[var(--text-muted)] font-medium">{t('wizard.step_3_label')}</span>
+              <span className="text-[11px] text-[var(--text-muted)] font-medium">{t('wizard.step_3_label')}</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-amber-500/10 border border-amber-500/20 p-3 rounded-xl w-full text-start flex items-start gap-3">
-          <Info size={16} className="text-amber-500 shrink-0 mt-0.5" />
+        <div className="bg-[color-mix(in_srgb,var(--warning)_12%,transparent)] border border-[color-mix(in_srgb,var(--warning)_30%,transparent)] p-3 rounded-xl w-full text-start flex items-start gap-3">
+          <Info size={16} className="text-warning shrink-0 mt-0.5" />
           <div>
-            <span className="text-amber-500 text-xs font-bold block mb-0.5">{t('wizard.start_note')}</span>
-            <p className="text-amber-500/80 text-[10px] leading-relaxed">{t('wizard.start_desc')}</p>
+            <span className="text-warning text-xs font-bold block mb-0.5">{t('wizard.start_note')}</span>
+            <p className="text-warning text-xs leading-relaxed">{t('wizard.start_desc')}</p>
           </div>
         </div>
 
@@ -73,11 +73,11 @@ export default function WizardIntro({ t, onStart }: WizardIntroProps) {
           <button
             type="button"
             onClick={onStart}
-            className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-[0_0_20px_rgba(29,183,240,0.3)] hover:shadow-[0_0_25px_rgba(29,183,240,0.5)] transition-all"
+            className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl shadow-[0_0_20px_rgb(var(--primary-glow-rgb) / 0.3)] hover:shadow-[0_0_25px_rgb(var(--primary-glow-rgb) / 0.5)] transition-all"
           >
             {t('wizard.start_btn')}
           </button>
-          <p className="text-[10px] text-[var(--text-muted)] mt-2 font-medium">{t('wizard.no_commit')}</p>
+          <p className="text-[11px] text-[var(--text-muted)] mt-2 font-medium">{t('wizard.no_commit')}</p>
         </div>
 
         <div className="h-4" />

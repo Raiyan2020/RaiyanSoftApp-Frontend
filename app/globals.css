@@ -2,23 +2,66 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── CSS Variables ─────────────────────────────────────── */
+/* ── Design tokens ─────────────────────────────────────────
+   Single source of truth for colour. Tailwind's `primary` is wired to
+   --primary-rgb in tailwind.config.ts, so `bg-primary/10`, `text-primary`
+   and `ring-primary/30` all follow the active theme instead of drifting to
+   a second, hard-coded hex.
+
+   No one hue clears 4.5:1 against BOTH #ffffff and #020617, so the accent
+   is defined per theme: a deeper teal-blue on light, the brand cyan on
+   dark. --on-primary carries the matching label colour for filled
+   primary surfaces (white on light, near-black on dark cyan).
+   ──────────────────────────────────────────────────────── */
 :root {
   --bg: #f7fbfd;
   --bg-2: #eaf7fb;
   --surface: #ffffff;
   --surface-2: #eef7fb;
+  /* --surface-3 is referenced in ~150 places (toggles, chips, icon buttons,
+     disabled states) but was never declared, so all of them rendered with a
+     transparent background. It is the third step of the surface ramp. */
+  --surface-3: #e0eff6;
   --border: #d8e8ef;
   --text: #092033;
-  --text-muted: #5c7180;
-  --primary: #12a9d9;
-  --primary-dark: #087aa3;
-  --mint: #21d3a2;
-  --amber: #f5a524;
+  --text-muted: #55697a;
+
+  /* Accent — channel form so Tailwind can apply opacity modifiers. */
+  --primary-rgb: 10 112 147;      /* #0a7093: 5.3:1 on --surface, and still
+                                     4.6:1 where text-primary sits on its own
+                                     bg-primary/10 tint (#0b7ea8 gave 4.42). */
+  --primary: rgb(var(--primary-rgb));
+  --primary-dark: #075b7a;
+  --on-primary: #ffffff;          /* 4.61:1 on --primary */
+  /* Decorative only (glows, hairlines) — never carries text. */
+  --primary-glow-rgb: 18 169 217;
+
+  /* Semantic status colours — AA on --surface. */
+  --success: #047857;
+  /* Warning badges also sit on --surface-2/--surface-3, not just white;
+     #8a5104 cleared 4.5:1 over white but measured 4.49:1 on those tinted
+     cards. #7d4903 holds >=5.4:1 on every surface the badge is used on. */
+  --warning: #7d4903;
+  --danger: #c02626;
+  /* Label colour for a solid --danger fill, mirroring --on-primary. --danger
+     inverts between themes (dark red in light, light red in dark), so a fixed
+     white label measured 2.77:1 on the dark-theme fill. */
+  --on-danger: #ffffff;           /* 5.9:1 on --danger */
+  --info: #1d4ed8;
+
+  --mint: #0f9c78;
+  --amber: #9a5b04;
   --navy: #071827;
-  --radius-card: 2rem;
-  --shadow-soft: 0 24px 80px rgba(8, 38, 58, 0.12);
-  --shadow-glow: 0 24px 70px rgba(18, 169, 217, 0.22);
+
+  /* Radius scale — one ramp, used everywhere. */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --radius-card: 1.25rem;
+
+  --shadow-soft: 0 18px 50px rgba(8, 38, 58, 0.10);
+  --shadow-glow: 0 24px 70px rgb(var(--primary-glow-rgb) / 0.22);
 }
 
 .dark {
@@ -26,9 +69,28 @@
   --bg-2: #0f172a;
   --surface: #0f172a;
   --surface-2: #1e293b;
-  --border: #1e293b;
+  --surface-3: #2b3a52;
+  --border: #223047;
   --text: #f8fafc;
-  --text-muted: #94a3b8;
+  --text-muted: #a3b2c6;
+
+  --primary-rgb: 34 184 232;      /* #22b8e8 — lifted from #12a9d9, whose text-primary labels on a primary/10 tint measured 4.38:1, under the 4.5:1 minimum */
+  /* Kept light: .premium-button fades primary -> primary-dark under
+     text-on-primary, and #0b7ea8 gave only 3.63:1 at that end in dark mode. */
+  --primary-dark: #12a9d9;
+  --on-primary: #04212e;          /* 7.4:1 on --primary */
+  --primary-glow-rgb: 56 189 248;
+
+  --success: #34d399;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --on-danger: #04212e;           /* 6.0:1 on --danger */
+  --info: #60a5fa;
+
+  --mint: #21d3a2;
+  --amber: #f5a524;
+
+  --shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.35);
 }
 
 /* ── Base ──────────────────────────────────────────────── */
@@ -45,7 +107,7 @@ body {
   scroll-behavior: smooth;
   overflow-x: hidden;
   text-rendering: optimizeLegibility;
-  line-height: 1.8;
+  line-height: 1.65;
 }
 
 html {
@@ -53,7 +115,7 @@ html {
 }
 
 ::selection {
-  background: rgba(18, 169, 217, 0.22);
+  background: rgb(var(--primary-rgb) / 0.22);
   color: var(--text);
 }
 
@@ -65,29 +127,70 @@ textarea {
   font: inherit;
 }
 
+/* ── Typographic rhythm ───────────────────────────────────
+   Headings previously carried `line-height: 1.34 !important` and body copy
+   `1.9 !important`, which flattened the scale: a 60px display line led as
+   loosely as a 16px one and no component could tune its own block. These
+   are plain declarations now, and leading tightens as type grows — Arabic
+   still needs more room than Latin, so the floor stays generous.
+   ──────────────────────────────────────────────────────── */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  line-height: 1.34 !important;
+  line-height: 1.25;
+  text-wrap: balance;
+}
+
+h1 {
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+h2 {
+  line-height: 1.2;
 }
 
 p,
 li {
-  line-height: 1.9 !important;
+  line-height: 1.75;
 }
 
+p {
+  text-wrap: pretty;
+}
+
+/* ── Focus ────────────────────────────────────────────────
+   Tailwind's `outline-none` utility (used in 130+ places across forms,
+   dialogs and nav) outranks a plain `:focus-visible` rule, which left
+   keyboard users with no visible focus anywhere. This is the one place
+   that is allowed to win, so the ring is guaranteed app-wide.
+   ──────────────────────────────────────────────────────── */
 :focus-visible {
-  outline: 3px solid rgba(18, 169, 217, 0.45);
-  outline-offset: 4px;
+  outline: 2px solid rgb(var(--primary-rgb)) !important;
+  outline-offset: 2px !important;
+}
+
+.dark :focus-visible {
+  outline-color: rgb(var(--primary-glow-rgb)) !important;
+}
+
+/* Inputs sit inside clipping containers often enough that an outline can be
+   cropped; pair it with an inset ring that cannot be. */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+[role='combobox']:focus-visible {
+  box-shadow: 0 0 0 3px rgb(var(--primary-rgb) / 0.22);
+  border-color: rgb(var(--primary-rgb));
 }
 
 .skip-link {
   position: fixed;
   top: 16px;
-  right: 16px;
+  inset-inline-start: 16px;
   z-index: 100;
   transform: translateY(-140%);
   border-radius: 999px;
@@ -106,13 +209,11 @@ li {
 .scroll-progress {
   position: fixed;
   top: 0;
-  right: 0;
+  inset-inline-start: 0;
   z-index: 70;
   height: 3px;
   width: var(--scroll-progress, 0%);
   background: linear-gradient(90deg, var(--mint), var(--primary));
-  box-shadow: 0 0 24px rgba(18, 169, 217, 0.45);
-  transition: width 0.08s linear;
 }
 
 /* ── Scrollbar ─────────────────────────────────────────── */
@@ -163,18 +264,15 @@ li {
 
 /* ── Gradient text ─────────────────────────────────────── */
 .gradient-text {
-  background: linear-gradient(135deg, #087aa3, #12a9d9, #21d3a2);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--primary);
 }
 
 .premium-grid {
-  background-image:
-    linear-gradient(rgba(18, 169, 217, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(18, 169, 217, 0.08) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: linear-gradient(to bottom, black, transparent 72%);
+  background-image: radial-gradient(
+    ellipse 90% 60% at 50% 0%,
+    rgb(var(--primary-glow-rgb) / 0.12),
+    transparent 70%
+  );
 }
 
 /* ── Nav link underline effect ─────────────────────────── */
@@ -185,13 +283,15 @@ li {
   content: '';
   position: absolute;
   bottom: -4px;
-  right: 0;
-  width: 0;
+  inset-inline-end: 0;
+  width: 100%;
   height: 2px;
   background: var(--primary);
-  transition: width 0.3s ease;
+  transform: scaleX(0);
+  transform-origin: inline-end;
+  transition: transform 0.3s ease;
 }
-.nav-link:hover::after { width: 100%; }
+.nav-link:hover::after { transform: scaleX(1); }
 
 .spotlight-card {
   position: relative;
@@ -203,7 +303,7 @@ li {
   inset: 0;
   pointer-events: none;
   border-radius: inherit;
-  background: radial-gradient(circle at 50% 0%, rgba(18, 169, 217, 0.16), transparent 34%);
+  background: radial-gradient(circle at 50% 0%, rgb(var(--primary-glow-rgb) / 0.16), transparent 34%);
   opacity: 0;
   transition: opacity 0.35s ease;
 }
@@ -244,12 +344,16 @@ li {
 /* ── Rich text editor ─────────────────────────────────── */
 .rich-text-editor-shell {
   background: var(--surface);
+  /* Colour belongs to the editor chrome, not the content class: page-html-content
+     reuses that class to render CMS HTML on public pages, and a hardcoded
+     var(--text) there overrode the caller's colour, leaving 1.22:1 dark-on-dark
+     wherever CMS copy sits on a dark band. */
+  color: var(--text);
 }
 
 .rich-text-editor-content {
   width: 100%;
   padding: 1rem;
-  color: var(--text);
   outline: none;
 }
 
@@ -406,13 +510,13 @@ li {
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: rgba(18, 169, 217, 0.14);
+  background: rgb(var(--primary-rgb) / 0.14);
 }
 
 .rich-text-editor-content .column-resize-handle {
   position: absolute;
   top: 0;
-  right: -2px;
+  inset-inline-end: -2px;
   bottom: -2px;
   width: 4px;
   pointer-events: none;
@@ -423,7 +527,7 @@ li {
   min-height: 100dvh;
   width: 100%;
   background:
-    radial-gradient(circle at top left, rgba(18, 169, 217, 0.12), transparent 32rem),
+    radial-gradient(circle at top left, rgb(var(--primary-glow-rgb) / 0.12), transparent 32rem),
     linear-gradient(180deg, var(--bg-2), var(--bg));
   color: var(--text);
 }
@@ -442,11 +546,18 @@ li {
   min-height: 0;
   flex: 1;
   flex-direction: column;
+}
+
+/* Only routes that actually render the tab bar reserve room for it. */
+.app-main-tabbed {
   padding-bottom: 5.5rem;
 }
 
-@media (min-width: 1024px) {
-  .app-main {
+/* The bottom tab bar is phone-only (md:hidden), so the reserved space it
+   needs must disappear at the same breakpoint — not at lg, which left a
+   dead 5.5rem gutter on tablets. */
+@media (min-width: 768px) {
+  .app-main-tabbed {
     padding-bottom: 0;
   }
 }
@@ -520,11 +631,7 @@ li {
 .app-card {
   background: color-mix(in srgb, var(--surface) 86%, transparent);
   border: 1px solid var(--border);
-  box-shadow: 0 18px 50px rgba(8, 38, 58, 0.08);
-}
-
-.dark .app-card {
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
+  box-shadow: var(--shadow-soft);
 }
 
 .app-muted {

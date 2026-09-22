@@ -33,14 +33,14 @@ export function getEmployeeStatusLabel(employee: AdminEmployee) {
 }
 
 export function formatEmployeeDate(value?: string) {
-  if (!value) return '—';
+  if (!value) return '-';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export function formatRoleLabel(role: string) {
-  if (!role) return '—';
+  if (!role) return '-';
   return role
     .replace(/_/g, ' ')
     .split(' ')

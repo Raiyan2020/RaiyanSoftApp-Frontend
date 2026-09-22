@@ -79,7 +79,16 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
   }
 
   return (
-    <form onSubmit={onSubmit} onFocus={onStart} className="space-y-5 rounded-lg border border-cyan-950/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
+    <form
+      onSubmit={onSubmit}
+      onFocus={onStart}
+      // The phone field carries a native `required`; without noValidate the
+      // browser's own constraint validation intercepts the click before this
+      // component's onSubmit ever runs, so the styled/aria-wired errors below
+      // never render (confirmed: form.querySelector(':invalid') blocks submit).
+      noValidate
+      className="space-y-5 rounded-xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-sm"
+    >
       {submitError ? <PublicFormStatus type="error" message={submitError} /> : null}
       {submitting ? <PublicFormStatus type="loading" message="Submitting..." /> : null}
       <div className="grid gap-5 sm:grid-cols-2">
@@ -112,7 +121,7 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
       <button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-lg bg-primary px-5 py-3 text-sm font-black text-white transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
+        className="w-full rounded-xl bg-primary px-5 py-3 text-sm font-black text-on-primary transition hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60"
       >
         {translateMessage(submitting ? 'Submitting...' : mode === 'quote' ? 'Send Quote Request' : 'Send Message')}
       </button>

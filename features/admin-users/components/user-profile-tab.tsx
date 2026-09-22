@@ -73,7 +73,7 @@ export default function UserProfileTab({ selectedUser, formatDate, formatDateTim
               <CheckCircle size={16} /> {translateMessage('Account Status')}
             </span>
             <span
-              className={`text-sm font-medium ${selectedUser.status === 'Active' ? 'text-emerald-400' : 'text-red-400'}`}
+              className={`text-sm font-medium ${selectedUser.status === 'Active' ? 'text-success' : 'text-danger'}`}
             >
               {translateMessage(selectedUser.status)}
             </span>

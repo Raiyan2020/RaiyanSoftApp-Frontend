@@ -73,7 +73,7 @@ export default function AdminCountriesPage() {
           <button
             type="button"
             onClick={startCreate}
-            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-primary/90 disabled:opacity-60"
+            className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-on-primary shadow-lg transition hover:bg-primary/90 disabled:opacity-60"
           >
             <Plus size={16} />
             {translateMessage('Add Country')}
@@ -126,7 +126,7 @@ export default function AdminCountriesPage() {
                     key={country.id}
                     className={`rounded-2xl border p-4 transition ${
                       isEditing
-                        ? 'border-primary/40 bg-primary/5 shadow-[0_0_0_1px_rgba(29,183,240,0.15)]'
+                        ? 'border-primary/40 bg-primary/5 shadow-[0_0_0_1px_rgb(var(--primary-glow-rgb) / 0.15)]'
                         : 'border-[var(--border)] bg-[var(--surface-2)]'
                     }`}
                   >
@@ -141,10 +141,10 @@ export default function AdminCountriesPage() {
                             </p>
                           </div>
                           <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[10px] font-bold uppercase tracking-[0.18em] ${
+                            className={`inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-bold uppercase tracking-[0.18em] ${
                               country.is_active
-                                ? 'bg-emerald-500/10 text-emerald-500'
-                                : 'bg-zinc-500/10 text-[var(--text-muted)]'
+                                ? 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success'
+                                : 'bg-[var(--surface-2)] text-[var(--text-muted)]'
                             }`}
                           >
                             <ShieldCheck size={11} />
@@ -166,7 +166,7 @@ export default function AdminCountriesPage() {
                             type="button"
                             onClick={() => setPendingDeleteId(country.id)}
                             disabled={loadingCountryId === country.id || deleteLoading}
-                            className="inline-flex items-center gap-2 rounded-xl border border-red-500/20 bg-red-500/5 px-3 py-2 text-xs font-semibold text-red-400 transition hover:bg-red-500/10 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="inline-flex items-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--danger)_20%,transparent)] bg-[color-mix(in_srgb,var(--danger)_5%,transparent)] px-3 py-2 text-xs font-semibold text-danger transition hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] disabled:cursor-not-allowed disabled:opacity-60"
                           >
                             {isDeleting ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                             {translateMessage('Delete')}
@@ -277,7 +277,7 @@ export default function AdminCountriesPage() {
               <button
                 type="submit"
                 disabled={isSaving}
-                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-white shadow-lg transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-on-primary shadow-lg transition hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Save size={16} />}
                 {translateMessage(isSaving ? 'Saving...' : editingId ? 'Update Country' : 'Create Country')}

@@ -49,7 +49,9 @@ export default async function PublicLayout({ children, seo }: PublicLayoutProps)
       <a href="#main-content" className="skip-link">{tt('Skip to content')}</a>
       <PublicNavigation />
       <main id="main-content">{children}</main>
-      <footer className="border-t border-slate-200 bg-slate-950 text-slate-300 dark:border-white/10">
+      {/* The closing CTA band and the footer share --navy, so without this
+          hairline they merged into one undifferentiated dark mass. */}
+      <footer className="border-t border-white/10 bg-[var(--navy)] text-slate-300">
         <div className="mx-auto grid max-w-7xl gap-10 px-4 py-14 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.2fr_0.8fr_0.8fr_0.8fr] lg:px-8">
           <div className="space-y-5">
             <Link href="/" className="inline-flex items-center gap-3">
@@ -58,15 +60,15 @@ export default async function PublicLayout({ children, seo }: PublicLayoutProps)
               </span>
               <span>
                 <span className="block text-lg font-bold text-white">{siteConfig.name}</span>
-                <span className="block text-xs text-slate-500">{siteConfig.englishName}</span>
+                <span className="block text-xs text-slate-300">{siteConfig.englishName}</span>
               </span>
             </Link>
-            <p className="max-w-sm text-sm leading-8 text-slate-400">{siteConfig.description}</p>
+            <p className="max-w-sm text-sm leading-8 text-slate-300">{siteConfig.description}</p>
             <div className="flex flex-wrap gap-3">
-              <Link className="rounded-lg bg-primary px-4 py-2 text-sm font-bold text-white transition hover:bg-primary-dark" href="/quote">
+              <Link className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-on-primary transition hover:bg-primary-dark" href="/quote">
                 {tt('Get a Quote')}
               </Link>
-              <Link className="rounded-lg border border-white/10 px-4 py-2 text-sm font-bold text-slate-200 transition hover:border-primary hover:text-primary" href="/contact">
+              <Link className="rounded-xl border border-white/10 px-4 py-2 text-sm font-bold text-slate-200 transition hover:border-primary hover:text-cyan-300" href="/contact">
                 {tt('Contact Us')}
               </Link>
             </div>
@@ -84,9 +86,9 @@ export default async function PublicLayout({ children, seo }: PublicLayoutProps)
           </div>
         </div>
         <div className="border-t border-white/10">
-          <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+          <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-5 text-sm text-slate-300 sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
             <p>© {new Date().getFullYear()} {siteConfig.name}. {tt('All rights reserved.')}</p>
-            <p>{tt('A separate public site, apart from the client and admin dashboard.')}</p>
+            
           </div>
         </div>
       </footer>
@@ -98,10 +100,13 @@ function FooterGroup({ title, links, language }: FooterGroupProps) {
   return (
     <nav aria-label={title}>
       <p className="mb-4 text-base font-bold text-white">{title}</p>
-      <ul className="space-y-3">
+      <ul className="space-y-1">
         {links.map((link) => (
           <li key={link.href}>
-            <Link className="text-sm text-slate-400 transition hover:text-primary" href={link.href}>
+            {/* footer is bg-[var(--navy)] in both themes; --primary-glow-rgb
+                stays bright-on-dark in both themes, unlike --primary-rgb
+                (3.21:1 here in light theme, below the 4.5:1 minimum). */}
+            <Link className="inline-block py-1.5 text-sm text-slate-300 transition hover:text-cyan-300" href={link.href}>
               {translateMessage(link.label, language)}
             </Link>
           </li>

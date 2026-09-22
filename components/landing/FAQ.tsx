@@ -22,9 +22,6 @@ export default function FAQ({ homeData }: FAQProps) {
     <section id="faq" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
       <div ref={ref} className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
         <div className={`reveal ${textAlign}`}>
-          <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-            {apiHeader?.caption || faq.badge}
-          </div>
           <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
             {apiHeader?.title || faq.title}
           </h2>

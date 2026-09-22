@@ -63,7 +63,7 @@ export default function NotificationsPage() {
               type="button"
               onClick={handleDeleteAll}
               disabled={isMutating}
-              className="text-xs font-medium text-red-400 flex items-center gap-1 hover:text-red-300 transition-colors bg-red-500/10 px-3 py-1.5 rounded-lg disabled:opacity-50"
+              className="text-xs font-medium text-danger flex items-center gap-1 hover:text-danger transition-colors bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] px-3 py-1.5 rounded-lg disabled:opacity-50"
             >
               <Trash2 size={14} />
               <span>{t('notif.delete_all')}</span>
@@ -76,7 +76,7 @@ export default function NotificationsPage() {
                   onClick={() => setActiveFilter(filter)}
                   className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 border ${
                     activeFilter === filter
-                      ? 'bg-primary text-white border-primary shadow-[0_0_10px_rgba(29,183,240,0.3)]'
+                      ? 'bg-primary text-on-primary border-primary shadow-[0_0_10px_rgb(var(--primary-glow-rgb) / 0.3)]'
                       : 'bg-transparent text-[var(--text-muted)] border-transparent hover:text-[var(--text)]'
                   } capitalize`}
                 >

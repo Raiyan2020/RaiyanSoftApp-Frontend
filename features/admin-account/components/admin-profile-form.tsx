@@ -70,7 +70,7 @@ export default function AdminProfileForm({
                       type="text"
                       aria-invalid={fieldState.invalid}
                       className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
-                        fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                       }`}
                     />
                   </div>
@@ -94,7 +94,7 @@ export default function AdminProfileForm({
                       type="text"
                       aria-invalid={fieldState.invalid}
                       className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
-                        fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                       }`}
                     />
                   </div>
@@ -133,7 +133,7 @@ export default function AdminProfileForm({
                     type="email"
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                   />
                 </div>
@@ -159,7 +159,7 @@ export default function AdminProfileForm({
                     placeholder="••••••••"
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                   />
                 </div>
@@ -174,7 +174,7 @@ export default function AdminProfileForm({
             <button
               type="submit"
               disabled={isSaving}
-              className="bg-primary hover:bg-sky-400 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 flex items-center gap-2 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
+              className="bg-primary hover:bg-primary-dark text-on-primary px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-primary/20 flex items-center gap-2 transition-all duration-300 disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isSaving ? <Loader2 size={18} className="animate-spin" /> : <Save size={18} />}
               <span>{translateMessage('Save Changes')}</span>

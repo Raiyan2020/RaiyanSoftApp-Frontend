@@ -41,7 +41,7 @@ export default function AdminPagesPage() {
             key={tab.id}
             onClick={() => handleTabChange(tab.id)}
             className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
-              activeTab === tab.id ? 'bg-primary text-white shadow-lg' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+              activeTab === tab.id ? 'bg-primary text-on-primary shadow-lg' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
           >
             <tab.icon size={16} />

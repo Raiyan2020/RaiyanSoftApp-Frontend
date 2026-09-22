@@ -69,13 +69,13 @@ export default function RoleFormModal({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel>{translateMessage('Role Name')} <span className="text-red-400">*</span></FieldLabel>
+                  <FieldLabel>{translateMessage('Role Name')} <span className="text-danger">*</span></FieldLabel>
                   <input
                     {...field}
                     type="text"
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                     placeholder={translateMessage('e.g. Sales Manager')}
                   />
@@ -96,7 +96,7 @@ export default function RoleFormModal({
                     {...field}
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors h-20 resize-none ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                     placeholder={translateMessage('Role purpose...')}
                   />
@@ -130,7 +130,7 @@ export default function RoleFormModal({
           <button
             form="roleForm"
             type="submit"
-            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-sky-400 text-white font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2 transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-dark text-on-primary font-medium text-sm shadow-lg shadow-primary/20 flex items-center gap-2 transition-colors"
           >
             <Save size={16} />
             <span>{translateMessage('Save Role')}</span>

@@ -35,13 +35,15 @@ export default function DesktopHeader() {
   };
 
   return (
-    <div className="hidden lg:flex items-center justify-between gap-6 px-8 py-4 bg-[var(--surface)] backdrop-blur-md border-b border-[var(--border)] sticky top-0 z-50 shrink-0">
+    // Shown from md up. Below lg the tab labels collapse to icons so the five
+    // tabs, brand and language switch still fit a 768px tablet without wrapping.
+    <div className="hidden md:flex items-center justify-between gap-4 px-4 lg:px-8 py-3 bg-[var(--surface)] backdrop-blur-md border-b border-[var(--border)] sticky top-0 z-50 shrink-0">
       <button type="button" className="flex items-center gap-3" onClick={() => router.push('/home')}>
         <div className="w-9 h-9 relative">
           <SafeImage
             src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
             alt="Raiyansoft"
-            className="w-full h-full object-contain drop-shadow-[0_0_8px_rgba(29,183,240,0.5)]"
+            className="w-full h-full object-contain drop-shadow-[0_0_8px_rgb(var(--primary-glow-rgb) / 0.5)]"
           />
         </div>
         {/* i18n-ignore-next-line: brand name, never translated */}
@@ -56,7 +58,10 @@ export default function DesktopHeader() {
               key={tab.id}
               type="button"
               onClick={() => handleNav(tab.path, tab.protected)}
-              className={`relative flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200 group ${
+              aria-label={tab.label}
+              aria-current={isActive ? 'page' : undefined}
+              title={tab.label}
+              className={`relative flex min-h-10 items-center gap-2 px-3 lg:px-4 py-2 rounded-lg transition-all duration-200 group ${
                 isActive ? 'text-primary' : 'text-[var(--text-muted)] hover:text-[var(--text)] hover:bg-[var(--surface)]'
               }`}
             >
@@ -68,12 +73,12 @@ export default function DesktopHeader() {
                   }`}
                 />
                 {tab.badge > 0 ? (
-                  <span className="absolute -top-1.5 -end-1.5 bg-red-500 text-white text-[9px] font-bold px-1 min-w-[14px] h-[14px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm">
+                  <span className="absolute -top-1.5 -end-1.5 bg-red-500 text-white text-[11px] font-bold px-1 min-w-[14px] h-[14px] flex items-center justify-center rounded-full border-2 border-[var(--surface)] shadow-sm">
                     {tab.badge > 99 ? '99+' : tab.badge}
                   </span>
                 ) : null}
               </div>
-              <span className="text-sm font-medium">{tab.label}</span>
+              <span className="hidden text-sm font-medium lg:inline">{tab.label}</span>
 
               {isActive ? (
                 <motion.div
@@ -91,8 +96,8 @@ export default function DesktopHeader() {
         <button
           type="button"
           onClick={() => setLanguage('en')}
-          className={`px-3 py-1.5 rounded-full text-[10px] font-medium transition-all duration-300 ${
-            language === 'en' ? 'bg-primary text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+          className={`min-h-9 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${
+            language === 'en' ? 'bg-primary text-on-primary shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
           }`}
         >
           English
@@ -100,8 +105,8 @@ export default function DesktopHeader() {
         <button
           type="button"
           onClick={() => setLanguage('ar')}
-          className={`px-3 py-1.5 rounded-full text-[10px] font-medium transition-all duration-300 ${
-            language === 'ar' ? 'bg-primary text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+          className={`min-h-9 px-3 py-1.5 rounded-full text-xs font-bold transition-all duration-300 ${
+            language === 'ar' ? 'bg-primary text-on-primary shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
           }`}
         >
           العربية

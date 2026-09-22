@@ -48,7 +48,7 @@ export default function UsersTableRow({
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${
             user.role === 'Admin'
               ? 'bg-purple-500/10 text-purple-400 border-purple-500/20'
-              : 'bg-blue-500/10 text-blue-400 border-blue-500/20'
+              : 'bg-[color-mix(in_srgb,var(--info)_10%,transparent)] text-info border-[color-mix(in_srgb,var(--info)_20%,transparent)]'
           }`}
         >
           {translateMessage(user.role)}
@@ -79,7 +79,7 @@ export default function UsersTableRow({
             type="button"
             onClick={() => onToggleStatus(user)}
             className={`p-2 hover:bg-white/5 rounded-lg transition-colors ${
-              user.status === 'Active' ? 'text-amber-400 hover:text-amber-300' : 'text-emerald-400 hover:text-emerald-300'
+              user.status === 'Active' ? 'text-warning hover:text-warning' : 'text-success hover:text-success'
             }`}
             title={translateMessage(user.status === 'Active' ? 'Disable Account' : 'Enable Account')}
           >
@@ -89,7 +89,7 @@ export default function UsersTableRow({
             <button
               type="button"
               onClick={() => onDeleteUser(user.id)}
-              className="p-2 hover:bg-red-500/10 rounded-lg text-[var(--text-muted)] hover:text-red-400 transition-colors"
+              className="p-2 hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] rounded-lg text-[var(--text-muted)] hover:text-danger transition-colors"
               title={translateMessage('Delete User')}
             >
               <Trash2 size={16} />

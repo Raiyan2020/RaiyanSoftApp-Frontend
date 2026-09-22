@@ -86,7 +86,7 @@ function MeetingWhatsAppButton({ phone }: { phone?: string | null }) {
       }}
       className={`p-2 rounded-lg transition-colors flex items-center justify-center ${
         waUrl
-          ? 'bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20'
+          ? 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success hover:bg-[color-mix(in_srgb,var(--success)_20%,transparent)]'
           : 'bg-[var(--surface-3)] text-[var(--text-muted)] cursor-not-allowed opacity-50'
       }`}
       title={waUrl ? translateMessage('WhatsApp') : translateMessage('No phone number')}
@@ -144,7 +144,7 @@ export default function AdminBookingsTab({
               onClick={() => onStatusFilterChange(status.value)}
               className={`px-3 py-2 rounded-xl text-xs font-bold capitalize border ${
                 statusFilter === status.value
-                  ? 'bg-primary text-white border-primary'
+                  ? 'bg-primary text-on-primary border-primary'
                   : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)] hover:text-[var(--text)]'
               }`}
             >
@@ -196,7 +196,7 @@ export default function AdminBookingsTab({
             <div key={meeting.id} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4 space-y-3">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0">
-                  <p className="font-bold text-[var(--text)] break-words">{meeting.subject || '—'}</p>
+                  <p className="font-bold text-[var(--text)] break-words">{meeting.subject || '-'}</p>
                   {meeting.user ? (
                     <p className="text-xs text-[var(--text-muted)] mt-1 break-words">
                       {meeting.user.full_name} · {meeting.user.full_phone}
@@ -247,16 +247,16 @@ export default function AdminBookingsTab({
                     <div className="text-xs text-[var(--text-muted)]">{meeting.created_at}</div>
                   </TableCell>
                   <TableCell className="py-4 text-start text-[var(--text)]">
-                    <div className="font-medium truncate max-w-[180px]">{meeting.user?.full_name || '—'}</div>
-                    <div className="text-xs text-[var(--text-muted)]">{meeting.user?.full_phone || '—'}</div>
+                    <div className="font-medium truncate max-w-[180px]">{meeting.user?.full_name || '-'}</div>
+                    <div className="text-xs text-[var(--text-muted)]">{meeting.user?.full_phone || '-'}</div>
                   </TableCell>
                   <TableCell className="py-4 text-start text-[var(--text)]">
                     <button type="button" onClick={() => onOpenBooking(meeting)} className="text-start hover:text-primary">
-                      <div className="truncate max-w-[220px]">{meeting.subject || '—'}</div>
+                      <div className="truncate max-w-[220px]">{meeting.subject || '-'}</div>
                       {meeting.notes ? <div className="text-xs text-[var(--text-muted)] truncate max-w-[220px]">{meeting.notes}</div> : null}
                     </button>
                   </TableCell>
-                  <TableCell className="py-4 text-start text-[var(--text-muted)]">{meeting.type_label || '—'}</TableCell>
+                  <TableCell className="py-4 text-start text-[var(--text-muted)]">{meeting.type_label || '-'}</TableCell>
                   <TableCell className="py-4 text-start">
                     <StatusPill label={meeting.status_label} status={meeting.status} />
                   </TableCell>
@@ -272,12 +272,12 @@ export default function AdminBookingsTab({
                             type="button"
                             onClick={() => onApproveBooking(meeting.id)}
                             disabled={actionLoading}
-                            className="p-2 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors"
+                            className="p-2 hover:bg-[color-mix(in_srgb,var(--info)_20%,transparent)] text-info rounded-lg transition-colors"
                             title={translateMessage('Approve')}
                           >
                             <CheckCircle size={16} />
                           </button>
-                          {meeting.status === MEETING_STATUS.PENDING ? <button type="button" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading} className="p-2 hover:bg-red-500/20 text-red-400 rounded-lg transition-colors" title={translateMessage('Reject')}><XCircle size={16} /></button> : null}
+                          {meeting.status === MEETING_STATUS.PENDING ? <button type="button" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading} className="p-2 hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] text-danger rounded-lg transition-colors" title={translateMessage('Reject')}><XCircle size={16} /></button> : null}
                         </>
                       ) : null}
                     </div>
@@ -347,8 +347,8 @@ export default function AdminBookingsTab({
                 <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs text-[var(--text-muted)] mb-1">{translateMessage('Client')}</p>
-                    <p className="font-bold text-[var(--text)] truncate">{selectedBooking.user?.full_name || '—'}</p>
-                    <p className="text-sm text-[var(--text-muted)]">{selectedBooking.user?.full_phone || '—'}</p>
+                    <p className="font-bold text-[var(--text)] truncate">{selectedBooking.user?.full_name || '-'}</p>
+                    <p className="text-sm text-[var(--text-muted)]">{selectedBooking.user?.full_phone || '-'}</p>
                   </div>
                   <MeetingWhatsAppButton phone={selectedBooking.user?.full_phone} />
                 </div>
@@ -362,7 +362,7 @@ export default function AdminBookingsTab({
                   </div>
                   <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
                     <p className="text-xs text-[var(--text-muted)] mb-1">{translateMessage('Meeting Type')}</p>
-                    <p className="font-bold text-[var(--text)]">{selectedBooking.type_label || '—'}</p>
+                    <p className="font-bold text-[var(--text)]">{selectedBooking.type_label || '-'}</p>
                   </div>
                 </div>
 

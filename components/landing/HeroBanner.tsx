@@ -35,7 +35,7 @@ export default function HeroBanner({ homeData }: HeroBannerProps) {
 
   return (
     <section id="home" className="relative isolate min-h-screen overflow-hidden bg-[#06111f] text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_20%,rgba(18,169,217,0.28),transparent_32%),radial-gradient(circle_at_18%_58%,rgba(33,211,162,0.16),transparent_34%),linear-gradient(135deg,#020617_0%,#071827_52%,#06111f_100%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_78%_20%,rgb(var(--primary-glow-rgb) / 0.28),transparent_32%),radial-gradient(circle_at_18%_58%,rgba(33,211,162,0.16),transparent_34%),linear-gradient(135deg,#020617_0%,#071827_52%,#06111f_100%)]" />
       <div className="premium-grid absolute inset-0 opacity-35" />
       <div className="noise-bg opacity-[0.06]" />
 
@@ -43,7 +43,6 @@ export default function HeroBanner({ homeData }: HeroBannerProps) {
         <div className="grid w-full grid-cols-1 items-center gap-12 lg:grid-cols-[0.95fr_1.05fr]">
           <div className={`order-2 text-center ${textAlign}`}>
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/8 px-4 py-2 text-sm font-bold text-cyan-200 shadow-2xl shadow-primary/10 backdrop-blur-xl">
-              <span className="h-2 w-2 rounded-full bg-[var(--mint)] shadow-[0_0_18px_rgba(33,211,162,0.9)]" />
               {badge}
             </div>
 
@@ -53,7 +52,7 @@ export default function HeroBanner({ homeData }: HeroBannerProps) {
               ) : (
                 <>
                   {hero.titleLine1}
-                  <span className="mt-2 block bg-gradient-to-l from-cyan-200 via-primary to-emerald-300 bg-clip-text text-transparent">
+                  <span className="mt-2 block text-[var(--mint)]">
                     {hero.titleHighlight}
                   </span>
                   {hero.titleLine2}
@@ -77,7 +76,7 @@ export default function HeroBanner({ homeData }: HeroBannerProps) {
                       ?.scrollIntoView({ behavior: 'smooth' });
                   }
                 }}
-                className="premium-button touch-lift rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3.5 text-base font-black text-white shadow-2xl shadow-primary/30 transition-all duration-300 hover:-translate-y-1 sm:px-8 sm:py-4 sm:text-lg"
+                className="premium-button touch-lift rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3.5 text-base font-black text-on-primary shadow-2xl shadow-primary/30 transition-all duration-300 hover:-translate-y-1 sm:px-8 sm:py-4 sm:text-lg"
               >
                 {ctaPrimary}
               </button>

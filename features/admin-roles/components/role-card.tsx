@@ -34,34 +34,34 @@ export default function RoleCard({ role, onOpenModal, onDeleteRole }: RoleCardPr
           <button
             type="button"
             onClick={() => onDeleteRole(role.id)}
-            className="p-2 bg-[var(--surface-3)] hover:bg-red-500/20 hover:text-red-400 rounded-lg text-[var(--text-muted)] transition-colors"
+            className="p-2 bg-[var(--surface-3)] hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] hover:text-danger rounded-lg text-[var(--text-muted)] transition-colors"
           >
             <Trash2 size={16} />
           </button>
         </div>
       </div>
 
-      <h3 className="text-[var(--text)] font-bold text-lg mb-1">{role.name}</h3>
+      <h2 className="text-[var(--text)] font-bold text-lg mb-1">{role.name}</h2>
       <p className="text-[var(--text-muted)] text-sm mb-4 h-10 line-clamp-2">{role.description}</p>
 
       <div className="mt-auto">
-        <h4 className="text-[10px] uppercase text-[var(--text-muted)] font-bold mb-2">{translateMessage('Permissions')}</h4>
+        <h3 className="text-[11px] uppercase text-[var(--text-muted)] font-bold mb-2">{translateMessage('Permissions')}</h3>
         <div className="flex flex-wrap gap-2">
           {role.permissions.slice(0, 3).map((perm) => (
             <span
               key={perm}
-              className="text-[10px] bg-[var(--surface-3)] border border-[var(--border)] text-[var(--text)] px-2 py-1 rounded-md"
+              className="text-[11px] bg-[var(--surface-3)] border border-[var(--border)] text-[var(--text)] px-2 py-1 rounded-md"
             >
               {perm}
             </span>
           ))}
           {role.permissions.length > 3 ? (
-            <span className="text-[10px] bg-[var(--surface-3)] border border-[var(--border)] text-[var(--text-muted)] px-2 py-1 rounded-md">
+            <span className="text-[11px] bg-[var(--surface-3)] border border-[var(--border)] text-[var(--text-muted)] px-2 py-1 rounded-md">
               +{role.permissions.length - 3} {translateMessage('more')}
             </span>
           ) : null}
           {role.permissions.length === 0 ? (
-            <span className="text-[10px] text-[var(--text-muted)] italic">{translateMessage('No specific permissions')}</span>
+            <span className="text-[11px] text-[var(--text-muted)] italic">{translateMessage('No specific permissions')}</span>
           ) : null}
         </div>
       </div>

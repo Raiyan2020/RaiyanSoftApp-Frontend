@@ -11,26 +11,34 @@ export default function Textarea({
   error,
   className = '',
   dir,
+  id,
   ...props
 }: TextareaProps) {
+  const reactId = React.useId();
+  const fieldId = id ?? `textarea-${reactId}`;
+  const errorId = `${fieldId}-error`;
+
   return (
-    <div className="space-y-2 w-full">
+    <div className="space-y-1.5 w-full">
       {label ? (
-        <label className="text-xs text-[var(--text-muted)] ms-1 block font-medium">
+        <label htmlFor={fieldId} className="text-xs font-bold text-[var(--text-muted)] ms-1 block">
           {translateMessage(label)}
         </label>
       ) : null}
       <textarea
+        id={fieldId}
         dir={dir}
-        className={`w-full app-input rounded-xl px-4 py-3 focus:outline-none transition-all resize-none ${
-          error
-            ? 'border-red-500/50 focus:border-red-500'
-            : 'focus:border-primary'
+        aria-invalid={error ? true : undefined}
+        aria-describedby={error ? errorId : undefined}
+        className={`w-full app-input rounded-xl px-4 py-3 focus:outline-none transition-colors resize-y ${
+          error ? 'border-danger' : 'focus:border-primary'
         } ${className}`}
         {...props}
       />
       {error ? (
-        <p className="text-[10px] text-red-400 ms-1 mt-0.5 font-medium">{translateMessage(error)}</p>
+        <p id={errorId} className="text-xs text-danger ms-1 font-bold">
+          {translateMessage(error)}
+        </p>
       ) : null}
     </div>
   );

@@ -71,7 +71,7 @@ export default function AdminDashboardPage() {
         </button>
       </div>
 
-      {error ? <p className="rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-300">{error}</p> : null}
+      {error ? <p className="rounded-xl border border-[color-mix(in_srgb,var(--warning)_30%,transparent)] bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] px-4 py-3 text-sm text-warning">{error}</p> : null}
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {cards.map(({ label, value, href, icon: Icon }) => (
@@ -80,7 +80,7 @@ export default function AdminDashboardPage() {
               <span className="text-sm font-bold text-[var(--text-muted)]">{translateMessage(label)}</span>
               <span className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary"><Icon size={18} /></span>
             </div>
-            <p className="mt-6 text-3xl font-black text-[var(--text)]">{loading ? '—' : value}</p>
+            <p className="mt-3 text-3xl font-black text-[var(--text)]">{loading ? '-' : value}</p>
           </Link>
         ))}
       </div>
@@ -88,7 +88,7 @@ export default function AdminDashboardPage() {
       <section className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-lg">
         <h2 className="text-lg font-black text-[var(--text)]">{translateMessage('Quick actions')}</h2>
         <div className="mt-4 flex flex-wrap gap-3">
-          <Link className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-white" href="/admin/leads">{translateMessage('Review requests')}</Link>
+          <Link className="rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-on-primary" href="/admin/leads">{translateMessage('Review requests')}</Link>
           <Link className="rounded-xl border border-[var(--border)] px-4 py-2.5 text-sm font-bold text-[var(--text)]" href="/admin/appointments">{translateMessage('Manage meetings')}</Link>
           <Link className="rounded-xl border border-[var(--border)] px-4 py-2.5 text-sm font-bold text-[var(--text)]" href="/admin/landing-page">{translateMessage('Edit website')}</Link>
         </div>

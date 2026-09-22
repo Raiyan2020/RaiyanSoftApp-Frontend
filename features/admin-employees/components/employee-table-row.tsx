@@ -89,7 +89,7 @@ export default function EmployeeTableRow({
             <button
               type="button"
               onClick={() => onDeleteEmployee(employee.id)}
-              className="p-2 hover:bg-red-500/10 rounded-lg text-[var(--text-muted)] hover:text-red-400"
+              className="p-2 hover:bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] rounded-lg text-[var(--text-muted)] hover:text-danger"
               title={translateMessage('Delete')}
             >
               <Trash2 size={16} />
@@ -105,7 +105,7 @@ export default function EmployeeTableRow({
         <div className="flex items-center gap-3">
           <Avatar name={fullName} className="w-10 h-10 border border-[var(--border)] text-sm" />
           <div>
-            <h3 className="text-sm font-medium text-[var(--text)]">{fullName}</h3>
+            <h2 className="text-sm font-medium text-[var(--text)]">{fullName}</h2>
             <p className="text-xs text-[var(--text-muted)]">{translateMessage(formatRoleLabel(employee.role))}</p>
           </div>
         </div>

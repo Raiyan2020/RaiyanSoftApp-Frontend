@@ -49,9 +49,6 @@ export default function Contact({ homeData }: ContactProps) {
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className={`reveal mb-10 text-start lg:mb-12 ${textAlign}`}>
-          <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-            {contact.badge}
-          </div>
           <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
             {contact.title} <span className="gradient-text">{contact.titleHighlight}</span>
           </h2>
@@ -75,7 +72,7 @@ export default function Contact({ homeData }: ContactProps) {
               <div className="mt-6 space-y-4">
                 {contact.sidebarSteps.map((step, i) => (
                   <div key={step} className="flex gap-3">
-                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-xs font-black text-primary">{i + 1}</span>
+                    <span className="grid h-7 w-7 shrink-0 place-items-center rounded-full bg-white/10 text-xs font-black text-cyan-300">{i + 1}</span>
                     <p className="text-sm font-semibold leading-relaxed text-slate-200">{step}</p>
                   </div>
                 ))}
@@ -99,7 +96,7 @@ export default function Contact({ homeData }: ContactProps) {
             <div className="rounded-[2rem] border border-cyan-950/10 bg-white p-5 shadow-2xl shadow-cyan-950/8 dark:border-white/10 dark:bg-white/5 sm:p-8">
               {submitted ? (
                 <div className="py-14 text-center">
-                  <div className="mx-auto mb-6 grid h-20 w-20 place-items-center rounded-3xl bg-emerald-400/15 text-4xl text-emerald-500">✓</div>
+                  <div className="mx-auto mb-6 grid h-20 w-20 place-items-center rounded-3xl bg-emerald-400/15 text-4xl text-success">✓</div>
                   <h3 className="text-2xl font-bold text-slate-950 dark:text-white">{contact.form.successTitle}</h3>
                   <p className="mx-auto mt-3 max-w-md text-slate-600 dark:text-slate-300">{contact.form.successDescription}</p>
                   <button
@@ -109,7 +106,7 @@ export default function Contact({ homeData }: ContactProps) {
                       setForm({ name: '', email: '', message: '' });
                       setPhone('');
                     }}
-                    className="premium-button touch-lift mt-7 rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3 font-bold text-white shadow-lg shadow-primary/25"
+                    className="premium-button touch-lift mt-7 rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3 font-bold text-on-primary shadow-lg shadow-primary/25"
                   >
                     {contact.form.sendAnother}
                   </button>
@@ -174,7 +171,7 @@ export default function Contact({ homeData }: ContactProps) {
                     id="contact-submit"
                     type="submit"
                     disabled={loading}
-                    className="premium-button touch-lift flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-l from-primary to-primary-dark py-4 text-lg font-bold text-white shadow-xl shadow-primary/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-primary/35 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="premium-button touch-lift flex w-full items-center justify-center gap-3 rounded-2xl bg-gradient-to-l from-primary to-primary-dark py-4 text-lg font-bold text-on-primary shadow-xl shadow-primary/25 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-primary/35 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {loading ? (
                       <>

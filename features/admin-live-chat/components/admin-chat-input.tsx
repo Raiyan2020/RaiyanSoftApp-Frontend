@@ -58,7 +58,7 @@ export default function AdminChatInput({ inputText, setInputText, onSend }: Admi
         <button
           type="submit"
           disabled={isInvalid}
-          className="bg-primary hover:bg-sky-400 text-white p-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
+          className="bg-primary hover:bg-primary-dark text-on-primary p-3 rounded-xl transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-primary/20"
         >
           <Send size={20} />
         </button>

@@ -23,8 +23,8 @@ export default function ChatHeader() {
         <div>
           <h2 className="text-[var(--text)] font-bold text-sm leading-tight">{t('chat.header')}</h2>
           <div className="flex items-center gap-1">
-            <p className="text-[var(--text-muted)] text-[10px] uppercase tracking-wide font-medium">{t('chat.team')}</p>
-            <span className="text-emerald-500 text-[10px]">- {t('chat.online')}</span>
+            <p className="text-[var(--text-muted)] text-[11px] uppercase tracking-wide font-medium">{t('chat.team')}</p>
+            <span className="text-success text-[11px]">- {t('chat.online')}</span>
           </div>
         </div>
       </div>

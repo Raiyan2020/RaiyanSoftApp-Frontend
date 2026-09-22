@@ -110,7 +110,7 @@ export default function MeetingDetailsForm({
         type="button"
         onClick={onBook}
         disabled={!topic.trim() || isSubmitting}
-        className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl shadow-lg disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
       >
         {isSubmitting ? <Loader2 className="animate-spin" size={18} /> : null}
         {confirmLabel}

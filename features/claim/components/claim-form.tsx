@@ -41,7 +41,7 @@ export default function ClaimForm({ status, onSubmit, t }: ClaimFormProps) {
                   type="text"
                   aria-invalid={fieldState.invalid}
                   className={`w-full bg-[var(--surface-3)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] border focus:outline-none transition-all ${
-                    fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+                    fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
                   }`}
                 />
               </div>
@@ -62,7 +62,7 @@ export default function ClaimForm({ status, onSubmit, t }: ClaimFormProps) {
                   type="text"
                   aria-invalid={fieldState.invalid}
                   className={`w-full bg-[var(--surface-3)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] border focus:outline-none transition-all ${
-                    fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+                    fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
                   }`}
                 />
               </div>
@@ -98,7 +98,7 @@ export default function ClaimForm({ status, onSubmit, t }: ClaimFormProps) {
                 dir="ltr"
                 aria-invalid={fieldState.invalid}
                 className={`w-full bg-[var(--surface-3)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] border focus:outline-none transition-all ${
-                  fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+                  fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
                 }`}
               />
             </div>
@@ -121,7 +121,7 @@ export default function ClaimForm({ status, onSubmit, t }: ClaimFormProps) {
                 dir="ltr"
                 aria-invalid={fieldState.invalid}
                 className={`w-full bg-[var(--surface-3)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] border focus:outline-none transition-all ${
-                  fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+                  fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
                 }`}
               />
             </div>
@@ -133,7 +133,7 @@ export default function ClaimForm({ status, onSubmit, t }: ClaimFormProps) {
       <button
         type="submit"
         disabled={status === 'claiming'}
-        className="w-full bg-primary text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all mt-6 flex items-center justify-center gap-2"
+        className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-all mt-6 flex items-center justify-center gap-2"
       >
         {status === 'claiming' ? <Loader2 className="animate-spin" /> : translateMessage('Create Account & Claim')}
       </button>

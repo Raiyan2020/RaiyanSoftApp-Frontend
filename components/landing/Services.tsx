@@ -5,14 +5,10 @@ import { useLandingContent } from '@/features/landing/hooks/use-landing-content'
 import SafeImage from '@/components/ui/safe-image';
 import type { LandingPageContent } from '@/features/landing-page';
 
-const SERVICE_GRADIENTS = [
-  'from-sky-500 to-cyan-500',
-  'from-primary to-emerald-400',
-  'from-emerald-500 to-teal-500',
-  'from-amber-400 to-orange-500',
-  'from-violet-500 to-purple-500',
-  'from-rose-500 to-pink-500',
-];
+// The palette used to be six index-assigned rainbow gradients (`i % length`),
+// so the colour carried no meaning, and white on amber-400 / emerald-400
+// measured 1.86:1 and 1.8:1 behind the step numerals. One brand ramp instead.
+const SERVICE_GRADIENTS = ['from-primary to-primary-dark'];
 
 type ServicesProps = {
   homeData?: LandingPageContent | null;
@@ -25,7 +21,6 @@ export default function Services({ homeData }: ServicesProps) {
   const { services: staticServices } = content;
   const apiHomeServices = homeData?.services ?? null;
 
-  const badge = apiHomeServices?.header?.caption || staticServices.badge;
   const title = apiHomeServices?.header?.title || `${staticServices.title} ${staticServices.titleHighlight}`;
   const description = apiHomeServices?.header?.description || staticServices.description;
 
@@ -33,14 +28,11 @@ export default function Services({ homeData }: ServicesProps) {
 
   return (
     <section id="services" className="relative overflow-hidden bg-white py-12 dark:bg-navy-950 sm:py-16 lg:py-20">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(18,169,217,0.12),transparent_34%),linear-gradient(to_bottom,#ffffff,rgba(247,251,253,0.82))] dark:bg-[radial-gradient(circle_at_top_right,rgba(18,169,217,0.12),transparent_32%),linear-gradient(to_bottom,#020617,#071827)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgb(var(--primary-glow-rgb) / 0.12),transparent_34%),linear-gradient(to_bottom,#ffffff,rgba(247,251,253,0.82))] dark:bg-[radial-gradient(circle_at_top_right,rgb(var(--primary-glow-rgb) / 0.12),transparent_32%),linear-gradient(to_bottom,#020617,#071827)]" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className={`reveal mb-10 lg:mb-12`}>
           <div className={`space-y-4 ${textAlign}`}>
-            <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-              {badge}
-            </div>
             <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
               {title}
             </h2>
@@ -73,7 +65,7 @@ export default function Services({ homeData }: ServicesProps) {
                         {service.image ? (
                           <SafeImage src={service.image} alt={service.title} sizes="64px" className="h-14 w-14 rounded-2xl shadow-lg sm:h-16 sm:w-16" />
                         ) : (
-                          <div className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${gradient} text-xl font-black text-white shadow-lg sm:h-16 sm:w-16`}>
+                          <div className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${gradient} text-xl font-black text-on-primary shadow-lg sm:h-16 sm:w-16`}>
                             {String(i + 1).padStart(2, '0')}
                           </div>
                         )}
@@ -114,7 +106,7 @@ export default function Services({ homeData }: ServicesProps) {
                         <p className="mb-3 text-sm font-bold text-primary">{service.eyebrow}</p>
                         <h3 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">{service.title}</h3>
                       </div>
-                      <div className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${service.gradient} text-xs font-black text-white shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16 sm:text-sm`}>
+                      <div className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${service.gradient} text-xs font-black text-on-primary shadow-lg transition-transform duration-300 group-hover:scale-110 sm:h-16 sm:w-16 sm:text-sm`}>
                         {service.metric}
                       </div>
                     </div>

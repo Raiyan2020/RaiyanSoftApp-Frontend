@@ -26,7 +26,7 @@ export default function FileList({
   return (
     <div className="space-y-4">
       <h2 className="text-sm font-bold text-[var(--text)] uppercase tracking-wider mb-4 flex items-center gap-2">
-        <Check size={14} className="text-emerald-500" />
+        <Check size={14} className="text-success" />
         {t('files.uploaded')} ({files.length})
       </h2>
 

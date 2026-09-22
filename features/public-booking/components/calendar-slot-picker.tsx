@@ -84,7 +84,7 @@ export default function CalendarSlotPicker({
                       !isCurrent
                         ? 'opacity-0 pointer-events-none'
                         : isSelected
-                        ? 'bg-primary border-primary text-white shadow-lg'
+                        ? 'bg-primary border-primary text-on-primary shadow-lg'
                         : isClickable
                         ? 'bg-[var(--surface-3)] text-[var(--text)] border-[var(--border)] hover:bg-[var(--surface-3)]'
                         : 'bg-[var(--surface-2)] text-[var(--text-muted)] border-transparent cursor-not-allowed'
@@ -117,7 +117,7 @@ export default function CalendarSlotPicker({
                   onClick={() => onSelectTime(time)}
                   className={`py-3 rounded-xl border font-medium text-sm transition-all ${
                     selectedTime === time
-                      ? 'bg-primary text-white border-primary shadow-lg'
+                      ? 'bg-primary text-on-primary border-primary shadow-lg'
                       : 'bg-[var(--surface-3)] text-[var(--text)] border-[var(--border)] hover:bg-[var(--surface-3)]'
                   }`}
                 >

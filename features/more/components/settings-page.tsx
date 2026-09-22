@@ -22,7 +22,7 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={() => router.push('/more')}
-            className="text-[var(--text-muted)] hover:text-[var(--text)] mb-4 flex items-center gap-1"
+            className="-ms-2 mb-4 flex min-h-11 items-center gap-1 rounded-lg px-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
           >
             {dir === 'rtl' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
             <span className="text-sm">{t('auth.back')}</span>
@@ -44,7 +44,7 @@ export default function SettingsPage() {
               type="button"
               onClick={() => setLanguage('en')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                language === 'en' ? 'bg-primary text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                language === 'en' ? 'bg-primary text-on-primary shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
               }`}
             >
               English
@@ -53,7 +53,7 @@ export default function SettingsPage() {
               type="button"
               onClick={() => setLanguage('ar')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                language === 'ar' ? 'bg-primary text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                language === 'ar' ? 'bg-primary text-on-primary shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
               }`}
             >
               العربية
@@ -73,7 +73,7 @@ export default function SettingsPage() {
               type="button"
               onClick={() => setTheme('light')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                theme === 'light' ? 'bg-primary text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                theme === 'light' ? 'bg-primary text-on-primary shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
               }`}
             >
               {t('settings.theme_light')}
@@ -82,7 +82,7 @@ export default function SettingsPage() {
               type="button"
               onClick={() => setTheme('dark')}
               className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
-                theme === 'dark' ? 'bg-primary text-white shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
+                theme === 'dark' ? 'bg-primary text-on-primary shadow-sm' : 'text-[var(--text-muted)] hover:text-[var(--text)]'
               }`}
             >
               {t('settings.theme_dark')}

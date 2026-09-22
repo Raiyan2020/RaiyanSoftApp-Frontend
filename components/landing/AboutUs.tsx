@@ -22,18 +22,14 @@ export default function AboutUs({ homeData }: AboutUsProps) {
   const apiBanner = homeData?.banners?.idea;
 
   const headline = apiAbout?.header?.title || partners.title;
-  const subtitle = apiAbout?.header?.caption || partners.badge;
   const description = apiAbout?.header?.description || partners.description;
   const cards = apiAbout?.cards ?? [];
 
   return (
     <section id="about-us" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(18,169,217,0.12),transparent_34%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgb(var(--primary-glow-rgb) / 0.12),transparent_34%)]" />
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className={`reveal mb-10 text-center lg:mb-12 ${textAlign}`}>
-          <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-            {subtitle}
-          </div>
           <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
             {headline}
           </h2>
@@ -54,7 +50,7 @@ export default function AboutUs({ homeData }: AboutUsProps) {
                 <div className="flex justify-start lg:justify-end">
                   <a
                     href={apiBanner.button_url || '#contact'}
-                    className="inline-flex rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3.5 text-base font-bold text-white shadow-xl shadow-primary/25 transition hover:-translate-y-0.5"
+                    className="inline-flex rounded-2xl bg-gradient-to-l from-primary to-primary-dark px-6 py-3.5 text-base font-bold text-on-primary shadow-xl shadow-primary/25 transition hover:-translate-y-0.5"
                   >
                     {apiBanner.button_text || translateMessage('Learn more', lang)}
                   </a>
@@ -80,7 +76,7 @@ export default function AboutUs({ homeData }: AboutUsProps) {
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="absolute inset-0 grid place-items-center text-6xl font-black text-primary/20">01</div>
+                  <div aria-hidden="true" className="absolute inset-0 grid place-items-center text-6xl font-black text-primary/20">01</div>
                 )}
               </div>
               <div className="p-6">

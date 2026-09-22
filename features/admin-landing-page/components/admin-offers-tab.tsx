@@ -142,7 +142,7 @@ export default function AdminOffersTab() {
               <p className="mt-0.5 text-sm text-[var(--text-muted)]">{offer.caption.en || offer.caption.ar}</p>
             </div>
             {offer.most_requested ? (
-              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-amber-400">
+              <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-xs font-bold text-warning">
                 <Star size={10} /> {translateMessage('Popular')}
               </span>
             ) : null}
@@ -171,10 +171,10 @@ export default function AdminOffersTab() {
             placeholder="#contact"
             aria-invalid={Boolean(fieldErrors.button_url)}
             className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:outline-none ${
-              fieldErrors.button_url ? 'border-red-500/50 focus:border-red-500' : 'border-[var(--border)] focus:border-primary'
+              fieldErrors.button_url ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
             }`}
           />
-          {fieldErrors.button_url ? <p className="mt-1 text-xs font-medium text-red-400">{fieldErrors.button_url}</p> : null}
+          {fieldErrors.button_url ? <p className="mt-1 text-xs font-medium text-danger">{fieldErrors.button_url}</p> : null}
         </div>
         <label className="flex cursor-pointer items-center gap-2 text-sm font-semibold text-[var(--text)]">
           <input type="checkbox" checked={form.most_requested === 1} onChange={(e) => setForm((p) => ({ ...p, most_requested: e.target.checked ? 1 : 0 }))} className="h-4 w-4 rounded accent-primary" />

@@ -50,7 +50,7 @@ export default function FileListItem({ file, dir, isImage, formatSize, onDelete 
         <button
           type="button"
           onClick={() => onDelete(file)}
-          className="p-2 bg-red-500/10 rounded-lg text-red-400 hover:bg-red-500/20 transition-colors"
+          className="p-2 bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] rounded-lg text-danger hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] transition-colors"
         >
           <Trash2 size={16} />
         </button>

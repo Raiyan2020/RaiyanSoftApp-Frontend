@@ -15,7 +15,7 @@ export default function TabIconWithBadge({ icon: Icon, isActive, badgeCount }: T
         size={24}
         className={`transition-all duration-300 ${
           isActive
-            ? 'text-primary drop-shadow-[0_0_8px_rgba(29,183,240,0.6)] scale-110'
+            ? 'text-primary drop-shadow-[0_0_8px_rgb(var(--primary-glow-rgb) / 0.6)] scale-110'
             : 'text-[var(--text-muted)] hover:text-[var(--text)]'
         }`}
       />
@@ -28,7 +28,7 @@ export default function TabIconWithBadge({ icon: Icon, isActive, badgeCount }: T
             exit={{ scale: 0, opacity: 0 }}
             className="absolute -top-1 -end-1.5 z-10 flex items-center justify-center min-w-[18px] h-[18px] bg-red-500 rounded-full border-2 border-[var(--surface)] px-1 pointer-events-none"
           >
-            <span className="text-[10px] font-bold text-[var(--text)] leading-none">
+            <span className="text-[11px] font-bold text-[var(--text)] leading-none">
               {badgeCount > 99 ? '99+' : badgeCount}
             </span>
           </motion.div>

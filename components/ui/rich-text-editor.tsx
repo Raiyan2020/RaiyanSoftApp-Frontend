@@ -115,7 +115,7 @@ function ToolbarButton({
       className={cx(
         'inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border text-[var(--text-muted)] transition-all focus:outline-none disabled:cursor-not-allowed disabled:opacity-40',
         isActive
-          ? 'border-primary/50 bg-primary/10 text-primary shadow-[0_0_14px_rgba(18,169,217,0.18)]'
+          ? 'border-primary/50 bg-primary/10 text-primary shadow-[0_0_14px_rgb(var(--primary-glow-rgb) / 0.18)]'
           : 'border-transparent hover:border-[var(--border)] hover:bg-[var(--surface-2)] hover:text-[var(--text)]',
       )}
     >
@@ -377,7 +377,7 @@ export default function RichTextEditor({
       <div
         className={cx(
           'overflow-hidden rounded-xl border bg-[var(--surface)] transition-all',
-          error ? 'border-red-500/50 focus-within:border-red-500' : 'border-[var(--border)] focus-within:border-primary/70',
+          error ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus-within:border-danger' : 'border-[var(--border)] focus-within:border-primary/70',
           disabled && 'opacity-70',
         )}
       >
@@ -414,7 +414,7 @@ export default function RichTextEditor({
         ) : null}
       </div>
 
-      {error ? <p className="ms-1 mt-0.5 text-[10px] font-medium text-red-400">{error}</p> : null}
+      {error ? <p className="ms-1 mt-0.5 text-[11px] font-medium text-danger">{error}</p> : null}
     </div>
   );
 }

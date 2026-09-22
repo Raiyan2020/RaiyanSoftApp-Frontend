@@ -14,19 +14,19 @@ import {
 } from '@/components/profile/profile-records-data';
 
 const statusColors: Record<ProfileRecordStatus, string> = {
-  active: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
-  pending: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  completed: 'bg-sky-500/10 text-sky-400 border-sky-500/20',
-  cancelled: 'bg-red-500/10 text-red-400 border-red-500/20',
-  draft: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+  active: 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success border-[color-mix(in_srgb,var(--success)_34%,transparent)]',
+  pending: 'bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] text-warning border-[color-mix(in_srgb,var(--warning)_34%,transparent)]',
+  completed: 'bg-[color-mix(in_srgb,var(--primary)_8%,transparent)] text-primary border-[color-mix(in_srgb,var(--primary)_34%,transparent)]',
+  cancelled: 'bg-[color-mix(in_srgb,var(--danger)_8%,transparent)] text-danger border-[color-mix(in_srgb,var(--danger)_34%,transparent)]',
+  draft: 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)]',
 };
 
 const typeColors: Record<ProfileRecordType, string> = {
-  booking: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
-  deal: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
-  project: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
-  notification: 'bg-amber-500/10 text-amber-400 border-amber-500/20',
-  info: 'bg-violet-500/10 text-violet-400 border-violet-500/20',
+  booking: 'bg-[color-mix(in_srgb,var(--info)_8%,transparent)] text-info border-[color-mix(in_srgb,var(--info)_34%,transparent)]',
+  deal: 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success border-[color-mix(in_srgb,var(--success)_34%,transparent)]',
+  project: 'bg-[color-mix(in_srgb,var(--primary)_8%,transparent)] text-primary border-[color-mix(in_srgb,var(--primary)_34%,transparent)]',
+  notification: 'bg-[color-mix(in_srgb,var(--warning)_8%,transparent)] text-warning border-[color-mix(in_srgb,var(--warning)_34%,transparent)]',
+  info: 'bg-[var(--surface-2)] text-[var(--text-muted)] border-[var(--border)]',
 };
 
 export default function ProfileRecordPage() {

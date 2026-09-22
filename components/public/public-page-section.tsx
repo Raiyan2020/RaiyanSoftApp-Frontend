@@ -33,16 +33,21 @@ export default function PublicSimplePage({
   return (
     <PublicLayout>
       <PublicWebPageJsonLd title={jsonLdTitle} description={jsonLdDescription} path={resolvedPath} />
+      {/* No hero actions here: CtaBlock below closes the page with the very
+          same "Get a Quote" / "Contact Us" pair, and repeating them above the
+          fold split the call to action instead of strengthening it. The hero
+          now carries breadcrumbs, which these pages had no orientation cue for
+          at all. */}
       <PageHero
         eyebrow={eyebrow}
         title={title}
         description={description}
-        actions={[
-          { label: 'Get a Quote', href: '/quote' },
-          { label: 'Contact Us', href: '/contact', variant: 'secondary' },
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: eyebrow ?? title, href: resolvedPath },
         ]}
       />
-      <SectionShell>{children}</SectionShell>
+      <SectionShell tone="muted">{children}</SectionShell>
       <CtaBlock title={ctaTitle} description={ctaDescription} />
     </PublicLayout>
   );

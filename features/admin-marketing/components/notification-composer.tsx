@@ -143,10 +143,10 @@ export default function NotificationComposer({
                                     <div className="text-xs text-[var(--text-muted)]">{user.email}</div>
                                   </div>
                                   <span
-                                    className={`ms-auto text-[10px] px-2 py-0.5 rounded-full ${
+                                    className={`ms-auto text-[11px] px-2 py-0.5 rounded-full ${
                                       user.status === 'Active'
-                                        ? 'bg-emerald-500/10 text-emerald-400'
-                                        : 'bg-red-500/10 text-red-400'
+                                        ? 'bg-[color-mix(in_srgb,var(--success)_10%,transparent)] text-success'
+                                        : 'bg-[color-mix(in_srgb,var(--danger)_10%,transparent)] text-danger'
                                     }`}
                                   >
                                     {translateMessage(user.status)}
@@ -201,7 +201,7 @@ export default function NotificationComposer({
                     type="text"
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                   />
                   {fieldState.invalid && (
@@ -222,7 +222,7 @@ export default function NotificationComposer({
                     rows={4}
                     aria-invalid={fieldState.invalid}
                     className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors resize-none ${
-                      fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                     }`}
                   />
                   {fieldState.invalid && (
@@ -244,7 +244,7 @@ export default function NotificationComposer({
                       type="url"
                       aria-invalid={fieldState.invalid}
                       className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
-                        fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                       }`}
                     />
                     {fieldState.invalid && (
@@ -265,7 +265,7 @@ export default function NotificationComposer({
                       type="text"
                       aria-invalid={fieldState.invalid}
                       className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
-                        fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                       }`}
                     />
                     {fieldState.invalid && (
@@ -307,7 +307,7 @@ export default function NotificationComposer({
                       type="datetime-local"
                       aria-invalid={fieldState.invalid}
                       className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
-                        fieldState.invalid ? 'border-red-500/50 focus:border-red-500' : ''
+                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
                       }`}
                     />
                     {fieldState.invalid && (
@@ -321,13 +321,13 @@ export default function NotificationComposer({
             <button
               type="submit"
               disabled={isSending}
-              className="w-full mt-4 bg-primary hover:bg-sky-400 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 disabled:opacity-50"
+              className="w-full mt-4 bg-primary hover:bg-primary-dark text-on-primary font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 disabled:opacity-50"
             >
               {isSending ? <CheckCircle className="animate-spin" size={20} /> : <Send size={20} />}
               <span>{translateMessage(isSending ? 'Sending...' : 'Send Notification')}</span>
             </button>
             {successMessage ? (
-              <div className="text-emerald-400 text-center text-sm font-medium mt-2">{translateMessage(successMessage)}</div>
+              <div className="text-success text-center text-sm font-medium mt-2">{translateMessage(successMessage)}</div>
             ) : null}
           </div>
         </form>

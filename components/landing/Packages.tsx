@@ -17,7 +17,6 @@ export default function Packages({ homeData }: PackagesProps) {
   const { packages } = content;
   const apiOffers = homeData?.offers;
 
-  const badge = apiOffers?.header?.caption || packages.badge;
   const title = apiOffers?.header?.title || `${packages.title} ${packages.titleHighlight}`;
   const description = apiOffers?.header?.description || packages.description;
   const hasApiItems = (apiOffers?.offers?.length ?? 0) > 0;
@@ -34,9 +33,6 @@ export default function Packages({ homeData }: PackagesProps) {
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="reveal mb-10 lg:mb-12">
           <div className={`space-y-4 ${textAlign}`}>
-            <div className="inline-flex rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-bold text-primary">
-              {badge}
-            </div>
             <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
               {title}
             </h2>
@@ -59,7 +55,7 @@ export default function Packages({ homeData }: PackagesProps) {
                   style={{ transitionDelay: `${i * 0.08}s` }}
                 >
                   {offer.most_requested ? (
-                    <span className="mb-5 inline-flex rounded-full bg-primary/20 px-3 py-1 text-xs font-bold text-primary">
+                    <span className="mb-5 inline-flex rounded-full bg-primary/20 px-3 py-1 text-xs font-bold text-cyan-300">
                       {packages.popularBadge}
                     </span>
                   ) : null}
@@ -86,7 +82,7 @@ export default function Packages({ homeData }: PackagesProps) {
                     }}
                     className={`mt-8 w-full rounded-2xl px-5 py-3 font-bold transition-all duration-300 hover:-translate-y-0.5 ${
                       offer.most_requested
-                        ? 'bg-gradient-to-l from-primary to-primary-dark text-white shadow-lg shadow-primary/25'
+                        ? 'bg-gradient-to-l from-primary to-primary-dark text-on-primary shadow-lg shadow-primary/25'
                         : 'border border-primary/25 text-primary hover:bg-primary/10'
                     }`}
                   >
@@ -105,7 +101,7 @@ export default function Packages({ homeData }: PackagesProps) {
                   style={{ transitionDelay: `${i * 0.08}s` }}
                 >
                   {item.highlighted ? (
-                    <span className="mb-5 inline-flex rounded-full bg-primary/20 px-3 py-1 text-xs font-bold text-primary">
+                    <span className="mb-5 inline-flex rounded-full bg-primary/20 px-3 py-1 text-xs font-bold text-cyan-300">
                       {packages.popularBadge}
                     </span>
                   ) : null}
@@ -124,7 +120,7 @@ export default function Packages({ homeData }: PackagesProps) {
                     onClick={() => document.querySelector('#contact')?.scrollIntoView({ behavior: 'smooth' })}
                     className={`mt-8 w-full rounded-2xl px-5 py-3 font-bold transition-all duration-300 hover:-translate-y-0.5 ${
                       item.highlighted
-                        ? 'bg-gradient-to-l from-primary to-primary-dark text-white shadow-lg shadow-primary/25'
+                        ? 'bg-gradient-to-l from-primary to-primary-dark text-on-primary shadow-lg shadow-primary/25'
                         : 'border border-primary/25 text-primary hover:bg-primary/10'
                     }`}
                   >

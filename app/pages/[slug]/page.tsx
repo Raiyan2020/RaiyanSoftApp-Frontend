@@ -47,7 +47,7 @@ export default async function LandingPageSlugPage({ params }: PageProps) {
 
   return (
     <PublicSimplePage seoKey="about" eyebrow={tt('Site Pages')} title={page.title} description={page.description}>
-      <article className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-white/5">
+      <article className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-sm">
         {page.image ? (
           <div className="relative aspect-[16/9] w-full">
             <Image src={page.image} alt={page.title} fill className="object-cover" />

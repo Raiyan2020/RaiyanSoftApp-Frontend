@@ -22,8 +22,8 @@ export default function LeadCapturePage() {
           animate={{ scale: 1, opacity: 1 }}
           className="bg-[var(--surface-3)] border border-[var(--border)] rounded-3xl p-8 max-w-sm w-full text-center"
         >
-          <div className="w-20 h-20 bg-emerald-500/20 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20">
-            <CheckCircle size={40} className="text-emerald-500" />
+          <div className="w-20 h-20 bg-[color-mix(in_srgb,var(--success)_20%,transparent)] rounded-full flex items-center justify-center mx-auto mb-6 border border-[color-mix(in_srgb,var(--success)_20%,transparent)]">
+            <CheckCircle size={40} className="text-success" />
           </div>
           <h1 className="text-2xl font-bold mb-4">
             {translateMessage('Request Received', language)}
