@@ -30,8 +30,8 @@ export default function Navbar({ dark, onToggleDark }: { dark: boolean; onToggle
   } = useNavbar();
 
   const glassBarClass = scrolled
-    ? 'border-slate-200/80 bg-white/92 shadow-lg shadow-slate-900/10 ring-slate-200/70 dark:border-white/12 dark:bg-slate-950/55 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_20px_50px_rgba(8,20,36,0.28)] dark:ring-cyan-300/10'
-    : 'border-slate-200/70 bg-white/85 shadow-xl shadow-slate-900/10 ring-slate-200/60 dark:border-white/10 dark:bg-slate-950/40 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_18px_60px_rgba(8,20,36,0.22)] dark:ring-cyan-300/10';
+    ? 'border-slate-200/80 bg-white/92 shadow-lg shadow-slate-900/10 ring-slate-200/70 dark:border-white/12 dark:bg-slate-950/92 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_20px_50px_rgba(8,20,36,0.28)] dark:ring-cyan-300/10'
+    : 'border-slate-200/70 bg-white/85 shadow-xl shadow-slate-900/10 ring-slate-200/60 dark:border-white/10 dark:bg-slate-950/85 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_18px_60px_rgba(8,20,36,0.22)] dark:ring-cyan-300/10';
 
   return (
     <header className="fixed top-0 start-0 end-0 z-50 px-4 pt-3 transition-all duration-300 sm:px-6 lg:px-8">

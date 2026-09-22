@@ -1,4 +1,4 @@
-import { MEETING_STATUS, MEETING_TYPE, MeetingTypeCode, TimeSlotDayApiItem } from '../types/meeting.types';
+import { MEETING_STATUS, MEETING_TYPE, MeetingTypeCode, TimeSlotDayApiItem, WeeklyAvailability } from '../types/meeting.types';
 
 export function formatDateKey(date: Date): string {
   return new Intl.DateTimeFormat('en-CA', {
@@ -75,7 +75,7 @@ function dayNameToUiIndex(name: string) {
   return map[normalized] ?? null;
 }
 
-export function defaultWeeklyAvailability(): Record<number, { enabled: boolean; ranges: { start_time: string; end_time: string }[] }> {
+export function defaultWeeklyAvailability(): WeeklyAvailability {
   return {
     0: { enabled: false, ranges: [] },
     1: { enabled: true, ranges: [{ start_time: '09:00', end_time: '17:00' }] },
@@ -100,6 +100,7 @@ export function timeSlotsToWeeklyAvailability(
       weekly[uiIndex] = {
         enabled: day.is_active,
         ranges: day.time_slots || [],
+        dayId: day.id,
       };
     });
     return weekly;
@@ -116,11 +117,14 @@ export function timeSlotsToWeeklyAvailability(
   return weekly;
 }
 
-export function weeklyAvailabilityToTimeSlots(weekly: Record<number, { enabled: boolean; ranges: { start_time: string; end_time: string }[] }>) {
+export function weeklyAvailabilityToTimeSlots(weekly: WeeklyAvailability) {
   const days: Record<string, { is_active: boolean; time_slots: { start_time: string; end_time: string }[] }> = {};
 
   Object.entries(weekly).forEach(([uiIndex, config]) => {
-    const apiDay = String(uiIndexToApiDay(Number(uiIndex)));
+    // Prefer the real `days` row id the API gave us; the seeded row order
+    // doesn't match uiIndexToApiDay's Sun-first numbering, so falling back
+    // to that number writes to the wrong day (see normalizeWeeklyAvailabilityPayload).
+    const apiDay = String(config.dayId ?? uiIndexToApiDay(Number(uiIndex)));
     days[apiDay] = {
       is_active: config.enabled,
       time_slots: config.ranges || [],
@@ -172,13 +176,16 @@ function normalizeRange(range: { start_time: string; end_time: string }) {
 }
 
 export function normalizeWeeklyAvailabilityPayload(
-  weekly: Record<number, { enabled: boolean; ranges: { start_time: string; end_time: string }[] }>
+  weekly: WeeklyAvailability
 ) {
   const days: Record<string, { is_active: boolean; time_slots: { start_time: string; end_time: string }[] }> = {};
 
   for (let uiIndex = 0; uiIndex <= 6; uiIndex += 1) {
     const config = weekly[uiIndex] || { enabled: false, ranges: [] };
-    const apiDay = String(uiIndexToApiDay(uiIndex));
+    // See weeklyAvailabilityToTimeSlots: the real Day id (from GET) must win
+    // over the recomputed uiIndexToApiDay number, or saves land on the wrong
+    // weekday's row and the edited day appears to revert on reload.
+    const apiDay = String(config.dayId ?? uiIndexToApiDay(uiIndex));
     const time_slots = (config.ranges || [])
       .map(normalizeRange)
       .filter((range): range is { start_time: string; end_time: string } => Boolean(range));

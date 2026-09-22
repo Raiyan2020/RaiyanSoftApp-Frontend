@@ -184,7 +184,7 @@ const InputComponent = React.forwardRef<HTMLInputElement, React.InputHTMLAttribu
     <input
       ref={ref}
       // i18n-ignore-next-line: phone input is pinned dir="ltr"; calling codes must not mirror
-      className={`min-w-0 flex-1 bg-[var(--surface)] border border-[var(--border)] border-l-0 rounded-r-xl py-3 px-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all font-mono text-left ${className}`}
+      className={`min-w-0 flex-1 bg-[var(--surface)] dark:bg-white/5 border border-[var(--border)] border-l-0 rounded-r-xl py-3 px-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all font-mono text-left ${className}`}
       {...props}
       dir="ltr"
       style={{
@@ -258,7 +258,7 @@ function CountrySelect({
         type="button"
         onClick={() => (isOpen ? closeDropdown() : setIsOpen(true))}
         disabled={disabled}
-        className="flex h-full items-center gap-2 bg-[var(--surface)] border border-[var(--border)] rounded-l-xl border-r-0 px-3 py-3 text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex h-full items-center gap-2 bg-[var(--surface)] dark:bg-white/5 border border-[var(--border)] rounded-l-xl border-r-0 px-3 py-3 text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <FlagComponent country={selectedCountry} countryName={selectedCountry} />
         <span className="text-xs font-mono text-[var(--text-muted)]">{selectedCallingCode}</span>

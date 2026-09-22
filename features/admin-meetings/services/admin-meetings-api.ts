@@ -58,8 +58,8 @@ export async function approveAdminMeeting(id: number | string) {
   return response.data;
 }
 
-export async function rejectAdminMeeting(id: number | string) {
-  const response = await apiService.post<AdminMeeting>(`admin/meetings/${id}/reject`, undefined, {
+export async function rejectAdminMeeting(id: number | string, reason: string) {
+  const response = await apiService.post<AdminMeeting>(`admin/meetings/${id}/reject`, { reason }, {
     skipGlobalToast: true,
   });
 

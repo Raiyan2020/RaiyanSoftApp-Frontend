@@ -140,25 +140,32 @@ export function useAdminUsers() {
   };
 
   const handleExport = () => {
-    const escapeCsv = (value: string) => `"${value.replace(/"/g, '""')}"`;
-    const rows = [
-      ['Name', 'Email', 'Phone', 'Status', 'Registered'],
-      ...filteredUsers.map((user) => [
-        `${user.firstName} ${user.lastName}`.trim(),
-        user.email,
-        user.phone,
-        user.status,
-        formatDate(user.registeredAt),
-      ]),
-    ];
-    const csv = `\uFEFF${rows.map((row) => row.map(escapeCsv).join(',')).join('\r\n')}`;
-    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `users-${new Date().toISOString().slice(0, 10)}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-    globalToast.info('Users CSV downloaded.');
+    try {
+      const escapeCsv = (value: string) => `"${value.replace(/"/g, '""')}"`;
+      const rows = [
+        ['Name', 'Email', 'Phone', 'Status', 'Registered'],
+        ...filteredUsers.map((user) => [
+          `${user.firstName} ${user.lastName}`.trim(),
+          user.email,
+          user.phone,
+          user.status,
+          formatDate(user.registeredAt),
+        ]),
+      ];
+      const csv = `\uFEFF${rows.map((row) => row.map(escapeCsv).join(',')).join('\r\n')}`;
+      const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `users-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      globalToast.info('Users CSV downloaded.');
+    } catch (err: any) {
+      setActionError(err.message || 'Failed to export users CSV.');
+      globalToast.error('Failed to export users CSV.');
+    }
   };
 
   const handleToggleStatus = async (user: AdminUser) => {

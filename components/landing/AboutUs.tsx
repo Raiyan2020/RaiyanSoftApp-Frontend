@@ -33,7 +33,7 @@ export default function AboutUs({ homeData }: AboutUsProps) {
           <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
             {headline}
           </h2>
-          <p className="mx-auto mt-5 max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300">
+          <p className="mx-auto mt-5 max-w-3xl lg:mx-0 text-lg leading-relaxed text-slate-600 dark:text-slate-300">
             {description}
           </p>
         </div>

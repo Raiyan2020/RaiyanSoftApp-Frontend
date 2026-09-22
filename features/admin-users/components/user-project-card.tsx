@@ -1,5 +1,6 @@
 import React from 'react';
-import { LayoutGrid, ExternalLink } from 'lucide-react';
+import Link from 'next/link';
+import { LayoutGrid, ExternalLink, Eye } from 'lucide-react';
 import { UserProject } from '@/lib/userProjectsStore';
 import { translateMessage } from '@/lib/i18n-utils';
 
@@ -11,6 +12,11 @@ interface UserProjectCardProps {
 }
 
 export default function UserProjectCard({ project, formatDate }: UserProjectCardProps) {
+  // The per-project detail page only resolves live (Laravel-backed) projects
+  // when addressed via the literal "api" owner segment -- see
+  // useAdminProjectOperations's isApiProject check -- not the real owner id.
+  const detailHref = `/admin/user-projects/api/${encodeURIComponent(project.id)}`;
+
   return (
     <div className="bg-[var(--surface-3)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-3 group hover:border-[var(--border)] transition-colors">
       <div className="flex items-start justify-between">
@@ -49,7 +55,13 @@ export default function UserProjectCard({ project, formatDate }: UserProjectCard
         </div>
       </div>
 
-      <div className="pt-2 border-t border-[var(--border)] flex justify-end">
+      <div className="pt-2 border-t border-[var(--border)] flex items-center justify-between">
+        <Link
+          href={detailHref}
+          className="text-xs font-medium text-primary hover:text-[var(--text)] flex items-center gap-1 transition-colors"
+        >
+          {translateMessage('View Project')} <Eye size={12} />
+        </Link>
         {project.projectUrl ? (
           <a
             href={project.projectUrl}

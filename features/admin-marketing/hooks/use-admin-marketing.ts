@@ -1,18 +1,20 @@
 import { useState, useEffect, useRef } from 'react';
 import { marketingStore, useMarketingHistory } from '@/lib/marketingNotifications';
-import { useUsers, User } from '@/lib/userStore';
+import { fetchAdminUsers } from '@/features/admin-users/services/admin-users-api';
+import { mapAdminApiUser } from '@/features/admin-users/utils/admin-user-mappers';
+import { AdminUser as User } from '@/features/admin-users/types/admin-user.types';
 import { NotificationValues } from '../schemas/notification.schema';
 import { sendAdminNotification } from '../services/admin-notifications-api';
 import { translateMessage } from '@/lib/i18n-utils';
 
 export function useAdminMarketing() {
   const { history } = useMarketingHistory();
-  const { users } = useUsers();
 
   const [targetType, setTargetType] = useState<'all' | 'single'>('all');
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserDropdown, setShowUserDropdown] = useState(false);
+  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
 
   const [formData, setFormData] = useState<NotificationValues>({
     title: '',
@@ -27,18 +29,30 @@ export function useAdminMarketing() {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const filteredUsers =
-    searchQuery.trim() === ''
-      ? []
-      : users
-          .filter(
-            (u) =>
-              u.firstName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              u.lastName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              u.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
-              u.phone.includes(searchQuery)
-          )
-          .slice(0, 5);
+  // Debounced server-side search across name/email/phone (backend does the
+  // partial, case-insensitive LIKE matching via AdminUserService::getUsers).
+  useEffect(() => {
+    const query = searchQuery.trim();
+    if (query === '') {
+      setFilteredUsers([]);
+      return;
+    }
+
+    let cancelled = false;
+    const timer = setTimeout(async () => {
+      try {
+        const data = await fetchAdminUsers({ search: query });
+        if (!cancelled) setFilteredUsers(data.slice(0, 5).map(mapAdminApiUser));
+      } catch {
+        if (!cancelled) setFilteredUsers([]);
+      }
+    }, 300);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [searchQuery]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

@@ -85,7 +85,7 @@ function getPreviewHref(section: WebsiteContentSection, item: WebsiteContentItem
   if (section === 'services' && item.slug) return `/services/${item.slug}`;
   if (section === 'blogCategories' && item.slug) return `/blogs/categories/${item.slug}`;
   if (section === 'apps' && item.slug) return `/portfolio/${item.slug}`;
-  if (section === 'blog' && item.slug) return `/blog/${item.slug}`;
+  if (section === 'blog' && item.slug) return `/blogs/${item.slug}`;
   if (section === 'legal' && item.slug === 'privacy') return '/privacy';
   if (section === 'legal' && item.slug === 'terms') return '/terms';
 
@@ -94,7 +94,7 @@ function getPreviewHref(section: WebsiteContentSection, item: WebsiteContentItem
     services: '/services',
     blogCategories: '/blogs/categories',
     apps: '/portfolio',
-    blog: '/blog',
+    blog: '/blogs',
     faqs: '/faq',
     pricing: '/pricing',
     testimonials: '/testimonials',

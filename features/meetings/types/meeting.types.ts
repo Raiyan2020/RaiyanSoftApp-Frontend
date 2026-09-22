@@ -127,6 +127,13 @@ export type MeetingSettingsForm = {
 export type WeeklyAvailabilityDay = {
   enabled: boolean;
   ranges: TimeSlotRange[];
+  /**
+   * The real `days` table primary key for this weekday, as returned by GET.
+   * The backend looks slots up by this raw id (Day::find($dayId)), and the
+   * seeded row order doesn't match the Sun-first UI index, so saves must
+   * carry the id the API gave us rather than recomputing one from the index.
+   */
+  dayId?: number;
 };
 
 export type WeeklyAvailability = Record<number, WeeklyAvailabilityDay>;

@@ -10,7 +10,7 @@ export default function AdminLoginRedirect() {
   useEffect(() => {
     const unsubscribe = authService.subscribe(({ admin }) => {
       if (admin) {
-        router.replace('/admin/projects');
+        router.replace('/admin/dashboard');
       }
     });
 

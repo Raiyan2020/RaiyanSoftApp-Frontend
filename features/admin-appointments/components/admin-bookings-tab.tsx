@@ -37,7 +37,7 @@ interface AdminBookingsTabProps {
   onOpenBooking: (booking: AdminMeeting) => void;
   onCloseBooking: () => void;
   onApproveBooking: (id: number) => void;
-  onRejectBooking: (id: number) => void;
+  onRejectBooking: (id: number, reason: string) => void;
   onPageChange: (page: number) => void;
 }
 
@@ -124,6 +124,15 @@ export default function AdminBookingsTab({
   const formatDateTime = (value: string) =>
     parseMeetingDateTime(value).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
 
+  // Backend requires a rejection reason (RejectMeetingRequest: reason|required).
+  // ponytail: native window.prompt keeps this a one-line fix with no new
+  // component; swap for an in-sheet textarea if the UX needs to improve.
+  const promptAndReject = (id: number) => {
+    const reason = window.prompt(translateMessage('Enter a rejection reason:'));
+    if (!reason || !reason.trim()) return;
+    onRejectBooking(id, reason.trim());
+  };
+
   return (
     <>
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-3">
@@ -132,7 +141,7 @@ export default function AdminBookingsTab({
           <input
             value={searchQuery}
             onChange={(event) => onSearchQueryChange(event.target.value)}
-            placeholder={translateMessage('Search by name...')}
+            placeholder={translateMessage('Search by name, subject, email, or phone...')}
             className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary"
           />
         </div>
@@ -184,6 +193,10 @@ export default function AdminBookingsTab({
       {error ? (
         <ErrorAlert message={error} />
       ) : null}
+      {actionError ? (
+        <ErrorAlert message={actionError} />
+      ) : null}
+      <SuccessToast message={actionMessage} />
 
       {loading && bookings.length === 0 ? (
         <div className="flex justify-center py-16">
@@ -216,7 +229,7 @@ export default function AdminBookingsTab({
                     <Button type="button" size="sm" onClick={() => onApproveBooking(meeting.id)} disabled={actionLoading}>
                       {translateMessage('Approve')}
                     </Button>
-                    {meeting.status === MEETING_STATUS.PENDING ? <Button type="button" variant="destructive" size="sm" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading}>{translateMessage('Reject')}</Button> : null}
+                    {meeting.status === MEETING_STATUS.PENDING ? <Button type="button" variant="destructive" size="sm" onClick={() => promptAndReject(meeting.id)} disabled={actionLoading}>{translateMessage('Reject')}</Button> : null}
                   </>
                 ) : null}
               </div>
@@ -277,7 +290,7 @@ export default function AdminBookingsTab({
                           >
                             <CheckCircle size={16} />
                           </button>
-                          {meeting.status === MEETING_STATUS.PENDING ? <button type="button" onClick={() => onRejectBooking(meeting.id)} disabled={actionLoading} className="p-2 hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] text-danger rounded-lg transition-colors" title={translateMessage('Reject')}><XCircle size={16} /></button> : null}
+                          {meeting.status === MEETING_STATUS.PENDING ? <button type="button" onClick={() => promptAndReject(meeting.id)} disabled={actionLoading} className="p-2 hover:bg-[color-mix(in_srgb,var(--danger)_20%,transparent)] text-danger rounded-lg transition-colors" title={translateMessage('Reject')}><XCircle size={16} /></button> : null}
                         </>
                       ) : null}
                     </div>
@@ -373,9 +386,6 @@ export default function AdminBookingsTab({
                   </p>
                 </div>
 
-                {actionError ? <ErrorAlert message={actionError} /> : null}
-                <SuccessToast message={actionMessage} />
-
                 {canApprove(selectedBooking.status) ? (
                   <div className="flex flex-wrap gap-3 pt-2">
                     <Button
@@ -387,7 +397,7 @@ export default function AdminBookingsTab({
                       {actionLoading ? <Loader2 className="animate-spin" size={16} /> : <CheckCircle size={16} />}
                       {translateMessage('Approve')}
                     </Button>
-                    {selectedBooking.status === MEETING_STATUS.PENDING ? <Button type="button" variant="destructive" onClick={() => onRejectBooking(selectedBooking.id)} disabled={actionLoading} className="gap-2">{actionLoading ? <Loader2 className="animate-spin" size={16} /> : <XCircle size={16} />}{translateMessage('Reject')}</Button> : null}
+                    {selectedBooking.status === MEETING_STATUS.PENDING ? <Button type="button" variant="destructive" onClick={() => promptAndReject(selectedBooking.id)} disabled={actionLoading} className="gap-2">{actionLoading ? <Loader2 className="animate-spin" size={16} /> : <XCircle size={16} />}{translateMessage('Reject')}</Button> : null}
                   </div>
                 ) : null}
 

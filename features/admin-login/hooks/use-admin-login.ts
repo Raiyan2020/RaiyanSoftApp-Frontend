@@ -38,7 +38,7 @@ export function useAdminLogin() {
       const { admin, token } = response.data;
       authService.setAdminSession(admin, token);
 
-      router.push('/admin/projects');
+      router.push('/admin/dashboard');
     } catch (err: any) {
       console.error('Admin Login Error:', err);
       setError(err.message || translateMessage('Login failed. Please check your credentials.'));

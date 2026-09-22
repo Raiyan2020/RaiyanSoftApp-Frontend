@@ -92,11 +92,17 @@ class ApiService {
 
     try {
       const response = await fetch(url, config);
-      const data = (await response.json()) as ApiResponse<T>;
 
+      // Check the status BEFORE parsing. A 401 does not always carry a JSON
+      // body -- an expired session can come back as HTML or empty -- and
+      // parsing first meant response.json() threw, the catch swallowed it as a
+      // generic network error, and the dead token was never cleared. The user
+      // then sat on an invalid credential until they cleared storage by hand.
       if (response.status === 401) {
         handleUnauthorized(path);
       }
+
+      const data = (await response.json().catch(() => null)) as ApiResponse<T>;
 
       if (data && data.status === false && !skipGlobalToast) {
         let errorMsg = data.message || 'An error occurred.';

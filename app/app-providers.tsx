@@ -10,7 +10,6 @@ const FullProviders = dynamic(() => import('./providers'), { ssr: false });
 const publicPrefixes = [
   '/about',
   '/blogs',
-  '/blog',
   '/careers',
   '/consultation',
   '/contact',

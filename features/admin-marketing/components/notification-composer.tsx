@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, CheckCircle, Send } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
-import { User } from '@/lib/userStore';
+import { AdminUser as User } from '@/features/admin-users/types/admin-user.types';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { notificationSchema, NotificationValues } from '../schemas/notification.schema';
@@ -51,17 +51,15 @@ export default function NotificationComposer({
     defaultValues: formData,
   });
 
-  // Keep form data in sync
+  // Reset the visible form when the parent clears formData (e.g. after a
+  // successful send). Do NOT sync every keystroke back into formData via
+  // form.watch() + form.reset() here — that created a watch -> setFormData
+  // -> reset -> watch loop that fired on every render and made typing (and
+  // the rest of the page) freeze after one character.
   useEffect(() => {
     form.reset(formData);
-  }, [formData, form]);
-
-  useEffect(() => {
-    const subscription = form.watch((value) => {
-      setFormData(value as NotificationValues);
-    });
-    return () => subscription.unsubscribe();
-  }, [form, setFormData]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData]);
 
   const isScheduled = form.watch('isScheduled');
 

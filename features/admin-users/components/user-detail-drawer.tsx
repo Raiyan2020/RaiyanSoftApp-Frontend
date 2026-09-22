@@ -85,7 +85,7 @@ export default function UserDetailDrawer({
                 : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
           >
-            {translateMessage('Projects')} ({selectedUser.projectsCount || 0})
+            {translateMessage('Projects')} ({userProjects.length})
           </button>
         </div>
 

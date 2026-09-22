@@ -12,6 +12,16 @@ import { globalToast } from '@/lib/toast-context';
 import { TimeSlotDayApiItem } from '@/features/meetings';
 import { translateMessage } from '@/lib/i18n-utils';
 
+// ponytail: naive 1-hour step, capped at 23:59; a real slot picker would let
+// the admin pick freely, upgrade if this feels too rigid.
+function addOneHour(time: string): string {
+  const [hh, mm] = time.split(':').map(Number);
+  const totalMinutes = Math.min((hh || 0) * 60 + (mm || 0) + 60, 23 * 60 + 59);
+  const newHh = Math.floor(totalMinutes / 60);
+  const newMm = totalMinutes % 60;
+  return `${String(newHh).padStart(2, '0')}:${String(newMm).padStart(2, '0')}`;
+}
+
 export function useAdminTimeSlots() {
   const [weeklyAvailability, setWeeklyAvailability] = useState<WeeklyAvailability>(
     defaultWeeklyAvailability()
@@ -79,9 +89,14 @@ export function useAdminTimeSlots() {
     setWeeklyAvailability((current) => {
       const next = { ...current };
       const day = next[dayIndex] || { enabled: true, ranges: [] };
+      const lastRange = day.ranges[day.ranges.length - 1];
+      // Chain off the previous range's end time instead of a hardcoded
+      // 09:00-17:00, so a newly added slot doesn't render as a visual
+      // duplicate of the one already there.
+      const start_time = lastRange ? lastRange.end_time : '09:00';
       next[dayIndex] = {
         ...day,
-        ranges: [...day.ranges, { start_time: '09:00', end_time: '17:00' }],
+        ranges: [...day.ranges, { start_time, end_time: addOneHour(start_time) }],
       };
       return next;
     });

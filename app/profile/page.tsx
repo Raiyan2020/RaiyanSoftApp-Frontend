@@ -5,7 +5,8 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { BadgePercent, Bell, Calendar, Eye, FileText, FolderKanban, Info, Loader2, LogOut, MessageCircle, Pencil } from 'lucide-react';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
-import { authService, User } from '@/lib/auth-service';
+import { authService } from '@/lib/auth-service';
+import Loader from '@/components/ui/loader';
 import { useTranslation } from '@/lib/i18nContext';
 import ProfileTable from '@/components/profile/profile-table';
 import ProfileBookingsPanel from '@/components/profile/profile-bookings-panel';
@@ -100,16 +101,6 @@ function ProfileProjectsPanel({
   );
 }
 
-const staticProfileUser: User = {
-  id: 101,
-  first_name: 'Abdullah',
-  last_name: 'Mohammed',
-  country_code: '+965',
-  phone: '55555555',
-  email: 'abdullah@example.com',
-  unread_notifications_count: 3,
-};
-
 export default function ProfilePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -124,7 +115,12 @@ export default function ProfilePage() {
     updateError,
     updateSuccess,
   } = useUserProfile();
-  const currentUser = profileUser ?? staticProfileUser;
+  // No placeholder fallback. This page used to substitute a hardcoded user when
+  // the profile query returned nothing, so a signed-out visitor was shown a
+  // fully populated profile -- complete with a Logout button -- while the navbar
+  // correctly showed Login. Middleware now keeps anonymous users off /profile;
+  // this render guard covers the gap before that redirect lands.
+  const currentUser = profileUser;
   const [dark, setDark] = useState(false);
   const [activeTab, setActiveTab] = useState<ProfileTab>('all');
   const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
@@ -203,10 +199,24 @@ export default function ProfilePage() {
     }
   };
 
+  // Until the profile resolves there is no user to describe, and inventing one
+  // is what produced the signed-out-but-showing-a-profile bug. Render the shell
+  // only; middleware redirects anonymous visitors before they get this far.
+  if (!currentUser) {
+    return (
+      <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex flex-col" dir={dir}>
+        <Navbar dark={dark} onToggleDark={toggleDark} />
+        <main className="flex-grow pt-20 pb-12 sm:pt-24 sm:pb-16">
+          <Loader fullScreen={false} label={errorMessage || 'Loading...'} />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex flex-col" dir={dir}>
       <Navbar dark={dark} onToggleDark={toggleDark} />
-      
+
       <main className="flex-grow pt-20 pb-12 sm:pt-24 sm:pb-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { MEETING_STATUS, MeetingStatusCode, MeetingTypeCode } from '@/features/meetings';
+import { translateMessage } from '@/lib/i18n-utils';
 import { useAdminMeetingsList } from '@/features/admin-meetings';
 import { useApproveMeeting } from '@/features/admin-meetings';
 import { useRejectMeeting } from '@/features/admin-meetings';
@@ -85,7 +86,7 @@ export function useAdminAppointments() {
   const handleApproveBooking = async (id: number) => {
     try {
       await approveMeeting(id);
-      setActionMessage('Meeting approved successfully.');
+      setActionMessage(translateMessage('Meeting approved successfully.'));
       await reloadMeetings();
       setSelectedBooking((current) => (current?.id === id ? { ...current, status: MEETING_STATUS.APPROVED } : current));
     } catch {
@@ -93,10 +94,10 @@ export function useAdminAppointments() {
     }
   };
 
-  const handleRejectBooking = async (id: number) => {
+  const handleRejectBooking = async (id: number, reason: string) => {
     try {
-      await rejectMeeting(id);
-      setActionMessage('Meeting rejected successfully.');
+      await rejectMeeting(id, reason);
+      setActionMessage(translateMessage('Meeting rejected successfully.'));
       await reloadMeetings();
       setSelectedBooking((current) => (current?.id === id ? { ...current, status: MEETING_STATUS.REJECTED } : current));
     } catch {

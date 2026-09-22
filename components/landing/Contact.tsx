@@ -83,8 +83,8 @@ export default function Contact({ homeData }: ContactProps) {
               {contactMethods.map((item) => (
                 <div key={item.label} className="rounded-3xl border border-cyan-950/10 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-white/5">
                   <p className="text-xs font-bold text-primary">{item.label}</p>
-                  <p className="mt-1 font-bold text-slate-950 dark:text-white" dir={item.dir}>
-                    {item.value}
+                  <p className="mt-1 font-bold text-slate-950 dark:text-white">
+                    <bdi dir={item.dir}>{item.value}</bdi>
                   </p>
                   <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{item.hint}</p>
                 </div>
