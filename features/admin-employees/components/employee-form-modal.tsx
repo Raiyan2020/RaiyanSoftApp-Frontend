@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { X, CheckCircle, Copy, Lock, RefreshCw, Loader2, Save } from 'lucide-react';
 import { AdminEmployee } from '../types/admin-employee.types';
@@ -6,6 +7,7 @@ import { EmployeeValues, getEmployeeSchema } from '../schemas/employee.schema';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import Input from '@/components/ui/input';
 import PhoneInput from '@/components/ui/phone-input';
 import { globalToast } from '@/lib/toast-context';
 import ErrorAlert from '@/components/ui/error-alert';
@@ -52,8 +54,8 @@ export default function EmployeeFormModal({
     }
   }, [formData.password, form]);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
+  return createPortal(
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
         initial={false}
         animate={{ scale: 1, opacity: 1 }}
@@ -113,14 +115,13 @@ export default function EmployeeFormModal({
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel>
-                          First Name <span className="text-danger">*</span>
+                          {translateMessage('First Name')} <span className="text-danger">*</span>
                         </FieldLabel>
-                        <input
+                        <Input
                           {...field}
                           type="text"
-                          className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
-                            fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                          }`}
+                          aria-invalid={fieldState.invalid}
+                          className={fieldState.invalid ? 'border-danger' : ''}
                         />
                         {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
                       </Field>
@@ -132,14 +133,13 @@ export default function EmployeeFormModal({
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel>
-                          Last Name <span className="text-danger">*</span>
+                          {translateMessage('Last Name')} <span className="text-danger">*</span>
                         </FieldLabel>
-                        <input
+                        <Input
                           {...field}
                           type="text"
-                          className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
-                            fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                          }`}
+                          aria-invalid={fieldState.invalid}
+                          className={fieldState.invalid ? 'border-danger' : ''}
                         />
                         {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
                       </Field>
@@ -153,14 +153,13 @@ export default function EmployeeFormModal({
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid}>
                       <FieldLabel>
-                        Email <span className="text-danger">*</span>
+                        {translateMessage('Email')} <span className="text-danger">*</span>
                       </FieldLabel>
-                      <input
+                      <Input
                         {...field}
                         type="email"
-                        className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none ${
-                          fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                        }`}
+                        aria-invalid={fieldState.invalid}
+                        className={fieldState.invalid ? 'border-danger' : ''}
                       />
                       {fieldState.invalid ? <FieldError errors={[fieldState.error]} /> : null}
                     </Field>
@@ -186,17 +185,16 @@ export default function EmployeeFormModal({
                     render={({ field, fieldState }) => (
                       <Field data-invalid={fieldState.invalid}>
                         <FieldLabel>
-                          Password <span className="text-danger">*</span>
+                          {translateMessage('Password')} <span className="text-danger">*</span>
                         </FieldLabel>
                         <div className="flex gap-2">
-                          <div className="relative flex-1">
-                            <Lock className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={16} />
-                            <input
+                          <div className="flex-1">
+                            <Input
                               {...field}
                               type="text"
-                              className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl ps-10 pe-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none font-mono ${
-                                fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                              }`}
+                              icon={<Lock size={16} />}
+                              aria-invalid={fieldState.invalid}
+                              className={`font-mono ${fieldState.invalid ? 'border-danger' : ''}`}
                               placeholder={translateMessage('Min 8 characters')}
                             />
                           </div>
@@ -221,14 +219,14 @@ export default function EmployeeFormModal({
                   render={({ field }) => (
                     <Field>
                       <FieldLabel>
-                        Role <span className="text-danger">*</span>
+                        {translateMessage('Role')} <span className="text-danger">*</span>
                       </FieldLabel>
-                      <input
+                      <Input
                         {...field}
                         type="text"
                         readOnly
                         value={translateMessage('Super Admin')}
-                        className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text-muted)] cursor-not-allowed"
+                        className="bg-[var(--surface-3)] text-[var(--text-muted)] cursor-not-allowed"
                       />
                       <p className="text-xs text-[var(--text-muted)]">{translateMessage('Only this role is available for now.')}</p>
                     </Field>
@@ -258,6 +256,7 @@ export default function EmployeeFormModal({
           </>
         )}
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useId, useRef, useState } from 'react';
 import NextImage from 'next/image';
+import FallbackImage from './fallback-image';
 import { ImagePlus, RotateCcw, Upload, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { translateMessage } from '@/lib/i18n-utils';
@@ -240,7 +241,7 @@ export default function ImageUpload({
         )}
       >
         {hasImage ? (
-          <img
+          <FallbackImage
             src={previewUrl}
             alt={translateMessage('Image preview')}
             className="h-full w-full object-cover"

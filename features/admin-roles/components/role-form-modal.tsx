@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { X, Save } from 'lucide-react';
 import { Role } from '@/lib/roleStore';
@@ -6,7 +7,9 @@ import RolePermissionList from './role-permission-list';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { roleSchema, RoleValues } from '../schemas/role.schema';
-import { Field, FieldLabel, FieldError, FieldGroup } from '@/components/ui/field';
+import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import Input from '@/components/ui/input';
+import Textarea from '@/components/ui/textarea';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface RoleFormModalProps {
@@ -44,8 +47,8 @@ export default function RoleFormModal({
     return () => subscription.unsubscribe();
   }, [form, setFormData]);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
+  return createPortal(
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
         initial={false}
         animate={{ scale: 1, opacity: 1 }}
@@ -70,13 +73,11 @@ export default function RoleFormModal({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel>{translateMessage('Role Name')} <span className="text-danger">*</span></FieldLabel>
-                  <input
+                  <Input
                     {...field}
                     type="text"
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors ${
-                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                    }`}
+                    className={fieldState.invalid ? 'border-danger' : ''}
                     placeholder={translateMessage('e.g. Sales Manager')}
                   />
                   {fieldState.invalid && (
@@ -92,12 +93,10 @@ export default function RoleFormModal({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel>{translateMessage('Description')}</FieldLabel>
-                  <textarea
+                  <Textarea
                     {...field}
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:border-primary focus:outline-none transition-colors h-20 resize-none ${
-                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                    }`}
+                    className={`h-20 resize-none ${fieldState.invalid ? 'border-danger' : ''}`}
                     placeholder={translateMessage('Role purpose...')}
                   />
                   {fieldState.invalid && (
@@ -137,6 +136,7 @@ export default function RoleFormModal({
           </button>
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }

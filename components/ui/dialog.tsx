@@ -16,7 +16,7 @@ const DialogOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Overlay
     ref={ref}
-    className={cn('fixed inset-0 z-50 bg-black/60 backdrop-blur-sm', className)}
+    className={cn('fixed inset-0 z-[70] bg-black/60 backdrop-blur-sm', className)}
     {...props}
   />
 ));
@@ -34,7 +34,7 @@ const DialogContent = React.forwardRef<
         // max-h + overflow: a tall dialog previously grew past the viewport
         // with no way to reach its footer, which is how every long form
         // behaved at 390px.
-        'fixed left-[50%] top-[50%] z-50 flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col overflow-y-auto overscroll-contain rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl',
+        'fixed left-[50%] top-[50%] z-[70] flex max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col overflow-y-auto overscroll-contain rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl',
         className
       )}
       {...props}
@@ -50,7 +50,7 @@ const DialogContent = React.forwardRef<
 DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn('flex flex-col space-y-1.5 text-center sm:text-start', className)} {...props} />
+  <div className={cn('flex flex-col space-y-1.5 text-start', className)} {...props} />
 );
 DialogHeader.displayName = 'DialogHeader';
 

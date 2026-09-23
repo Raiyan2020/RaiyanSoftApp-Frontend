@@ -83,7 +83,7 @@ export default function NotificationListItem({ notification, onClick, onDismiss 
         type="button"
         onClick={(e) => onDismiss(e, id)}
         aria-label={t('notif.dismiss')}
-        className="absolute top-2 end-2 p-2 text-[var(--text-muted)] hover:text-danger transition-colors opacity-0 group-hover:opacity-100 focus:opacity-100"
+        className="absolute top-2 end-2 p-2 text-[var(--text-muted)] hover:text-danger transition-colors"
       >
         <X size={14} />
       </button>

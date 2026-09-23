@@ -6,8 +6,10 @@ import { createPublicMetadata } from '@/lib/site';
 import { getServerLanguage } from '@/lib/language.server';
 
 export async function generateMetadata(): Promise<Metadata> {
-  const t = translations[await getServerLanguage()];
+  const language = await getServerLanguage();
+  const t = translations[language];
   return createPublicMetadata({
+    language,
     title: t['seo.not_found_title'],
     description: t['seo.not_found_description'],
     path: '/404',

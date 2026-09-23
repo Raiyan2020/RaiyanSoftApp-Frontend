@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
+import FallbackImage from '@/components/ui/fallback-image';
 import { notFound } from 'next/navigation';
 import PublicSimplePage from '@/components/public/public-page-section';
 import { fetchLandingPageBySlug } from '@/features/landing-page';
@@ -26,10 +26,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const page = await fetchLandingPageBySlug<LandingPageRecord>(slug, language);
 
   if (!page) {
-    return createPublicMetadata({ title: translateMessage('Page Not Found', language), path: `/pages/${slug}`, noIndex: true });
+    return createPublicMetadata({ language, title: translateMessage('Page Not Found', language), path: `/pages/${slug}`, noIndex: true });
   }
 
   return createPublicMetadata({
+    language,
     title: page.title,
     description: page.description,
     path: `/pages/${page.slug}`,
@@ -50,7 +51,7 @@ export default async function LandingPageSlugPage({ params }: PageProps) {
       <article className="mx-auto max-w-4xl overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] shadow-sm">
         {page.image ? (
           <div className="relative aspect-[16/9] w-full">
-            <Image src={page.image} alt={page.title} fill className="object-cover" />
+            <FallbackImage src={page.image} alt={page.title} className="absolute inset-0 h-full w-full object-cover" />
           </div>
         ) : null}
         <div className="p-6 sm:p-8">

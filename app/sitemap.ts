@@ -70,8 +70,8 @@ function routePriority(route: string): SitemapEntry {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [blogPosts, blogCategories, services, portfolioItems] = await Promise.all([
-    safelyLoad(fetchPublicBlogs, []),
+  const [{ items: blogPosts }, blogCategories, services, portfolioItems] = await Promise.all([
+    safelyLoad(() => fetchPublicBlogs(undefined, { per_page: 1000 }), { items: [], pagination: null }),
     safelyLoad(fetchPublicBlogCategories, []),
     safelyLoad(() => getPublicWebsiteContent('services'), []),
     safelyLoad(() => getPublicWebsiteContent('apps'), []),

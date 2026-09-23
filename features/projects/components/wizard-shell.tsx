@@ -14,7 +14,6 @@ interface WizardShellProps {
   isAuthenticated: boolean;
   dir: 'ltr' | 'rtl';
   language: string;
-  setLanguage: (lang: any) => void;
   t: (key: string) => string;
   onClose: () => void;
   onPrev: () => void;
@@ -22,6 +21,7 @@ interface WizardShellProps {
   children: React.ReactNode;
   customFooterLabel?: string;
   showFooter?: boolean;
+  secondaryAction?: { label: string; onClick: () => void };
 }
 
 export default function WizardShell({
@@ -35,7 +35,6 @@ export default function WizardShell({
   isAuthenticated,
   dir,
   language,
-  setLanguage,
   t,
   onClose,
   onPrev,
@@ -43,6 +42,7 @@ export default function WizardShell({
   children,
   customFooterLabel,
   showFooter = true,
+  secondaryAction,
 }: WizardShellProps) {
   const shellSizeClass = isLeadMode
     ? 'md:h-[min(82dvh,38rem)] md:max-w-xl lg:max-w-[44rem]'
@@ -89,27 +89,14 @@ export default function WizardShell({
             ))}
           </div>
           <div className="min-w-[40px] flex justify-end">
-            <div className="flex items-center gap-2">
-              {isLeadMode ? (
-                <button
-                  type="button"
-                  onClick={() => setLanguage(language === 'en' ? 'ar' : 'en')}
-                  className="text-xs font-bold text-primary hover:text-[var(--text)] transition-colors border border-primary/30 rounded-lg px-3 py-1.5 bg-primary/10"
-                >
-                  {language === 'en' ? 'عربي' : 'English'}
-                </button>
-              ) : (
-                <div className="w-10" />
-              )}
-              <button
-                type="button"
-                onClick={onClose}
-                className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
-                aria-label={translateMessage('Close dialog', language === 'ar' ? 'ar' : 'en')}
-              >
-                <X size={18} />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="grid h-10 w-10 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
+              aria-label={translateMessage('Close dialog', language === 'ar' ? 'ar' : 'en')}
+            >
+              <X size={18} />
+            </button>
           </div>
         </div>
 
@@ -132,11 +119,22 @@ export default function WizardShell({
               </motion.div>
             ) : null}
 
+            <div className="flex gap-2">
+            {secondaryAction ? (
+              <button
+                type="button"
+                onClick={secondaryAction.onClick}
+                disabled={isLoading}
+                className="shrink-0 rounded-xl border border-primary/40 bg-primary/10 px-4 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-70"
+              >
+                {secondaryAction.label}
+              </button>
+            ) : null}
             <button
               type="button"
               onClick={onNext}
               disabled={isLoading}
-              className="w-full bg-primary text-on-primary font-bold py-3 rounded-xl shadow-[0_0_20px_rgb(var(--primary-glow-rgb) / 0.3)] hover:shadow-[0_0_25px_rgb(var(--primary-glow-rgb) / 0.5)] transition-all flex items-center justify-center space-x-2 rtl:space-x-reverse disabled:opacity-70 disabled:cursor-not-allowed"
+              className="min-w-0 flex-1 bg-primary text-on-primary font-bold py-3 rounded-xl shadow-[0_0_20px_rgb(var(--primary-glow-rgb) / 0.3)] hover:shadow-[0_0_25px_rgb(var(--primary-glow-rgb) / 0.5)] transition-all flex items-center justify-center space-x-2 rtl:space-x-reverse disabled:opacity-70 disabled:cursor-not-allowed"
             >
               {isLoading ? (
                 <Loader2 size={24} className="animate-spin" />
@@ -149,6 +147,7 @@ export default function WizardShell({
                 </>
               )}
             </button>
+            </div>
           </div>
         ) : null}
       </div>

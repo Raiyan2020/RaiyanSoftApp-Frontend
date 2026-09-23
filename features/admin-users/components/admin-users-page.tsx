@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Download, User as UserIcon } from 'lucide-react';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ErrorAlert from '@/components/ui/error-alert';
+import TablePagination from '@/components/ui/table-pagination';
 import { translateMessage } from '@/lib/i18n-utils';
 import { useAdminUsers } from '../hooks/use-admin-users';
 import UsersFilterBar from './users-filter-bar';
@@ -13,6 +14,8 @@ import UserDetailDrawer from './user-detail-drawer';
 export default function AdminUsersPage() {
   const {
     users,
+    pagination,
+    goToPage,
     loading,
     error,
     actionError,
@@ -102,6 +105,8 @@ export default function AdminUsersPage() {
           </>
         )}
       </div>
+
+      <TablePagination pagination={pagination} onPageChange={goToPage} loading={loading} />
 
       <AnimatePresence>
         {selectedUser ? (

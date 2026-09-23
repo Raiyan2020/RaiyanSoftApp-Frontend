@@ -8,7 +8,9 @@ import { createReviewListJsonLd } from '@/lib/site';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
 
-export const metadata: Metadata = getPageMetadata('testimonials');
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('testimonials', await getServerLanguage());
+}
 
 type PublicTestimonial = { quote: string; author: string; role?: string; company?: string };
 

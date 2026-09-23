@@ -1,6 +1,7 @@
 'use client';
 import { useRef, useState } from 'react';
 import { useSectionReveal } from './use-section-reveal';
+import SectionHeader from './SectionHeader';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
 import type { LandingPageContent } from '@/features/landing-page';
 
@@ -12,7 +13,7 @@ export default function FAQ({ homeData }: FAQProps) {
   const [open, setOpen] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
-  const { content, textAlign } = useLandingContent();
+  const { content } = useLandingContent();
   const { faq } = content;
   const apiFaqs = homeData?.faqs;
   const apiHeader = apiFaqs?.header;
@@ -20,17 +21,10 @@ export default function FAQ({ homeData }: FAQProps) {
 
   return (
     <section id="faq" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
-      <div ref={ref} className="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
-        <div className={`reveal ${textAlign}`}>
-          <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
-            {apiHeader?.title || faq.title}
-          </h2>
-          <p className="mt-5 text-lg leading-relaxed text-slate-600 dark:text-slate-300">
-            {apiHeader?.description || faq.description}
-          </p>
-        </div>
+      <div ref={ref} className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <SectionHeader title={apiHeader?.title || faq.title} description={apiHeader?.description || faq.description} />
 
-        <div className="space-y-4">
+        <div className="mx-auto max-w-3xl space-y-4">
           {(apiItems.length > 0 ? apiItems.map((item) => ({ q: item.question, a: item.answer })) : faq.items).map((item, i) => (
             <div
               key={item.q}

@@ -17,7 +17,7 @@ export const FEATURES = {
   rolesManagement: false,
 
   /** Full website CMS section (/admin/website/*) */
-  websiteManagement: false,
+  websiteManagement: true,
 
   /** Landing page content management (/admin/landing-page) */
   landingPageManagement: true,

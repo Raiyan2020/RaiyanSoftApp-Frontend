@@ -55,7 +55,7 @@ export function useClaim() {
 
       setStatus('success');
       setTimeout(() => {
-        router.push('/home');
+        router.push('/profile?tab=project');
       }, 2000);
     } catch (err: any) {
       console.error(err);

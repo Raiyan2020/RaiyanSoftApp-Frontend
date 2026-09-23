@@ -12,6 +12,10 @@ import type {
   LandingTestimonialsData,
   LandingFaqsData,
   LandingPageContent,
+  PublicJobOpening,
+  PublicPartner,
+  PublicPricingPlan,
+  PublicTeamMember,
 } from '../types/landing-page.types';
 
 type Language = 'ar' | 'en';
@@ -123,4 +127,26 @@ export async function fetchLandingPageBySlug<T = { id: number; slug: string; tit
   language: Language = 'ar'
 ): Promise<T | null> {
   return fetchUserJson<T>(`pages/${encodeURIComponent(slug)}`, language);
+}
+
+async function fetchLandingList<T>(path: string, language: Language): Promise<T[]> {
+  const data = await fetchLandingJson<T[]>(path, language);
+  return Array.isArray(data) ? data : [];
+}
+
+/** Active partners in dashboard order; [] when the API is unreachable. */
+export function fetchPublicPartners(language: Language = 'ar'): Promise<PublicPartner[]> {
+  return fetchLandingList<PublicPartner>('partners', language);
+}
+
+export function fetchPublicTeamMembers(language: Language = 'ar'): Promise<PublicTeamMember[]> {
+  return fetchLandingList<PublicTeamMember>('team-members', language);
+}
+
+export function fetchPublicPricingPlans(language: Language = 'ar'): Promise<PublicPricingPlan[]> {
+  return fetchLandingList<PublicPricingPlan>('pricing-plans', language);
+}
+
+export function fetchPublicJobOpenings(language: Language = 'ar'): Promise<PublicJobOpening[]> {
+  return fetchLandingList<PublicJobOpening>('job-openings', language);
 }

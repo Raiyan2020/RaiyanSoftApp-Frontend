@@ -4,13 +4,14 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { CheckCheck, RefreshCw, Trash2 } from 'lucide-react';
 import EmptyState from '@/components/ui/empty-state';
+import TablePagination from '@/components/ui/table-pagination';
 import { useNotifications, NotificationFilterType } from '../hooks/use-notifications';
 import NotificationListItem from './notification-list-item';
 import NotificationSheet from './notification-sheet';
 import Loader from '@/components/ui/loader';
 import ErrorAlert from '@/components/ui/error-alert';
 
-export default function NotificationsPage() {
+export default function NotificationsPage({ embedded = false }: { embedded?: boolean }) {
   const {
     t,
     filteredNotifications,
@@ -28,13 +29,15 @@ export default function NotificationsPage() {
     errorMessage,
     refetch,
     isMutating,
+    pagination,
+    setPage,
   } = useNotifications();
 
   const filters: NotificationFilterType[] = ['all', 'unread', 'system'];
 
   return (
     <>
-      <div className="app-page app-page-wide">
+      <div className={embedded ? '' : 'app-page app-page-wide'}>
         <header className="app-header">
           <div>
             <h1 className="app-title">{t('notif.title')}</h1>
@@ -116,6 +119,13 @@ export default function NotificationsPage() {
             ) : null}
           </AnimatePresence>
         </div>
+
+        <TablePagination
+          pagination={pagination}
+          onPageChange={setPage}
+          loading={isFetching}
+          className="mt-6"
+        />
       </div>
 
       {selectedNotification ? (

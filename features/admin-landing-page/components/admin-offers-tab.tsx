@@ -13,7 +13,9 @@ import {
 import SectionHeaderForm from './section-header-form';
 import BilingualFieldInputs from './bilingual-field-inputs';
 import CrudItemList from '@/components/ui/crud-item-list';
+import TablePagination from '@/components/ui/table-pagination';
 import AdminFormModal from '@/components/ui/admin-form-modal';
+import Input from '@/components/ui/input';
 import type { AdminOffer, AdminOfferPayload, BilingualField, AdminSectionHeaderPayload } from '@/features/landing-page';
 import { formatLandingButtonUrlForForm } from '@/features/landing-page';
 import { translateMessage } from '@/lib/i18n-utils';
@@ -46,7 +48,14 @@ function offerToForm(o: AdminOffer): AdminOfferPayload {
 }
 
 export default function AdminOffersTab() {
-  const { data: offers = [], isLoading } = useAdminOffers();
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useAdminOffers(page);
+  const offers = data?.items ?? [];
+  const pagination = data?.pagination ?? null;
+  // Step back a page if a delete emptied the current page.
+  if (pagination && page > pagination.last_page && pagination.last_page >= 1) {
+    setPage(pagination.last_page);
+  }
   const { data: header, isLoading: headerLoading } = useAdminOffersHeader();
   const updateHeaderMutation = useUpdateAdminOffersHeader();
   const createMutation = useCreateAdminOffer();
@@ -149,6 +158,7 @@ export default function AdminOffersTab() {
           </div>
         )}
       />
+      <TablePagination pagination={pagination} onPageChange={setPage} loading={isLoading} />
 
       <AdminFormModal
         open={showForm}
@@ -163,16 +173,14 @@ export default function AdminOffersTab() {
         <BilingualFieldInputs label={translateMessage('Description')} value={form.description} onChange={(v) => setForm((p) => ({ ...p, description: v }))} />
         <BilingualFieldInputs label={translateMessage('Button Text')} value={form.button_text} onChange={(v) => setForm((p) => ({ ...p, button_text: v }))} errors={fieldErrors.button_text} required />
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Button URL')}</label>
-          <input
+          <Input
+            label={translateMessage('Button URL')}
             type="text"
             value={form.button_url}
             onChange={(e) => setForm((p) => ({ ...p, button_url: e.target.value }))}
             placeholder="#contact"
             aria-invalid={Boolean(fieldErrors.button_url)}
-            className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:outline-none ${
-              fieldErrors.button_url ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
-            }`}
+            className={fieldErrors.button_url ? 'border-danger' : ''}
           />
           {fieldErrors.button_url ? <p className="mt-1 text-xs font-medium text-danger">{fieldErrors.button_url}</p> : null}
         </div>

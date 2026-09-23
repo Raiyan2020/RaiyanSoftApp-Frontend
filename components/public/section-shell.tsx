@@ -23,10 +23,10 @@ export default async function SectionShell({ eyebrow, title, description, childr
     <section className={`${tones[tone]} py-14 sm:py-16 lg:py-20`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {title || description || eyebrow ? (
-          <div className="mb-10 max-w-3xl">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
             {eyebrow ? <p className="mb-3 text-sm font-black text-primary">{translateMessage(eyebrow, language)}</p> : null}
             {title ? <h2 className="text-2xl font-black sm:text-3xl lg:text-4xl">{translateMessage(title, language)}</h2> : null}
-            {description ? <p className="mt-4 max-w-2xl text-base leading-8 text-[var(--text-muted)]">{translateMessage(description, language)}</p> : null}
+            {description ? <p className="mx-auto mt-4 max-w-2xl text-base leading-8 text-[var(--text-muted)]">{translateMessage(description, language)}</p> : null}
           </div>
         ) : null}
         {children}

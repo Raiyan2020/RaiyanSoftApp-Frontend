@@ -47,7 +47,7 @@ export default function UserProjectsTable({
                   <TableHead className="p-5 font-medium text-start">{translateMessage('Pricing')}</TableHead>
                   <TableHead className="p-5 font-medium text-start">{translateMessage('Customer')}</TableHead>
                   <TableHead className="p-5 font-medium text-start">{translateMessage('Created')}</TableHead>
-                  <TableHead className="p-5 font-medium text-end">{translateMessage('Actions')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{translateMessage('Actions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-[var(--border)] text-sm">

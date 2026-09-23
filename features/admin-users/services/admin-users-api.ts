@@ -1,4 +1,4 @@
-import { apiService, type ApiResponse } from '@/lib/api-service';
+import { apiService, readPagination, type ApiResponse, type PaginationMeta } from '@/lib/api-service';
 
 export type AdminApiUser = {
   id: number;
@@ -11,6 +11,7 @@ export type AdminApiUser = {
   user_code?: string;
   registered?: string;
   is_block?: boolean;
+  projects_count?: number;
 };
 
 export type AdminUsersFilters = {
@@ -18,6 +19,7 @@ export type AdminUsersFilters = {
   name?: string;
   email?: string;
   phone?: string;
+  page?: number;
 };
 
 function getApiErrorMessage(response: ApiResponse<unknown>) {
@@ -32,6 +34,10 @@ function toQueryString(filters: AdminUsersFilters = {}) {
   const params = new URLSearchParams();
 
   Object.entries(filters).forEach(([key, value]) => {
+    if (typeof value === 'number') {
+      params.set(key, String(value));
+      return;
+    }
     const normalized = value?.trim();
     if (normalized) params.set(key, normalized);
   });
@@ -49,7 +55,7 @@ export async function fetchAdminUsers(filters: AdminUsersFilters = {}) {
     throw new Error(getApiErrorMessage(response));
   }
 
-  return response.data;
+  return { items: response.data, pagination: readPagination(response) as PaginationMeta | null };
 }
 
 export async function toggleAdminUserBlock(id: number | string) {

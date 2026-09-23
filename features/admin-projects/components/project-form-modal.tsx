@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Image from 'next/image';
+import FallbackImage from '@/components/ui/fallback-image';
 import { motion } from 'framer-motion';
 import { X, Save } from 'lucide-react';
 import { Project } from '@/lib/projectStore';
@@ -207,7 +207,7 @@ export default function ProjectFormModal({
                   {isValidImageUrl(field.value) && !imageValue ? (
                     <div className="mt-2 w-16 h-16 bg-[var(--surface-3)] rounded-xl border border-[var(--border)] overflow-hidden relative group">
                       <div className="relative w-full h-full">
-                        <Image src={field.value || '/logo.webp'} alt={translateMessage('Preview')} fill className="object-cover" />
+                        <FallbackImage src={field.value} alt={translateMessage('Preview')} className="absolute inset-0 h-full w-full object-cover" />
                       </div>
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
                         <span className="text-[11px] text-[var(--text)]">{translateMessage('Preview')}</span>

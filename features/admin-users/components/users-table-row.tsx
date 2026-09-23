@@ -65,12 +65,12 @@ export default function UsersTableRow({
         </div>
       </td>
       <td className="p-5 text-[var(--text-muted)]">{formatDate(user.registeredAt)}</td>
-      <td className="p-5 text-end">
-        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <td className="p-5 text-start">
+        <div className="flex items-center justify-start gap-2">
           <button
             type="button"
             onClick={() => onSelectUser(user)}
-            className="p-2 hover:bg-white/5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
+            className="p-2 hover:bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)] transition-colors"
             title={translateMessage('View Details')}
           >
             <Eye size={16} />
@@ -78,7 +78,7 @@ export default function UsersTableRow({
           <button
             type="button"
             onClick={() => onToggleStatus(user)}
-            className={`p-2 hover:bg-white/5 rounded-lg transition-colors ${
+            className={`p-2 hover:bg-[var(--surface-3)] rounded-lg transition-colors ${
               user.status === 'Active' ? 'text-warning hover:text-warning' : 'text-success hover:text-success'
             }`}
             title={translateMessage(user.status === 'Active' ? 'Disable Account' : 'Enable Account')}

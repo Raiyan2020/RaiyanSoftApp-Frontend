@@ -1,4 +1,4 @@
-import { apiService, ApiResponse } from '@/lib/api-service';
+import { apiService, ApiResponse, readPagination } from '@/lib/api-service';
 import { translateMessage } from '@/lib/i18n-utils';
 import type {
   AdminLandingHero,
@@ -20,6 +20,7 @@ import type {
   AdminAboutUsCardPayload,
   AdminAboutUsSubmission,
   AdminAboutUsSubmissionListResult,
+  AdminPaginatedListResult,
   AdminBanner,
   AdminBannerPayload,
   AdminSiteSettings,
@@ -72,19 +73,19 @@ function normalizeWrappedData<T>(data: T | { data?: T } | { data: T[] } | T[] | 
   return [data as T];
 }
 
+function pageQuery(params?: { page?: number; per_page?: number }): string {
+  const query = new URLSearchParams();
+  if (params?.page) query.set('page', String(params.page));
+  if (params?.per_page) query.set('per_page', String(params.per_page));
+  return query.toString() ? `?${query.toString()}` : '';
+}
+
 function normalizeWrappedItem<T>(data: T | { data?: T } | null | undefined): T | null {
   if (!data) return null;
   if (typeof data === 'object' && 'data' in data) {
     return (data as { data?: T }).data ?? null;
   }
   return data as T;
-}
-
-function extractPagination(response: ApiResponse<unknown>) {
-  const pagination = (response as ApiResponse<unknown> & {
-    pagination?: { current_page: number; last_page: number; per_page: number; total: number };
-  }).pagination;
-  return pagination ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -156,16 +157,15 @@ async function updateSectionHeader(section: string, payload: AdminSectionHeaderP
 // Services
 // ---------------------------------------------------------------------------
 
-export async function fetchAdminServices(): Promise<AdminService[]> {
-  const response = await apiService.get<{ data: AdminService[] } | AdminService[]>(
-    'admin/landing-page/services',
+export async function fetchAdminServices(
+  params?: { page?: number; per_page?: number }
+): Promise<AdminPaginatedListResult<AdminService>> {
+  const response = await apiService.get<AdminService[] | { data: AdminService[] }>(
+    `admin/landing-page/services${pageQuery(params)}`,
     { skipGlobalToast: true }
   );
-  if (!response.status) return [];
-  const data = response.data as { data: AdminService[] } | AdminService[];
-  if (Array.isArray(data)) return data;
-  if (data && 'data' in data) return (data as { data: AdminService[] }).data ?? [];
-  return [];
+  if (!response.status) return { items: [], pagination: null };
+  return { items: normalizeWrappedData<AdminService>(response.data as any), pagination: readPagination(response) };
 }
 
 export const fetchAdminServicesHeader = () => fetchSectionHeader('services');
@@ -210,16 +210,15 @@ export async function deleteAdminService(id: number): Promise<void> {
 // Capabilities
 // ---------------------------------------------------------------------------
 
-export async function fetchAdminCapabilities(): Promise<AdminCapability[]> {
-  const response = await apiService.get<{ data: AdminCapability[] } | AdminCapability[]>(
-    'admin/landing-page/capabilities',
+export async function fetchAdminCapabilities(
+  params?: { page?: number; per_page?: number }
+): Promise<AdminPaginatedListResult<AdminCapability>> {
+  const response = await apiService.get<AdminCapability[] | { data: AdminCapability[] }>(
+    `admin/landing-page/capabilities${pageQuery(params)}`,
     { skipGlobalToast: true }
   );
-  if (!response.status) return [];
-  const data = response.data as { data: AdminCapability[] } | AdminCapability[];
-  if (Array.isArray(data)) return data;
-  if (data && 'data' in data) return (data as { data: AdminCapability[] }).data ?? [];
-  return [];
+  if (!response.status) return { items: [], pagination: null };
+  return { items: normalizeWrappedData<AdminCapability>(response.data as any), pagination: readPagination(response) };
 }
 
 export const fetchAdminCapabilitiesHeader = () => fetchSectionHeader('capabilities');
@@ -262,16 +261,15 @@ export async function deleteAdminCapability(id: number): Promise<void> {
 // Offers
 // ---------------------------------------------------------------------------
 
-export async function fetchAdminOffers(): Promise<AdminOffer[]> {
-  const response = await apiService.get<{ data: AdminOffer[] } | AdminOffer[]>(
-    'admin/landing-page/offers',
+export async function fetchAdminOffers(
+  params?: { page?: number; per_page?: number }
+): Promise<AdminPaginatedListResult<AdminOffer>> {
+  const response = await apiService.get<AdminOffer[] | { data: AdminOffer[] }>(
+    `admin/landing-page/offers${pageQuery(params)}`,
     { skipGlobalToast: true }
   );
-  if (!response.status) return [];
-  const data = response.data as { data: AdminOffer[] } | AdminOffer[];
-  if (Array.isArray(data)) return data;
-  if (data && 'data' in data) return (data as { data: AdminOffer[] }).data ?? [];
-  return [];
+  if (!response.status) return { items: [], pagination: null };
+  return { items: normalizeWrappedData<AdminOffer>(response.data as any), pagination: readPagination(response) };
 }
 
 export const fetchAdminOffersHeader = () => fetchSectionHeader('offers');
@@ -316,16 +314,15 @@ export async function deleteAdminOffer(id: number): Promise<void> {
 // Testimonials
 // ---------------------------------------------------------------------------
 
-export async function fetchAdminTestimonials(): Promise<AdminTestimonial[]> {
-  const response = await apiService.get<{ data: AdminTestimonial[] } | AdminTestimonial[]>(
-    'admin/landing-page/testimonials',
+export async function fetchAdminTestimonials(
+  params?: { page?: number; per_page?: number }
+): Promise<AdminPaginatedListResult<AdminTestimonial>> {
+  const response = await apiService.get<AdminTestimonial[] | { data: AdminTestimonial[] }>(
+    `admin/landing-page/testimonials${pageQuery(params)}`,
     { skipGlobalToast: true }
   );
-  if (!response.status) return [];
-  const data = response.data as { data: AdminTestimonial[] } | AdminTestimonial[];
-  if (Array.isArray(data)) return data;
-  if (data && 'data' in data) return (data as { data: AdminTestimonial[] }).data ?? [];
-  return [];
+  if (!response.status) return { items: [], pagination: null };
+  return { items: normalizeWrappedData<AdminTestimonial>(response.data as any), pagination: readPagination(response) };
 }
 
 export const fetchAdminTestimonialsHeader = () => fetchSectionHeader('testimonials');
@@ -366,16 +363,15 @@ export async function deleteAdminTestimonial(id: number): Promise<void> {
 // FAQs
 // ---------------------------------------------------------------------------
 
-export async function fetchAdminFaqs(): Promise<AdminFaq[]> {
-  const response = await apiService.get<{ data: AdminFaq[] } | AdminFaq[]>(
-    'admin/landing-page/faqs',
+export async function fetchAdminFaqs(
+  params?: { page?: number; per_page?: number }
+): Promise<AdminPaginatedListResult<AdminFaq>> {
+  const response = await apiService.get<AdminFaq[] | { data: AdminFaq[] }>(
+    `admin/landing-page/faqs${pageQuery(params)}`,
     { skipGlobalToast: true }
   );
-  if (!response.status) return [];
-  const data = response.data as { data: AdminFaq[] } | AdminFaq[];
-  if (Array.isArray(data)) return data;
-  if (data && 'data' in data) return (data as { data: AdminFaq[] }).data ?? [];
-  return [];
+  if (!response.status) return { items: [], pagination: null };
+  return { items: normalizeWrappedData<AdminFaq>(response.data as any), pagination: readPagination(response) };
 }
 
 export async function fetchAdminFaqsHeader(): Promise<AdminFaqHeaderItem | null> {
@@ -454,13 +450,15 @@ export async function updateAdminAboutUsHeader(payload: AdminSectionHeaderPayloa
   if (!response.status) throw new Error(getApiError(response));
 }
 
-export async function fetchAdminAboutUsCards(): Promise<AdminAboutUsCard[]> {
+export async function fetchAdminAboutUsCards(
+  params?: { page?: number; per_page?: number }
+): Promise<AdminPaginatedListResult<AdminAboutUsCard>> {
   const response = await apiService.get<AdminAboutUsCard[] | { data: AdminAboutUsCard[] }>(
-    'admin/landing-page/about-us',
+    `admin/landing-page/about-us${pageQuery(params)}`,
     { skipGlobalToast: true }
   );
-  if (!response.status) return [];
-  return normalizeWrappedData(response.data as any);
+  if (!response.status) return { items: [], pagination: null };
+  return { items: normalizeWrappedData<AdminAboutUsCard>(response.data as any), pagination: readPagination(response) };
 }
 
 export async function createAdminAboutUsCard(payload: AdminAboutUsCardPayload): Promise<void> {
@@ -496,12 +494,8 @@ export async function fetchAdminAboutUsSubmissions(params?: {
   page?: number;
   per_page?: number;
 }): Promise<AdminAboutUsSubmissionListResult> {
-  const query = new URLSearchParams();
-  if (params?.page) query.set('page', String(params.page));
-  if (params?.per_page) query.set('per_page', String(params.per_page));
-
   const response = await apiService.get<AdminAboutUsSubmission[] | { data: AdminAboutUsSubmission[] }>(
-    `admin/landing-page/about-us/submissions${query.toString() ? `?${query.toString()}` : ''}`,
+    `admin/landing-page/about-us/submissions${pageQuery(params)}`,
     { skipGlobalToast: true }
   );
 
@@ -509,10 +503,9 @@ export async function fetchAdminAboutUsSubmissions(params?: {
     return { submissions: [], pagination: null };
   }
 
-  const data = normalizeWrappedData(response.data as any);
   return {
-    submissions: data,
-    pagination: extractPagination(response),
+    submissions: normalizeWrappedData<AdminAboutUsSubmission>(response.data as any),
+    pagination: readPagination(response),
   };
 }
 

@@ -1,4 +1,5 @@
 import { AdminEmployee } from '../types/admin-employee.types';
+import { formatLocalizedDate, readStoredLanguage } from '@/lib/language';
 
 type EmployeeNameLike = Pick<AdminEmployee, 'first_name' | 'last_name'> & {
   full_name?: string;
@@ -34,9 +35,7 @@ export function getEmployeeStatusLabel(employee: AdminEmployee) {
 
 export function formatEmployeeDate(value?: string) {
   if (!value) return '-';
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+  return formatLocalizedDate(value, readStoredLanguage());
 }
 
 export function formatRoleLabel(role: string) {

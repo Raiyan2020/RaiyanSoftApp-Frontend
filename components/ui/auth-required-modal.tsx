@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Lock, LogIn } from 'lucide-react';
+import { X, LogIn } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
 import { guestStore } from '@/lib/guestStore';
 import AuthDialog from '@/features/auth/components/auth-dialog';
@@ -44,11 +44,7 @@ export default function AuthRequiredModal({ isOpen, onClose, redirectTo }: AuthR
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-sm bg-[var(--surface)] border border-[var(--border)] rounded-3xl p-6 shadow-2xl relative overflow-hidden text-center"
             >
-              <div className="w-16 h-16 bg-[var(--surface-2)] rounded-full flex items-center justify-center mx-auto mb-4 border border-[var(--border)]">
-                <Lock size={32} className="text-primary" />
-              </div>
-
-              <h2 className="text-xl font-bold text-[var(--text)] mb-2">{t('auth.login_required_title')}</h2>
+              <h2 className="text-xl font-bold text-[var(--text)] mb-2 px-8">{t('auth.login_required_title')}</h2>
               <p className="text-[var(--text-muted)] text-sm mb-8 leading-relaxed max-w-[260px] mx-auto">
                 {t('auth.login_required_body')}
               </p>

@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const language = await getServerLanguage();
   const items = await getPortfolioItems(language);
   const item = items.find((entry) => entry.slug === slug);
-  if (!item) return createPublicMetadata({ title: translateMessage('Work Not Found', language), path: '/portfolio', noIndex: true });
-  return createPublicMetadata({ title: item.title, description: item.summary, path: `/portfolio/${item.slug}` });
+  if (!item) return createPublicMetadata({ language, title: translateMessage('Work Not Found', language), path: '/portfolio', noIndex: true });
+  return createPublicMetadata({ language, title: item.title, description: item.summary, path: `/portfolio/${item.slug}` });
 }
 
 export default async function PortfolioDetailPage({ params }: PageProps) {

@@ -2,6 +2,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authService, type User } from '@/lib/auth-service';
+import { formatCallingCode } from '@/lib/utils';
 import { fetchUserProfile, updateUserProfile } from '../services/profile-api';
 import { profileKeys } from '../query-keys';
 import type { UserProfileValues } from '../schemas/profile.schema';
@@ -10,16 +11,11 @@ function hasUserToken() {
   return Boolean(authService.getUserToken());
 }
 
-function normalizeCountryCode(countryCode?: string) {
-  if (!countryCode) return '';
-  return countryCode.startsWith('+') ? countryCode : `+${countryCode}`;
-}
-
 export function getUserProfilePhoneValue(user: User | null | undefined) {
   if (!user?.phone) return '';
   if (user.phone.startsWith('+')) return user.phone;
 
-  const countryCode = normalizeCountryCode(user.country_code);
+  const countryCode = formatCallingCode(user.country_code);
   return countryCode ? `${countryCode}${user.phone}` : user.phone;
 }
 
@@ -59,6 +55,6 @@ export function useUserProfile() {
     updateProfile: updateMutation.mutateAsync,
     isUpdating: updateMutation.isPending,
     updateError: updateMutation.error instanceof Error ? updateMutation.error.message : null,
-    updateSuccess: updateMutation.isSuccess,
+    resetUpdate: updateMutation.reset,
   };
 }

@@ -102,6 +102,8 @@ export interface UserProject {
   version?: string;
   iconBg?: string;
   brandColor?: string;
+  /** Project image/logo URL; UI falls back to the site logo when empty. */
+  image?: string | null;
   stages?: ProjectStage[];
   progressUpdates?: ProjectProgressUpdate[];
   weeklyReports?: ProjectWeeklyReport[];

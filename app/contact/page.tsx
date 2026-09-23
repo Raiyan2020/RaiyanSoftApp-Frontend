@@ -10,7 +10,9 @@ import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
 import { fetchUserSettingsServer } from '@/features/settings/services/user-settings-api';
 
-export const metadata: Metadata = getPageMetadata('contact');
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('contact', await getServerLanguage());
+}
 
 export default async function ContactPage() {
   const language = await getServerLanguage();

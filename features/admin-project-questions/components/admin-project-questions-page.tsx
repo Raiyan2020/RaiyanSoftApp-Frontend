@@ -16,6 +16,7 @@ import {
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ErrorAlert from '@/components/ui/error-alert';
+import Input from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { translateMessage } from '@/lib/i18n-utils';
 import {
@@ -37,9 +38,6 @@ const FieldLabel = ({ children }: { children: React.ReactNode }) => (
     {typeof children === 'string' ? translateMessage(children) : children}
   </label>
 );
-
-const optionRowClasses =
-  'rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-3 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
 
 function OptionRow({
   option,
@@ -105,19 +103,17 @@ function OptionRow({
       <div className="grid gap-5 md:grid-cols-2">
         <div className="space-y-3">
           <FieldLabel>{translateMessage('English Label')}</FieldLabel>
-          <input
+          <Input
             value={option.label}
             onChange={(event) => onChange(index, { label: event.target.value })}
-            className={optionRowClasses}
             placeholder={translateMessage('Option label in English')}
           />
         </div>
         <div className="space-y-3">
           <FieldLabel>{translateMessage('Arabic Label')}</FieldLabel>
-          <input
+          <Input
             value={option.labelAr || ''}
             onChange={(event) => onChange(index, { labelAr: event.target.value })}
-            className={optionRowClasses}
             placeholder={translateMessage('Option label in Arabic')}
           />
         </div>
@@ -326,19 +322,17 @@ export default function AdminProjectQuestionsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-3">
                   <FieldLabel>{translateMessage('English Label')}</FieldLabel>
-                  <input
+                  <Input
                     value={state.form.label}
                     onChange={(e) => state.setForm((prev) => ({ ...prev, label: e.target.value }))}
-                    className={inputClasses}
                     placeholder={translateMessage('What platforms do you need?')}
                   />
                 </div>
                 <div className="space-y-3">
                   <FieldLabel>{translateMessage('Arabic Label')}</FieldLabel>
-                  <input
+                  <Input
                     value={state.form.labelAr}
                     onChange={(e) => state.setForm((prev) => ({ ...prev, labelAr: e.target.value }))}
-                    className={inputClasses}
                     placeholder={translateMessage('Arabic label')}
                   />
                 </div>

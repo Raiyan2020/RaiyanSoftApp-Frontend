@@ -50,6 +50,9 @@ export const ThemeProvider: React.FC<{ children: ReactNode }> = ({ children }) =
   );
 };
 
+/** For shared UI (e.g. the toaster) that also renders in trees without ThemeProvider. */
+export const useOptionalTheme = () => useContext(ThemeContext);
+
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {

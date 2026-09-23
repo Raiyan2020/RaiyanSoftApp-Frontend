@@ -5,7 +5,9 @@ import { Edit2, Loader2, Plus, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ErrorAlert from '@/components/ui/error-alert';
+import FallbackImage from '@/components/ui/fallback-image';
 import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
+import TablePagination from '@/components/ui/table-pagination';
 import { translateMessage } from '@/lib/i18n-utils';
 import BilingualFieldInputs from './bilingual-field-inputs';
 import {
@@ -21,8 +23,9 @@ import type { AdminAboutUsCard, BilingualField } from '@/features/landing-page';
 const EMPTY_BI: BilingualField = { ar: '', en: '' };
 
 export default function AdminAboutUsTab() {
+  const [page, setPage] = useState(1);
   const headerQuery = useAdminAboutUsHeader();
-  const cardsQuery = useAdminAboutUsCards();
+  const cardsQuery = useAdminAboutUsCards(page);
   const updateHeader = useUpdateAdminAboutUsHeader();
   const createCard = useCreateAdminAboutUsCard();
   const updateCard = useUpdateAdminAboutUsCard();
@@ -55,23 +58,30 @@ export default function AdminAboutUsTab() {
     }
   }
 
+  const cards = cardsQuery.data?.items ?? [];
+  const pagination = cardsQuery.data?.pagination ?? null;
+  // Step back a page if a delete emptied the current page.
+  if (pagination && page > pagination.last_page && pagination.last_page >= 1) {
+    setPage(pagination.last_page);
+  }
+
   // Default to the first card whenever nothing is selected yet and the list
   // changes, adjusted during render instead of in an effect.
+  // Compare the query data (referentially stable), never `cards`: while
+  // loading `cards` is a fresh `[]` each render, which would loop forever.
   const [prevCardSelectSync, setPrevCardSelectSync] = useState<{
     selected: AdminAboutUsCard | null;
-    data: AdminAboutUsCard[] | undefined;
+    data: typeof cardsQuery.data;
   }>({ selected, data: cardsQuery.data });
   if (selected !== prevCardSelectSync.selected || cardsQuery.data !== prevCardSelectSync.data) {
     setPrevCardSelectSync({ selected, data: cardsQuery.data });
-    if (!selected && cardsQuery.data?.[0]) {
-      const next = cardsQuery.data[0];
+    if (!selected && cards[0]) {
+      const next = cards[0];
       setSelected(next);
       setCardTitle(next.title);
       setCardDescription(next.description);
     }
   }
-
-  const cards = cardsQuery.data ?? [];
 
   const startCreate = () => {
     setSelected(null);
@@ -148,7 +158,7 @@ export default function AdminAboutUsTab() {
           {cards.map((card) => (
             <div key={card.id} className={`rounded-2xl border p-4 ${selectedId === card.id ? 'border-primary/50 bg-primary/5' : 'border-[var(--border)] bg-[var(--surface)]'}`}>
               <div className="flex items-start gap-3">
-                {card.image ? <img src={card.image} alt={card.title.ar} className="h-16 w-16 rounded-xl object-cover" /> : null}
+                <FallbackImage src={card.image} alt={card.title.ar} className="h-16 w-16 shrink-0 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-black text-[var(--text)]">{card.title.ar || card.title.en}</p>
                   <p className="line-clamp-2 text-xs text-[var(--text-muted)]">{card.description.ar || card.description.en}</p>
@@ -167,6 +177,7 @@ export default function AdminAboutUsTab() {
             </div>
           ))}
         </div>
+        <TablePagination pagination={pagination} onPageChange={setPage} loading={cardsQuery.isLoading} className="mt-4" />
       </section>
 
       <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
@@ -181,7 +192,7 @@ export default function AdminAboutUsTab() {
             aspectRatio={16 / 9}
           />
           {selected?.image && !imageValue ? (
-            <img src={selected.image} alt={selected.title.ar} className="max-h-48 w-full rounded-2xl object-cover" />
+            <FallbackImage src={selected.image} alt={selected.title.ar} className="max-h-48 w-full rounded-2xl object-cover" />
           ) : null}
           {imageError ? <ErrorAlert message={imageError} /> : null}
 

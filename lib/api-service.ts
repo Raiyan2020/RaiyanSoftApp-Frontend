@@ -14,6 +14,22 @@ export interface ApiResponse<T = any> {
   message: string;
   data: T;
   errors: any[] | Record<string, string[]>;
+  /** Present on list endpoints that use the backend `paginationResponse` helper. */
+  pagination?: PaginationMeta | [];
+}
+
+/** Shape of `pagination` from backend `ApiResponse::paginationResponse`. */
+export type PaginationMeta = {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+};
+
+/** Returns the pagination meta, or null when the endpoint returned none (empty array/missing). */
+export function readPagination(response: { pagination?: PaginationMeta | [] | null }): PaginationMeta | null {
+  const meta = response.pagination;
+  return meta && !Array.isArray(meta) && typeof meta.current_page === 'number' ? meta : null;
 }
 
 interface RequestOptions extends RequestInit {
@@ -113,7 +129,8 @@ class ApiService {
           }
         }
         globalToast.error(errorMsg);
-      } else if (method !== 'GET' && !fetchOptions.skipSuccessToast) {
+      } else if (method !== 'GET' && data?.status !== false && !fetchOptions.skipSuccessToast) {
+        // A failed request with skipGlobalToast must not fall through to a success toast.
         const successMsg = data?.message || 'Saved successfully.';
         globalToast.success(successMsg);
       }

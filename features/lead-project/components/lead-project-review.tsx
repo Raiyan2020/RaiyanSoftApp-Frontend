@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { Pencil } from 'lucide-react';
 import { FormQuestion } from '../types/form-question.types';
 import { resolveQuestionSection, ReviewSection } from '../utils/question-helpers';
 
@@ -10,7 +10,6 @@ interface LeadProjectReviewProps {
   answersByQuestionId: Record<number, number | string>;
   getAnswerLabel: (question: FormQuestion, answer: number | string) => string;
   t: (key: string) => string;
-  dir: 'ltr' | 'rtl';
   nameStep: number;
   colorStep: number;
   onEditStep: (step: number) => void;
@@ -30,7 +29,6 @@ export default function LeadProjectReview({
   answersByQuestionId,
   getAnswerLabel,
   t,
-  dir,
   nameStep,
   colorStep,
   onEditStep,
@@ -76,8 +74,6 @@ export default function LeadProjectReview({
     },
   ];
 
-  const ChevronIcon = dir === 'rtl' ? ChevronLeft : ChevronRight;
-
   return (
     <div className="flex h-full flex-col overflow-y-auto p-6 pt-10 pb-24 no-scrollbar">
       <h2 className="mb-6 text-2xl font-bold text-[var(--text)]">{t('wizard.review_title')}</h2>
@@ -93,15 +89,27 @@ export default function LeadProjectReview({
                     key={row.key}
                     type="button"
                     onClick={() => onEditStep(row.step)}
-                    className="flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-3)] p-4 text-start transition-colors hover:border-primary/40"
+                    aria-label={`${t('wizard.edit')}: ${row.label} (${row.value})`}
+                    className="group flex w-full items-center justify-between gap-3 rounded-2xl border border-[var(--border)] bg-[var(--surface-3)] p-4 text-start transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                   >
                     <span className="min-w-0 flex-1">
                       <span className="block text-xs font-bold text-[var(--text-muted)]">{row.label}</span>
-                      <span className="mt-1 block truncate text-sm font-bold text-[var(--text)]">
-                        {row.value}
+                      <span className="mt-1 flex items-center gap-2 text-sm font-bold text-[var(--text)]">
+                        {row.key === 'color' ? (
+                          <span
+                            aria-hidden="true"
+                            className="h-4 w-4 shrink-0 rounded-full border border-[var(--border)]"
+                            style={{ backgroundColor: row.value }}
+                          />
+                        ) : null}
+                        <span className="min-w-0 truncate" dir="auto">{row.value}</span>
                       </span>
                     </span>
-                    <ChevronIcon size={18} className="shrink-0 text-[var(--text-muted)]" />
+                    <Pencil
+                      size={16}
+                      aria-hidden="true"
+                      className="shrink-0 text-[var(--text-muted)] transition-colors group-hover:text-primary"
+                    />
                   </button>
                 ))}
               </div>

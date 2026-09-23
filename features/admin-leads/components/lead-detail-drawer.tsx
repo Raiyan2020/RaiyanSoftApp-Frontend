@@ -1,11 +1,13 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { MessageCircle, X, Copy, CheckCircle, Loader2, XCircle } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { MessageCircle, Copy, CheckCircle, Loader2, XCircle } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
+import { formatLocalizedDate } from '@/lib/language';
 import { globalToast } from '@/lib/toast-context';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
+import { toWhatsAppUrl } from '@/lib/utils';
 import { AdminLeadDetail, AdminLeadListItem } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
 import { LEAD_APPROVAL_WHATSAPP_MESSAGE } from '../utils/whatsapp-template';
@@ -21,7 +23,6 @@ interface LeadDetailDrawerProps {
   actionMessage: string | null;
   language: string;
   onClose: () => void;
-  toWhatsAppDigits: (phone: string) => string | null;
   onApprove: () => void;
   onReject: () => void;
 }
@@ -36,38 +37,28 @@ export default function LeadDetailDrawer({
   actionMessage,
   language,
   onClose,
-  toWhatsAppDigits,
   onApprove,
   onReject,
 }: LeadDetailDrawerProps) {
-  const { t } = useTranslation();
-  const phone = lead?.user.phone || listItem.user.full_phone;
+  const { t, language: uiLanguage } = useTranslation();
+  // full_phone carries the country code; the detail payload's user.phone is the bare local number.
+  const phone = listItem.user.full_phone || lead?.user.phone || '';
   const displayName = lead?.user.name || lead?.user.full_name || listItem.user.full_name;
   const projectName = lead?.project_name || listItem.project_name;
   const statusLabel = formatLeadStatusLabel(lead?.status ?? listItem.status, language);
   const statusTone = getLeadStatusTone(lead?.status ?? listItem.status);
   const canChangeStatus = lead ? isLeadPending(lead.status) : isLeadPending(listItem.status);
 
-  const waDigits = toWhatsAppDigits(phone);
-  const encodedWaMessage = encodeURIComponent(LEAD_APPROVAL_WHATSAPP_MESSAGE);
-  const waUrl = waDigits
-    ? `https://web.whatsapp.com/send/?phone=${waDigits}&text=${encodedWaMessage}&type=phone_number&app_absent=0`
-    : null;
+  const waUrl = toWhatsAppUrl(phone, LEAD_APPROVAL_WHATSAPP_MESSAGE);
 
   const requestId = lead?.request_id || String(listItem.id);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
-      <motion.div
-        initial={false}
-        animate={{ scale: 1, opacity: 1 }}
-        exit={{ scale: 0.95, opacity: 0 }}
-        onClick={(event) => event.stopPropagation()}
-        className="bg-[var(--surface)] w-full max-w-2xl lg:max-w-4xl rounded-2xl border border-[var(--border)] shadow-2xl flex flex-col max-h-[90vh]"
-      >
-        <div className="p-6 border-b border-[var(--border)] flex justify-between items-start">
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent aria-describedby={undefined} className="max-h-[90dvh] max-w-2xl overflow-hidden p-0 lg:max-w-4xl">
+        <div className="p-6 pe-12 border-b border-[var(--border)] flex justify-between items-start">
           <div>
-            <h2 className="text-xl font-bold text-[var(--text)] mb-2">{projectName}</h2>
+            <DialogTitle className="mb-2">{projectName}</DialogTitle>
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
                 <span>{displayName}</span>
@@ -97,12 +88,9 @@ export default function LeadDetailDrawer({
               ) : null}
             </div>
           </div>
-          <button type="button" onClick={onClose} className="text-[var(--text-muted)] hover:text-[var(--text)]">
-            <X size={24} />
-          </button>
         </div>
 
-        <div className="p-6 overflow-y-auto custom-scrollbar">
+        <div className="min-h-0 flex-1 p-6 overflow-y-auto overscroll-contain custom-scrollbar">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
 
             {/* ── Left column: meta + actions ── */}
@@ -115,7 +103,7 @@ export default function LeadDetailDrawer({
                   </span>
                   <span className={`text-sm font-bold ${statusTone.textClass}`}>{statusLabel}</span>
                 </div>
-                <span className="text-xs text-[var(--text-muted)]">{listItem.date}</span>
+                <span className="text-xs text-[var(--text-muted)]">{formatLocalizedDate(listItem.date, uiLanguage)}</span>
               </div>
 
               {/* Request ID */}
@@ -213,7 +201,7 @@ export default function LeadDetailDrawer({
 
           </div>
         </div>
-      </motion.div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

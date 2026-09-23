@@ -2,23 +2,25 @@
 
 import React, { useState } from 'react';
 import { isValidPhoneNumber } from 'react-phone-number-input';
-import { AlertCircle, Phone, ShieldCheck, User } from 'lucide-react';
+import { ArrowLeft, Phone, User } from 'lucide-react';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import PhoneInput from '@/components/ui/phone-input';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
 import { useTranslation } from '@/lib/i18nContext';
-import { usePhoneAuth } from '@/features/auth';
+import { OtpField, OTP_LENGTH, usePhoneAuth } from '@/features/auth';
 
 interface BookingAuthGateProps {
   onAuthenticated: () => void | Promise<void>;
   submitError?: string | null;
+  /** Leave the auth step for the previous wizard step. */
+  onBack: () => void;
 }
 
-export default function BookingAuthGate({ onAuthenticated, submitError }: BookingAuthGateProps) {
+export default function BookingAuthGate({ onAuthenticated, submitError, onBack }: BookingAuthGateProps) {
   const { t, dir } = useTranslation();
-  const { step, phone, isNewUser, newUserOtpSent, loading, error, message, checkPhone, submitRegistrationDetails, submitOtp } =
+  const { step, phone, isNewUser, newUserOtpSent, loading, error, message, reset, checkPhone, submitRegistrationDetails, submitOtp } =
     usePhoneAuth({ onSuccess: onAuthenticated });
   const [phoneValue, setPhoneValue] = useState('');
   const [name, setName] = useState('');
@@ -47,7 +49,7 @@ export default function BookingAuthGate({ onAuthenticated, submitError }: Bookin
     submitRegistrationDetails(name.trim());
   };
 
-  const handleOtpSubmit = () => {
+  const handleOtpSubmit = (code = otp) => {
     setLocalError(null);
 
     if (isNewUser && !newUserOtpSent) {
@@ -60,16 +62,35 @@ export default function BookingAuthGate({ onAuthenticated, submitError }: Bookin
       return;
     }
 
-    if (!otp.trim() || otp.trim().length < 4) {
+    if (code.length < OTP_LENGTH) {
       setLocalError(t('auth.otp_invalid'));
       return;
     }
 
-    submitOtp({ phone, otp: otp.trim() });
+    submitOtp({ phone, otp: code });
   };
 
   return (
     <div className="flex h-full flex-col p-5 sm:p-6 pt-8" dir={dir}>
+      <button
+        type="button"
+        onClick={() => {
+          // OTP step returns to the phone step; phone step leaves the auth gate.
+          if (step === 'otp') {
+            reset();
+            setOtp('');
+            setName('');
+            setLocalError(null);
+          } else {
+            onBack();
+          }
+        }}
+        disabled={loading}
+        className="mb-4 inline-flex items-center gap-2 self-start text-xs font-bold text-[var(--text-muted)] transition-colors hover:text-[var(--text)] disabled:opacity-50"
+      >
+        <ArrowLeft size={14} className="rtl:rotate-180" aria-hidden="true" />
+        {step === 'otp' ? t('auth.change_phone') : t('auth.back')}
+      </button>
       <h2 className="mb-2 text-2xl font-bold text-[var(--text)]">
         {dir === 'rtl' ? 'سجّل للحجز' : 'Sign in to finish booking'}
       </h2>
@@ -123,13 +144,13 @@ export default function BookingAuthGate({ onAuthenticated, submitError }: Bookin
                 : 'After entering your name, press the button below and we will send the OTP to your phone.'}
             </div>
           ) : (
-            <Input
-              label={t('auth.otp')}
+            <OtpField
               value={otp}
-              onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))}
-              icon={<ShieldCheck size={16} />}
-              dir="ltr"
-              autoFocus
+              onChange={setOtp}
+              onComplete={(code) => {
+                if (!loading) handleOtpSubmit(code);
+              }}
+              disabled={loading}
             />
           )}
           <Button type="submit" disabled={loading || (needsNameBeforeOtp && !name.trim())} className="w-full">

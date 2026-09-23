@@ -36,6 +36,8 @@ export type StoredProject = {
   id: number;
   project_name: string;
   color: string;
+  image?: string | null;
+  logo?: string | null;
   status: string | number;
   request_id?: string;
   description?: string;

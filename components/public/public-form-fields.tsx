@@ -26,7 +26,8 @@ export function PublicField({ id, label, error, required, children }: FieldProps
 }
 
 export const publicInputClass =
-  'w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-[var(--text)] transition focus:border-primary focus:outline-none focus:ring-4 focus:ring-primary/10 dark:bg-white/5 dark:text-white';
+  // Same surface as the shared Input/PhoneInput (`app-input`) so mixed fields match.
+  'w-full app-input rounded-xl min-h-11 px-4 py-2.5 transition-colors focus:border-primary focus:outline-none rtl:placeholder-shown:[direction:rtl]';
 
 export function PublicFormStatus({ type, message }: { type: 'success' | 'error' | 'loading'; message: string }) {
   const styles = {

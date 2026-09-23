@@ -12,6 +12,7 @@ import {
 import SectionHeaderForm from './section-header-form';
 import BilingualFieldInputs from './bilingual-field-inputs';
 import CrudItemList from '@/components/ui/crud-item-list';
+import TablePagination from '@/components/ui/table-pagination';
 import AdminFormModal from '@/components/ui/admin-form-modal';
 import { globalToast } from '@/lib/toast-context';
 import type { AdminFaq, AdminFaqPayload, AdminSectionHeaderPayload, BilingualField } from '@/features/landing-page';
@@ -37,7 +38,14 @@ function faqToForm(faq: AdminFaq): AdminFaqPayload {
 }
 
 export default function AdminFaqsTab() {
-  const { data: faqs = [], isLoading } = useAdminFaqs();
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useAdminFaqs(page);
+  const faqs = data?.items ?? [];
+  const pagination = data?.pagination ?? null;
+  // Step back a page if a delete emptied the current page.
+  if (pagination && page > pagination.last_page && pagination.last_page >= 1) {
+    setPage(pagination.last_page);
+  }
   const { data: header, isLoading: headerLoading } = useAdminFaqsHeader();
   const updateHeaderMutation = useUpdateAdminFaqsHeader();
   const createMutation = useCreateAdminFaq();
@@ -128,6 +136,7 @@ export default function AdminFaqsTab() {
           );
         }}
       />
+      <TablePagination pagination={pagination} onPageChange={setPage} loading={isLoading} />
 
       <AdminFormModal
         open={showForm}

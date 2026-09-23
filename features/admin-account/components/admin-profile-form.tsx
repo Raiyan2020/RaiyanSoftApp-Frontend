@@ -4,10 +4,12 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { adminProfileSchema, AdminProfileValues } from '../schemas/profile.schema';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
+import Input from '@/components/ui/input';
 import Avatar from '@/components/ui/avatar';
 import PhoneInput from '@/components/ui/phone-input';
 import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
+import { formatRoleLabel } from '@/features/admin-employees/utils/employee-helpers';
 
 interface AdminProfileFormProps {
   defaultValues: AdminProfileValues & { role?: string };
@@ -50,7 +52,7 @@ export default function AdminProfileForm({
           </div>
           <div className="text-center">
             <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 capitalize">
-              {defaultValues.role || translateMessage('Admin')}
+              {defaultValues.role ? translateMessage(formatRoleLabel(defaultValues.role)) : translateMessage('Admin')}
             </span>
           </div>
         </div>
@@ -63,17 +65,13 @@ export default function AdminProfileForm({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel className="uppercase tracking-wider font-bold">{translateMessage('First Name')}</FieldLabel>
-                  <div className="relative">
-                    <User className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-                    <input
-                      {...field}
-                      type="text"
-                      aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
-                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                      }`}
-                    />
-                  </div>
+                  <Input
+                    {...field}
+                    type="text"
+                    icon={<User size={18} />}
+                    aria-invalid={fieldState.invalid}
+                    className={fieldState.invalid ? 'border-danger' : ''}
+                  />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -87,17 +85,13 @@ export default function AdminProfileForm({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel className="uppercase tracking-wider font-bold">{translateMessage('Last Name')}</FieldLabel>
-                  <div className="relative">
-                    <User className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-                    <input
-                      {...field}
-                      type="text"
-                      aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
-                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                      }`}
-                    />
-                  </div>
+                  <Input
+                    {...field}
+                    type="text"
+                    icon={<User size={18} />}
+                    aria-invalid={fieldState.invalid}
+                    className={fieldState.invalid ? 'border-danger' : ''}
+                  />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -126,17 +120,13 @@ export default function AdminProfileForm({
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <FieldLabel className="uppercase tracking-wider font-bold">{translateMessage('Email Address')}</FieldLabel>
-                <div className="relative">
-                  <Mail className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-                  <input
-                    {...field}
-                    type="email"
-                    aria-invalid={fieldState.invalid}
-                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
-                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                    }`}
-                  />
-                </div>
+                <Input
+                  {...field}
+                  type="email"
+                  icon={<Mail size={18} />}
+                  aria-invalid={fieldState.invalid}
+                  className={fieldState.invalid ? 'border-danger' : ''}
+                />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}
@@ -151,18 +141,14 @@ export default function AdminProfileForm({
                   {translateMessage('New Password')}
                   <span className="ms-1 text-[var(--text-muted)] normal-case font-normal">({translateMessage('leave blank to keep current')})</span>
                 </FieldLabel>
-                <div className="relative">
-                  <Lock className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-                  <input
-                    {...field}
-                    type="password"
-                    placeholder="••••••••"
-                    aria-invalid={fieldState.invalid}
-                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary/50 transition-colors ${
-                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                    }`}
-                  />
-                </div>
+                <Input
+                  {...field}
+                  type="password"
+                  placeholder="••••••••"
+                  icon={<Lock size={18} />}
+                  aria-invalid={fieldState.invalid}
+                  className={fieldState.invalid ? 'border-danger' : ''}
+                />
                 {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
               </Field>
             )}

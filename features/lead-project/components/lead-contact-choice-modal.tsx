@@ -1,9 +1,9 @@
 'use client';
 
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import React, { useState } from 'react';
 import { Calendar, CheckCircle2, MessageCircle, X } from 'lucide-react';
 import Button from '@/components/ui/button';
+import BookingWizard from '@/features/appointments/components/booking-wizard';
 import { useUserSettings } from '@/features/settings';
 import { useTranslation } from '@/lib/i18nContext';
 
@@ -12,19 +12,16 @@ interface LeadContactChoiceModalProps {
   onClose: () => void;
 }
 
-// F-LEAD-03: shown once a project request is saved successfully. Offers
-// exactly two follow-up options; closing without choosing still leaves the
-// request saved (the caller only renders this after a successful create).
+// F-LEAD-03: shown once a project request is saved successfully. Asks whether
+// to book a meeting; "Yes" swaps this modal for the existing BookingWizard in
+// place (no navigation). Closing still leaves the request saved — the caller
+// only renders this after a successful create, which already invalidated the
+// projects queries.
 export default function LeadContactChoiceModal({ requestId, onClose }: LeadContactChoiceModalProps) {
   const { t, dir } = useTranslation();
-  const router = useRouter();
+  const [isBooking, setIsBooking] = useState(false);
   const { settings } = useUserSettings();
   const whatsappNumber = settings?.whatsapp_number?.trim();
-
-  const handleBooking = () => {
-    onClose();
-    router.push('/book');
-  };
 
   const handleWhatsApp = () => {
     if (!whatsappNumber) return;
@@ -35,6 +32,9 @@ export default function LeadContactChoiceModal({ requestId, onClose }: LeadConta
     window.open(`https://wa.me/${digits}?text=${encodeURIComponent(text)}`, '_blank', 'noopener,noreferrer');
     onClose();
   };
+
+  // BookingWizard carries its own auth step for guests.
+  if (isBooking) return <BookingWizard onClose={onClose} />;
 
   return (
     <div
@@ -60,7 +60,7 @@ export default function LeadContactChoiceModal({ requestId, onClose }: LeadConta
         <p className="mt-2 text-sm leading-6 text-[var(--text-muted)]">{t('contact_choice.subtitle')}</p>
 
         <div className="mt-5 space-y-3">
-          <Button type="button" onClick={handleBooking} className="w-full gap-2">
+          <Button type="button" onClick={() => setIsBooking(true)} className="w-full gap-2">
             <Calendar size={17} />
             {t('contact_choice.book')}
           </Button>
@@ -76,6 +76,10 @@ export default function LeadContactChoiceModal({ requestId, onClose }: LeadConta
               {t('contact_choice.whatsapp')}
             </Button>
           ) : null}
+
+          <Button type="button" variant="outline" onClick={onClose} className="w-full">
+            {t('contact_choice.close')}
+          </Button>
         </div>
       </div>
     </div>

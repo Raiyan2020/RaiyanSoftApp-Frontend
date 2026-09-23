@@ -6,6 +6,7 @@ import { trackPublicEvent } from '@/lib/analytics';
 import { leadStore } from '@/lib/leadStore';
 import PhoneInput from '@/components/ui/phone-input';
 import { translateMessage } from '@/lib/i18n-utils';
+import { getPhoneError } from '@/lib/phone';
 
 type PublicInquiryFormProps = {
   mode: 'contact' | 'quote';
@@ -23,7 +24,8 @@ export default function PublicInquiryForm({ mode }: PublicInquiryFormProps) {
     const nextErrors: Record<string, string> = {};
     if (!String(formData.get('name') || '').trim()) nextErrors.name = 'Full name is required';
     if (!String(formData.get('email') || '').includes('@')) nextErrors.email = 'Please enter a valid email';
-    if (!phone.trim()) nextErrors.phone = 'Phone number is required';
+    const phoneError = getPhoneError(phone);
+    if (phoneError) nextErrors.phone = phoneError;
     if (!String(formData.get('message') || '').trim()) nextErrors.message = 'Message is required';
     return nextErrors;
   };

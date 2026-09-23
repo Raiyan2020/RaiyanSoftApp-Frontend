@@ -6,6 +6,7 @@ import { useAdminProjects } from '../hooks/use-admin-projects';
 import AdminProjectCard from './admin-project-card';
 import ProjectFormModal from './project-form-modal';
 import EmptyState from '@/components/ui/empty-state';
+import Input from '@/components/ui/input';
 import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminProjectsPage() {
@@ -45,14 +46,13 @@ export default function AdminProjectsPage() {
           </button>
         </div>
 
-        <div className="relative mb-6">
-          <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-          <input
+        <div className="relative mb-6 md:max-w-md">
+          <Input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={translateMessage('Search projects...')}
-            className="w-full md:max-w-md bg-[var(--surface)] border border-[var(--border)] rounded-xl py-2.5 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
+            icon={<Search size={18} />}
           />
         </div>
 

@@ -1,15 +1,16 @@
-import Script from 'next/script';
-
 type JsonLdProps = {
   id: string;
   data: Record<string, unknown>;
 };
 
+// Plain <script> from a Server Component, per the Next.js JSON-LD guide;
+// `<` is escaped so data can't close the tag early.
 export default function JsonLd({ id, data }: JsonLdProps) {
   return (
-    <Script id={id} type="application/ld+json" strategy="beforeInteractive">
-      {JSON.stringify(data)}
-    </Script>
+    <script
+      id={id}
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data).replace(/</g, '\\u003c') }}
+    />
   );
 }
-

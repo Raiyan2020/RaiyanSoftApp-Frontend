@@ -6,6 +6,7 @@ import { CalendarDays, FolderKanban, Inbox, RefreshCw, Users } from 'lucide-reac
 import { apiService } from '@/lib/api-service';
 import { translateMessage } from '@/lib/i18n-utils';
 import { useTranslation } from '@/lib/i18nContext';
+import { formatLocalizedDate } from '@/lib/language';
 import { fetchAdminLeads } from '@/features/admin-leads/services/admin-leads-api';
 import { LEAD_STATUS, AdminLeadListItem } from '@/features/admin-leads/types/admin-lead.types';
 import { fetchAdminMeetings } from '@/features/admin-meetings/services/admin-meetings-api';
@@ -201,7 +202,7 @@ export default function AdminDashboardPage() {
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-bold text-[var(--text)]">{lead.project_name || lead.user.full_name}</p>
-                  <p className="truncate text-xs text-[var(--text-muted)]">{lead.user.full_name} · {lead.date}</p>
+                  <p className="truncate text-xs text-[var(--text-muted)]">{lead.user.full_name} · {formatLocalizedDate(lead.date, language)}</p>
                 </div>
                 <span className="shrink-0 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">{lead.status}</span>
               </Link>
@@ -226,7 +227,7 @@ export default function AdminDashboardPage() {
               >
                 <div className="min-w-0">
                   <p className="truncate text-sm font-bold text-[var(--text)]">{meeting.subject || meeting.user?.full_name}</p>
-                  <p className="truncate text-xs text-[var(--text-muted)]">{meeting.user?.full_name} · {meeting.date_time}</p>
+                  <p className="truncate text-xs text-[var(--text-muted)]">{meeting.user?.full_name} · {formatLocalizedDate(meeting.date_time, language, { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' })}</p>
                 </div>
                 <span className="shrink-0 rounded-lg bg-primary/10 px-2.5 py-1 text-xs font-bold text-primary">{meeting.status_label}</span>
               </Link>

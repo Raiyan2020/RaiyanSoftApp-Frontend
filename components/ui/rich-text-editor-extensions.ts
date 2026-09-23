@@ -85,7 +85,8 @@ export function createRichTextEditorExtensions({
     TextAlign.configure({
       types: ['heading', 'paragraph'],
       alignments: ['left', 'center', 'right', 'justify'],
-      defaultAlignment: 'left',
+      // null: unaligned paragraphs follow the editor/page direction (RTL Arabic stays right-aligned).
+      defaultAlignment: null,
     }),
     TaskList,
     TaskItem.configure({

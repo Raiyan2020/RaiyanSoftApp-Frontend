@@ -1,7 +1,7 @@
 import React from 'react';
 import { translateMessage } from '@/lib/i18n-utils';
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+interface TextareaProps extends React.ComponentProps<'textarea'> {
   label?: string;
   error?: string;
 }

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ErrorAlert from '@/components/ui/error-alert';
+import Input from '@/components/ui/input';
 import { translateMessage } from '@/lib/i18n-utils';
 import BilingualFieldInputs from './bilingual-field-inputs';
 import {
@@ -73,14 +74,11 @@ function BannerEditor({
         <BilingualFieldInputs label={translateMessage('Title')} value={heading} onChange={setHeading} required />
         <BilingualFieldInputs label={translateMessage('Description')} value={description} onChange={setDescription} multiline required />
         <BilingualFieldInputs label={translateMessage('Button Text')} value={buttonText} onChange={setButtonText} required />
-        <label className="block space-y-2">
-          <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Button URL')}</span>
-          <input
-            value={buttonUrl}
-            onChange={(e) => setButtonUrl(e.target.value)}
-            className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60"
-          />
-        </label>
+        <Input
+          label={translateMessage('Button URL')}
+          value={buttonUrl}
+          onChange={(e) => setButtonUrl(e.target.value)}
+        />
         {error ? <ErrorAlert message={error} /> : null}
         <Button type="button" onClick={save} isLoading={loading}>
           {translateMessage('Save')}

@@ -1,9 +1,13 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, Loader2, Phone, MessageCircle, Eye } from 'lucide-react';
+import { Loader2, Phone, MessageCircle, Eye } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
+import { formatLocalizedDate } from '@/lib/language';
+import { toWhatsAppUrl } from '@/lib/utils';
 import ErrorAlert from '@/components/ui/error-alert';
+import TablePagination from '@/components/ui/table-pagination';
 import Avatar from '@/components/ui/avatar';
 import { Table, TableHeader, TableBody, TableRow, TableHead } from '@/components/ui/table';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { AdminLeadListItem, AdminLeadsPagination, LEAD_STATUS, LeadStatusCode } from '../types/admin-lead.types';
 import { formatLeadStatusLabel, getLeadStatusCode, getLeadStatusTone, isLeadPending } from '../utils/lead-status';
 import { LEAD_APPROVAL_WHATSAPP_MESSAGE } from '../utils/whatsapp-template';
@@ -21,7 +25,6 @@ interface LeadsTableProps {
   error: string | null;
   pagination: AdminLeadsPagination | null;
   onSelectLead: (lead: AdminLeadListItem) => void;
-  toWhatsAppDigits: (phone: string) => string | null;
   onPageChange: (page: number) => void;
   updatingLeadId: number | null;
   onChangeStatus: (lead: AdminLeadListItem, nextStatus: LeadStatusCode) => void;
@@ -33,7 +36,6 @@ export default function LeadsTable({
   error,
   pagination,
   onSelectLead,
-  toWhatsAppDigits,
   onPageChange,
   updatingLeadId,
   onChangeStatus,
@@ -74,7 +76,7 @@ export default function LeadsTable({
                   <TableHead className="p-5 font-medium text-start">{t('admin.leads.type')}</TableHead>
                   <TableHead className="p-5 font-medium text-start">{t('admin.leads.status')}</TableHead>
                   <TableHead className="p-5 font-medium text-start">{t('admin.leads.date')}</TableHead>
-                  <TableHead className="p-5 font-medium text-end">{t('admin.leads.action')}</TableHead>
+                  <TableHead className="p-5 font-medium text-start">{t('admin.leads.action')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody className="divide-y divide-[var(--border)] text-sm">
@@ -83,7 +85,6 @@ export default function LeadsTable({
                     key={lead.id}
                     lead={lead}
                     onSelectLead={onSelectLead}
-                    toWhatsAppDigits={toWhatsAppDigits}
                     isUpdatingStatus={updatingLeadId === lead.id}
                     onChangeStatus={onChangeStatus}
                   />
@@ -99,10 +100,7 @@ export default function LeadsTable({
               const statusCode = getLeadStatusCode(lead.status);
               const statusLabel = formatLeadStatusLabel(statusCode, language);
               const canChangeStatus = isLeadPending(lead.status);
-              const waDigits = toWhatsAppDigits(lead.user.full_phone);
-              const waUrl = waDigits
-                ? `https://web.whatsapp.com/send/?phone=${waDigits}&text=${encodeURIComponent(LEAD_APPROVAL_WHATSAPP_MESSAGE)}&type=phone_number&app_absent=0`
-                : null;
+              const waUrl = toWhatsAppUrl(lead.user.full_phone, LEAD_APPROVAL_WHATSAPP_MESSAGE);
 
               return (
                 <div key={lead.id} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-4 flex flex-col gap-3">
@@ -135,27 +133,34 @@ export default function LeadsTable({
                     {leadTypeLabel(lead.type) ? (
                       <p className="text-xs text-[var(--text-muted)] mt-1">{leadTypeLabel(lead.type)}</p>
                     ) : null}
-                    <p className="text-xs text-[var(--text-muted)] mt-1">{lead.date}</p>
+                    <p className="text-xs text-[var(--text-muted)] mt-1">{formatLocalizedDate(lead.date, language)}</p>
                   </div>
 
                   {/* Status change + actions */}
                   <div className="flex items-center justify-between gap-2">
-                    <select
-                      value={statusCode}
+                    <Select
+                      value={String(statusCode)}
                       disabled={!canChangeStatus || updatingLeadId === lead.id}
-                      onChange={(e) => onChangeStatus(lead, Number(e.target.value) as LeadStatusCode)}
-                      className="flex-1 h-9 rounded-lg border border-[var(--border)] bg-[var(--surface)] px-2 text-xs font-bold text-[var(--text)] outline-none disabled:opacity-55 disabled:cursor-not-allowed"
+                      onValueChange={(value) => onChangeStatus(lead, Number(value) as LeadStatusCode)}
                     >
-                      <option value={LEAD_STATUS.PENDING}>{formatLeadStatusLabel(LEAD_STATUS.PENDING, language)}</option>
-                      <option value={LEAD_STATUS.APPROVED}>{formatLeadStatusLabel(LEAD_STATUS.APPROVED, language)}</option>
-                      <option value={LEAD_STATUS.REJECTED}>{formatLeadStatusLabel(LEAD_STATUS.REJECTED, language)}</option>
-                    </select>
+                      <SelectTrigger className="flex-1 h-9 min-h-0 px-2 text-xs font-bold">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value={String(LEAD_STATUS.PENDING)}>{formatLeadStatusLabel(LEAD_STATUS.PENDING, language)}</SelectItem>
+                        <SelectItem value={String(LEAD_STATUS.APPROVED)}>{formatLeadStatusLabel(LEAD_STATUS.APPROVED, language)}</SelectItem>
+                        <SelectItem value={String(LEAD_STATUS.REJECTED)}>{formatLeadStatusLabel(LEAD_STATUS.REJECTED, language)}</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <div className="flex items-center gap-2 shrink-0">
                       <a
                         href={waUrl || undefined}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => { if (!waUrl) e.preventDefault(); }}
+                        title={waUrl ? t('admin.leads.whatsapp') : t('admin.leads.no_phone')}
+                        aria-label={waUrl ? t('admin.leads.whatsapp') : t('admin.leads.no_phone')}
+                        aria-disabled={!waUrl}
                         className={`p-2 rounded-lg flex items-center justify-center transition-colors ${waUrl ? 'bg-[color-mix(in_srgb,var(--success)_8%,transparent)] text-success hover:bg-[color-mix(in_srgb,var(--success)_20%,transparent)]' : 'bg-[var(--surface-3)] text-[var(--text-muted)] opacity-40 cursor-not-allowed'}`}
                       >
                         <MessageCircle size={16} />
@@ -176,34 +181,12 @@ export default function LeadsTable({
         </>
       )}
 
-      {pagination && pagination.last_page > 1 ? (
-        <div className="flex items-center justify-between border-t border-[var(--border)] px-5 py-4 text-sm text-[var(--text-muted)]">
-          <span>
-            {t('admin.leads.page_of')
-              .replace('{current}', String(pagination.current_page))
-              .replace('{last}', String(pagination.last_page))
-              .replace('{total}', String(pagination.total))}
-          </span>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={pagination.current_page <= 1 || loading}
-              onClick={() => onPageChange(pagination.current_page - 1)}
-              className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--border)] disabled:opacity-40"
-            >
-              <ChevronLeft size={16} className="rtl:rotate-180" />
-            </button>
-            <button
-              type="button"
-              disabled={pagination.current_page >= pagination.last_page || loading}
-              onClick={() => onPageChange(pagination.current_page + 1)}
-              className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--border)] disabled:opacity-40"
-            >
-              <ChevronRight size={16} className="rtl:rotate-180" />
-            </button>
-          </div>
-        </div>
-      ) : null}
+      <TablePagination
+        pagination={pagination}
+        onPageChange={onPageChange}
+        loading={loading}
+        className="border-t border-[var(--border)] px-5 py-4"
+      />
     </div>
   );
 }

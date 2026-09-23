@@ -6,6 +6,7 @@ import { AdminUser as User } from '@/features/admin-users/types/admin-user.types
 import { NotificationValues } from '../schemas/notification.schema';
 import { sendAdminNotification } from '../services/admin-notifications-api';
 import { translateMessage } from '@/lib/i18n-utils';
+import { getIntlLocale, readStoredLanguage } from '@/lib/language';
 
 export function useAdminMarketing() {
   const { history } = useMarketingHistory();
@@ -14,7 +15,18 @@ export function useAdminMarketing() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [showUserDropdown, setShowUserDropdown] = useState(false);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>([]);
+  // Results are tagged with the query they answer, so "searching" is simply
+  // "the current query has no answer yet" — covers the debounce window and
+  // the in-flight request, and never shows stale results for an old query.
+  const [searchResult, setSearchResult] = useState<{ query: string; users: User[]; failed: boolean }>({
+    query: '',
+    users: [],
+    failed: false,
+  });
+  const trimmedQuery = searchQuery.trim();
+  const isSearchingUsers = trimmedQuery !== '' && searchResult.query !== trimmedQuery;
+  const filteredUsers = isSearchingUsers ? [] : searchResult.users;
+  const userSearchFailed = !isSearchingUsers && searchResult.failed;
 
   const [formData, setFormData] = useState<NotificationValues>({
     title: '',
@@ -32,19 +44,16 @@ export function useAdminMarketing() {
   // Debounced server-side search across name/email/phone (backend does the
   // partial, case-insensitive LIKE matching via AdminUserService::getUsers).
   useEffect(() => {
-    const query = searchQuery.trim();
-    if (query === '') {
-      setFilteredUsers([]);
-      return;
-    }
+    const query = trimmedQuery;
+    if (query === '') return;
 
     let cancelled = false;
     const timer = setTimeout(async () => {
       try {
-        const data = await fetchAdminUsers({ search: query });
-        if (!cancelled) setFilteredUsers(data.slice(0, 5).map(mapAdminApiUser));
+        const { items } = await fetchAdminUsers({ search: query });
+        if (!cancelled) setSearchResult({ query, users: items.slice(0, 5).map(mapAdminApiUser), failed: false });
       } catch {
-        if (!cancelled) setFilteredUsers([]);
+        if (!cancelled) setSearchResult({ query, users: [], failed: true });
       }
     }, 300);
 
@@ -52,7 +61,7 @@ export function useAdminMarketing() {
       cancelled = true;
       clearTimeout(timer);
     };
-  }, [searchQuery]);
+  }, [trimmedQuery]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -126,7 +135,7 @@ export function useAdminMarketing() {
   };
 
   const formatHistoryDate = (ts: number) => {
-    return new Date(ts).toLocaleString('en-US', {
+    return new Date(ts).toLocaleString(getIntlLocale(readStoredLanguage()), {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
@@ -150,6 +159,8 @@ export function useAdminMarketing() {
     successMessage,
     dropdownRef,
     filteredUsers,
+    isSearchingUsers,
+    userSearchFailed,
     handleUserSelect,
     handleSubmit,
     formatHistoryDate,

@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import { optionalPhoneSchema } from '@/lib/phone';
 import { translateMessage } from '@/lib/i18n-utils';
 
 export const adminProfileSchema = z.object({
   firstName: z.string().min(1, translateMessage('First name is required')),
   lastName: z.string().min(1, translateMessage('Last name is required')),
-  phone: z.string().optional(),
+  phone: optionalPhoneSchema,
   email: z
     .string()
     .min(1, translateMessage('Valid email is required'))

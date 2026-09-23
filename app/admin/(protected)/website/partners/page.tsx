@@ -1,7 +1,7 @@
-import AdminWebsiteSectionPage from '@/features/admin-website/components/admin-website-section-page';
+import AdminPartnersPage from '@/features/admin-website/components/admin-partners-page';
 
 export const dynamic = 'force-dynamic';
 
 export default function PartnersAdminPage() {
-  return <AdminWebsiteSectionPage section="partners" />;
+  return <AdminPartnersPage />;
 }

@@ -6,6 +6,8 @@ import { Archive, Copy, ExternalLink, Plus, Search, Trash2 } from 'lucide-react'
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ErrorAlert from '@/components/ui/error-alert';
+import Input from '@/components/ui/input';
+import Textarea from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getWebsiteContentConfig } from '../config/website-content-config';
@@ -30,12 +32,12 @@ function FieldControl({
   value: any;
   onChange: (value: any) => void;
 }) {
-  const baseClass = 'w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none transition focus:border-primary/60';
+  const baseClass = 'w-full app-input rounded-xl min-h-11 px-4 py-2.5 focus:outline-none transition-colors focus:border-primary';
 
   if (field.type === 'textarea' || field.type === 'list') {
     return (
-      <textarea
-        className={`${baseClass} min-h-28 resize-y`}
+      <Textarea
+        className="min-h-28"
         value={field.type === 'list' ? listToTextarea(value) : value || ''}
         onChange={(event) => onChange(field.type === 'list' ? textareaToList(event.target.value) : event.target.value)}
         placeholder={translateMessage(field.placeholder || (field.type === 'list' ? 'One item per line' : ''))}
@@ -70,8 +72,7 @@ function FieldControl({
   }
 
   return (
-    <input
-      className={baseClass}
+    <Input
       type={field.type === 'number' ? 'number' : field.type === 'url' ? 'url' : 'text'}
       value={value || ''}
       onChange={(event) => onChange(field.type === 'number' ? Number(event.target.value) : event.target.value)}
@@ -173,17 +174,17 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
           <div className="grid gap-5 md:grid-cols-2">
             <label className="space-y-2">
               <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Title')} *</span>
-              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.title} onChange={(event) => manager.updateField('title', event.target.value)} />
+              <Input value={manager.form.title} onChange={(event) => manager.updateField('title', event.target.value)} />
             </label>
 
             <label className="space-y-2">
               <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Slug')} {config.requiresSlug ? '*' : ''}</span>
-              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.slug} onChange={(event) => manager.updateField('slug', event.target.value)} placeholder={translateMessage('url-friendly-slug')} />
+              <Input value={manager.form.slug} onChange={(event) => manager.updateField('slug', event.target.value)} placeholder={translateMessage('url-friendly-slug')} />
             </label>
 
             <label className="space-y-2">
               <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Order')}</span>
-              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" type="number" value={manager.form.order} onChange={(event) => manager.updateField('order', event.target.value)} />
+              <Input type="number" value={manager.form.order} onChange={(event) => manager.updateField('order', event.target.value)} />
             </label>
 
             <label className="space-y-2">
@@ -215,9 +216,9 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
           <div className="mt-6 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
             <h3 className="text-sm font-black uppercase tracking-[0.2em] text-[var(--text)]">{translateMessage('SEO')}</h3>
             <div className="mt-4 grid gap-5">
-              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.seoTitle} onChange={(event) => manager.updateField('seoTitle', event.target.value)} placeholder={translateMessage('SEO title')} />
-              <textarea className="min-h-24 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.seoDescription} onChange={(event) => manager.updateField('seoDescription', event.target.value)} placeholder={translateMessage('SEO description')} />
-              <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={manager.form.ogImage} onChange={(event) => manager.updateField('ogImage', event.target.value)} placeholder={translateMessage('Open Graph image URL')} />
+              <Input value={manager.form.seoTitle} onChange={(event) => manager.updateField('seoTitle', event.target.value)} placeholder={translateMessage('SEO title')} />
+              <Textarea className="min-h-24" value={manager.form.seoDescription} onChange={(event) => manager.updateField('seoDescription', event.target.value)} placeholder={translateMessage('SEO description')} />
+              <Input value={manager.form.ogImage} onChange={(event) => manager.updateField('ogImage', event.target.value)} placeholder={translateMessage('Open Graph image URL')} />
             </div>
           </div>
 
@@ -257,13 +258,12 @@ export default function AdminWebsiteSectionPage({ section }: { section: WebsiteC
                 <h2 className="text-xl font-black text-[var(--text)]">{translateMessage('Existing')} {translateMessage(config.label)}</h2>
                 <p className="mt-1 text-sm text-[var(--text-muted)]">{translateMessage('Search, filter, and select an existing item when you need to edit published or draft content.')}</p>
               </div>
-              <div className="relative w-full lg:max-w-md">
-                <Search className="absolute start-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-                <input
+              <div className="w-full lg:max-w-md">
+                <Input
                   value={manager.query}
                   onChange={(event) => manager.setQuery(event.target.value)}
                   placeholder={`${translateMessage('Search')} ${translateMessage(config.label).toLowerCase()}...`}
-                  className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] py-3 pe-4 ps-11 text-sm text-[var(--text)] outline-none focus:border-primary/60"
+                  icon={<Search size={18} />}
                 />
               </div>
             </div>

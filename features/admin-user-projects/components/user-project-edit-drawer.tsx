@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { X, Briefcase, Activity, Link as LinkIcon, Loader2, Save } from 'lucide-react';
 import { UserProject } from '@/lib/userProjectsStore';
@@ -41,8 +42,10 @@ export default function UserProjectEditDrawer({
 
   if (!editingProject) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
+  // Portal: page content sits in a `relative z-10` stacking context, which kept
+  // this overlay under the admin sidebar (z-[60]).
+  return createPortal(
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" onClick={onClose}>
       <motion.div
         initial={false}
         animate={{ scale: 1, opacity: 1 }}
@@ -226,6 +229,7 @@ export default function UserProjectEditDrawer({
           </button>
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }

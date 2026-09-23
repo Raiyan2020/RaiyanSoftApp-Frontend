@@ -1,8 +1,11 @@
 'use client';
 import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
+import SectionHeader from './SectionHeader';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import SafeImage from '@/components/ui/safe-image';
+import ClampText from '@/components/ui/clamp-text';
+import { htmlToText } from '@/lib/html-to-text';
+import FallbackImage from '@/components/ui/fallback-image';
 import type { LandingPageContent } from '@/features/landing-page';
 
 // The palette used to be six index-assigned rainbow gradients (`i % length`),
@@ -17,7 +20,7 @@ type ServicesProps = {
 export default function Services({ homeData }: ServicesProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
-  const { content, textAlign } = useLandingContent();
+  const { content } = useLandingContent();
   const { services: staticServices } = content;
   const apiHomeServices = homeData?.services ?? null;
 
@@ -31,16 +34,7 @@ export default function Services({ homeData }: ServicesProps) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgb(var(--primary-glow-rgb) / 0.12),transparent_34%),linear-gradient(to_bottom,#ffffff,rgba(247,251,253,0.82))] dark:bg-[radial-gradient(circle_at_top_right,rgb(var(--primary-glow-rgb) / 0.12),transparent_32%),linear-gradient(to_bottom,#020617,#071827)]" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-10 lg:mb-12`}>
-          <div className={`space-y-4 ${textAlign}`}>
-            <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
-              {title}
-            </h2>
-          </div>
-          <p className={`mt-5 max-w-3xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg ${textAlign}`}>
-            {description}
-          </p>
-        </div>
+        <SectionHeader title={title} description={description} />
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6">
           {hasApiItems
@@ -63,7 +57,7 @@ export default function Services({ homeData }: ServicesProps) {
                           <h3 className="text-xl font-bold text-slate-950 dark:text-white sm:text-2xl">{service.title}</h3>
                         </div>
                         {service.image ? (
-                          <SafeImage src={service.image} alt={service.title} sizes="64px" className="h-14 w-14 rounded-2xl shadow-lg sm:h-16 sm:w-16" />
+                          <FallbackImage src={service.image} alt={service.title} sizes="64px" className="h-14 w-14 rounded-2xl shadow-lg sm:h-16 sm:w-16" />
                         ) : (
                           <div className={`grid h-14 w-14 place-items-center rounded-2xl bg-gradient-to-br ${gradient} text-xl font-black text-on-primary shadow-lg sm:h-16 sm:w-16`}>
                             {String(i + 1).padStart(2, '0')}
@@ -71,7 +65,7 @@ export default function Services({ homeData }: ServicesProps) {
                         )}
                       </div>
 
-                      <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">{service.description}</p>
+                      <ClampText lines={3} className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">{htmlToText(service.description)}</ClampText>
 
                       {service.overview ? (
                         <div className="hidden rounded-3xl border border-cyan-950/10 bg-slate-50/80 p-4 text-sm font-semibold leading-relaxed text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 sm:block">
@@ -110,7 +104,7 @@ export default function Services({ homeData }: ServicesProps) {
                         {service.metric}
                       </div>
                     </div>
-                    <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">{service.description}</p>
+                    <ClampText lines={3} className="text-sm leading-relaxed text-slate-600 dark:text-slate-300 sm:text-base">{htmlToText(service.description)}</ClampText>
                     <div className="hidden rounded-3xl border border-cyan-950/10 bg-slate-50/80 p-4 text-sm font-semibold leading-relaxed text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-200 sm:block">
                       {service.outcome}
                     </div>

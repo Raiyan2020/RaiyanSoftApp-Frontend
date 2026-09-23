@@ -2,6 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { globalToast } from '@/lib/toast-context';
 import { translateMessage } from '@/lib/i18n-utils';
+import { formatCallingCode } from '@/lib/utils';
 import { adminCountriesKeys } from '../query-keys';
 import {
   CountryApiError,
@@ -26,7 +27,8 @@ function mapCountryToForm(country: AdminCountry): CountryFormValues {
   return {
     name: country.name || '',
     countryCode: country.country_code || '',
-    phoneCode: country.phone_code || '',
+    // The form takes digits only (see the field hint); stored codes may carry a "+".
+    phoneCode: formatCallingCode(country.phone_code).slice(1),
     isActive: country.is_active !== false,
     image: null,
   };
@@ -67,7 +69,7 @@ export function useAdminCountries() {
       const body: CountryPayload = {
         name: payload.values.name.trim(),
         country_code: payload.values.countryCode.trim(),
-        phone_code: payload.values.phoneCode.trim(),
+        phone_code: formatCallingCode(payload.values.phoneCode),
         is_active: payload.values.isActive,
         ...(payload.values.image?.file ? { image: payload.values.image.file } : {}),
       };
@@ -115,10 +117,12 @@ export function useAdminCountries() {
       setForm(mapCountryToForm(country));
       setCurrentImageUrl(getAdminCountryImageUrl(country.image));
       setFormResetToken((current) => current + 1);
+      return true;
     } catch (error: unknown) {
       const message = translateMessage(error instanceof Error ? error.message : 'Failed to load country.');
       setValidationError(message);
       globalToast.error(message);
+      return false;
     } finally {
       setLoadingCountryId(null);
     }
@@ -132,6 +136,7 @@ export function useAdminCountries() {
       await saveMutation.mutateAsync({ id: editingId, values: form });
       globalToast.success(translateMessage(editingId ? 'Country updated successfully.' : 'Country created successfully.'));
       resetForm();
+      return true;
     } catch (error: unknown) {
       if (error instanceof CountryApiError && error.fieldErrors) {
         const nextFieldErrors: Partial<Record<keyof CountryFormValues, string>> = {};
@@ -145,12 +150,13 @@ export function useAdminCountries() {
         const message = translateMessage(fieldMessage || error.message || 'Failed to save country.');
         setValidationError(message);
         globalToast.error(message);
-        return;
+        return false;
       }
 
       const message = translateMessage(error instanceof Error ? error.message : 'Failed to save country.');
       setValidationError(message);
       globalToast.error(message);
+      return false;
     }
   }, [editingId, form, resetForm, saveMutation]);
 

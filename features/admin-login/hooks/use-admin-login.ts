@@ -9,7 +9,6 @@ export function useAdminLogin() {
   const router = useRouter();
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isBootstrapping, setIsBootstrapping] = useState(false);
   const [bootstrapMessage, setBootstrapMessage] = useState<string | null>(null);
 
   const handleLogin = async (data: AdminLoginValues) => {
@@ -47,18 +46,11 @@ export function useAdminLogin() {
     }
   };
 
-  const handleBootstrap = async (): Promise<AdminLoginValues | null> => {
-    // Bootstrap is not needed with the backend database
-    return null;
-  };
-
   return {
     error,
     isLoading,
-    isBootstrapping,
     bootstrapMessage,
     handleLogin,
-    handleBootstrap,
   };
 }
 

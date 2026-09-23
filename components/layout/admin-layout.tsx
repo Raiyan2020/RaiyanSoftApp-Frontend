@@ -18,17 +18,13 @@ import {
   Calendar,
   Inbox,
   ListChecks,
-  Globe2,
   Home,
   Newspaper,
-  HelpCircle,
   Tags,
-  Star,
   Handshake,
   FileText,
   Flag,
   Palette,
-  Settings,
   Sun,
   Moon,
   Search,
@@ -43,7 +39,7 @@ import { hasPermission } from '@/lib/permissions';
 import { FEATURES } from '@/lib/feature-flags';
 import { useTheme } from '@/lib/themeContext';
 import { useTranslation } from '@/lib/i18nContext';
-import SafeImage from '../ui/safe-image';
+import FallbackImage from '../ui/fallback-image';
 import Avatar from '../ui/avatar';
 
 
@@ -146,7 +142,7 @@ function SidebarContent({
     <div className="flex flex-col h-full">
       <div className={`p-3 flex items-center border-b border-[var(--border)] ${isSidebarCollapsed ? 'justify-center' : 'gap-2.5'}`}>
         <div className="grid h-8 w-8 place-items-center rounded-xl bg-primary/10 ring-1 ring-primary/15 relative overflow-hidden">
-          <SafeImage
+          <FallbackImage
             src="/logo.webp"
             alt="Raiyansoft"
             className="h-5 w-5 object-contain"
@@ -375,22 +371,16 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     ...(FEATURES.landingPageManagement ? [{ id: 'landing-page', label: t('admin.nav.landing_page'), icon: Layout, path: '/admin/landing-page', badge: 0, permission: '*' }] : []),
   ].filter((item) => hasPermission(currentPermissions, item.permission));
 
+  // Only API-backed sections are listed. The other /admin/website/* routes (homepage,
+  // services, apps, steps, faqs, testimonials, legal, settings) are local-JSON
+  // prototypes that duplicate /admin/landing-page, so they stay unlinked.
   const websiteNavItems = FEATURES.websiteManagement ? [
-    { id: 'website', label: t('admin.nav.overview'), icon: Globe2, path: '/admin/website', permission: 'website.view' },
-    { id: 'website-homepage', label: t('admin.nav.homepage'), icon: Home, path: '/admin/website/homepage', permission: 'website.homepage.manage' },
-    { id: 'website-services', label: t('admin.nav.services'), icon: Briefcase, path: '/admin/website/services', permission: 'website.services.manage' },
     { id: 'website-blog-categories', label: t('admin.nav.blog_categories'), icon: Tags, path: '/admin/website/blog/categories', permission: 'website.blog.manage' },
-    { id: 'website-apps', label: t('admin.nav.apps_cases'), icon: FolderKanban, path: '/admin/website/apps', permission: 'website.apps.manage' },
     { id: 'website-blog', label: t('admin.nav.blog'), icon: Newspaper, path: '/admin/website/blog', permission: 'website.blog.manage' },
-    { id: 'website-steps', label: t('admin.nav.steps'), icon: ListChecks, path: '/admin/website/steps', permission: 'website.steps.manage' },
-    { id: 'website-faqs', label: t('admin.nav.faqs'), icon: HelpCircle, path: '/admin/website/faqs', permission: 'website.faqs.manage' },
     { id: 'website-pricing', label: t('admin.nav.pricing'), icon: Tags, path: '/admin/website/pricing', permission: 'website.pricing.manage' },
-    { id: 'website-testimonials', label: t('admin.nav.testimonials'), icon: Star, path: '/admin/website/testimonials', permission: 'website.testimonials.manage' },
     { id: 'website-partners', label: t('admin.nav.partners'), icon: Handshake, path: '/admin/website/partners', permission: 'website.partners.manage' },
     { id: 'website-team', label: t('admin.nav.team'), icon: Users, path: '/admin/website/team', permission: 'website.team.manage' },
     { id: 'website-careers', label: t('admin.nav.careers'), icon: Briefcase, path: '/admin/website/careers', permission: 'website.careers.manage' },
-    { id: 'website-legal', label: t('admin.nav.legal'), icon: FileText, path: '/admin/website/legal', permission: 'website.legal.manage' },
-    { id: 'website-settings', label: t('admin.nav.site_settings'), icon: Settings, path: '/admin/website/settings', permission: 'website.settings.manage' },
   ].filter((item) => hasPermission(currentPermissions, item.permission)) : [];
 
   const allSearchableNavItems = [
@@ -490,7 +480,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               {isSidebarCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
             </button>
             <div className="md:hidden flex items-center gap-2">
-              <SafeImage
+              <FallbackImage
                 src="/logo.webp"
                 alt="Logo"
                 className="w-8 h-8 object-contain"
@@ -508,9 +498,6 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           >
             <Search size={16} />
             <span className="hidden lg:inline">{t('admin.search.header')}</span>
-            <kbd className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-1.5 py-0.5 text-[11px] font-bold">
-              {t('admin.search.shortcut')}
-          </kbd>
           </button>
           <button
             type="button"
@@ -662,9 +649,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                     placeholder={t('admin.search.placeholder')}
                     className="min-w-0 flex-1 bg-transparent text-base text-[var(--text)] placeholder:text-[var(--text-muted)] outline-none"
                   />
-                  <kbd className="rounded-md border border-[var(--border)] bg-[var(--surface-2)] px-2 py-1 text-[11px] font-bold text-[var(--text-muted)]">
-                    Esc
-                  </kbd>
+                  <button
+                    type="button"
+                    onClick={() => setIsCommandOpen(false)}
+                    aria-label={t('auth.close')}
+                    className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-[var(--border)] bg-[var(--surface-2)] text-[var(--text-muted)] transition-colors hover:text-[var(--text)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+                  >
+                    <X size={16} />
+                  </button>
                 </div>
 
                 <div className="max-h-[24rem] overflow-y-auto p-2 custom-scrollbar">

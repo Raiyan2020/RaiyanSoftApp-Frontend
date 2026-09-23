@@ -90,14 +90,14 @@ export default function AdminScheduleTab({
                           type="time"
                           value={range.start_time}
                           onChange={(e) => onChangeRange(idx, rangeIdx, 'start_time', e.target.value)}
-                          className="bg-[var(--surface-3)] border border-[var(--border)] rounded-lg px-3 py-2 text-[var(--text)] text-sm"
+                          className="app-input w-auto rounded-xl min-h-11 px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
                         />
                         <span className="text-[var(--text-muted)]">{translateMessage('to')}</span>
                         <input
                           type="time"
                           value={range.end_time}
                           onChange={(e) => onChangeRange(idx, rangeIdx, 'end_time', e.target.value)}
-                          className="bg-[var(--surface-3)] border border-[var(--border)] rounded-lg px-3 py-2 text-[var(--text)] text-sm"
+                          className="app-input w-auto rounded-xl min-h-11 px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
                         />
                         <button
                           type="button"

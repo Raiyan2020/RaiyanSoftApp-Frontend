@@ -1,9 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { EmployeeValues } from '../schemas/employee.schema';
 import { AdminEmployee } from '../types/admin-employee.types';
-import { getEmployeeFullName } from '../utils/employee-helpers';
 import { useAdminEmployeesList } from './use-admin-employees-list';
 import { useAdminEmployee } from './use-admin-employee';
 import { useCreateEmployee } from './use-create-employee';
@@ -22,6 +21,7 @@ const emptyForm: EmployeeValues = {
 
 export function useAdminEmployees() {
   const [searchTerm, setSearchTerm] = useState('');
+  const [page, setPage] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<AdminEmployee | null>(null);
   const [selectedEmployeeId, setSelectedEmployeeId] = useState<number | null>(null);
@@ -31,7 +31,33 @@ export function useAdminEmployees() {
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [selectedListEmployee, setSelectedListEmployee] = useState<AdminEmployee | null>(null);
 
-  const { employees, loading: listLoading, error: listError, reload: reloadList } = useAdminEmployeesList();
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  useEffect(() => {
+    const timer = window.setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
+    return () => window.clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Reset to page 1 whenever the effective (debounced) search changes.
+  // Adjusted during render instead of in an effect, so the search change and
+  // the page reset land in the same render pass.
+  const [prevSearch, setPrevSearch] = useState(debouncedSearch);
+  if (debouncedSearch !== prevSearch) {
+    setPrevSearch(debouncedSearch);
+    setPage(1);
+  }
+
+  const {
+    employees,
+    pagination,
+    loading: listLoading,
+    error: listError,
+    reload: reloadList,
+  } = useAdminEmployeesList(page, debouncedSearch);
+
+  const goToPage = (nextPage: number) => {
+    if (!pagination) return;
+    setPage(Math.min(Math.max(1, nextPage), pagination.last_page));
+  };
   const {
     employee: selectedEmployee,
     loading: detailLoading,
@@ -44,25 +70,8 @@ export function useAdminEmployees() {
   const { deleteEmployee, loading: deleteLoading, error: deleteError } = useDeleteEmployee();
   const { toggleBlock, loading: toggleLoading, error: toggleError } = useToggleEmployeeBlock();
 
-  const filteredEmployees = useMemo(() => {
-    const query = searchTerm.trim().toLowerCase();
-    if (!query) return employees;
-
-    return employees.filter((employee) => {
-      const haystack = [
-        getEmployeeFullName(employee),
-        employee.email,
-        employee.phone,
-        employee.role,
-        String(employee.id),
-      ]
-        .filter(Boolean)
-        .join(' ')
-        .toLowerCase();
-
-      return haystack.includes(query);
-    });
-  }, [employees, searchTerm]);
+  // Search runs server-side across all pages (admin/employess?search=).
+  const filteredEmployees = employees;
 
   const handleOpenModal = (employee?: AdminEmployee) => {
     setCreatedPassword(null);
@@ -163,7 +172,14 @@ export function useAdminEmployees() {
       await deleteEmployee(deleteId);
       if (selectedEmployeeId === deleteId) closeEmployee();
       setDeleteId(null);
-      await reloadList();
+      // Deleting the last item on a page beyond the first empties it; step
+      // back a page (the page-change effect in useAdminEmployeesList then
+      // reloads automatically) instead of reloading the now-empty page.
+      if (employees.length === 1 && page > 1) {
+        setPage(page - 1);
+      } else {
+        await reloadList();
+      }
     } catch {
       // error surfaced via deleteError
     }
@@ -175,7 +191,10 @@ export function useAdminEmployees() {
   return {
     employees,
     filteredEmployees,
-    listLoading,
+    pagination,
+    goToPage,
+    // Typed-but-not-yet-debounced search counts as loading.
+    listLoading: listLoading || searchTerm.trim() !== debouncedSearch,
     listError,
     searchTerm,
     setSearchTerm,

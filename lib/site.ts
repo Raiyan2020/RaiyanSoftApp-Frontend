@@ -1,9 +1,13 @@
 import type { Metadata } from 'next';
 import { translateMessage } from './i18n-utils';
+import type { AppLanguage } from './language';
 
 export const siteConfig = {
   name: 'ريان سوفت',
   englishName: 'Raiyan Soft',
+  englishDefaultTitle: 'Raiyan Soft | App, Website & E-commerce Development',
+  englishDescription:
+    'Raiyan Soft is a technology agency building mobile apps, websites, online stores, and brand identities with a clear user experience and growth-ready performance.',
   defaultTitle: 'ريان سوفت | تطوير تطبيقات ومواقع ومتاجر إلكترونية',
   description:
     'ريان سوفت وكالة تقنية تبني تطبيقات الجوال، المواقع الإلكترونية، المتاجر الرقمية، والهويات البصرية بتجربة مستخدم واضحة وأداء جاهز للنمو.',
@@ -78,17 +82,23 @@ type PublicMetadataOptions = {
   image?: string;
   type?: 'website' | 'article';
   noIndex?: boolean;
+  /** Language of the rendered request; picks the matching site name and defaults. */
+  language?: AppLanguage;
 };
 
 export function createPublicMetadata({
   title,
-  description = siteConfig.description,
+  description,
   path = '/',
   image = siteConfig.ogImage,
   type = 'website',
   noIndex = false,
+  language = 'ar',
 }: PublicMetadataOptions = {}): Metadata {
-  const resolvedTitle = title ? `${title} | ${siteConfig.name}` : siteConfig.defaultTitle;
+  const isArabic = language === 'ar';
+  const siteName = isArabic ? siteConfig.name : siteConfig.englishName;
+  description ??= isArabic ? siteConfig.description : siteConfig.englishDescription;
+  const resolvedTitle = title ? `${title} | ${siteName}` : isArabic ? siteConfig.defaultTitle : siteConfig.englishDefaultTitle;
   const canonical = getCanonicalUrl(path);
   const ogImage = image.startsWith('http') ? image : getCanonicalUrl(image.startsWith('/') ? image.slice(1) : image);
 
@@ -106,9 +116,9 @@ export function createPublicMetadata({
     openGraph: {
       title: resolvedTitle,
       description,
-      locale: siteConfig.locale,
+      locale: isArabic ? siteConfig.locale : 'en_US',
       type,
-      siteName: siteConfig.name,
+      siteName,
       url: canonical,
       images: [
         {

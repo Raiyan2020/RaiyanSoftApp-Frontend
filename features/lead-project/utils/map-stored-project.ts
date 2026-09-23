@@ -42,6 +42,7 @@ export type UserProjectView = {
   version: string;
   iconBg: string;
   brandColor: string;
+  image: string | null;
   industry: string;
   industryOther: string | null;
   markets: string[];
@@ -90,6 +91,7 @@ export function mapStoredProject(project: StoredProject): UserProjectView {
     version: project.request_id || 'v1.0.0',
     iconBg: color,
     brandColor: color,
+    image: project.image || project.logo || null,
     industry: '',
     industryOther: null,
     markets: [],

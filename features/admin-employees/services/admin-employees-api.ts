@@ -1,4 +1,4 @@
-import { apiService, ApiResponse } from '@/lib/api-service';
+import { apiService, ApiResponse, readPagination, type PaginationMeta } from '@/lib/api-service';
 import {
   AdminEmployee,
   CreateEmployeePayload,
@@ -7,6 +7,11 @@ import {
 
 /** Backend route uses this typo intentionally. */
 const EMPLOYEES_PATH = 'admin/employess';
+
+export type AdminEmployeesFilters = {
+  page?: number;
+  search?: string;
+};
 
 function getApiErrorMessage(response: ApiResponse<unknown>) {
   if (response.errors && typeof response.errors === 'object') {
@@ -22,8 +27,12 @@ function unwrapList<T>(data: T[] | { data?: T[] } | null | undefined): T[] {
   return [];
 }
 
-export async function fetchAdminEmployees() {
-  const response = await apiService.get<AdminEmployee[] | { data?: AdminEmployee[] }>(EMPLOYEES_PATH, {
+export async function fetchAdminEmployees(filters: AdminEmployeesFilters = {}) {
+  const params = new URLSearchParams();
+  if (filters.search?.trim()) params.set('search', filters.search.trim());
+  if (filters.page && filters.page > 1) params.set('page', String(filters.page));
+  const query = params.toString() ? `?${params.toString()}` : '';
+  const response = await apiService.get<AdminEmployee[] | { data?: AdminEmployee[] }>(`${EMPLOYEES_PATH}${query}`, {
     skipGlobalToast: true,
   });
   const employees = unwrapList(response.data);
@@ -32,7 +41,7 @@ export async function fetchAdminEmployees() {
     throw new Error(getApiErrorMessage(response));
   }
 
-  return employees;
+  return { items: employees, pagination: readPagination(response) as PaginationMeta | null };
 }
 
 export async function fetchAdminEmployee(id: number | string) {

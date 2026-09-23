@@ -6,7 +6,7 @@ import { translateMessage } from '@/lib/i18n-utils';
 import { useAuthGuard } from '@/lib/authGuardContext';
 import { guestStore } from '@/lib/guestStore';
 import { getUserDisplayName } from '@/lib/user-display';
-import { useUserStoredProjects } from '@/features/lead-project';
+import { useMyProjects } from '@/features/projects';
 
 export function useHome() {
   const router = useRouter();
@@ -29,7 +29,9 @@ export function useHome() {
     projects,
     loading: projectsLoading,
     error: projectsError,
-  } = useUserStoredProjects(Boolean(currentUser));
+    pagination: projectsPagination,
+    setPage: setProjectsPage,
+  } = useMyProjects(Boolean(currentUser));
   const userCreatedProjects = currentUser ? projects : [];
 
   const handleCreateClick = () => {
@@ -47,6 +49,8 @@ export function useHome() {
     projects: userCreatedProjects,
     projectsLoading,
     projectsError,
+    projectsPagination,
+    setProjectsPage,
     isWizardOpen,
     setIsWizardOpen,
     handleCreateClick,

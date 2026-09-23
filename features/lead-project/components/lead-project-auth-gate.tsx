@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { isValidPhoneNumber } from 'react-phone-number-input';
-import { AlertCircle, Phone, ShieldCheck, User } from 'lucide-react';
+import { ArrowLeft, Phone, User } from 'lucide-react';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import PhoneInput from '@/components/ui/phone-input';
@@ -10,16 +10,18 @@ import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
 import { useTranslation } from '@/lib/i18nContext';
 import { translateMessage } from '@/lib/i18n-utils';
-import { usePhoneAuth } from '@/features/auth';
+import { OtpField, OTP_LENGTH, usePhoneAuth } from '@/features/auth';
 
 interface LeadProjectAuthGateProps {
   onAuthenticated: () => void | Promise<void>;
   submitError?: string | null;
+  /** Leave the auth step for the previous wizard step. */
+  onBack: () => void;
 }
 
-export default function LeadProjectAuthGate({ onAuthenticated, submitError }: LeadProjectAuthGateProps) {
+export default function LeadProjectAuthGate({ onAuthenticated, submitError, onBack }: LeadProjectAuthGateProps) {
   const { t, dir, language } = useTranslation();
-  const { step, phone, isNewUser, newUserOtpSent, loading, error, message, checkPhone, submitRegistrationDetails, submitOtp } = usePhoneAuth({
+  const { step, phone, isNewUser, newUserOtpSent, loading, error, message, reset, checkPhone, submitRegistrationDetails, submitOtp } = usePhoneAuth({
     onSuccess: onAuthenticated,
   });
   const [phoneValue, setPhoneValue] = useState('');
@@ -49,7 +51,7 @@ export default function LeadProjectAuthGate({ onAuthenticated, submitError }: Le
     submitRegistrationDetails(name.trim());
   };
 
-  const handleOtpSubmit = () => {
+  const handleOtpSubmit = (code = otp) => {
     setLocalError(null);
 
     if (isNewUser && !newUserOtpSent) {
@@ -62,15 +64,34 @@ export default function LeadProjectAuthGate({ onAuthenticated, submitError }: Le
       return;
     }
 
-    if (!otp.trim() || otp.trim().length < 4) {
+    if (code.length < OTP_LENGTH) {
       setLocalError(t('auth.otp_invalid'));
       return;
     }
-    submitOtp({ phone, otp: otp.trim() });
+    submitOtp({ phone, otp: code });
   };
 
   return (
     <div className="flex h-full flex-col p-6 pt-10" dir={dir}>
+      <button
+        type="button"
+        onClick={() => {
+          // OTP step returns to the phone step; phone step leaves the auth gate.
+          if (step === 'otp') {
+            reset();
+            setOtp('');
+            setName('');
+            setLocalError(null);
+          } else {
+            onBack();
+          }
+        }}
+        disabled={loading}
+        className="mb-4 inline-flex items-center gap-2 self-start text-xs font-bold text-[var(--text-muted)] transition-colors hover:text-[var(--text)] disabled:opacity-50"
+      >
+        <ArrowLeft size={14} className="rtl:rotate-180" aria-hidden="true" />
+        {step === 'otp' ? t('auth.change_phone') : t('auth.back')}
+      </button>
       <h2 className="mb-2 text-2xl font-bold text-[var(--text)]">
         {translateMessage('Sign in to continue', language)}
       </h2>
@@ -121,13 +142,13 @@ export default function LeadProjectAuthGate({ onAuthenticated, submitError }: Le
               )}
             </div>
           ) : (
-            <Input
-              label={t('auth.otp')}
+            <OtpField
               value={otp}
-              onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))}
-              icon={<ShieldCheck size={16} />}
-              dir="ltr"
-              autoFocus
+              onChange={setOtp}
+              onComplete={(code) => {
+                if (!loading) handleOtpSubmit(code);
+              }}
+              disabled={loading}
             />
           )}
           <Button type="submit" disabled={loading || (needsNameBeforeOtp && !name.trim())} className="w-full">

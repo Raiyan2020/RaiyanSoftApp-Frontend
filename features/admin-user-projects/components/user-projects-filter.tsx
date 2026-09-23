@@ -1,7 +1,12 @@
 import React from 'react';
 import { Search } from 'lucide-react';
 import { translateMessage } from '@/lib/i18n-utils';
+import { useTranslation } from '@/lib/i18nContext';
+import Input from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { INDUSTRIES, ProjectTypeFilter } from '../hooks/use-admin-user-projects';
+
+const TYPE_FILTER_ALL = '__all__';
 
 interface UserProjectsFilterProps {
   searchTerm: string;
@@ -24,46 +29,51 @@ export default function UserProjectsFilter({
   typeFilter,
   setTypeFilter,
 }: UserProjectsFilterProps) {
+  const { language } = useTranslation();
   return (
     <div className="flex flex-col md:flex-row gap-4 bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border)] shadow-lg">
       <div className="relative flex-1">
-        <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-        <input
+        <Input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder={translateMessage('Search by project, customer, or phone...')}
-          className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
+          icon={<Search size={18} />}
         />
       </div>
       <div className="flex flex-wrap gap-2">
         <input
           type="date"
+          lang={language}
           value={dateFrom}
           onChange={(e) => setDateFrom(e.target.value)}
           aria-label={translateMessage('From date')}
-          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
+          className="app-input rounded-xl min-h-11 px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
         />
         <input
           type="date"
+          lang={language}
           value={dateTo}
           onChange={(e) => setDateTo(e.target.value)}
           aria-label={translateMessage('To date')}
-          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
+          className="app-input rounded-xl min-h-11 px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
         />
-        <select
-          value={typeFilter}
-          onChange={(e) => setTypeFilter(e.target.value as ProjectTypeFilter)}
-          aria-label={translateMessage('Project Type')}
-          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
+        <Select
+          value={typeFilter || TYPE_FILTER_ALL}
+          onValueChange={(value) => setTypeFilter((value === TYPE_FILTER_ALL ? '' : value) as ProjectTypeFilter)}
         >
-          <option value="">{translateMessage('All Types')}</option>
-          {INDUSTRIES.map((industry) => (
-            <option key={industry} value={industry}>
-              {translateMessage(industry)}
-            </option>
-          ))}
-        </select>
+          <SelectTrigger className="min-h-11" aria-label={translateMessage('Project Type')}>
+            <SelectValue placeholder={translateMessage('All Types')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={TYPE_FILTER_ALL}>{translateMessage('All Types')}</SelectItem>
+            {INDUSTRIES.map((industry) => (
+              <SelectItem key={industry} value={industry}>
+                {translateMessage(industry)}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );

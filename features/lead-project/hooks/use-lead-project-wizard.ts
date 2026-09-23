@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { authService } from '@/lib/auth-service';
 import {
@@ -24,7 +24,7 @@ export function useLeadProjectWizard({
   onComplete: (requestId?: string) => void;
   questionsEnabled?: boolean;
 }) {
-  const { t, dir, language, setLanguage } = useTranslation();
+  const { t, dir, language } = useTranslation();
   const queryClient = useQueryClient();
   const { colors } = useUserColors();
   const presetColors = useMemo(
@@ -43,10 +43,17 @@ export function useLeadProjectWizard({
   >(savedDraft.answersByQuestionId || {});
   const [errors, setErrors] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  // Set while the client jumps back to a question from the review screen to
-  // edit an answer; consumed by the next answer/step advance to send them
-  // straight back to review instead of continuing forward through the wizard.
-  const [editReturnStep, setEditReturnStep] = useState<number | null>(null);
+  // Set while the client edits one answer from the review screen: holds the
+  // values as they were, so "back" can discard the edit. The primary action
+  // validates the step and returns straight to review instead of walking
+  // forward through every following step.
+  const [editSnapshot, setEditSnapshot] = useState<{
+    name: string;
+    brandColor: string;
+    showCustomColor: boolean;
+    answersByQuestionId: Record<number, number | string>;
+  } | null>(null);
+  const isEditingFromReview = editSnapshot !== null;
 
   const { questions, loading: questionsLoading, error: questionsError } = useFormQuestions(
     language,
@@ -54,6 +61,8 @@ export function useLeadProjectWizard({
   );
 
   const [colorsInitialized, setColorsInitialized] = useState(false);
+  const [reviewedQuestionsKey, setReviewedQuestionsKey] = useState(savedDraft.reviewedQuestionsKey);
+  const submittingRef = useRef(false);
 
   // Initialize the brand color once the preset colors have loaded, adjusted
   // during render instead of in an effect (guarded by colorsInitialized so
@@ -70,13 +79,22 @@ export function useLeadProjectWizard({
       brandColor,
       showCustomColor,
       answersByQuestionId,
+      reviewedQuestionsKey,
     });
-  }, [answersByQuestionId, brandColor, name, showCustomColor, step]);
+  }, [answersByQuestionId, brandColor, name, showCustomColor, step, reviewedQuestionsKey]);
 
   const questionCount = questions.length;
   const nameStep = questionCount + 1;
   const colorStep = questionCount + 2;
   const reviewStep = questionCount + 3;
+
+  // "Completed once" is tied to the exact question list: if the form's
+  // questions change, the shortcut hides until review is reached again.
+  const questionsKey = questions.map((question) => question.id).join(',');
+  const hasReachedReview = questionCount > 0 && reviewedQuestionsKey === questionsKey;
+  if (step === reviewStep && questionCount > 0 && !questionsLoading && !hasReachedReview) {
+    setReviewedQuestionsKey(questionsKey);
+  }
   const authStep = questionCount + 4;
   const totalSteps = (isAuthenticated ? reviewStep : authStep) + 1;
 
@@ -92,11 +110,8 @@ export function useLeadProjectWizard({
   const selectSingleAnswerAndContinue = (questionId: number, optionId: number) => {
     setErrors([]);
     setAnswersByQuestionId((current) => ({ ...current, [questionId]: optionId }));
-    if (editReturnStep !== null) {
-      const target = editReturnStep;
-      setEditReturnStep(null);
-      setDirection(1);
-      setStep(target);
+    if (isEditingFromReview) {
+      returnToReview();
       return;
     }
     setDirection(1);
@@ -107,11 +122,17 @@ export function useLeadProjectWizard({
     });
   };
 
-  // Jump back to a specific step from the review screen; the next answer or
-  // "next" press returns here instead of advancing normally.
+  const returnToReview = () => {
+    setEditSnapshot(null);
+    setErrors([]);
+    setDirection(1);
+    setStep(reviewStep);
+  };
+
+  // Jump from the review screen to the step that owns one answer.
   const goToStepFromReview = (targetStep: number) => {
     setErrors([]);
-    setEditReturnStep(reviewStep);
+    setEditSnapshot({ name, brandColor, showCustomColor, answersByQuestionId });
     setDirection(-1);
     setStep(targetStep);
   };
@@ -120,8 +141,7 @@ export function useLeadProjectWizard({
     setAnswersByQuestionId((current) => ({ ...current, [questionId]: value }));
   };
 
-  const validateStep = (currentStep: number): boolean => {
-    setErrors([]);
+  const getStepErrors = (currentStep: number): string[] => {
     const newErrors: string[] = [];
 
     if (currentStep >= 1 && currentStep <= questionCount) {
@@ -143,21 +163,39 @@ export function useLeadProjectWizard({
       }
     }
 
-    if (newErrors.length > 0) {
-      setErrors(newErrors);
-      return false;
-    }
-
-    return true;
+    return newErrors;
   };
+
+  const validateStep = (currentStep: number): boolean => {
+    const newErrors = getStepErrors(currentStep);
+    setErrors(newErrors);
+    return newErrors.length === 0;
+  };
+
+  // Shortcut for a client who already completed the form once and walked
+  // back: validate this step, then jump to review, or to the first step that
+  // is no longer valid.
+  const jumpToReview = () => {
+    if (!validateStep(step)) return;
+    let target = reviewStep;
+    for (let candidate = 1; candidate <= colorStep; candidate += 1) {
+      if (getStepErrors(candidate).length > 0) {
+        target = candidate;
+        break;
+      }
+    }
+    setErrors(target === reviewStep ? [] : getStepErrors(target));
+    setDirection(1);
+    setStep(target);
+  };
+
+  const canJumpToReview =
+    hasReachedReview && !isEditingFromReview && step >= 1 && step <= colorStep;
 
   const nextStep = () => {
     if (!validateStep(step)) return;
-    if (editReturnStep !== null) {
-      const target = editReturnStep;
-      setEditReturnStep(null);
-      setDirection(1);
-      setStep(target);
+    if (isEditingFromReview) {
+      returnToReview();
       return;
     }
     setDirection(1);
@@ -165,13 +203,25 @@ export function useLeadProjectWizard({
   };
 
   const prevStep = () => {
+    if (editSnapshot) {
+      // Back while editing from review = cancel: restore the previous values.
+      setName(editSnapshot.name);
+      setBrandColor(editSnapshot.brandColor);
+      setShowCustomColor(editSnapshot.showCustomColor);
+      setAnswersByQuestionId(editSnapshot.answersByQuestionId);
+      returnToReview();
+      return;
+    }
+    setErrors([]);
     setDirection(-1);
     setStep((current) => Math.max(current - 1, 0));
   };
 
   const handleSubmit = async () => {
+    if (submittingRef.current) return;
     if (!validateStep(reviewStep)) return;
 
+    submittingRef.current = true;
     setIsLoading(true);
     setErrors([]);
 
@@ -179,7 +229,16 @@ export function useLeadProjectWizard({
       const response = await storeProject({
         name: name.trim(),
         color: brandColor,
-        answersByQuestionId,
+        // Only answers to questions still in the form; drops leftovers from
+        // questions removed since the draft was saved. Skipped if the
+        // question list failed to load, so answers are never all dropped.
+        answersByQuestionId: questions.length
+          ? Object.fromEntries(
+              questions
+                .filter((question) => answersByQuestionId[question.id] !== undefined)
+                .map((question) => [question.id, answersByQuestionId[question.id]])
+            )
+          : answersByQuestionId,
       });
 
       if (!response.status) {
@@ -195,6 +254,7 @@ export function useLeadProjectWizard({
     } catch (err: any) {
       setErrors([err.message || (dir === 'rtl' ? 'فشل إرسال الطلب.' : 'Failed to submit request.')]);
     } finally {
+      submittingRef.current = false;
       setIsLoading(false);
     }
   };
@@ -245,6 +305,9 @@ export function useLeadProjectWizard({
     nextStep,
     prevStep,
     goToStepFromReview,
+    isEditingFromReview,
+    canJumpToReview,
+    jumpToReview,
     handleSubmit,
     selectSingleAnswerAndContinue,
     setTextAnswer,
@@ -254,7 +317,6 @@ export function useLeadProjectWizard({
     t,
     dir,
     language,
-    setLanguage,
     clearDraft: clearLeadProjectDraft,
   };
 }

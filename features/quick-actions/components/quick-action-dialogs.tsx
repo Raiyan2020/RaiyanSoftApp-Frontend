@@ -5,6 +5,8 @@ import { Calendar, CheckCircle2, FolderPlus, Loader2, Phone, User, X } from 'luc
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
 import PhoneInput from '@/components/ui/phone-input';
+import { FieldError } from '@/components/ui/field';
+import { getPhoneError } from '@/lib/phone';
 import Textarea from '@/components/ui/textarea';
 import LeadProjectWizard from '@/features/lead-project/components/lead-project-wizard';
 import LeadContactChoiceModal from '@/features/lead-project/components/lead-contact-choice-modal';
@@ -12,6 +14,7 @@ import BookingWizard from '@/features/appointments/components/booking-wizard';
 import { User as AuthUser } from '@/lib/auth-service';
 import { useTranslation } from '@/lib/i18nContext';
 import { getUserDisplayName } from '@/lib/user-display';
+import { formatCallingCode } from '@/lib/utils';
 
 type QuickActionMode = 'booking' | 'lead';
 
@@ -90,6 +93,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
   const [form, setForm] = useState<FormState>(emptyForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedRef, setSubmittedRef] = useState<string | null>(null);
+  const [phoneError, setPhoneError] = useState<string | undefined>();
 
   const copy = useMemo(() => {
     const isBooking = mode === 'booking';
@@ -143,17 +147,24 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
 
   const updateField = (key: keyof FormState, value: string) => {
     setForm((current) => ({ ...current, [key]: value }));
+    if (key === 'phone') setPhoneError(undefined);
   };
 
   const closeDialog = () => {
     setForm(emptyForm);
     setSubmittedRef(null);
     setIsSubmitting(false);
+    setPhoneError(undefined);
     onClose();
   };
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (!isLoggedIn) {
+      const nextPhoneError = getPhoneError(form.phone);
+      setPhoneError(nextPhoneError);
+      if (nextPhoneError) return;
+    }
     setIsSubmitting(true);
 
     window.setTimeout(() => {
@@ -214,7 +225,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
                       {userDisplayName}
                     </p>
                     <p className="text-xs text-[var(--text-muted)]" dir="ltr">
-                      {[user?.country_code, user?.phone].filter(Boolean).join(' ')}
+                      {[formatCallingCode(user?.country_code), user?.phone].filter(Boolean).join(' ')}
                     </p>
                   </div>
                 </div>
@@ -231,6 +242,7 @@ function QuickActionDialog({ isOpen, mode, onClose, user }: QuickActionDialogPro
                 <div className="space-y-2">
                   <label className="ms-1 block text-xs font-medium text-[var(--text-muted)]">{copy.guestPhone}</label>
                   <PhoneInput value={form.phone} onChange={(value) => updateField('phone', value || '')} required />
+                  <FieldError errors={[phoneError]} />
                 </div>
                 <Input
                   label={copy.guestEmail}

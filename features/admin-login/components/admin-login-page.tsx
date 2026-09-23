@@ -1,6 +1,6 @@
 import React from 'react';
-import { Lock, Mail, ArrowRight, Loader2, Zap } from 'lucide-react';
-import SafeImage from '@/components/ui/safe-image';
+import { Lock, Mail, ArrowRight, Loader2 } from 'lucide-react';
+import FallbackImage from '@/components/ui/fallback-image';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
 import { useAdminLogin } from '../hooks/use-admin-login';
@@ -8,18 +8,12 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { adminLoginSchema, AdminLoginValues } from '../schemas/admin-login.schema';
 import { Field, FieldLabel, FieldError, PasswordInput } from '@/components/ui/field';
+import Input from '@/components/ui/input';
 import AdminLoginRedirect from './admin-login-redirect';
 import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminLoginPage() {
-  const {
-    error,
-    isLoading,
-    isBootstrapping,
-    bootstrapMessage,
-    handleLogin,
-    handleBootstrap,
-  } = useAdminLogin();
+  const { error, isLoading, bootstrapMessage, handleLogin } = useAdminLogin();
 
   const form = useForm<AdminLoginValues>({
     resolver: zodResolver(adminLoginSchema),
@@ -40,7 +34,7 @@ export default function AdminLoginPage() {
         <div className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border)] rounded-3xl p-8 shadow-2xl sm:p-10">
           <div className="flex flex-col items-center mb-8">
             <div className="w-16 h-16 bg-[var(--surface-2)] rounded-2xl flex items-center justify-center border border-[var(--border)] mb-4 shadow-lg">
-              <SafeImage
+              <FallbackImage
                 src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
                 className="w-10 h-10 object-contain"
                 alt={translateMessage('Raiyansoft Logo')}
@@ -57,17 +51,15 @@ export default function AdminLoginPage() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel>{translateMessage('Email Address')}</FieldLabel>
-                  <div className="relative">
-                    <Mail className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-                    <input
-                      {...field}
-                      type="email"
-                      aria-invalid={fieldState.invalid}
-                      aria-describedby={fieldState.invalid ? 'admin-login-email-error' : undefined}
-                      className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                      placeholder="name@raiyansoft.com"
-                    />
-                  </div>
+                  <Input
+                    {...field}
+                    type="email"
+                    icon={<Mail size={18} />}
+                    aria-invalid={fieldState.invalid}
+                    aria-describedby={fieldState.invalid ? 'admin-login-email-error' : undefined}
+                    className={fieldState.invalid ? 'border-danger' : ''}
+                    placeholder="name@raiyansoft.com"
+                  />
                   {fieldState.invalid && (
                     <FieldError id="admin-login-email-error" errors={[fieldState.error]} />
                   )}
@@ -120,26 +112,6 @@ export default function AdminLoginPage() {
               )}
             </button>
           </form>
-
-          <div className="mt-8 text-center space-y-4">
-            <p className="text-[11px] text-[var(--text-muted)] uppercase tracking-widest">{translateMessage('Secured Area • Raiyansoft® Admin')}</p>
-
-            <button
-              type="button"
-              onClick={async () => {
-                const values = await handleBootstrap();
-                if (values) {
-                  form.setValue('email', values.email);
-                  form.setValue('password', values.password);
-                }
-              }}
-              disabled={isBootstrapping}
-              className="text-[11px] text-[var(--text-muted)] hover:text-[var(--text-muted)] transition-colors flex items-center justify-center gap-1 mx-auto"
-            >
-              {isBootstrapping ? <Loader2 size={10} className="animate-spin" /> : <Zap size={10} />}
-              {translateMessage('Initialize / Recover Super Admin')}
-            </button>
-          </div>
         </div>
       </div>
     </div>

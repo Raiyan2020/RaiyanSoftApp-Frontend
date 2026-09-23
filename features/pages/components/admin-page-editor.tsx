@@ -7,6 +7,7 @@ import { AboutUsForm, PageSlug, SimplePageForm } from '../types/page.types';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
 import Loader from '@/components/ui/loader';
+import Input from '@/components/ui/input';
 import { translateMessage } from '@/lib/i18n-utils';
 
 const RichTextEditor = dynamic(() => import('@/components/ui/rich-text-editor'), {
@@ -83,12 +84,12 @@ export default function AdminPageEditor({
 
       <div className="space-y-2">
         <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Title')}</label>
-        <input
+        <Input
           type="text"
           value={form.title}
           onChange={(event) => updateField('title', event.target.value)}
           readOnly={readOnly}
-          className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text)] outline-none focus:border-primary read-only:cursor-not-allowed read-only:opacity-75"
+          className="read-only:cursor-not-allowed read-only:opacity-75"
           placeholder={translateMessage('Page title')}
         />
       </div>
@@ -97,7 +98,7 @@ export default function AdminPageEditor({
         <>
           <div className="space-y-2">
             <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Caption')}</label>
-            <input
+            <Input
               type="text"
               value={form.caption}
               onChange={(event) => {
@@ -105,7 +106,7 @@ export default function AdminPageEditor({
                 setForm({ ...form, caption: event.target.value });
               }}
               readOnly={readOnly}
-              className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text)] outline-none focus:border-primary read-only:cursor-not-allowed read-only:opacity-75"
+              className="read-only:cursor-not-allowed read-only:opacity-75"
               placeholder={translateMessage('Short subtitle')}
             />
           </div>
@@ -113,7 +114,7 @@ export default function AdminPageEditor({
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
               <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Contact Email')}</label>
-              <input
+              <Input
                 type="email"
                 value={form.email}
                 onChange={(event) => {
@@ -121,13 +122,13 @@ export default function AdminPageEditor({
                   setForm({ ...form, email: event.target.value });
                 }}
                 readOnly={readOnly}
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text)] outline-none focus:border-primary read-only:cursor-not-allowed read-only:opacity-75"
+                className="read-only:cursor-not-allowed read-only:opacity-75"
                 placeholder="support@example.com"
               />
             </div>
             <div className="space-y-2">
               <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Website URL')}</label>
-              <input
+              <Input
                 type="url"
                 value={form.url}
                 onChange={(event) => {
@@ -135,7 +136,7 @@ export default function AdminPageEditor({
                   setForm({ ...form, url: event.target.value });
                 }}
                 readOnly={readOnly}
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 text-[var(--text)] outline-none focus:border-primary read-only:cursor-not-allowed read-only:opacity-75"
+                className="read-only:cursor-not-allowed read-only:opacity-75"
                 placeholder="https://example.com"
               />
             </div>

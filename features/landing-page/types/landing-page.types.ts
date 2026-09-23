@@ -338,6 +338,12 @@ export interface AdminAboutUsSubmissionListResult {
   pagination: AdminAboutUsSubmissionPagination | null;
 }
 
+/** Generic paginated list result for admin landing-page CRUD tabs. */
+export interface AdminPaginatedListResult<T> {
+  items: T[];
+  pagination: AdminAboutUsSubmissionPagination | null;
+}
+
 export interface AdminBanner {
   id: number;
   slug: string;
@@ -389,4 +395,44 @@ export interface AdminSocialMediaPayload {
   platform: string;
   link: string;
   image?: File | null;
+}
+
+// ---------------------------------------------------------------------------
+// Website CMS lists (public, localized by Accept-Language)
+// ---------------------------------------------------------------------------
+
+export interface PublicPartner {
+  id: number;
+  name: string;
+  description: string | null;
+  logo: string | null;
+  url: string | null;
+}
+
+export interface PublicTeamMember {
+  id: number;
+  name: string;
+  role: string;
+  bio: string | null;
+  image: string | null;
+}
+
+export interface PublicPricingPlan {
+  id: number;
+  name: string;
+  description: string;
+  price_label: string | null;
+  features: string[];
+  is_featured: boolean;
+}
+
+export interface PublicJobOpening {
+  id: number;
+  title: string;
+  department: string;
+  location: string;
+  /** Rich-text HTML. */
+  description: string;
+  employment_type: 'full_time' | 'part_time' | 'contract' | 'remote';
+  apply_url: string | null;
 }

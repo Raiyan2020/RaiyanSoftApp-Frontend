@@ -2,6 +2,7 @@ import React from 'react';
 import { MessageCircle, Volume2, VolumeX, Search } from 'lucide-react';
 import { Conversation } from '../hooks/use-admin-live-chat';
 import ConversationListItem from './conversation-list-item';
+import Input from '@/components/ui/input';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface ConversationListProps {
@@ -50,16 +51,14 @@ export default function ConversationList({
           </button>
         </div>
 
-        <div className="relative">
-          <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={16} />
-          <input
-            type="text"
-            placeholder={translateMessage('Search customers...')}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-[var(--surface-3)] border border-[var(--border)] rounded-xl py-2 ps-9 pe-3 text-sm text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
-          />
-        </div>
+        <Input
+          type="text"
+          placeholder={translateMessage('Search customers...')}
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          icon={<Search size={16} />}
+          className="text-sm"
+        />
       </div>
 
       <div className="flex-1 overflow-y-auto custom-scrollbar">

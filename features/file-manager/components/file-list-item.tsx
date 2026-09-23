@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { FileText, Trash2, Download } from 'lucide-react';
-import SafeImage from '@/components/ui/safe-image';
+import FallbackImage from '@/components/ui/fallback-image';
 import { translateMessage } from '@/lib/i18n-utils';
 import { UploadedFile } from '../hooks/use-file-manager';
 
@@ -23,7 +23,7 @@ export default function FileListItem({ file, dir, isImage, formatSize, onDelete 
     >
       <div className="w-12 h-12 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center overflow-hidden shrink-0">
         {isImage(file.type) ? (
-          <SafeImage src={file.url} alt={file.name} className="w-full h-full object-cover" />
+          <FallbackImage src={file.url} alt={file.name} className="w-full h-full object-cover" />
         ) : (
           <FileText size={20} className="text-[var(--text-muted)]" />
         )}

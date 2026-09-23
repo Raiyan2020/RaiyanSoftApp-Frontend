@@ -8,7 +8,9 @@ import { fetchLandingFaqs } from '@/features/landing-page';
 import { getServerLanguage } from '@/lib/language.server';
 import { translateMessage } from '@/lib/i18n-utils';
 
-export const metadata: Metadata = getPageMetadata('faq');
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('faq', await getServerLanguage());
+}
 
 export default async function FaqPage() {
   const language = await getServerLanguage();

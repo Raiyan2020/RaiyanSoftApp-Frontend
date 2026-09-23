@@ -21,6 +21,8 @@ export default function AdminMarketingPage() {
     successMessage,
     dropdownRef,
     filteredUsers,
+    isSearchingUsers,
+    userSearchFailed,
     handleUserSelect,
     handleSubmit,
     formatHistoryDate,
@@ -45,6 +47,8 @@ export default function AdminMarketingPage() {
           setShowUserDropdown={setShowUserDropdown}
           dropdownRef={dropdownRef}
           filteredUsers={filteredUsers}
+          isSearchingUsers={isSearchingUsers}
+          userSearchFailed={userSearchFailed}
           handleUserSelect={handleUserSelect}
           formData={formData}
           setFormData={setFormData}

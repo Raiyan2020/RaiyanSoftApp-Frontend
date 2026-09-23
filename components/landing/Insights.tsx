@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRef } from 'react';
 import { ArrowUpLeft } from 'lucide-react';
 import { useSectionReveal } from './use-section-reveal';
+import SectionHeader from './SectionHeader';
 import { translateMessage } from '@/lib/i18n-utils';
 import { useTranslation } from '@/lib/i18nContext';
 
@@ -42,22 +43,15 @@ export default function Insights({ posts }: InsightsProps) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgb(var(--primary-glow-rgb) / 0.12),transparent_32%),linear-gradient(to_bottom,#ffffff,rgba(247,251,253,0.82))] dark:bg-[radial-gradient(circle_at_top_left,rgb(var(--primary-glow-rgb) / 0.12),transparent_30%),linear-gradient(to_bottom,#020617,#071827)]" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="reveal mb-10 grid gap-5 lg:mb-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
-          <div className="space-y-4 text-start">
-            <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
-              {translateMessage('Articles that help you')} <span className="gradient-text">{translateMessage('decide with confidence')}</span>
-            </h2>
-          </div>
-          <div className="text-start">
-            <p className="max-w-3xl text-base leading-relaxed text-slate-600 dark:text-slate-300 sm:text-lg">
-              {translateMessage('We write about planning, cost, user experience, and launch so you start your project with clearer decisions.')}
-            </p>
-            <Link href="/blogs" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary hover:text-primary-dark">
-              {translateMessage('All Articles')}
-              <ArrowUpLeft size={16} className={arrowClass} />
-            </Link>
-          </div>
-        </div>
+        <SectionHeader
+          title={<>{translateMessage('Articles that help you')} <span className="gradient-text">{translateMessage('decide with confidence')}</span></>}
+          description={translateMessage('We write about planning, cost, user experience, and launch so you start your project with clearer decisions.')}
+        >
+          <Link href="/blogs" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary hover:text-primary-dark">
+            {translateMessage('All Articles')}
+            <ArrowUpLeft size={16} className={arrowClass} />
+          </Link>
+        </SectionHeader>
 
         <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
           {featuredPost ? (
@@ -71,7 +65,7 @@ export default function Insights({ posts }: InsightsProps) {
                 <h3 className="mt-6 max-w-2xl text-2xl font-bold leading-[1.36] text-white transition-colors group-hover:text-primary sm:text-3xl">
                   {translateMessage(featuredPost.title)}
                 </h3>
-                <p className="mt-4 max-w-2xl leading-relaxed text-slate-300">{translateMessage(featuredPost.excerpt)}</p>
+                <p className="mt-4 line-clamp-4 max-w-2xl leading-relaxed text-slate-300">{translateMessage(featuredPost.excerpt)}</p>
                 <div className="mt-10 grid grid-cols-2 gap-3 sm:max-w-lg">
                   {['Scope Clarity', 'Lower Risk', 'Faster Decision', 'First Plan'].map((label) => (
                     <div key={label} className="rounded-2xl border border-white/10 bg-white/7 p-4 text-sm font-bold text-slate-200">
@@ -92,13 +86,13 @@ export default function Insights({ posts }: InsightsProps) {
               <Link
                 key={post.slug}
                 href={`/blogs/${post.slug}`}
-                className="reveal group rounded-[1.5rem] border border-cyan-950/10 bg-slate-50/80 p-6 transition-all duration-500 hover:-translate-y-2 hover:border-primary/30 hover:bg-white hover:shadow-[var(--shadow-glow)] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/8"
+                className="reveal group flex flex-col rounded-[1.5rem] border border-cyan-950/10 bg-slate-50/80 p-6 transition-all duration-500 hover:-translate-y-2 hover:border-primary/30 hover:bg-white hover:shadow-[var(--shadow-glow)] dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/8"
                 style={{ transitionDelay: `${(index + 1) * 0.08}s` }}
               >
-                <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">{translateMessage(post.category || 'Blog')}</span>
+                <span className="self-start rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">{translateMessage(post.category || 'Blog')}</span>
                 <h3 className="mt-5 text-xl font-bold leading-[1.36] text-slate-950 transition-colors group-hover:text-primary dark:text-white">{translateMessage(post.title)}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{translateMessage(post.excerpt)}</p>
-                <p className="mt-5 inline-flex items-center gap-2 text-sm font-bold text-primary">
+                <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-600 dark:text-slate-300">{translateMessage(post.excerpt)}</p>
+                <p className="mt-auto inline-flex self-start items-center pt-5 gap-2 text-sm font-bold text-primary">
                   {translateMessage('Read Article')}
                   <ArrowUpLeft size={16} className={arrowClass} />
                 </p>

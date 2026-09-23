@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
 import { authService, User } from '@/lib/auth-service';
 import { sectionLinks } from './NavbarLinks';
 
@@ -8,7 +9,10 @@ export function useNavbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [pagesOpen, setPagesOpen] = useState(false);
-  const [activeHref, setActiveHref] = useState('#home');
+  const pathname = usePathname();
+  const router = useRouter();
+  // Section links are home-page anchors; off the home page none is active.
+  const [activeHref, setActiveHref] = useState(pathname === '/' ? '#home' : '');
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -24,6 +28,13 @@ export function useNavbar() {
     window.addEventListener('scroll', handler);
     return () => window.removeEventListener('scroll', handler);
   }, []);
+
+  // Arriving from another page via `/#services`: client navigation doesn't
+  // reliably land on the anchor, so scroll to it once the sections exist.
+  useEffect(() => {
+    const id = window.location.hash.slice(1);
+    if (id) document.getElementById(id)?.scrollIntoView();
+  }, [pathname]);
 
   useEffect(() => {
     const sections = sectionLinks
@@ -49,6 +60,7 @@ export function useNavbar() {
     setPagesOpen(false);
     const el = document.querySelector(href);
     if (el) el.scrollIntoView({ behavior: 'smooth' });
+    else router.push(`/${href}`); // section lives on the home page
   };
 
   return {

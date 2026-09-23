@@ -1,4 +1,5 @@
 import { translateMessage } from '@/lib/i18n-utils';
+import { formatCallingCode } from '@/lib/utils';
 import { AdminApiUser } from '../services/admin-users-api';
 import { AdminUser } from '../types/admin-user.types';
 
@@ -33,12 +34,12 @@ export function mapAdminApiUser(user: AdminApiUser): AdminUser {
     firstName,
     lastName,
     email: user.email || translateMessage('No Email'),
-    phone: [user.country_code, user.phone].filter(Boolean).join(' ') || user.phone || '',
+    phone: [formatCallingCode(user.country_code), user.phone].filter(Boolean).join(' ') || user.phone || '',
     role: 'Customer',
     status: user.is_block ? 'Disabled' : 'Active',
     registeredAt,
     lastLoginAt: registeredAt,
-    projectsCount: 0,
+    projectsCount: user.projects_count ?? null,
     userCode: user.user_code,
   };
 }

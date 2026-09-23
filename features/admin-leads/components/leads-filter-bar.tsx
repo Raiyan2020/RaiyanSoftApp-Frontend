@@ -2,6 +2,8 @@ import React from 'react';
 import { Search } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
 import { useAdminProjectTypes } from '@/features/admin-project-types';
+import Input from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { LeadStatusFilter } from '../hooks/use-admin-leads';
 
 interface LeadsFilterBarProps {
@@ -17,8 +19,9 @@ interface LeadsFilterBarProps {
   setTypeFilter: (val: string) => void;
 }
 
-const fieldClass =
-  'min-h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] transition-colors focus:outline-none focus:border-primary';
+const fieldClass = 'app-input min-h-11 w-full rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors';
+
+const TYPE_FILTER_ALL = '__all__';
 
 const STATUS_OPTIONS: { value: LeadStatusFilter; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -38,7 +41,7 @@ export default function LeadsFilterBar({
   typeFilter,
   setTypeFilter,
 }: LeadsFilterBarProps) {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { types: projectTypes } = useAdminProjectTypes();
   const activeTypes = projectTypes.filter((type) => type.active);
 
@@ -46,13 +49,12 @@ export default function LeadsFilterBar({
     <div className="bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border)] shadow-lg flex flex-col gap-4">
       <div className="flex flex-col md:flex-row gap-4">
         <div className="relative flex-1">
-          <Search className="absolute top-1/2 -translate-y-1/2 text-[var(--text-muted)] start-3" size={18} />
-          <input
+          <Input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={t('admin.leads.search_placeholder')}
-            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors ps-10 pe-4"
+            icon={<Search size={18} />}
           />
         </div>
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
@@ -80,6 +82,7 @@ export default function LeadsFilterBar({
           <span className="text-xs font-bold text-[var(--text-muted)]">{t('admin.leads.date_from')}</span>
           <input
             type="date"
+            lang={language}
             value={dateFrom}
             onChange={(e) => setDateFrom(e.target.value)}
             className={fieldClass}
@@ -89,6 +92,7 @@ export default function LeadsFilterBar({
           <span className="text-xs font-bold text-[var(--text-muted)]">{t('admin.leads.date_to')}</span>
           <input
             type="date"
+            lang={language}
             value={dateTo}
             onChange={(e) => setDateTo(e.target.value)}
             className={fieldClass}
@@ -96,14 +100,19 @@ export default function LeadsFilterBar({
         </label>
         <label className="flex min-w-0 flex-col gap-1">
           <span className="text-xs font-bold text-[var(--text-muted)]">{t('admin.leads.project_type')}</span>
-          <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className={fieldClass}>
-            <option value="">{t('admin.leads.all_types')}</option>
-            {activeTypes.map((type) => (
-              <option key={type.id} value={type.slug || type.name}>
-                {type.name}
-              </option>
-            ))}
-          </select>
+          <Select value={typeFilter || TYPE_FILTER_ALL} onValueChange={(value) => setTypeFilter(value === TYPE_FILTER_ALL ? '' : value)}>
+            <SelectTrigger className="min-h-11" aria-label={t('admin.leads.project_type')}>
+              <SelectValue placeholder={t('admin.leads.all_types')} />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={TYPE_FILTER_ALL}>{t('admin.leads.all_types')}</SelectItem>
+              {activeTypes.map((type) => (
+                <SelectItem key={type.id} value={type.slug || type.name}>
+                  {(language === 'ar' && type.nameAr) || type.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </label>
       </div>
     </div>

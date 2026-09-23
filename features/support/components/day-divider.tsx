@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from '@/lib/i18nContext';
+import { getIntlLocale, readStoredLanguage } from '@/lib/language';
 
 interface DayDividerProps {
   date: number;
@@ -9,7 +10,7 @@ const safelyFormatDate = (timestamp: number) => {
   try {
     const date = new Date(timestamp);
     if (isNaN(date.getTime())) return '';
-    return date.toLocaleDateString([], { weekday: 'long', month: 'short', day: 'numeric' });
+    return date.toLocaleDateString(getIntlLocale(readStoredLanguage()), { weekday: 'long', month: 'short', day: 'numeric' });
   } catch (e) {
     return '';
   }

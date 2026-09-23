@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { AlertCircle, ArrowLeft, Phone, ShieldCheck, User, X } from 'lucide-react';
+import { ArrowLeft, User, X } from 'lucide-react';
 import { isValidPhoneNumber } from 'react-phone-number-input';
 import Button from '@/components/ui/button';
 import Input from '@/components/ui/input';
@@ -12,6 +12,7 @@ import SuccessToast from '@/components/ui/success-toast';
 import { useTranslation } from '@/lib/i18nContext';
 import { translateMessage } from '@/lib/i18n-utils';
 import { usePhoneAuth } from '../hooks/use-phone-auth';
+import { OtpField, OTP_LENGTH } from './otp-field';
 
 interface AuthDialogProps {
   isOpen: boolean;
@@ -74,7 +75,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
     submitRegistrationDetails(name.trim());
   };
 
-  const handleOtpSubmit = () => {
+  const handleOtpSubmit = (code = otp) => {
     setLocalError(null);
 
     if (isNewUser && !newUserOtpSent) {
@@ -87,15 +88,12 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
       return;
     }
 
-    if (!otp.trim() || otp.trim().length < 4) {
+    if (code.length < OTP_LENGTH) {
       setLocalError(t('auth.otp_invalid'));
       return;
     }
 
-    submitOtp({
-      phone,
-      otp: otp.trim(),
-    });
+    submitOtp({ phone, otp: code });
   };
 
   const activeError = localError || error;
@@ -130,14 +128,7 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
               <X size={20} />
             </button>
 
-            <div className="mb-6 pe-9 rtl:pe-0 rtl:ps-9">
-              <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 mb-5">
-                {step === 'phone' ? (
-                  <Phone size={26} className="text-primary" />
-                ) : (
-                  <ShieldCheck size={26} className="text-primary" />
-                )}
-              </div>
+            <div className="mb-6 pe-9">
               <h2 className="text-2xl font-bold text-[var(--text)] mb-2">
                 {step === 'phone'
                   ? t('auth.phone_dialog_title')
@@ -231,15 +222,13 @@ export default function AuthDialog({ isOpen, onClose }: AuthDialogProps) {
                     {translateMessage('After entering your name, press the button below and we will send the OTP to your phone.')}
                   </div>
                 ) : (
-                  <Input
-                    label={t('auth.otp')}
+                  <OtpField
                     value={otp}
-                    onChange={(event) => setOtp(event.target.value.replace(/\D/g, '').slice(0, 6))}
-                    placeholder="123456"
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    dir="ltr"
-                    autoFocus
+                    onChange={setOtp}
+                    onComplete={(code) => {
+                      if (!loading) handleOtpSubmit(code);
+                    }}
+                    disabled={loading}
                   />
                 )}
 

@@ -28,13 +28,6 @@ export async function storeProject(draft: LeadProjectDraft) {
   });
 }
 
-export async function fetchMyProjects(language?: string) {
-  return apiService.get<StoredProject[]>('user/my-projects', {
-    ...(language ? { headers: languageHeaders(language) } : {}),
-    skipGlobalToast: true,
-  });
-}
-
 export async function fetchMyProject(id: number | string, language?: string) {
   return apiService.get<StoredProject>(`user/my-projects/${id}`, {
     ...(language ? { headers: languageHeaders(language) } : {}),

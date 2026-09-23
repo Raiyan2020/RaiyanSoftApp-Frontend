@@ -8,17 +8,28 @@ import JsonLd from '@/components/public/json-ld';
 import { getPageMetadata, pageSeo } from '@/lib/page-seo';
 import { createCollectionPageJsonLd, createItemListJsonLd, getCanonicalUrl } from '@/lib/site';
 import { fetchPublicBlogs, fetchPublicBlogCategories } from '@/features/blog/services/blog-api';
+import BlogPager from '@/features/blog/components/blog-pager';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
 
-export const metadata: Metadata = getPageMetadata('blog');
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('blog', await getServerLanguage());
+}
 
-export default async function BlogsPage() {
+type BlogsPageProps = { searchParams: Promise<{ page?: string }> };
+
+export default async function BlogsPage({ searchParams }: BlogsPageProps) {
   const language = await getServerLanguage();
   const tt = (message: string) => translateMessage(message, language);
-  const [blogPosts, categories] = await Promise.all([fetchPublicBlogs(language), fetchPublicBlogCategories(language)]);
-  const featuredPost = blogPosts[0];
-  const remainingPosts = blogPosts.slice(1);
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const [{ items: blogPosts, pagination }, categories] = await Promise.all([
+    fetchPublicBlogs(language, { page }),
+    fetchPublicBlogCategories(language),
+  ]);
+  // The featured/hero slot is only shown on page 1, so pagination hands back consistent page sizes.
+  const featuredPost = page === 1 ? blogPosts[0] : undefined;
+  const remainingPosts = page === 1 ? blogPosts.slice(1) : blogPosts;
 
   return (
     <PublicLayout seo={pageSeo.blog}>
@@ -67,7 +78,7 @@ export default async function BlogsPage() {
             <div>
               <p className="text-sm font-black text-cyan-300">{featuredPost.category?.title || tt('Featured Article')}</p>
               <h2 className="mt-4 text-2xl font-black leading-snug sm:text-3xl">{featuredPost.title}</h2>
-              <p className="mt-4 text-sm leading-8 text-slate-300 sm:text-base">{featuredPost.excerpt}</p>
+              <p className="mt-4 line-clamp-4 text-sm leading-8 text-slate-300 sm:text-base">{featuredPost.excerpt}</p>
               <p className="mt-6 text-sm font-black text-cyan-300 transition group-hover:text-white">{tt('Read Article')}</p>
             </div>
             <div className="flex min-h-52 items-end rounded-xl bg-[radial-gradient(circle_at_top_left,rgb(var(--primary-glow-rgb) / 0.35),transparent_42%),linear-gradient(135deg,#102033,#07111f)] p-5">
@@ -80,14 +91,14 @@ export default async function BlogsPage() {
           </Link>
         ) : null}
 
-        <div className="mt-8 flex items-center justify-between gap-3">
+        <div className="mt-8 text-center">
           <h2 className="text-lg font-black text-[var(--text)]">{tt('Recent Articles')}</h2>
-          <Link href="/blogs/categories" className="text-sm font-black text-primary hover:text-primary-dark">
+          <Link href="/blogs/categories" className="mt-2 inline-block text-sm font-black text-primary hover:text-primary-dark">
             {tt('Browse Categories')}
           </Link>
         </div>
         <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {(featuredPost ? remainingPosts : blogPosts).map((post) => (
+          {remainingPosts.map((post) => (
             <Link
               key={post.slug}
               href={`/blogs/${post.slug}`}
@@ -95,11 +106,12 @@ export default async function BlogsPage() {
             >
               <p className="text-xs font-black text-primary">{post.category?.title || tt('Blog')}</p>
               <h2 className="mt-3 text-xl font-black leading-snug text-[var(--text)] transition group-hover:text-primary">{post.title}</h2>
-              <p className="mt-3 flex-1 text-sm leading-7 text-[var(--text-muted)]">{post.excerpt}</p>
-              <p className="mt-5 text-sm font-black text-primary">{tt('Read Article')}</p>
+              <p className="mt-3 line-clamp-3 text-sm leading-7 text-[var(--text-muted)]">{post.excerpt}</p>
+              <p className="mt-auto pt-5 text-sm font-black text-primary">{tt('Read Article')}</p>
             </Link>
           ))}
         </div>
+        <BlogPager pagination={pagination} basePath="/blogs" language={language} />
       </SectionShell>
 
       <CtaBlock title={tt('Want to turn the idea into an execution plan?')} description={tt("Share your project context and we'll suggest the next practical step.")} />

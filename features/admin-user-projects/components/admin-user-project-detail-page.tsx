@@ -29,6 +29,9 @@ import {
   UserRound,
 } from 'lucide-react';
 import Button from '@/components/ui/button';
+import FallbackImage from '@/components/ui/fallback-image';
+import Input from '@/components/ui/input';
+import Textarea from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useTranslation } from '@/lib/i18nContext';
 import { translateMessage } from '@/lib/i18n-utils';
@@ -85,9 +88,6 @@ const formatFileSize = (bytes: number) => {
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
   <label className="text-xs text-[var(--text-muted)] font-medium ms-1">{children}</label>
 );
-
-const inputClasses =
-  'w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
 
 function StatusPill({ status, tr }: { status: string; tr: (message: string) => string }) {
   const color =
@@ -245,12 +245,11 @@ export default function AdminUserProjectDetailPage({
         <div className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-5 shadow-xl">
           <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5">
             <div className="flex items-start gap-4 min-w-0">
-              <div
-                className="w-14 h-14 rounded-2xl border border-[var(--border)] flex items-center justify-center text-[var(--text)] shrink-0 shadow-inner"
-                style={{ background: project.brandColor || project.iconBg || '#1DB7F0' }}
-              >
-                <LayoutGrid size={24} />
-              </div>
+              <FallbackImage
+                src={project.image}
+                alt={project.name}
+                className="w-14 h-14 rounded-2xl border border-[var(--border)] shrink-0 shadow-inner"
+              />
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <h1 className="text-2xl font-bold text-[var(--text)] break-words">{project.name}</h1>
@@ -287,7 +286,7 @@ export default function AdminUserProjectDetailPage({
             <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
               <p className="text-xs text-[var(--text-muted)] mb-1">{tr('Estimated Price')}</p>
               <p className="text-lg font-bold text-[var(--text)]">
-                {project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : tr('Not set')}
+                {project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} ${tr('KWD')}` : tr('Not set')}
               </p>
             </div>
             <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4">
@@ -396,19 +395,18 @@ export default function AdminUserProjectDetailPage({
             <div className="space-y-4">
               <div className="space-y-2">
                 <FieldLabel>{tr('Stage Title')}</FieldLabel>
-                <input
+                <Input
                   value={ops.stageForm.title}
                   onChange={(e) => ops.setStageForm((prev) => ({ ...prev, title: e.target.value }))}
-                  className={inputClasses}
                   placeholder={tr('Design approval')}
                 />
               </div>
               <div className="space-y-2">
                 <FieldLabel>{tr('Description')}</FieldLabel>
-                <textarea
+                <Textarea
                   value={ops.stageForm.description}
                   onChange={(e) => ops.setStageForm((prev) => ({ ...prev, description: e.target.value }))}
-                  className={`${inputClasses} h-24 resize-none`}
+                  className="h-24 resize-none"
                   placeholder={tr('What must happen in this stage?')}
                 />
               </div>
@@ -445,12 +443,11 @@ export default function AdminUserProjectDetailPage({
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <FieldLabel>{tr('Days')}</FieldLabel>
-                  <input
+                  <Input
                     type="number"
                     min="0"
                     value={ops.stageForm.estimatedDays}
                     onChange={(e) => ops.setStageForm((prev) => ({ ...prev, estimatedDays: e.target.value }))}
-                    className={inputClasses}
                     placeholder="7"
                   />
                 </div>
@@ -526,21 +523,20 @@ export default function AdminUserProjectDetailPage({
                     onChange={(e) => ops.setProgressValue(Number(e.target.value))}
                     className="w-full accent-sky-400"
                   />
-                  <input
+                  <Input
                     type="number"
                     min="0"
                     max="100"
                     value={ops.progressValue}
                     onChange={(e) => ops.setProgressValue(Number(e.target.value))}
-                    className={inputClasses}
                   />
                 </div>
                 <div className="space-y-2">
                   <FieldLabel>{tr('Progress Note')}</FieldLabel>
-                  <textarea
+                  <Textarea
                     value={ops.progressNote}
                     onChange={(e) => ops.setProgressNote(e.target.value)}
-                    className={`${inputClasses} h-28 resize-none`}
+                    className="h-28 resize-none"
                     placeholder={tr('Summarize what changed before saving.')}
                   />
                 </div>
@@ -610,20 +606,18 @@ export default function AdminUserProjectDetailPage({
               <div className="grid grid-cols-2 gap-3">
                 <div className="space-y-2">
                   <FieldLabel>{tr('Week Start')}</FieldLabel>
-                  <input
+                  <Input
                     type="date"
                     value={ops.reportForm.weekStart}
                     onChange={(e) => ops.setReportForm((prev) => ({ ...prev, weekStart: e.target.value }))}
-                    className={inputClasses}
                   />
                 </div>
                 <div className="space-y-2">
                   <FieldLabel>{tr('Week End')}</FieldLabel>
-                  <input
+                  <Input
                     type="date"
                     value={ops.reportForm.weekEnd}
                     onChange={(e) => ops.setReportForm((prev) => ({ ...prev, weekEnd: e.target.value }))}
-                    className={inputClasses}
                   />
                 </div>
               </div>
@@ -635,10 +629,10 @@ export default function AdminUserProjectDetailPage({
 
               <div className="space-y-2">
                 <FieldLabel>{tr('Report Content')}</FieldLabel>
-                <textarea
+                <Textarea
                   value={ops.reportForm.content}
                   onChange={(e) => ops.setReportForm((prev) => ({ ...prev, content: e.target.value }))}
-                  className={`${inputClasses} h-72 resize-none font-mono text-xs leading-relaxed`}
+                  className="h-72 resize-none font-mono text-xs leading-relaxed"
                   placeholder={tr('Write the weekly report text shown to the client.')}
                 />
               </div>
@@ -802,28 +796,27 @@ export default function AdminUserProjectDetailPage({
                   </div>
                   <div className="space-y-2">
                     <FieldLabel>{tr('Title')}</FieldLabel>
-                    <input
+                    <Input
                       value={ops.attachmentForm.title}
                       onChange={(e) => ops.setAttachmentForm((prev) => ({ ...prev, title: e.target.value }))}
-                      className={inputClasses}
                       placeholder={tr('Client brief')}
                     />
                   </div>
                   <div className="space-y-2">
                     <FieldLabel>{tr('Description')}</FieldLabel>
-                    <textarea
+                    <Textarea
                       value={ops.attachmentForm.description}
                       onChange={(e) => ops.setAttachmentForm((prev) => ({ ...prev, description: e.target.value }))}
-                      className={`${inputClasses} h-24 resize-none`}
+                      className="h-24 resize-none"
                       placeholder={tr('Describe what this file contains.')}
                     />
                   </div>
                   <div className="space-y-2">
                     <FieldLabel>{tr('Reason For Adding')}</FieldLabel>
-                    <textarea
+                    <Textarea
                       value={ops.attachmentForm.reason}
                       onChange={(e) => ops.setAttachmentForm((prev) => ({ ...prev, reason: e.target.value }))}
-                      className={`${inputClasses} h-20 resize-none`}
+                      className="h-20 resize-none"
                       placeholder={tr('Why is this attachment needed?')}
                     />
                   </div>
@@ -904,10 +897,10 @@ export default function AdminUserProjectDetailPage({
                     </div>
                     <div className="space-y-2">
                       <FieldLabel>{tr('Note')}</FieldLabel>
-                      <textarea
+                      <Textarea
                         value={ops.noteText}
                         onChange={(e) => ops.setNoteText(e.target.value)}
-                        className={`${inputClasses} h-32 resize-none`}
+                        className="h-32 resize-none"
                         placeholder={tr('Write an internal admin note for this stage.')}
                       />
                     </div>
@@ -1121,10 +1114,10 @@ export default function AdminUserProjectDetailPage({
               ) : null}
             </div>
 
-            <textarea
+            <Textarea
               value={ops.finalReportContent}
               onChange={(event) => ops.setFinalReportContent(event.target.value)}
-              className={`${inputClasses} h-[520px] resize-none font-mono text-xs leading-relaxed`}
+              className="h-[520px] resize-none font-mono text-xs leading-relaxed"
               placeholder={tr('Generate or write the final project report.')}
             />
 

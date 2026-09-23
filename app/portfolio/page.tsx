@@ -8,7 +8,9 @@ import { createItemListJsonLd, getCanonicalUrl } from '@/lib/site';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
 
-export const metadata: Metadata = getPageMetadata('portfolio');
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('portfolio', await getServerLanguage());
+}
 
 type PublicPortfolioItem = { slug: string; title: string; summary: string };
 

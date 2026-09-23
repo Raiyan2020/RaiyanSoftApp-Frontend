@@ -68,7 +68,7 @@ export type AdminLeadsFilters = {
   page?: number;
 };
 
-export type LeadStatusAction = 'approve' | 'reject';
+export type LeadStatusAction = 'approve' | 'reject' | 'pending';
 
 export type AdminLeadsListResult = {
   leads: AdminLeadListItem[];

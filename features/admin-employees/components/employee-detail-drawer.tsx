@@ -1,8 +1,7 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { X, Mail, Phone, Ban, CheckCircle, Trash2, Loader2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Mail, Phone, Ban, CheckCircle, Trash2, Loader2 } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
-import { useTranslation } from '@/lib/i18nContext';
 import { AdminEmployee } from '../types/admin-employee.types';
 import {
   formatEmployeeDate,
@@ -36,35 +35,17 @@ export default function EmployeeDetailDrawer({
   actionMessage,
   actionError,
 }: EmployeeDetailDrawerProps) {
-  const { dir } = useTranslation();
   const fullName = getEmployeeFullName(employee);
   const isBlocked = isEmployeeBlocked(employee);
 
   return (
-    <>
-      <motion.div
-        initial={false}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-      />
-      <motion.div
-        initial={{ x: dir === 'rtl' ? '-100%' : '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: dir === 'rtl' ? '-100%' : '100%' }}
-        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        onClick={(event) => event.stopPropagation()}
-        className="fixed inset-y-0 end-0 z-50 w-full max-w-md bg-[var(--surface)] border-s border-[var(--border)] shadow-2xl flex flex-col"
-      >
-        <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
-          <h2 className="text-xl font-bold text-[var(--text)]">{translateMessage('Employee Details')}</h2>
-          <button type="button" onClick={onClose} className="p-2 text-[var(--text-muted)] hover:text-[var(--text)]">
-            <X size={20} />
-          </button>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent aria-describedby={undefined} className="max-h-[90dvh] max-w-lg overflow-hidden p-0">
+        <div className="flex items-center justify-between p-6 pe-12 border-b border-[var(--border)]">
+          <DialogTitle>{translateMessage('Employee Details')}</DialogTitle>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-6">
           {loading ? (
             <div className="flex justify-center py-10">
               <Loader2 className="animate-spin text-primary" size={24} />
@@ -138,7 +119,7 @@ export default function EmployeeDetailDrawer({
             <Trash2 size={18} /> {translateMessage('Delete')}
           </button>
         </div>
-      </motion.div>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 }

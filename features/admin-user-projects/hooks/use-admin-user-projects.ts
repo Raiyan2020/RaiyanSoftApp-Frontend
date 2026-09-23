@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import type { PaginationMeta } from '@/lib/api-service';
 import { globalToast } from '@/lib/toast-context';
 import { translateMessage } from '@/lib/i18n-utils';
+import { formatLocalizedDate, readStoredLanguage } from '@/lib/language';
 import { UserProject, ProjectStatus } from '@/lib/userProjectsStore';
 import { UserProjectEditValues } from '../schemas/user-project-edit.schema';
 import { AdminProjectSummary, fetchAdminProjects, updateAdminProject } from '../services/admin-projects-api';
@@ -121,11 +123,11 @@ const parseApiDate = (date?: string) => {
 const mapAdminProjectToUserProject = (project: AdminProjectSummary): UserProject => ({
   id: String(project.id),
   ownerId: 'api',
-  ownerName: project.user?.full_name || 'Customer',
+  ownerName: project.user?.full_name || translateMessage('Customer'),
   ownerEmail: project.user?.email || '',
   ownerPhone: project.user?.full_phone || '',
   referenceNumber: project.request_id || '',
-  name: project.project_name || `Project ${project.id}`,
+  name: project.project_name || `${translateMessage('Project')} ${project.id}`,
   description: project.description || '',
   estimatedPrice: (() => {
     const raw = project.estimated_price;
@@ -147,6 +149,7 @@ const mapAdminProjectToUserProject = (project: AdminProjectSummary): UserProject
   ),
   iconBg: '#1DB7F0',
   brandColor: '#1DB7F0',
+  image: project.image || project.logo || null,
 });
 
 export function useAdminUserProjects() {
@@ -158,6 +161,17 @@ export function useAdminUserProjects() {
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [typeFilter, setTypeFilter] = useState<ProjectTypeFilter>('');
+  const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+
+  // Reset to page 1 whenever the effective filters change (render-time
+  // adjustment, same pattern as the leads/appointments hooks).
+  const filterKey = `${debouncedSearch}|${dateFrom}|${dateTo}|${typeFilter}`;
+  const [prevFilterKey, setPrevFilterKey] = useState(filterKey);
+  if (filterKey !== prevFilterKey) {
+    setPrevFilterKey(filterKey);
+    setPage(1);
+  }
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedSearch(searchTerm.trim()), 350);
@@ -180,29 +194,35 @@ export function useAdminUserProjects() {
   useEffect(() => {
     fetchProjects();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [debouncedSearch, dateFrom, dateTo, typeFilter]);
+  }, [debouncedSearch, dateFrom, dateTo, typeFilter, page]);
 
+  const latestRequestRef = useRef(0);
   const fetchProjects = async () => {
+    const requestId = ++latestRequestRef.current;
     setLoading(true);
     setError(null);
     try {
-      const results = (
-        await fetchAdminProjects({
-          search: debouncedSearch || undefined,
-          dateFrom: dateFrom || undefined,
-          dateTo: dateTo || undefined,
-          type: industryToProjectType(typeFilter) || undefined,
-        })
-      ).map(mapAdminProjectToUserProject);
+      const response = await fetchAdminProjects({
+        search: debouncedSearch || undefined,
+        dateFrom: dateFrom || undefined,
+        dateTo: dateTo || undefined,
+        type: industryToProjectType(typeFilter) || undefined,
+        page,
+      });
+      const results = response.projects.map(mapAdminProjectToUserProject);
 
       results.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
 
+      // Ignore responses superseded by a newer search/filter request.
+      if (requestId !== latestRequestRef.current) return;
       setProjects(results);
+      setPagination(response.pagination);
     } catch (err: any) {
+      if (requestId !== latestRequestRef.current) return;
       console.error('Failed to load projects:', err);
       setError(`${translateMessage('Error loading projects:')} ${err.message || translateMessage('Request failed.')}`);
     } finally {
-      setLoading(false);
+      if (requestId === latestRequestRef.current) setLoading(false);
     }
   };
 
@@ -305,13 +325,21 @@ export function useAdminUserProjects() {
   };
 
   const formatDate = (ts: number) => {
-    if (!ts) return 'N/A';
-    return new Date(ts).toLocaleDateString('en-UK', { day: 'numeric', month: 'short', year: 'numeric' });
+    if (!ts) return translateMessage('N/A');
+    return formatLocalizedDate(ts, readStoredLanguage());
+  };
+
+  const goToPage = (nextPage: number) => {
+    if (!pagination) return;
+    setPage(Math.min(Math.max(1, nextPage), pagination.last_page));
   };
 
   return {
     projects,
-    loading,
+    pagination,
+    goToPage,
+    // Typed-but-not-yet-debounced search counts as loading.
+    loading: loading || searchTerm.trim() !== debouncedSearch,
     error,
     searchTerm,
     setSearchTerm,

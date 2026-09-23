@@ -3,7 +3,7 @@
 import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import SafeImage from '@/components/ui/safe-image';
+import FallbackImage from '@/components/ui/fallback-image';
 import { authService } from '@/lib/auth-service';
 
 export default function Splash() {
@@ -36,7 +36,7 @@ export default function Splash() {
         transition={{ duration: 0.8, ease: 'easeOut' }}
         className="relative w-32 h-32 mb-12"
       >
-        <SafeImage
+        <FallbackImage
           src="https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png"
           alt="Raiyansoft Logo"
           className="w-full h-full object-contain drop-shadow-[0_0_20px_rgb(var(--primary-glow-rgb) / 0.3)]"

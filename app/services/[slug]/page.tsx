@@ -33,8 +33,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const language = await getServerLanguage();
   const services = await getServices(language);
   const service = services.find((item) => item.slug === slug);
-  if (!service) return createPublicMetadata({ title: translateMessage('Service Not Found', language), path: '/services', noIndex: true });
-  return createPublicMetadata({ title: service.title, description: service.description, path: `/services/${service.slug}` });
+  if (!service) return createPublicMetadata({ language, title: translateMessage('Service Not Found', language), path: '/services', noIndex: true });
+  return createPublicMetadata({ language, title: service.title, description: service.description, path: `/services/${service.slug}` });
 }
 
 export default async function ServiceDetailPage({ params }: PageProps) {

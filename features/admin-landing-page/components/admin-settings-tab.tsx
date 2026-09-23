@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ErrorAlert from '@/components/ui/error-alert';
+import Input from '@/components/ui/input';
 import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
 import { translateMessage } from '@/lib/i18n-utils';
 import BilingualFieldInputs from './bilingual-field-inputs';
@@ -77,13 +78,13 @@ export default function AdminSettingsTab() {
       <BilingualFieldInputs label={translateMessage('Site Name')} value={form.site_name} onChange={(value) => setForm((current) => ({ ...current, site_name: value }))} required />
       <BilingualFieldInputs label={translateMessage('Site Description')} value={form.site_description} onChange={(value) => setForm((current) => ({ ...current, site_description: value }))} multiline required />
       <div className="grid gap-4 md:grid-cols-2">
-        <label className="space-y-2">
-          <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Site Email')}</span>
-          <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={form.site_email} onChange={(e) => setForm((current) => ({ ...current, site_email: e.target.value }))} />
+        <label className="block space-y-2">
+          <span className="block text-sm font-semibold text-[var(--text)]">{translateMessage('Site Email')}</span>
+          <Input value={form.site_email} onChange={(e) => setForm((current) => ({ ...current, site_email: e.target.value }))} />
         </label>
-        <label className="space-y-2">
-          <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Site Phone')}</span>
-          <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={form.site_phone} onChange={(e) => setForm((current) => ({ ...current, site_phone: e.target.value }))} />
+        <label className="block space-y-2">
+          <span className="block text-sm font-semibold text-[var(--text)]">{translateMessage('Site Phone')}</span>
+          <Input value={form.site_phone} onChange={(e) => setForm((current) => ({ ...current, site_phone: e.target.value }))} />
         </label>
       </div>
       <div className="grid gap-4 md:grid-cols-2">

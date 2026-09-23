@@ -68,12 +68,12 @@ export default function EmployeeTableRow({
           </div>
         </td>
         <td className="p-5 text-[var(--text-muted)]">{formatEmployeeDate(employee.created_at)}</td>
-        <td className="p-5 text-end">
-          <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <td className="p-5 text-start">
+          <div className="flex items-center justify-start gap-2">
             <button
               type="button"
               onClick={() => onSelectEmployee(employee)}
-              className="p-2 hover:bg-white/5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)]"
+              className="p-2 hover:bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)]"
               title={translateMessage('View')}
             >
               <Eye size={16} />
@@ -81,7 +81,7 @@ export default function EmployeeTableRow({
             <button
               type="button"
               onClick={() => onOpenModal(employee)}
-              className="p-2 hover:bg-white/5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text)]"
+              className="p-2 hover:bg-[var(--surface-3)] rounded-lg text-[var(--text-muted)] hover:text-[var(--text)]"
               title={translateMessage('Edit')}
             >
               <Edit2 size={16} />

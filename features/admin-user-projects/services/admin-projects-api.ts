@@ -1,4 +1,4 @@
-import { apiService, type ApiResponse } from '@/lib/api-service';
+import { apiService, readPagination, type ApiResponse } from '@/lib/api-service';
 import { translateMessage } from '@/lib/i18n-utils';
 
 export interface AdminProjectsFilters {
@@ -6,6 +6,9 @@ export interface AdminProjectsFilters {
   dateFrom?: string;
   dateTo?: string;
   type?: string;
+  userId?: number | string;
+  page?: number;
+  perPage?: number;
 }
 
 export interface AdminProjectSummary {
@@ -19,6 +22,9 @@ export interface AdminProjectSummary {
   estimated_duration?: number | string | null;
   project_url?: string | null;
   type?: string | { value?: string; key?: string; name?: string } | null;
+  /** Optional project image/logo URL (not sent by every endpoint). */
+  image?: string | null;
+  logo?: string | null;
   date?: string;
   user?: {
     id?: number | string;
@@ -255,6 +261,9 @@ export async function fetchAdminProjects(filters?: AdminProjectsFilters) {
     date_from: filters?.dateFrom || undefined,
     date_to: filters?.dateTo || undefined,
     type: filters?.type || undefined,
+    user_id: filters?.userId || undefined,
+    page: filters?.page && filters.page > 1 ? filters.page : undefined,
+    per_page: filters?.perPage || undefined,
   });
 
   const response = await apiService.get<AdminProjectSummary[] | { data?: AdminProjectSummary[] }>(`admin/projects${query}`, {
@@ -266,7 +275,7 @@ export async function fetchAdminProjects(filters?: AdminProjectsFilters) {
     throw new Error(getApiErrorMessage(response));
   }
 
-  return projects;
+  return { projects, pagination: readPagination(response) };
 }
 
 export async function updateAdminProject(id: number | string, payload: AdminProjectPayload) {
@@ -366,7 +375,7 @@ export async function createAdminStageProgress(payload: AdminStageProgressPayloa
   return response.data || null;
 }
 
-export async function fetchAdminReports(params?: { project_id?: number | string }) {
+export async function fetchAdminReports(params?: { project_id?: number | string; per_page?: number }) {
   const response = await apiService.get<AdminProjectReport[] | { data?: AdminProjectReport[] }>(`admin/reports${toQueryString(params)}`, {
     skipGlobalToast: true,
   });

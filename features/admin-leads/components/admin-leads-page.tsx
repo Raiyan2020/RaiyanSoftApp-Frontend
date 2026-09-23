@@ -7,6 +7,7 @@ import LeadsTable from './leads-table';
 import LeadDetailDrawer from './lead-detail-drawer';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
+import ReasonDialog from '@/components/ui/reason-dialog';
 
 export default function AdminLeadsPage() {
   const { t } = useTranslation();
@@ -38,8 +39,10 @@ export default function AdminLeadsPage() {
     closeLead,
     handleApprove,
     handleReject,
+    rejectingLeadId,
+    cancelReject,
+    submitReject,
     handleStatusChange,
-    toWhatsAppDigits,
     goToPage,
   } = useAdminLeads();
 
@@ -79,7 +82,6 @@ export default function AdminLeadsPage() {
         error={listError}
         pagination={pagination}
         onSelectLead={openLead}
-        toWhatsAppDigits={toWhatsAppDigits}
         onPageChange={goToPage}
         updatingLeadId={updatingLeadId}
         onChangeStatus={handleStatusChange}
@@ -97,12 +99,18 @@ export default function AdminLeadsPage() {
             actionMessage={actionMessage}
             language={language}
             onClose={closeLead}
-            toWhatsAppDigits={toWhatsAppDigits}
             onApprove={handleApprove}
             onReject={handleReject}
           />
         ) : null}
       </AnimatePresence>
+
+      <ReasonDialog
+        open={rejectingLeadId !== null}
+        title={t('admin.leads.reject')}
+        onClose={cancelReject}
+        onSubmit={submitReject}
+      />
     </div>
   );
 }

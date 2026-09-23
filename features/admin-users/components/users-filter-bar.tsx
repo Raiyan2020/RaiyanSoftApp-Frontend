@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search } from 'lucide-react';
+import Input from '@/components/ui/input';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface UsersFilterBarProps {
@@ -18,13 +19,12 @@ export default function UsersFilterBar({
   return (
     <div className="flex flex-col md:flex-row gap-4 bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border)] shadow-lg">
       <div className="relative flex-1">
-        <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-        <input
+        <Input
           type="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           placeholder={translateMessage('Search users by name, email, or phone...')}
-          className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
+          icon={<Search size={18} />}
         />
       </div>
 

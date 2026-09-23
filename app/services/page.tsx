@@ -12,7 +12,9 @@ import { createServiceCollectionJsonLd } from '@/lib/site';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
 
-export const metadata: Metadata = getPageMetadata('services');
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('services', await getServerLanguage());
+}
 
 export default async function ServicesPage() {
   const language = await getServerLanguage();

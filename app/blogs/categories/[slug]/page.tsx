@@ -7,6 +7,7 @@ import SectionShell from '@/components/public/section-shell';
 import JsonLd from '@/components/public/json-ld';
 import { createCollectionPageJsonLd, createItemListJsonLd, getCanonicalUrl, createPublicMetadata } from '@/lib/site';
 import { fetchPublicBlogCategory, fetchPublicBlogCategoryBlogs, fetchPublicBlogCategories } from '@/features/blog/services/blog-api';
+import BlogPager from '@/features/blog/components/blog-pager';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
 
@@ -22,6 +23,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
 
   if (!category) {
     return createPublicMetadata({
+    language,
       title: translateMessage('Category Not Found', language),
       description: translateMessage('Category Not Found', language),
       path: '/blogs/categories',
@@ -30,19 +32,24 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   }
 
   return createPublicMetadata({
+    language,
     title: category.title,
     description: translateMessage('Articles in the {category} category', language).replace('{category}', category.title),
     path: `/blogs/categories/${slug}`,
   });
 }
 
-export default async function BlogCategoryPage({ params }: { params: { slug: string } }) {
+type BlogCategoryPageProps = { params: { slug: string }; searchParams: Promise<{ page?: string }> };
+
+export default async function BlogCategoryPage({ params, searchParams }: BlogCategoryPageProps) {
   const { slug } = params;
   const language = await getServerLanguage();
   const tt = (message: string) => translateMessage(message, language);
-  const [category, categoryPosts] = await Promise.all([
+  const { page: pageParam } = await searchParams;
+  const page = Math.max(1, Number(pageParam) || 1);
+  const [category, { items: categoryPosts, pagination }] = await Promise.all([
     fetchPublicBlogCategory(slug, language),
-    fetchPublicBlogCategoryBlogs(slug, language),
+    fetchPublicBlogCategoryBlogs(slug, language, { page }),
   ]);
   const categoryTitle = category?.title || '';
   const articlesInCategory = tt('Articles in the {category} category').replace('{category}', categoryTitle);
@@ -86,10 +93,11 @@ export default async function BlogCategoryPage({ params }: { params: { slug: str
           >
               <p className="text-xs font-black text-primary">{post.category?.title || category.title}</p>
               <h2 className="mt-3 text-xl font-black text-[var(--text)]">{post.title}</h2>
-              <p className="mt-3 text-sm leading-7 text-[var(--text-muted)]">{post.excerpt}</p>
+              <p className="mt-3 line-clamp-3 text-sm leading-7 text-[var(--text-muted)]">{post.excerpt}</p>
             </Link>
           ))}
         </div>
+        <BlogPager pagination={pagination} basePath={`/blogs/categories/${slug}`} language={language} />
       </SectionShell>
     </PublicLayout>
   );

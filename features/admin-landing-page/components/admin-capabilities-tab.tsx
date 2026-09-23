@@ -12,9 +12,10 @@ import {
 import SectionHeaderForm from './section-header-form';
 import BilingualFieldInputs from './bilingual-field-inputs';
 import CrudItemList from '@/components/ui/crud-item-list';
+import TablePagination from '@/components/ui/table-pagination';
 import AdminFormModal from '@/components/ui/admin-form-modal';
 import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
-import SafeImage from '@/components/ui/safe-image';
+import FallbackImage from '@/components/ui/fallback-image';
 import TagRepeater from '@/components/ui/tag-repeater';
 import type { AdminCapability, AdminCapabilityPayload, BilingualField, AdminSectionHeaderPayload } from '@/features/landing-page';
 import { translateMessage } from '@/lib/i18n-utils';
@@ -38,7 +39,14 @@ function capabilityToForm(c: AdminCapability): AdminCapabilityPayload {
 }
 
 export default function AdminCapabilitiesTab() {
-  const { data: capabilities = [], isLoading } = useAdminCapabilities();
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useAdminCapabilities(page);
+  const capabilities = data?.items ?? [];
+  const pagination = data?.pagination ?? null;
+  // Step back a page if a delete emptied the current page.
+  if (pagination && page > pagination.last_page && pagination.last_page >= 1) {
+    setPage(pagination.last_page);
+  }
   const { data: header, isLoading: headerLoading } = useAdminCapabilitiesHeader();
   const updateHeaderMutation = useUpdateAdminCapabilitiesHeader();
   const createMutation = useCreateAdminCapability();
@@ -118,11 +126,7 @@ export default function AdminCapabilitiesTab() {
           const displayTitle = cap.title.en || cap.title.ar;
           return (
             <div className="flex items-start gap-3">
-              {cap.image ? (
-                <SafeImage src={cap.image} alt={displayTitle} className="h-12 w-12 shrink-0 rounded-lg" />
-              ) : (
-                <SafeImage src="/logo.webp" alt={displayTitle} className="h-12 w-12 shrink-0 rounded-lg" />
-              )}
+              <FallbackImage src={cap.image} alt={displayTitle} className="h-12 w-12 shrink-0 rounded-lg" />
               <div className="min-w-0">
                 <p className="font-semibold text-[var(--text)]">{displayTitle}</p>
                 <p className="mt-0.5 text-sm text-[var(--text-muted)] line-clamp-2">{cap.description.en || cap.description.ar}</p>
@@ -138,6 +142,7 @@ export default function AdminCapabilitiesTab() {
           );
         }}
       />
+      <TablePagination pagination={pagination} onPageChange={setPage} loading={isLoading} />
 
       <AdminFormModal
         open={showForm}

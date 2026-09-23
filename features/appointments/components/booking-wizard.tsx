@@ -275,7 +275,7 @@ export default function BookingWizard({ onClose, onBooked }: BookingWizardProps)
 
           {step === authStep && !isAuthenticated ? (
             <motion.div initial={false} animate={{ opacity: 1, x: 0 }} className="h-full">
-              <BookingAuthGate onAuthenticated={async () => { await handleBook(); }} submitError={errorMsg} />
+              <BookingAuthGate onAuthenticated={async () => { await handleBook(); }} submitError={errorMsg} onBack={() => setStep(authStep - 1)} />
             </motion.div>
           ) : null}
 

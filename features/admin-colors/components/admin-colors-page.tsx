@@ -5,6 +5,7 @@ import { Edit2, Loader2, Palette, Plus, Save, Trash2, X } from 'lucide-react';
 import { useAdminColors } from '../hooks/use-admin-colors';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
+import Input from '@/components/ui/input';
 import { translateMessage } from '@/lib/i18n-utils';
 
 export default function AdminColorsPage() {
@@ -86,7 +87,7 @@ export default function AdminColorsPage() {
                     <div className="min-w-0">
                       <p className="truncate font-mono text-xs font-bold text-[var(--text)]">{color.hex_code}</p>
                       <p className="mt-1 text-[11px] uppercase tracking-wider text-[var(--text-muted)]">
-                        ID {color.id} · {translateMessage(color.is_active === false || color.is_active === 0 ? 'Inactive' : 'Active')}
+                        {translateMessage('ID')} {color.id} · {translateMessage(color.is_active === false || color.is_active === 0 ? 'Inactive' : 'Active')}
                       </p>
                     </div>
                     <div className="flex shrink-0 gap-1">
@@ -147,16 +148,14 @@ export default function AdminColorsPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <label className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Hex Code')}</label>
-              <input
-                type="text"
-                value={hexCode}
-                onChange={(event) => setHexCode(event.target.value)}
-                placeholder="#FF5733"
-                className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3 font-mono uppercase text-[var(--text)] outline-none focus:border-primary"
-              />
-            </div>
+            <Input
+              label={translateMessage('Hex Code')}
+              type="text"
+              value={hexCode}
+              onChange={(event) => setHexCode(event.target.value)}
+              placeholder="#FF5733"
+              className="font-mono uppercase"
+            />
 
             <label className="flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-3">
               <span className="text-sm font-bold text-[var(--text-muted)]">{translateMessage('Active')}</span>

@@ -10,7 +10,9 @@ import { getServerLanguage } from '@/lib/language.server';
 
 const cairo = Cairo({ subsets: ['arabic', 'latin'], weight: ['300', '400', '500', '600', '700', '800', '900'] });
 
-export const metadata: Metadata = createPublicMetadata();
+export async function generateMetadata(): Promise<Metadata> {
+  return createPublicMetadata({ language: await getServerLanguage() });
+}
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const jsonLd = createOrganizationJsonLd();
@@ -22,7 +24,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <script
           id="landing-schema"
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
         />
       </head>
       <body className={cairo.className}>

@@ -6,6 +6,10 @@
  * Handles: backdrop, scrollable container, title bar, close button,
  * backend error toast, and Save / Cancel footer.
  *
+ * Built on the shared Radix Dialog (z-[70]) so it dims the admin sidebar,
+ * traps focus, closes on Esc, and lets confirm/reason dialogs (z-[80]) and
+ * Select dropdowns (z-[90]) stack above it.
+ *
  * Usage:
  *   <AdminFormModal
  *     open={showForm}
@@ -21,7 +25,8 @@
  */
 
 import React from 'react';
-import { Loader2, Save, X } from 'lucide-react';
+import { Loader2, Save } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from './dialog';
 import ErrorAlert from './error-alert';
 import { translateMessage } from '@/lib/i18n-utils';
 
@@ -47,25 +52,17 @@ export default function AdminFormModal({
   maxWidth = 'max-w-2xl',
   children,
 }: AdminFormModalProps) {
-  if (!open) return null;
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div
-        className={`max-h-[90vh] w-full ${maxWidth} overflow-y-auto rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6 shadow-2xl`}
+    <Dialog open={open} onOpenChange={(next) => !next && onClose()}>
+      <DialogContent
+        aria-describedby={undefined}
+        // Outside clicks never closed this form before; keep it that way so a
+        // stray click (or a toast) can't discard unsaved input.
+        onInteractOutside={(event) => event.preventDefault()}
+        className={`block ${maxWidth}`}
       >
-        {/* Header */}
-        <div className="mb-5 flex items-center justify-between gap-3">
-          <h2 className="text-lg font-bold text-[var(--text)]">{title}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-[var(--text-muted)] hover:bg-[var(--surface-2)]"
-            aria-label={translateMessage('Cancel')}
-          >
-            <X size={16} />
-          </button>
-        </div>
+        {/* Header (close button comes from DialogContent) */}
+        <DialogTitle className="mb-5 pe-8 text-lg">{title}</DialogTitle>
 
         {/* Form fields */}
         <div className="space-y-4">{children}</div>
@@ -95,7 +92,7 @@ export default function AdminFormModal({
             {translateMessage('Save')}
           </button>
         </div>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

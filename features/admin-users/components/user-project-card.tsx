@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { LayoutGrid, ExternalLink, Eye } from 'lucide-react';
+import { ExternalLink, Eye } from 'lucide-react';
 import { UserProject } from '@/lib/userProjectsStore';
+import FallbackImage from '@/components/ui/fallback-image';
 import { translateMessage } from '@/lib/i18n-utils';
 
 const capitalize = (value: string) => (value ? value.charAt(0).toUpperCase() + value.slice(1) : value);
@@ -21,13 +22,11 @@ export default function UserProjectCard({ project, formatDate }: UserProjectCard
     <div className="bg-[var(--surface-3)] border border-[var(--border)] rounded-2xl p-4 flex flex-col gap-3 group hover:border-[var(--border)] transition-colors">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div
-            className={`w-10 h-10 ${
-              project.iconBg || 'bg-[var(--surface-3)]'
-            } rounded-lg flex items-center justify-center text-[var(--text)] border border-[var(--border)]`}
-          >
-            <LayoutGrid size={20} />
-          </div>
+          <FallbackImage
+            src={project.image}
+            alt={project.name}
+            className="w-10 h-10 shrink-0 rounded-lg border border-[var(--border)]"
+          />
           <div>
             <h4 className="font-bold text-[var(--text)] text-sm">{project.name}</h4>
             <p className="text-[var(--text-muted)] text-xs">{project.industry || translateMessage('General App')}</p>

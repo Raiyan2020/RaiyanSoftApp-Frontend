@@ -7,6 +7,7 @@ import flags from 'react-phone-number-input/flags';
 import metadata from 'libphonenumber-js/metadata.min.json';
 import { useManagedCountriesQuery } from '@/features/settings';
 import { translateMessage } from '@/lib/i18n-utils';
+import { formatCallingCode } from '@/lib/utils';
 
 type PhoneInputProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
@@ -47,9 +48,6 @@ export default function PhoneInput({
   ...props
 }: PhoneInputProps) {
   const { data: managedCountries } = useManagedCountriesQuery({ enabled: useManagedCountries });
-  const [selectedCountry, setSelectedCountry] = React.useState<RPNInput.Country | undefined>(
-    defaultCountry
-  );
 
   const countryConfig = React.useMemo(() => {
     if (!managedCountries?.length) {
@@ -70,7 +68,8 @@ export default function PhoneInput({
 
     managedCountries.forEach((country) => {
       const countryCode = country.country_code?.trim().toUpperCase() as RPNInput.Country;
-      if (!countryCode || countries.includes(countryCode)) return;
+      // Skip codes libphonenumber doesn't know (e.g. "ZZ" from the admin countries API).
+      if (!countryCode || !RPNInput.isSupportedCountry(countryCode) || countries.includes(countryCode)) return;
 
       countries.push(countryCode);
       labels[countryCode] = country.name;
@@ -85,44 +84,38 @@ export default function PhoneInput({
     };
   }, [defaultCountry, managedCountries]);
 
-  const maxNationalLength = React.useMemo(
-    () => getMaxNationalLength(selectedCountry ?? countryConfig.defaultCountry),
-    [countryConfig.defaultCountry, selectedCountry]
-  );
-  const inputMaxLength = React.useMemo(
-    () => getMaxInputLength(selectedCountry ?? countryConfig.defaultCountry, maxNationalLength),
-    [maxNationalLength, selectedCountry, countryConfig.defaultCountry]
-  );
+  // Country the input is currently formatting for. A ref (not state) because on a manual
+  // country switch RPNInput calls onCountryChange (componentDidUpdate) right before it
+  // emits the migrated value via onChange, and handlePhoneChange must see the new country.
+  const countryRef = React.useRef<RPNInput.Country | undefined>(countryConfig.defaultCountry);
+  const countriesKey = countryConfig.countries?.join(',') ?? 'all';
+  const countriesKeyRef = React.useRef(countriesKey);
+  if (countriesKeyRef.current !== countriesKey) {
+    // RPNInput remounts (see `key` below) and starts from the new default country.
+    countriesKeyRef.current = countriesKey;
+    countryRef.current = countryConfig.defaultCountry;
+  }
 
+  // `limitMaxLength` trims typed/pasted digits, but RPNInput does not re-trim when the
+  // country changes, so the migrated value is clamped here as well.
   const handlePhoneChange = React.useCallback(
     (nextValue?: string) => {
-      const limitedValue = limitPhoneValueByCountry(
-        nextValue || '',
-        selectedCountry ?? countryConfig.defaultCountry
-      );
-
-      onChange(limitedValue);
+      onChange(limitPhoneValueByCountry(nextValue || '', countryRef.current));
     },
-    [countryConfig.defaultCountry, onChange, selectedCountry]
+    [onChange]
   );
 
-  const handleCountryChange = React.useCallback(
-    (country?: RPNInput.Country) => {
-      setSelectedCountry(country);
-
-      if (country && value) {
-        const limitedValue = limitPhoneValueByCountry(value, country);
-        if (limitedValue !== value) {
-          onChange(limitedValue);
-        }
-      }
-    },
-    [onChange, value]
-  );
+  const handleCountryChange = React.useCallback((country?: RPNInput.Country) => {
+    countryRef.current = country;
+  }, []);
 
   return (
     <RPNInput.default
-      className={`flex w-full ${className}`}
+      // RPNInput snapshots `countries` into state on mount but reads `countryOptionsOrder`
+      // from live props; remount when the list changes so the two never diverge
+      // (divergence makes sortCountryOptions emit `undefined` options).
+      key={countriesKey}
+      className={`flex w-full app-input rounded-xl min-h-11 transition-colors ${className}`}
       value={value || undefined}
       onChange={handlePhoneChange}
       onCountryChange={handleCountryChange}
@@ -134,8 +127,13 @@ export default function PhoneInput({
       countrySelectComponent={CountrySelect}
       countrySelectProps={{ callingCodes: countryConfig.callingCodes }}
       inputComponent={InputComponent}
-      maxLength={inputMaxLength}
+      limitMaxLength
       smartCaret={false}
+      // The selector already shows the calling code, so keep the input national-only:
+      // an initial E.164 value renders as the national number, and a typed/pasted
+      // "+<selected code>..." is converted to national instead of duplicating the code.
+      // `value`/`onChange` stay E.164 for all callers.
+      international={false}
       {...props}
       dir="ltr"
       style={{ direction: 'ltr', unicodeBidi: 'isolate', ...style }}
@@ -143,40 +141,19 @@ export default function PhoneInput({
   );
 }
 
+/** Clamps an E.164 value to the country's longest national significant number. */
 function limitPhoneValueByCountry(value: string, country?: RPNInput.Country) {
   if (!value || !country) return value;
 
-  const maxNationalLength = getMaxNationalLength(country);
-  if (!maxNationalLength) return value;
+  const possibleLengths = phoneMetadata.countries[country]?.[3];
+  if (!possibleLengths?.length) return value;
 
-  const callingCode = RPNInput.getCountryCallingCode(country);
-  const digits = value.replace(/\D/g, '');
-  const nationalDigits = digits.startsWith(callingCode)
-    ? digits.slice(callingCode.length)
-    : digits;
-
-  if (nationalDigits.length <= maxNationalLength) return value;
-
-  return `+${callingCode}${nationalDigits.slice(0, maxNationalLength)}`;
-}
-
-function getMaxInputLength(country: RPNInput.Country, maxNationalLength?: number) {
-  const callingCode = RPNInput.getCountryCallingCode(country);
-  const digits = callingCode.replace(/\D/g, '').length;
-  if (!maxNationalLength) return undefined;
-  return maxNationalLength + digits + 1;
-}
-
-function getMaxNationalLength(country: RPNInput.Country) {
-  const countryMetadata = phoneMetadata.countries[country];
-  const possibleLengths = countryMetadata?.[3];
-
-  if (!possibleLengths?.length) return undefined;
+  const prefix = `+${RPNInput.getCountryCallingCode(country)}`;
+  if (!value.startsWith(prefix)) return value;
 
   const maxLength = Math.max(...possibleLengths);
-  const nationalPrefix = countryMetadata?.[5];
-
-  return nationalPrefix === '0' ? maxLength + 1 : maxLength;
+  const nationalDigits = value.slice(prefix.length);
+  return nationalDigits.length > maxLength ? prefix + nationalDigits.slice(0, maxLength) : value;
 }
 
 const InputComponent = React.forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>(
@@ -184,7 +161,7 @@ const InputComponent = React.forwardRef<HTMLInputElement, React.InputHTMLAttribu
     <input
       ref={ref}
       // i18n-ignore-next-line: phone input is pinned dir="ltr"; calling codes must not mirror
-      className={`min-w-0 flex-1 bg-[var(--surface)] dark:bg-white/5 border border-[var(--border)] border-l-0 rounded-r-xl py-3 px-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all font-mono text-left ${className}`}
+      className={`min-w-0 flex-1 bg-transparent border-0 rounded-r-xl py-2.5 pl-2 pr-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none text-left ${className}`}
       {...props}
       dir="ltr"
       style={{
@@ -207,7 +184,7 @@ function CountrySelect({
 }: {
   disabled?: boolean;
   value: RPNInput.Country;
-  options: CountryEntry[];
+  options: (CountryEntry | undefined)[];
   onChange: (country: RPNInput.Country) => void;
   callingCodes?: CountryCallingCodes;
 }) {
@@ -231,8 +208,8 @@ function CountrySelect({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const filteredCountries = options.filter((option) => {
-    if (!option.value) return false;
+  const filteredCountries = options.filter((option): option is CountryEntry => {
+    if (!option?.value) return false;
     const callingCode = getDisplayCallingCode(option.value, callingCodes);
     const query = searchQuery.toLowerCase();
 
@@ -258,7 +235,8 @@ function CountrySelect({
         type="button"
         onClick={() => (isOpen ? closeDropdown() : setIsOpen(true))}
         disabled={disabled}
-        className="flex h-full items-center gap-2 bg-[var(--surface)] dark:bg-white/5 border border-[var(--border)] rounded-l-xl border-r-0 px-3 py-3 text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        // i18n-ignore-next-line: phone input is pinned dir="ltr"; calling codes must not mirror
+        className="flex h-full items-center gap-2 bg-transparent rounded-l-xl pl-4 pr-2 text-[var(--text)] hover:bg-[var(--surface-2)] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <FlagComponent country={selectedCountry} countryName={selectedCountry} />
         <span className="text-xs font-mono text-[var(--text-muted)]">{selectedCallingCode}</span>
@@ -330,7 +308,7 @@ function CountrySelect({
 function getDisplayCallingCode(country: RPNInput.Country, callingCodes: CountryCallingCodes) {
   const managedCallingCode = callingCodes[country];
   if (managedCallingCode) {
-    return managedCallingCode.startsWith('+') ? managedCallingCode : `+${managedCallingCode}`;
+    return formatCallingCode(managedCallingCode);
   }
 
   return `+${RPNInput.getCountryCallingCode(country)}`;

@@ -8,12 +8,12 @@ export function useChangeLeadStatus() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const changeStatus = useCallback(async (id: number, action: LeadStatusAction) => {
+  const changeStatus = useCallback(async (id: number, action: LeadStatusAction, reason?: string) => {
     setLoading(true);
     setError(null);
 
     try {
-      const data = await changeAdminLeadStatus(id, action);
+      const data = await changeAdminLeadStatus(id, action, reason);
       return data as AdminLeadDetail;
     } catch (err: any) {
       const message = err.message || 'Failed to update lead status.';

@@ -54,39 +54,61 @@ export function formatLandingButtonUrlForForm(url: string | null | undefined): s
   return trimmed;
 }
 
-/** Resolves a stored URL to a scroll target (`#section`) for in-page navigation. */
-export function getLandingButtonScrollTarget(
-  url: string | null | undefined,
-  fallback: string
-): string {
-  if (!url) return fallback;
+export type LandingButtonAction =
+  | { type: 'fallback' }
+  | { type: 'scroll'; target: string }
+  | { type: 'internal'; href: string }
+  | { type: 'external'; href: string };
 
-  const trimmed = url.trim();
-  if (!trimmed) return fallback;
-  if (trimmed.startsWith('#')) return trimmed;
+/**
+ * Decides what a public landing button does with its admin-set URL. Empty, `#`,
+ * or a bare link to the home page means "no explicit link" → the caller's
+ * default action. Same-site links stay in-app; other http(s) links open a tab.
+ */
+export function resolveLandingButtonAction(url: string | null | undefined): LandingButtonAction {
+  const trimmed = url?.trim();
+  if (!trimmed || trimmed === '#') return { type: 'fallback' };
+  if (trimmed.startsWith('#')) return { type: 'scroll', target: trimmed };
 
+  const siteOrigins = [new URL(getSiteUrl()).origin];
+  if (typeof window !== 'undefined') siteOrigins.push(window.location.origin);
+
+  let parsed: URL;
   try {
-    const parsed = new URL(trimmed);
-    if (parsed.hash) return parsed.hash;
+    parsed = new URL(trimmed, siteOrigins[siteOrigins.length - 1]);
   } catch {
-    // Fall through to the raw value.
+    return { type: 'fallback' };
   }
+  if (!/^https?:$/i.test(parsed.protocol)) return { type: 'fallback' };
+  if (!siteOrigins.includes(parsed.origin)) return { type: 'external', href: parsed.href };
 
-  return trimmed;
+  const path = `${parsed.pathname}${parsed.search}`;
+  if (path === '/') {
+    return parsed.hash.length > 1 ? { type: 'scroll', target: parsed.hash } : { type: 'fallback' };
+  }
+  return { type: 'internal', href: `${path}${parsed.hash}` };
 }
 
-/** Opens external or non-hash absolute URLs in a new tab; scroll targets stay on-page. */
-export function shouldOpenLandingButtonInNewTab(url: string | null | undefined): boolean {
-  if (!url) return false;
-
-  const trimmed = url.trim();
-  if (!trimmed || trimmed.startsWith('#') || trimmed.startsWith('/')) return false;
-
-  try {
-    const parsed = new URL(trimmed);
-    if (parsed.hash) return false;
-    return /^https?:$/i.test(parsed.protocol);
-  } catch {
-    return false;
+/** Runs a landing button: explicit backend link if set, otherwise `onFallback`. */
+export function runLandingButtonAction(
+  url: string | null | undefined,
+  { onFallback, navigate }: { onFallback: () => void; navigate: (href: string) => void }
+): void {
+  const action = resolveLandingButtonAction(url);
+  if (action.type === 'external') {
+    window.open(action.href, '_blank', 'noopener,noreferrer');
+  } else if (action.type === 'internal') {
+    navigate(action.href);
+  } else if (action.type === 'scroll') {
+    let el: Element | null = null;
+    try {
+      el = document.querySelector(action.target);
+    } catch {
+      // Malformed selector from admin input: treat as no link.
+    }
+    if (el) el.scrollIntoView({ behavior: 'smooth' });
+    else onFallback();
+  } else {
+    onFallback();
   }
 }

@@ -5,11 +5,11 @@ import { ArrowDown, ArrowUp, Briefcase, Check, Loader2, Plus, Save, Trash2, X } 
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ErrorAlert from '@/components/ui/error-alert';
+import Input from '@/components/ui/input';
+import Textarea from '@/components/ui/textarea';
 import { translateMessage } from '@/lib/i18n-utils';
+import { readStoredLanguage } from '@/lib/language';
 import { ProjectType, useAdminProjectTypes } from '../hooks/use-admin-project-types';
-
-const inputClasses =
-  'w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:border-primary focus:outline-none transition-colors';
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
   <label className="text-xs text-[var(--text-muted)] font-medium ms-1">
@@ -50,14 +50,14 @@ function TypeCard({
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <h3 className="text-[var(--text)] font-bold break-words">{type.name}</h3>
+              <h3 className="text-[var(--text)] font-bold break-words">{(readStoredLanguage() === 'ar' && type.nameAr) || type.name}</h3>
               <span className={type.active ? 'text-[11px] text-success' : 'text-[11px] text-[var(--text-muted)]'}>
                 {translateMessage(type.active ? 'Active' : 'Inactive')}
               </span>
             </div>
-            <p className="text-sm text-[var(--text-muted)] line-clamp-2 mt-1">{type.description || translateMessage('No description added.')}</p>
+            <p className="text-sm text-[var(--text-muted)] line-clamp-2 mt-1">{(readStoredLanguage() === 'ar' && type.descriptionAr) || type.description || translateMessage('No description added.')}</p>
             <p className="text-xs text-[var(--text-muted)] mt-2">
-              {type.priceMin || type.priceMax ? `${type.priceMin || 0}-${type.priceMax || 0} KWD` : translateMessage('No price range')} ·{' '}
+              {type.priceMin || type.priceMax ? `${type.priceMin || 0}-${type.priceMax || 0} ${translateMessage('KWD')}` : translateMessage('No price range')} ·{' '}
               {type.durationMin || type.durationMax
                 ? `${type.durationMin || 0}-${type.durationMax || 0} ${translateMessage('days')}`
                 : translateMessage('No duration range')}
@@ -140,19 +140,17 @@ export default function AdminProjectTypesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="space-y-2">
                 <FieldLabel>{translateMessage('Name')}</FieldLabel>
-                <input
+                <Input
                   value={state.form.name}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, name: e.target.value }))}
-                  className={inputClasses}
                   placeholder={translateMessage('E-commerce app')}
                 />
               </div>
               <div className="space-y-2">
                 <FieldLabel>{translateMessage('Arabic Name')}</FieldLabel>
-                <input
+                <Input
                   value={state.form.nameAr}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, nameAr: e.target.value }))}
-                  className={inputClasses}
                   placeholder={translateMessage('Arabic name')}
                 />
               </div>
@@ -160,10 +158,10 @@ export default function AdminProjectTypesPage() {
 
             <div className="space-y-2">
               <FieldLabel>{translateMessage('Description')}</FieldLabel>
-              <textarea
+              <Textarea
                 value={state.form.description}
                 onChange={(e) => state.setForm((prev) => ({ ...prev, description: e.target.value }))}
-                className={`${inputClasses} h-24 resize-none`}
+                className="h-24 resize-none"
                 placeholder={translateMessage('What this project type includes.')}
               />
             </div>
@@ -171,38 +169,34 @@ export default function AdminProjectTypesPage() {
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-2">
                 <FieldLabel>{translateMessage('Min Price')}</FieldLabel>
-                <input
+                <Input
                   type="number"
                   value={state.form.priceMin}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, priceMin: e.target.value }))}
-                  className={inputClasses}
                 />
               </div>
               <div className="space-y-2">
                 <FieldLabel>{translateMessage('Max Price')}</FieldLabel>
-                <input
+                <Input
                   type="number"
                   value={state.form.priceMax}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, priceMax: e.target.value }))}
-                  className={inputClasses}
                 />
               </div>
               <div className="space-y-2">
                 <FieldLabel>{translateMessage('Min Days')}</FieldLabel>
-                <input
+                <Input
                   type="number"
                   value={state.form.durationMin}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, durationMin: e.target.value }))}
-                  className={inputClasses}
                 />
               </div>
               <div className="space-y-2">
                 <FieldLabel>{translateMessage('Max Days')}</FieldLabel>
-                <input
+                <Input
                   type="number"
                   value={state.form.durationMax}
                   onChange={(e) => state.setForm((prev) => ({ ...prev, durationMax: e.target.value }))}
-                  className={inputClasses}
                 />
               </div>
             </div>

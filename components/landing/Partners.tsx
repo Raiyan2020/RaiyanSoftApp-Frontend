@@ -1,8 +1,11 @@
 'use client';
 import { useRef } from 'react';
 import { useSectionReveal } from './use-section-reveal';
+import SectionHeader from './SectionHeader';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
-import SafeImage from '@/components/ui/safe-image';
+import FallbackImage from '@/components/ui/fallback-image';
+import ClampText from '@/components/ui/clamp-text';
+import { htmlToText } from '@/lib/html-to-text';
 import type { LandingPageContent } from '@/features/landing-page';
 
 type PartnersProps = {
@@ -12,7 +15,7 @@ type PartnersProps = {
 export default function Partners({ homeData }: PartnersProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
-  const { content, textAlign } = useLandingContent();
+  const { content } = useLandingContent();
   const { partners } = content;
   const apiTestimonials = homeData?.testimonials;
 
@@ -27,14 +30,7 @@ export default function Partners({ homeData }: PartnersProps) {
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(33,211,162,0.14),transparent_34%)]" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-10 text-center lg:mb-12 ${textAlign}`}>
-          <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
-            {title}
-          </h2>
-          <p className="mx-auto mt-5 max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300">
-            {description}
-          </p>
-        </div>
+        <SectionHeader title={title} description={description} />
 
         {/* Static trust cards — shown only when no API testimonials yet */}
         {!hasApiTestimonials ? (
@@ -56,19 +52,21 @@ export default function Partners({ homeData }: PartnersProps) {
         ) : null}
 
         {/* Testimonials grid */}
-        <div className={`${hasApiTestimonials ? '' : 'mt-8'} grid gap-6 ${hasApiTestimonials ? 'grid-cols-1 sm:grid-cols-2' : 'lg:grid-cols-2'}`}>
+        <div className={`${hasApiTestimonials ? '' : 'mt-8'} grid gap-6 ${hasApiTestimonials ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'lg:grid-cols-2'}`}>
           {hasApiTestimonials
             ? apiTestimonials!.testimonials.map((testimonial, i) => (
                 <article
                   key={testimonial.id}
-                  className="reveal rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-6 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/15 dark:bg-white/8"
+                  className="reveal flex h-full flex-col rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-6 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/15 dark:bg-white/8"
                   style={{ transitionDelay: `${i * 0.08}s` }}
                 >
                   <p className="text-3xl font-black text-primary">"</p>
-                  <blockquote className="mt-2 text-lg font-semibold leading-relaxed">{testimonial.description}</blockquote>
-                  <div className="mt-6 flex items-center gap-3">
+                  <blockquote className="mt-2 flex-1">
+                    <ClampText lines={4} className="text-lg font-semibold leading-relaxed" toggleClassName="text-cyan-300 hover:text-white">{htmlToText(testimonial.description)}</ClampText>
+                  </blockquote>
+                  <div className="mt-auto flex items-center gap-3 pt-6">
                     {testimonial.image ? (
-                      <SafeImage src={testimonial.image} alt={testimonial.title} sizes="44px" className="h-11 w-11 rounded-2xl" />
+                      <FallbackImage src={testimonial.image} alt={testimonial.title} sizes="44px" className="h-11 w-11 rounded-2xl" />
                     ) : (
                       <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-primary to-emerald-400" />
                     )}
@@ -82,12 +80,14 @@ export default function Partners({ homeData }: PartnersProps) {
             : partners.highlights.map((item, i) => (
                 <article
                   key={`${item.name}-${item.company}`}
-                  className="reveal rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-6 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/15 dark:bg-white/8"
+                  className="reveal flex h-full flex-col rounded-[2rem] border border-cyan-950/10 bg-slate-950 p-6 text-white shadow-2xl shadow-cyan-950/10 dark:border-white/15 dark:bg-white/8"
                   style={{ transitionDelay: `${(i + 3) * 0.08}s` }}
                 >
                   <p className="text-3xl font-black text-primary">"</p>
-                  <blockquote className="mt-2 text-lg font-semibold leading-relaxed">{item.quote}</blockquote>
-                  <div className="mt-6 flex items-center gap-3">
+                  <blockquote className="mt-2 flex-1">
+                    <ClampText lines={4} className="text-lg font-semibold leading-relaxed" toggleClassName="text-cyan-300 hover:text-white">{item.quote}</ClampText>
+                  </blockquote>
+                  <div className="mt-auto flex items-center gap-3 pt-6">
                     <div className="h-11 w-11 rounded-2xl bg-gradient-to-br from-primary to-emerald-400" />
                     <div>
                       <p className="font-bold">{item.name}</p>

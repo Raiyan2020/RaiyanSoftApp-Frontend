@@ -1,18 +1,23 @@
 import { cache } from 'react';
-import { apiService, BASE_URL } from '@/lib/api-service';
-import { translateMessage } from '@/lib/i18n-utils';
+import { apiService, readPagination, BASE_URL, type PaginationMeta } from '@/lib/api-service';
 import type { AppLanguage } from '@/lib/language';
+import { assertApiOk } from '@/lib/admin-api-error';
 import type {
+  AdminBlog,
+  AdminBlogCategory,
   BlogCategory,
-  BlogCategoryDetail,
   BlogCategoryPayload,
-  BlogCategoryWithCount,
   BlogDetailItem,
   BlogListItem,
   BlogPayload,
 } from '../types/blog.types';
 
 type ApiResponseShape<T> = { data?: T } | T;
+
+/** Public listing endpoints are paginated server-side; callers that need the
+ * whole set (sitemap, static params, cross-category counts) pass a large
+ * `per_page` instead of paging through — see call sites for the rationale. */
+export type PublicListResult<T> = { items: T[]; pagination: PaginationMeta | null };
 
 function unwrapList<T>(data: ApiResponseShape<T[] | { data?: T[] }> | null | undefined): T[] {
   if (!data) return [];
@@ -30,17 +35,23 @@ function unwrapItem<T>(data: ApiResponseShape<T> | null | undefined): T | null {
   return data as T;
 }
 
-export const fetchPublicBlogs = cache(async function fetchPublicBlogs(language: AppLanguage = 'ar'): Promise<BlogListItem[]> {
+export const fetchPublicBlogs = cache(async function fetchPublicBlogs(
+  language: AppLanguage = 'ar',
+  params?: { page?: number; per_page?: number },
+): Promise<PublicListResult<BlogListItem>> {
   try {
-    const response = await fetch(`${BASE_URL}/user/blogs`, {
+    const query = new URLSearchParams();
+    if (params?.page) query.set('page', String(params.page));
+    query.set('per_page', String(params?.per_page ?? 15));
+    const response = await fetch(`${BASE_URL}/user/blogs?${query.toString()}`, {
       headers: { Accept: 'application/json', 'Accept-Language': language },
       next: { revalidate: 300 },
     });
     const json = await response.json().catch(() => null);
-    if (!response.ok || !json?.status) return [];
-    return unwrapList<BlogListItem>(json.data);
+    if (!response.ok || !json?.status) return { items: [], pagination: null };
+    return { items: unwrapList<BlogListItem>(json.data), pagination: readPagination(json) };
   } catch {
-    return [];
+    return { items: [], pagination: null };
   }
 });
 
@@ -89,163 +100,115 @@ export const fetchPublicBlogCategory = cache(async function fetchPublicBlogCateg
   }
 });
 
-export const fetchPublicBlogCategoryBlogs = cache(async function fetchPublicBlogCategoryBlogs(slug: string, language: AppLanguage = 'ar'): Promise<BlogListItem[]> {
+export const fetchPublicBlogCategoryBlogs = cache(async function fetchPublicBlogCategoryBlogs(
+  slug: string,
+  language: AppLanguage = 'ar',
+  params?: { page?: number; per_page?: number },
+): Promise<PublicListResult<BlogListItem>> {
   try {
-    const response = await fetch(`${BASE_URL}/user/blog-categories/${slug}/blogs`, {
+    const query = new URLSearchParams();
+    if (params?.page) query.set('page', String(params.page));
+    query.set('per_page', String(params?.per_page ?? 15));
+    const response = await fetch(`${BASE_URL}/user/blog-categories/${slug}/blogs?${query.toString()}`, {
       headers: { Accept: 'application/json', 'Accept-Language': language },
       next: { revalidate: 300 },
     });
     const json = await response.json().catch(() => null);
-    if (!response.ok || !json?.status) return [];
-    return unwrapList<BlogListItem>(json.data);
+    if (!response.ok || !json?.status) return { items: [], pagination: null };
+    return { items: unwrapList<BlogListItem>(json.data), pagination: readPagination(json) };
   } catch {
     // The public site must still build/render when the content API is unreachable.
-    return [];
+    return { items: [], pagination: null };
   }
 });
 
-export async function fetchAdminBlogs(params?: { search?: string; category_id?: number | string; per_page?: number }): Promise<BlogListItem[]> {
+function appendBilingual(body: FormData, key: string, value?: { ar: string; en: string }) {
+  body.append(`${key}[ar]`, value?.ar || '');
+  body.append(`${key}[en]`, value?.en || '');
+}
+
+function appendSeo(body: FormData, payload: BlogPayload | BlogCategoryPayload) {
+  appendBilingual(body, 'meta_title', payload.meta_title);
+  appendBilingual(body, 'meta_description', payload.meta_description);
+  appendBilingual(body, 'og_title', payload.og_title);
+  appendBilingual(body, 'og_description', payload.og_description);
+  if (payload.image) body.append('image', payload.image);
+  if (payload.og_image) body.append('og_image', payload.og_image);
+}
+
+function buildBlogFormData(payload: BlogPayload): FormData {
+  const body = new FormData();
+  body.append('category_id', String(payload.category_id));
+  appendBilingual(body, 'title', payload.title);
+  body.append('slug', payload.slug);
+  appendBilingual(body, 'excerpt', payload.excerpt);
+  appendBilingual(body, 'content', payload.content);
+  body.append('is_featured', payload.is_featured ? '1' : '0');
+  body.append('is_active', payload.is_active ? '1' : '0');
+  // Sent as UTC ISO so the backend (UTC) stores the moment the admin picked locally.
+  body.append('published_at', payload.published_at ? new Date(payload.published_at).toISOString() : '');
+  body.append('sort_order', String(payload.sort_order));
+  appendSeo(body, payload);
+  return body;
+}
+
+function buildBlogCategoryFormData(payload: BlogCategoryPayload): FormData {
+  const body = new FormData();
+  appendBilingual(body, 'title', payload.title);
+  body.append('slug', payload.slug);
+  appendBilingual(body, 'description', payload.description);
+  body.append('is_active', payload.is_active ? '1' : '0');
+  body.append('sort_order', String(payload.sort_order));
+  appendSeo(body, payload);
+  return body;
+}
+
+export async function fetchAdminBlogs(params?: { search?: string; category_id?: number | string; page?: number; per_page?: number }): Promise<{ items: AdminBlog[]; pagination: PaginationMeta | null }> {
   const query = new URLSearchParams();
   if (params?.search) query.set('search', params.search);
   if (params?.category_id !== undefined && params.category_id !== '') query.set('category_id', String(params.category_id));
+  if (params?.page) query.set('page', String(params.page));
   if (params?.per_page) query.set('per_page', String(params.per_page));
-  const response = await apiService.get<BlogListItem[] | { data: BlogListItem[] }>(`admin/blogs?${query.toString()}`, {
+  const response = await apiService.get<AdminBlog[] | { data: AdminBlog[] }>(`admin/blogs?${query.toString()}`, {
     skipGlobalToast: true,
   });
-  if (!response.status) return [];
-  return unwrapList<BlogListItem>(response.data as any);
-}
-
-export async function fetchAdminBlog(id: number | string): Promise<BlogDetailItem | null> {
-  const response = await apiService.get<BlogDetailItem>(`admin/blogs/${id}`, { skipGlobalToast: true });
-  if (!response.status) return null;
-  return unwrapItem<BlogDetailItem>(response.data as any);
+  if (!response.status) return { items: [], pagination: null };
+  return { items: unwrapList<AdminBlog>(response.data), pagination: readPagination(response) };
 }
 
 export async function createAdminBlog(payload: BlogPayload): Promise<void> {
-  const body = new FormData();
-  body.append('category_id', String(payload.category_id));
-  body.append('title[ar]', payload.title.ar);
-  body.append('title[en]', payload.title.en);
-  body.append('slug', payload.slug);
-  body.append('excerpt[ar]', payload.excerpt.ar);
-  body.append('excerpt[en]', payload.excerpt.en);
-  body.append('content[ar]', payload.content.ar);
-  body.append('content[en]', payload.content.en);
-  body.append('is_featured', String(payload.is_featured ? 1 : 0));
-  body.append('is_active', String(payload.is_active ? 1 : 0));
-  body.append('sort_order', String(payload.sort_order));
-  body.append('meta_title[ar]', payload.meta_title?.ar || '');
-  body.append('meta_title[en]', payload.meta_title?.en || '');
-  body.append('meta_description[ar]', payload.meta_description?.ar || '');
-  body.append('meta_description[en]', payload.meta_description?.en || '');
-  body.append('og_title[ar]', payload.og_title?.ar || '');
-  body.append('og_title[en]', payload.og_title?.en || '');
-  body.append('og_description[ar]', payload.og_description?.ar || '');
-  body.append('og_description[en]', payload.og_description?.en || '');
-  if (payload.image) body.append('image', payload.image);
-  if (payload.og_image) body.append('og_image', payload.og_image);
-  const response = await apiService.post<unknown>('admin/blogs', body, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || translateMessage('Failed to save blog.'));
+  assertApiOk(await apiService.post<unknown>('admin/blogs', buildBlogFormData(payload), { skipGlobalToast: true }));
 }
 
 export async function updateAdminBlog(id: number, payload: BlogPayload): Promise<void> {
-  const body = new FormData();
-  body.append('category_id', String(payload.category_id));
-  body.append('title[ar]', payload.title.ar);
-  body.append('title[en]', payload.title.en);
-  body.append('slug', payload.slug);
-  body.append('excerpt[ar]', payload.excerpt.ar);
-  body.append('excerpt[en]', payload.excerpt.en);
-  body.append('content[ar]', payload.content.ar);
-  body.append('content[en]', payload.content.en);
-  body.append('is_featured', String(payload.is_featured ? 1 : 0));
-  body.append('is_active', String(payload.is_active ? 1 : 0));
-  body.append('sort_order', String(payload.sort_order));
-  body.append('meta_title[ar]', payload.meta_title?.ar || '');
-  body.append('meta_title[en]', payload.meta_title?.en || '');
-  body.append('meta_description[ar]', payload.meta_description?.ar || '');
-  body.append('meta_description[en]', payload.meta_description?.en || '');
-  body.append('og_title[ar]', payload.og_title?.ar || '');
-  body.append('og_title[en]', payload.og_title?.en || '');
-  body.append('og_description[ar]', payload.og_description?.ar || '');
-  body.append('og_description[en]', payload.og_description?.en || '');
-  if (payload.image) body.append('image', payload.image);
-  if (payload.og_image) body.append('og_image', payload.og_image);
-  const response = await apiService.post<unknown>(`admin/blogs/${id}`, body, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || translateMessage('Failed to save blog.'));
+  assertApiOk(await apiService.post<unknown>(`admin/blogs/${id}`, buildBlogFormData(payload), { skipGlobalToast: true }));
 }
 
 export async function deleteAdminBlog(id: number): Promise<void> {
-  const response = await apiService.delete<unknown>(`admin/blogs/${id}`, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || translateMessage('Failed to delete blog.'));
+  // The shared client toasts delete success/failure itself.
+  assertApiOk(await apiService.delete<unknown>(`admin/blogs/${id}`));
 }
 
-export async function fetchAdminBlogCategories(params?: { per_page?: number; all?: boolean; search?: string }): Promise<BlogCategoryWithCount[]> {
+export async function fetchAdminBlogCategories(params?: { per_page?: number; all?: boolean; search?: string }): Promise<AdminBlogCategory[]> {
   const query = new URLSearchParams();
   if (params?.per_page) query.set('per_page', String(params.per_page));
   if (params?.all) query.set('all', '1');
   if (params?.search) query.set('search', params.search);
-  const response = await apiService.get<BlogCategoryWithCount[] | { data: BlogCategoryWithCount[] }>(`admin/blog-categories?${query.toString()}`, {
+  const response = await apiService.get<AdminBlogCategory[] | { data: AdminBlogCategory[] }>(`admin/blog-categories?${query.toString()}`, {
     skipGlobalToast: true,
   });
   if (!response.status) return [];
-  return unwrapList<BlogCategoryWithCount>(response.data as any);
-}
-
-export async function fetchAdminBlogCategory(id: number | string): Promise<BlogCategoryDetail | null> {
-  const response = await apiService.get<BlogCategoryDetail>(`admin/blog-categories/${id}`, { skipGlobalToast: true });
-  if (!response.status) return null;
-  return unwrapItem<BlogCategoryDetail>(response.data as any);
+  return unwrapList<AdminBlogCategory>(response.data);
 }
 
 export async function createAdminBlogCategory(payload: BlogCategoryPayload): Promise<void> {
-  const body = new FormData();
-  body.append('title[ar]', payload.title.ar);
-  body.append('title[en]', payload.title.en);
-  body.append('slug', payload.slug);
-  body.append('description[ar]', payload.description.ar);
-  body.append('description[en]', payload.description.en);
-  body.append('is_active', String(payload.is_active ? 1 : 0));
-  body.append('sort_order', String(payload.sort_order));
-  body.append('meta_title[ar]', payload.meta_title?.ar || '');
-  body.append('meta_title[en]', payload.meta_title?.en || '');
-  body.append('meta_description[ar]', payload.meta_description?.ar || '');
-  body.append('meta_description[en]', payload.meta_description?.en || '');
-  body.append('og_title[ar]', payload.og_title?.ar || '');
-  body.append('og_title[en]', payload.og_title?.en || '');
-  body.append('og_description[ar]', payload.og_description?.ar || '');
-  body.append('og_description[en]', payload.og_description?.en || '');
-  if (payload.image) body.append('image', payload.image);
-  if (payload.og_image) body.append('og_image', payload.og_image);
-  const response = await apiService.post<unknown>('admin/blog-categories', body, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || translateMessage('Failed to save blog category.'));
+  assertApiOk(await apiService.post<unknown>('admin/blog-categories', buildBlogCategoryFormData(payload), { skipGlobalToast: true }));
 }
 
 export async function updateAdminBlogCategory(id: number, payload: BlogCategoryPayload): Promise<void> {
-  const body = new FormData();
-  body.append('title[ar]', payload.title.ar);
-  body.append('title[en]', payload.title.en);
-  body.append('slug', payload.slug);
-  body.append('description[ar]', payload.description.ar);
-  body.append('description[en]', payload.description.en);
-  body.append('is_active', String(payload.is_active ? 1 : 0));
-  body.append('sort_order', String(payload.sort_order));
-  body.append('meta_title[ar]', payload.meta_title?.ar || '');
-  body.append('meta_title[en]', payload.meta_title?.en || '');
-  body.append('meta_description[ar]', payload.meta_description?.ar || '');
-  body.append('meta_description[en]', payload.meta_description?.en || '');
-  body.append('og_title[ar]', payload.og_title?.ar || '');
-  body.append('og_title[en]', payload.og_title?.en || '');
-  body.append('og_description[ar]', payload.og_description?.ar || '');
-  body.append('og_description[en]', payload.og_description?.en || '');
-  if (payload.image) body.append('image', payload.image);
-  if (payload.og_image) body.append('og_image', payload.og_image);
-  const response = await apiService.post<unknown>(`admin/blog-categories/${id}`, body, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || translateMessage('Failed to save blog category.'));
+  assertApiOk(await apiService.post<unknown>(`admin/blog-categories/${id}`, buildBlogCategoryFormData(payload), { skipGlobalToast: true }));
 }
 
 export async function deleteAdminBlogCategory(id: number): Promise<void> {
-  const response = await apiService.delete<unknown>(`admin/blog-categories/${id}`, { skipGlobalToast: true });
-  if (!response.status) throw new Error(response.message || translateMessage('Failed to delete blog category.'));
+  assertApiOk(await apiService.delete<unknown>(`admin/blog-categories/${id}`));
 }

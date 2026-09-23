@@ -55,7 +55,7 @@ export default function UserProfileTab({ selectedUser, formatDate, formatDateTim
           <div className="text-[var(--text-muted)] text-xs mb-1 flex items-center gap-1">
             <Briefcase size={12} /> {translateMessage('Projects')}
           </div>
-          <div className="text-[var(--text)] text-sm font-medium">{selectedUser.projectsCount || 0} {translateMessage('Created')}</div>
+          <div className="text-[var(--text)] text-sm font-medium">{selectedUser.projectsCount ?? translateMessage('N/A')} {selectedUser.projectsCount !== null ? translateMessage('Created') : null}</div>
         </div>
       </div>
 

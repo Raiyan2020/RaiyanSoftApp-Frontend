@@ -3,7 +3,7 @@
 import React, { createContext, useContext, type ReactNode } from 'react';
 import { Toaster, toast as sonnerToast } from 'sonner';
 import { translateMessage } from './i18n-utils';
-import { useTheme } from './themeContext';
+import { useOptionalTheme } from './themeContext';
 
 type ToastFn = (message: string) => void;
 const ACTION_TOAST_ID = 'global-action-toast';
@@ -29,7 +29,9 @@ const toastApi: ToastContextType['toast'] = {
 };
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const { theme } = useTheme();
+  // Public pages have no ThemeProvider (they toggle `html.dark` themselves);
+  // the classNames below use CSS tokens, so colors still follow that class.
+  const theme = useOptionalTheme()?.theme;
   return (
     <ToastContext.Provider value={{ toast: toastApi }}>
       {children}
@@ -39,6 +41,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       <Toaster
         theme={theme}
         closeButton
+        containerAriaLabel={translateMessage('Notifications')}
         position="top-right"
         visibleToasts={1}
         toastOptions={{

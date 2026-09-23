@@ -12,6 +12,7 @@ import { getServerLanguage } from '@/lib/language.server';
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getServerLanguage();
   return createPublicMetadata({
+    language,
     title: translateMessage('Blog Categories', language),
     description: translateMessage(
       'Browse Raiyan Soft articles by category to find the content closest to your field and project stage.',
@@ -24,7 +25,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function BlogCategoriesPage() {
   const language = await getServerLanguage();
   const tt = (message: string) => translateMessage(message, language);
-  const [categories, posts] = await Promise.all([fetchPublicBlogCategories(language), fetchPublicBlogs(language)]);
+  const [categories, { items: posts }] = await Promise.all([
+    fetchPublicBlogCategories(language),
+    fetchPublicBlogs(language, { per_page: 1000 }),
+  ]);
   const categoriesWithCount = categories.map((category) => ({
     ...category,
     count: posts.filter((post) => post.category?.slug === category.slug || post.category?.id === category.id).length,

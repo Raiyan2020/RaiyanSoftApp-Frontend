@@ -63,12 +63,14 @@ export default function LeadProjectWizard({
     t,
     dir,
     language,
-    setLanguage,
+    isEditingFromReview,
+    canJumpToReview,
+    jumpToReview,
   } = wizard;
 
   const renderStepContent = () => {
     if (step === authStep && !isAuthenticated) {
-      return <LeadProjectAuthGate onAuthenticated={handleAuthenticated} submitError={errors[0]} />;
+      return <LeadProjectAuthGate onAuthenticated={handleAuthenticated} submitError={errors[0]} onBack={prevStep} />;
     }
 
     if (questionsLoading && step > 0 && step <= questionCount) {
@@ -133,7 +135,6 @@ export default function LeadProjectWizard({
           answersByQuestionId={answersByQuestionId}
           getAnswerLabel={getAnswerLabel}
           t={t}
-          dir={dir}
           nameStep={nameStep}
           colorStep={colorStep}
           onEditStep={goToStepFromReview}
@@ -162,13 +163,14 @@ export default function LeadProjectWizard({
       isAuthenticated={isAuthenticated}
       dir={dir}
       language={language}
-      setLanguage={setLanguage}
       t={t}
       onClose={onClose}
       onPrev={prevStep}
       onNext={isReviewStep && isAuthenticated ? handleSubmit : nextStep}
       customFooterLabel={
-        isReviewStep
+        isEditingFromReview
+          ? t('wizard.save_back_review')
+          : isReviewStep
           ? !isAuthenticated
             ? t('auth.continue')
             : isLeadMode
@@ -177,6 +179,9 @@ export default function LeadProjectWizard({
           : undefined
       }
       showFooter={showFooter}
+      secondaryAction={
+        canJumpToReview ? { label: t('wizard.go_to_review'), onClick: jumpToReview } : undefined
+      }
     >
       <AnimatePresence initial={false} custom={direction}>
         <motion.div

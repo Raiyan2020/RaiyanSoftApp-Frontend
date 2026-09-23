@@ -1,13 +1,12 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { X, Ban, CheckCircle, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog';
+import { Ban, CheckCircle, Trash2 } from 'lucide-react';
 import { UserProject } from '@/lib/userProjectsStore';
 import { FEATURES } from '@/lib/feature-flags';
 import { AdminUser } from '../types/admin-user.types';
 import UserProfileTab from './user-profile-tab';
 import UserProjectsTab from './user-projects-tab';
 import { translateMessage } from '@/lib/i18n-utils';
-import { useTranslation } from '@/lib/i18nContext';
 
 interface UserDetailDrawerProps {
   selectedUser: AdminUser;
@@ -34,34 +33,11 @@ export default function UserDetailDrawer({
   onToggleStatus,
   onDeleteUser,
 }: UserDetailDrawerProps) {
-  const { dir } = useTranslation();
   return (
-    <>
-      <motion.div
-        initial={false}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-        className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
-      />
-
-      <motion.div
-        initial={{ x: dir === 'rtl' ? '-100%' : '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: dir === 'rtl' ? '-100%' : '100%' }}
-        transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-        onClick={(event) => event.stopPropagation()}
-        className="fixed inset-y-0 end-0 z-50 w-full max-w-lg bg-[var(--surface)] border-s border-[var(--border)] shadow-2xl flex flex-col"
-      >
-        <div className="flex items-center justify-between p-6 border-b border-[var(--border)]">
-          <h2 className="text-xl font-bold text-[var(--text)]">{translateMessage('User Details')}</h2>
-          <button
-            type="button"
-            onClick={onClose}
-            className="p-2 text-[var(--text-muted)] hover:text-[var(--text)] rounded-lg hover:bg-white/5 transition-colors"
-          >
-            <X size={20} />
-          </button>
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent aria-describedby={undefined} className="max-h-[90dvh] max-w-2xl overflow-hidden p-0">
+        <div className="flex items-center justify-between p-6 pe-12 border-b border-[var(--border)]">
+          <DialogTitle>{translateMessage('User Details')}</DialogTitle>
         </div>
 
         <div className="flex border-b border-[var(--border)] bg-[var(--surface-2)]">
@@ -85,11 +61,13 @@ export default function UserDetailDrawer({
                 : 'border-transparent text-[var(--text-muted)] hover:text-[var(--text)]'
             }`}
           >
-            {translateMessage('Projects')} ({userProjects.length})
+            {translateMessage('Projects')}
+            {/* Count comes with the user (projects_count); the list itself loads lazily on this tab. */}
+            {selectedUser.projectsCount !== null ? ` (${selectedUser.projectsCount})` : null}
           </button>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-6">
           {activeTab === 'profile' ? (
             <UserProfileTab
               selectedUser={selectedUser}
@@ -133,7 +111,7 @@ export default function UserDetailDrawer({
             </div>
           </div>
         ) : null}
-      </motion.div>
-    </>
+      </DialogContent>
+    </Dialog>
   );
 }

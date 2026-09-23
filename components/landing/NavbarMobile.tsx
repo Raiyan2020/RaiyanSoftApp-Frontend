@@ -141,21 +141,21 @@ export default function NavbarMobile({
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <Link
-                    href="/appointments"
+                    href="/profile?tab=booking"
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary"
                   >
                     <span>{t('appt.title')}</span>
                   </Link>
                   <Link
-                    href="/support"
+                    href="/profile"
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary"
                   >
                     <span>{t('status.support')}</span>
                   </Link>
                   <Link
-                    href="/notifications"
+                    href="/profile?tab=notification"
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center justify-center gap-2 rounded-2xl bg-white/5 border border-white/10 px-4 py-3 text-sm font-bold text-slate-200 transition-colors hover:bg-primary/10 hover:text-primary"
                   >

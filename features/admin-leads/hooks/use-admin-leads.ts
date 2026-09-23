@@ -29,6 +29,8 @@ export function useAdminLeads() {
   const [selectedListItem, setSelectedListItem] = useState<AdminLeadListItem | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
   const [updatingLeadId, setUpdatingLeadId] = useState<number | null>(null);
+  // Lead awaiting a rejection reason; the backend requires `reason` when action=reject.
+  const [rejectingLeadId, setRejectingLeadId] = useState<number | null>(null);
 
   useEffect(() => {
     const timer = window.setTimeout(() => setDebouncedSearch(searchQuery.trim()), 350);
@@ -64,6 +66,12 @@ export function useAdminLeads() {
     error: listError,
     reload: reloadList,
   } = useAdminLeadsList(filters, language);
+
+  // A status action can empty the last page (e.g. approving the only pending
+  // row on it); step back to the new last page instead of showing nothing.
+  if (pagination && page > Math.max(1, pagination.last_page)) {
+    setPage(Math.max(1, pagination.last_page));
+  }
 
   useEffect(() => {
     // Genuine external synchronization: keeps the locally-held selected
@@ -116,36 +124,53 @@ export function useAdminLeads() {
     }
   };
 
-  const handleReject = async () => {
-    if (!selectedLeadId) return;
+  const handleReject = () => {
+    if (selectedLeadId) setRejectingLeadId(selectedLeadId);
+  };
+
+  const cancelReject = () => setRejectingLeadId(null);
+
+  // Throws on failure so the reason dialog stays open; the error is toasted via statusError.
+  const submitReject = async (reason: string) => {
+    if (!rejectingLeadId) return;
+    const id = rejectingLeadId;
+    const isSelected = selectedLeadId === id;
+    setUpdatingLeadId(id);
 
     try {
-      await changeStatus(selectedLeadId, 'reject');
+      await changeStatus(id, 'reject', reason);
       setActionMessage('Lead rejected successfully.');
-      await Promise.all([reloadList(), reloadDetail()]);
-      closeLead({ clearMessage: false });
-    } catch {
-      // error surfaced via statusError
+      setRejectingLeadId(null);
+      await Promise.all([reloadList(), isSelected ? reloadDetail() : Promise.resolve()]);
+      if (isSelected) closeLead({ clearMessage: false });
+    } finally {
+      setUpdatingLeadId(null);
     }
   };
 
   const handleStatusChange = async (lead: AdminLeadListItem, nextStatus: LeadStatusCode) => {
     const currentStatus = getLeadStatusCode(lead.status);
     if (currentStatus === nextStatus || updatingLeadId) return;
-    if (nextStatus === LEAD_STATUS.PENDING || (currentStatus === LEAD_STATUS.REJECTED && nextStatus === LEAD_STATUS.REJECTED)) return;
+    // Only a rejected lead can be re-opened as pending.
+    if (nextStatus === LEAD_STATUS.PENDING && currentStatus !== LEAD_STATUS.REJECTED) return;
+
+    // Reject needs a reason: open the dialog instead of sending. The select stays
+    // bound to the lead's server status, so cancelling leaves it unchanged.
+    if (nextStatus === LEAD_STATUS.REJECTED) {
+      setRejectingLeadId(lead.id);
+      return;
+    }
 
     setUpdatingLeadId(lead.id);
 
     try {
-      await changeStatus(
-        lead.id,
-        nextStatus === LEAD_STATUS.APPROVED ? 'approve' : 'reject'
-      );
-      setActionMessage(
-        nextStatus === LEAD_STATUS.APPROVED
-          ? 'Lead approved successfully.'
-          : 'Lead rejected successfully.'
-      );
+      if (nextStatus === LEAD_STATUS.PENDING) {
+        await changeStatus(lead.id, 'pending');
+        setActionMessage('Lead moved back to pending.');
+      } else {
+        await changeStatus(lead.id, 'approve');
+        setActionMessage('Lead approved successfully.');
+      }
 
       await Promise.all([
         reloadList(),
@@ -158,16 +183,6 @@ export function useAdminLeads() {
     }
   };
 
-  const toWhatsAppDigits = (phone: string): string | null => {
-    if (!phone) return null;
-    const digits = phone.replace(/\D/g, '');
-
-    if (digits.length === 8) return `965${digits}`;
-    if (digits.length < 8) return null;
-
-    return digits;
-  };
-
   const goToPage = (nextPage: number) => {
     if (!pagination) return;
     const safePage = Math.min(Math.max(1, nextPage), pagination.last_page);
@@ -177,7 +192,9 @@ export function useAdminLeads() {
   return {
     leads,
     pagination,
-    listLoading,
+    // Typed-but-not-yet-debounced search counts as loading, so the previous
+    // query's (possibly empty) results never read as "no results".
+    listLoading: listLoading || searchQuery.trim() !== debouncedSearch,
     listError,
     reloadList,
     selectedLead,
@@ -203,8 +220,10 @@ export function useAdminLeads() {
     closeLead,
     handleApprove,
     handleReject,
+    rejectingLeadId,
+    cancelReject,
+    submitReject,
     handleStatusChange,
-    toWhatsAppDigits,
     page,
     goToPage,
   };

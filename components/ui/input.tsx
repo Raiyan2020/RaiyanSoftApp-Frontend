@@ -1,7 +1,8 @@
 import React from 'react';
 import { translateMessage } from '@/lib/i18n-utils';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+// ComponentProps includes `ref` (React 19 passes it as a prop), so RHF `{...field}` / register() work.
+interface InputProps extends React.ComponentProps<'input'> {
   label?: string;
   error?: string;
   icon?: React.ReactNode;
@@ -43,6 +44,9 @@ export default function Input({
           className={`w-full app-input rounded-xl min-h-11 ${
             icon ? 'ps-10 pe-4' : 'px-4'
           } py-2.5 focus:outline-none transition-colors ${
+            // LTR-pinned values (email/url) still show the placeholder in page direction.
+            dir === 'ltr' ? 'rtl:placeholder-shown:[direction:rtl]' : ''
+          } ${
             error ? 'border-danger' : 'focus:border-primary'
           } ${className}`}
           {...props}

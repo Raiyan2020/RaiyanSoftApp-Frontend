@@ -8,12 +8,17 @@ import { fetchPublicBlogs } from '@/features/blog/services/blog-api';
 import { fetchLandingHome } from '@/features/landing-page';
 import { getServerLanguage } from '@/lib/language.server';
 
-export const metadata: Metadata = getPageMetadata('home');
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('home', await getServerLanguage());
+}
 
 export default async function Page() {
   const homeSeo = pageSeo.home;
   const language = await getServerLanguage();
-  const [blogPosts, landingHome] = await Promise.all([fetchPublicBlogs(language), fetchLandingHome(language)]);
+  const [{ items: blogPosts }, landingHome] = await Promise.all([
+    fetchPublicBlogs(language, { per_page: 3 }),
+    fetchLandingHome(language),
+  ]);
 
   return (
     <>
@@ -21,7 +26,7 @@ export default async function Page() {
       <JsonLd id="website-schema" data={createWebSiteJsonLd()} />
       <LandingPage
         homeData={landingHome}
-        blogPosts={blogPosts.slice(0, 3).map((post) => ({
+        blogPosts={blogPosts.map((post) => ({
           slug: post.slug,
           title: post.title,
           excerpt: post.excerpt,

@@ -85,10 +85,51 @@ export interface BlogPayload {
   image?: File | null;
   is_featured: boolean;
   is_active: boolean;
+  /** Local `YYYY-MM-DDTHH:mm` from a datetime-local input, or '' for "publish immediately". */
+  published_at: string;
   sort_order: number;
   meta_title?: { ar: string; en: string };
   meta_description?: { ar: string; en: string };
   og_title?: { ar: string; en: string };
   og_description?: { ar: string; en: string };
   og_image?: File | null;
+}
+
+type Bilingual = { ar: string; en: string };
+
+/** Admin endpoints return every translatable field as an { ar, en } map (possibly partial). */
+export interface AdminBlogCategory {
+  id: number;
+  title: Partial<Bilingual>;
+  slug: string;
+  description: Partial<Bilingual>;
+  image: string | null;
+  is_active: boolean;
+  sort_order: number;
+  meta_title: Partial<Bilingual>;
+  meta_description: Partial<Bilingual>;
+  og_title: Partial<Bilingual>;
+  og_description: Partial<Bilingual>;
+  og_image: string | null;
+}
+
+export interface AdminBlog {
+  id: number;
+  category_id: number | null;
+  category: { id: number; title: Partial<Bilingual>; slug: string } | null;
+  title: Partial<Bilingual>;
+  slug: string;
+  excerpt: Partial<Bilingual>;
+  content: Partial<Bilingual>;
+  image: string | null;
+  is_featured: boolean;
+  is_active: boolean;
+  published_at: string | null;
+  sort_order: number;
+  meta_title: Partial<Bilingual>;
+  meta_description: Partial<Bilingual>;
+  og_title: Partial<Bilingual>;
+  og_description: Partial<Bilingual>;
+  og_image: string | null;
+  created_at: string | null;
 }

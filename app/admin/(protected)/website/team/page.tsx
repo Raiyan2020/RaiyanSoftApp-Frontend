@@ -1,7 +1,7 @@
-import AdminWebsiteSectionPage from '@/features/admin-website/components/admin-website-section-page';
+import AdminTeamPage from '@/features/admin-website/components/admin-team-page';
 
 export const dynamic = 'force-dynamic';
 
 export default function TeamAdminPage() {
-  return <AdminWebsiteSectionPage section="team" />;
+  return <AdminTeamPage />;
 }

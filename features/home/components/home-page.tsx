@@ -1,13 +1,14 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Box, Plus, ChevronRight, ChevronLeft } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
 import EmptyState from '@/components/ui/empty-state';
 import Button from '@/components/ui/button';
-import { LeadProjectWizard } from '@/features/lead-project';
+import TablePagination from '@/components/ui/table-pagination';
+import { LeadProjectWizard, LeadContactChoiceModal } from '@/features/lead-project';
 import { useTranslation } from '@/lib/i18nContext';
 import { translateMessage } from '@/lib/i18n-utils';
 import { useHome } from '../hooks/use-home';
@@ -22,11 +23,16 @@ export default function HomePage() {
     projects,
     projectsLoading,
     projectsError,
+    projectsPagination,
+    setProjectsPage,
     isWizardOpen,
     setIsWizardOpen,
     handleCreateClick,
     handleNotificationsClick,
   } = useHome();
+  // Set after a successful submit; the project list refreshes itself because
+  // the wizard invalidates the lead-project queries before calling onComplete.
+  const [completedRequestId, setCompletedRequestId] = useState<string | null>(null);
 
   return (
     <div className="app-page app-page-wide">
@@ -114,6 +120,7 @@ export default function HomePage() {
                 description={app.description}
                 iconBg={app.iconBg}
                 brandColor={app.brandColor}
+                image={app.image}
                 onOpen={() => router.push(`/projects/${app.id}`)}
               />
             ))}
@@ -135,7 +142,11 @@ export default function HomePage() {
               </span>
             </motion.button>
           </div>
-        ) : (
+        ) : null}
+        {!projectsLoading && !projectsError && projects.length > 0 ? (
+          <TablePagination pagination={projectsPagination} onPageChange={setProjectsPage} className="mt-6" />
+        ) : null}
+        {!projectsLoading && !projectsError && projects.length === 0 ? (
           <EmptyState
             icon={<Plus size={24} />}
             title={t('home.no_apps')}
@@ -143,17 +154,27 @@ export default function HomePage() {
             className="py-14"
             action={<Button onClick={handleCreateClick}>{t('home.add_first')}</Button>}
           />
-        )}
+        ) : null}
       </section>
 
       <AnimatePresence>
         {isWizardOpen ? (
           <LeadProjectWizard
             onClose={() => setIsWizardOpen(false)}
-            onComplete={() => router.push('/profile?tab=project')}
+            onComplete={(id) => {
+              setIsWizardOpen(false);
+              setCompletedRequestId(id || '');
+            }}
           />
         ) : null}
       </AnimatePresence>
+
+      {completedRequestId !== null ? (
+        <LeadContactChoiceModal
+          requestId={completedRequestId || undefined}
+          onClose={() => setCompletedRequestId(null)}
+        />
+      ) : null}
     </div>
   );
 }

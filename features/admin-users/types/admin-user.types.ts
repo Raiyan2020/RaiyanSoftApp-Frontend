@@ -10,6 +10,7 @@ export type AdminUser = {
   status: AdminUserStatus;
   registeredAt: number;
   lastLoginAt: number;
-  projectsCount: number;
+  /** null = unknown (API didn't send projects_count); never render it as 0. */
+  projectsCount: number | null;
   userCode?: string;
 };

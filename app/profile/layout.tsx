@@ -6,6 +6,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const language = await getServerLanguage();
 
   return createPublicMetadata({
+    language,
     title: language === 'ar' ? 'الملف الشخصي' : 'Profile',
     description:
       language === 'ar'

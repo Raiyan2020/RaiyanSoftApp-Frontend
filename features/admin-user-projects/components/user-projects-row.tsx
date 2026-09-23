@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { Eye, LayoutGrid, Link as LinkIcon, Edit2 } from 'lucide-react';
+import { Eye, Link as LinkIcon, Edit2 } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
+import FallbackImage from '@/components/ui/fallback-image';
 import { UserProject } from '@/lib/userProjectsStore';
 import { translateMessage } from '@/lib/i18n-utils';
 
@@ -28,16 +29,18 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
         {/* Header */}
         <div className="flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className={`w-10 h-10 shrink-0 ${project.iconBg || 'bg-[var(--surface-3)]'} rounded-lg flex items-center justify-center text-[var(--text)] border border-[var(--border)] shadow-inner`}>
-              <LayoutGrid size={18} className="opacity-80" />
-            </div>
+            <FallbackImage
+              src={project.image}
+              alt={project.name}
+              className="w-10 h-10 shrink-0 rounded-lg border border-[var(--border)] shadow-inner"
+            />
             <div className="min-w-0">
               <Link href={detailHref} className="block font-bold text-[var(--text)] hover:text-primary transition-colors truncate">
                 {project.name}
               </Link>
               {project.industry ? (
                 <p className="text-xs text-[var(--text-muted)] truncate">
-                  {project.industry === 'Other' ? project.industryOther : project.industry}
+                  {project.industry === 'Other' ? project.industryOther : translateMessage(project.industry)}
                 </p>
               ) : null}
             </div>
@@ -59,7 +62,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
           </div>
           <div className="flex items-center justify-between text-xs">
             <span className="text-[var(--text-muted)]">{translateMessage('Pricing')}</span>
-            <span className="font-medium text-[var(--text)]">{project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : '-'}</span>
+            <span className="font-medium text-[var(--text)]">{project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} ${translateMessage('KWD')}` : '-'}</span>
           </div>
           {project.estimatedDuration ? (
             <div className="flex items-center justify-between text-xs">
@@ -102,21 +105,19 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
         <td className="p-5 text-[var(--text-muted)] text-xs font-mono">{project.referenceNumber || '-'}</td>
         <td className="p-5">
           <Link href={detailHref} className="flex items-center gap-3 group/project">
-            <div
-              className={`w-10 h-10 ${
-                project.iconBg || 'bg-[var(--surface-3)]'
-              } rounded-lg flex items-center justify-center text-[var(--text)] border border-[var(--border)] shadow-inner`}
-            >
-              <LayoutGrid size={18} className="opacity-80" />
-            </div>
+            <FallbackImage
+              src={project.image}
+              alt={project.name}
+              className="w-10 h-10 shrink-0 rounded-lg border border-[var(--border)] shadow-inner"
+            />
             <div>
               <div className="font-medium text-[var(--text)] group-hover/project:text-primary transition-colors">{project.name}</div>
               <div className="text-[var(--text-muted)] text-xs flex items-center gap-1">
                 {project.projectUrl ? <LinkIcon size={10} /> : null}
-                {project.version || 'v1.0.0'}
+                {project.version ? translateMessage(capitalize(project.version)) : 'v1.0.0'}
                 {project.industry ? (
                   <span className="text-[var(--text-muted)]">
-                    • {project.industry === 'Other' ? project.industryOther : project.industry}
+                    • {project.industry === 'Other' ? project.industryOther : translateMessage(project.industry)}
                   </span>
                 ) : null}
               </div>
@@ -124,7 +125,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
           </Link>
         </td>
         <td className="p-5 text-[var(--text-muted)] text-xs">
-          {project.industry ? (project.industry === 'Other' ? project.industryOther : project.industry) : '-'}
+          {project.industry ? (project.industry === 'Other' ? project.industryOther : translateMessage(project.industry)) : '-'}
         </td>
         <td className="p-5">
           <span
@@ -140,7 +141,7 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
         <td className="p-5">
           <div className="flex flex-col gap-0.5">
             <span className="text-[var(--text)] text-xs font-medium">
-              {project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} KWD` : '-'}
+              {project.estimatedPrice ? `${project.estimatedPrice.toLocaleString()} ${translateMessage('KWD')}` : '-'}
             </span>
             <span className="text-[var(--text-muted)] text-[11px]">
               {project.estimatedDuration ? `${project.estimatedDuration} ${translateMessage('days')}` : '-'}
@@ -157,8 +158,8 @@ export default function UserProjectsRow({ project, onEdit, formatDate, variant =
           </div>
         </td>
         <td className="p-5 text-[var(--text-muted)] text-xs">{formatDate(project.createdAt)}</td>
-        <td className="p-5 text-end">
-          <div className="flex items-center justify-end gap-2">
+        <td className="p-5 text-start">
+          <div className="flex items-center justify-start gap-2">
             <Link
               href={detailHref}
               className="p-2 bg-[var(--surface-3)] hover:bg-primary/20 rounded-lg text-[var(--text-muted)] hover:text-primary transition-colors border border-[var(--border)] hover:border-primary/30"

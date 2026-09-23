@@ -2,7 +2,6 @@
 
 import dynamic from 'next/dynamic';
 import { usePathname } from 'next/navigation';
-import PublicProviders from './public-providers';
 import LandingProviders from './landing-providers';
 
 const FullProviders = dynamic(() => import('./providers'), { ssr: false });
@@ -40,12 +39,9 @@ export default function AppProviders({
 }) {
   const pathname = usePathname();
 
-  if (pathname === '/') {
-    return <LandingProviders initialLanguage={initialLanguage}>{children}</LandingProviders>;
-  }
-
+  // Public pages share the home footer, which needs UserSettingsProvider.
   if (isPublicPath(pathname)) {
-    return <PublicProviders initialLanguage={initialLanguage}>{children}</PublicProviders>;
+    return <LandingProviders initialLanguage={initialLanguage}>{children}</LandingProviders>;
   }
 
   return <FullProviders initialLanguage={initialLanguage}>{children}</FullProviders>;

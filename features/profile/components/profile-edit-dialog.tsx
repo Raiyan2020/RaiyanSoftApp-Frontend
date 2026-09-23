@@ -13,7 +13,6 @@ import type { User } from '@/lib/auth-service';
 import { getUserProfilePhoneValue } from '../hooks/use-user-profile';
 import { userProfileSchema, type UserProfileValues } from '../schemas/profile.schema';
 import ErrorAlert from '@/components/ui/error-alert';
-import SuccessToast from '@/components/ui/success-toast';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface ProfileEditDialogProps {
@@ -21,7 +20,6 @@ interface ProfileEditDialogProps {
   user: User | null;
   isSaving: boolean;
   error?: string | null;
-  success?: boolean;
   onClose: () => void;
   onSubmit: (values: UserProfileValues) => Promise<void>;
 }
@@ -31,7 +29,6 @@ export default function ProfileEditDialog({
   user,
   isSaving,
   error,
-  success,
   onClose,
   onSubmit,
 }: ProfileEditDialogProps) {
@@ -98,7 +95,7 @@ export default function ProfileEditDialog({
                   render={({ field, fieldState }) => (
                     <Input
                       {...field}
-                      label="First Name"
+                      label={translateMessage('First Name')}
                       icon={<UserIcon size={16} />}
                       error={fieldState.error?.message}
                       autoComplete="given-name"
@@ -111,7 +108,7 @@ export default function ProfileEditDialog({
                   render={({ field, fieldState }) => (
                     <Input
                       {...field}
-                      label="Last Name"
+                      label={translateMessage('Last Name')}
                       icon={<UserIcon size={16} />}
                       error={fieldState.error?.message}
                       autoComplete="family-name"
@@ -127,7 +124,7 @@ export default function ProfileEditDialog({
                   <Input
                     {...field}
                     type="email"
-                    label="Email"
+                    label={translateMessage('Email')}
                     icon={<Mail size={16} />}
                     error={fieldState.error?.message}
                     autoComplete="email"
@@ -156,11 +153,10 @@ export default function ProfileEditDialog({
               {error ? (
                 <ErrorAlert message={error} />
               ) : null}
-              <SuccessToast message={success ? translateMessage('Profile updated successfully.') : null} />
 
               <div className="flex flex-col-reverse gap-3 border-t border-[var(--border)] pt-5 sm:flex-row sm:justify-end">
                 <Button type="button" variant="outline" onClick={onClose} disabled={isSaving}>
-                  Cancel
+                  {translateMessage('Cancel')}
                 </Button>
                 <Button type="submit" disabled={isSaving} className="gap-2">
                   {isSaving ? <Loader2 size={17} className="animate-spin" /> : <Save size={17} />}

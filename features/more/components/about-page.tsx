@@ -4,7 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import SafeImage from '@/components/ui/safe-image';
+import FallbackImage from '@/components/ui/fallback-image';
 import { useTranslation } from '@/lib/i18nContext';
 import { useAboutUs } from '@/features/pages';
 import { PageHtmlContent } from '@/features/pages';
@@ -49,7 +49,7 @@ export default function AboutPage() {
           <div className="flex flex-col items-center justify-center pt-6">
             <div className="w-24 h-24 mb-6 relative">
               <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
-              <SafeImage
+              <FallbackImage
                 src={data?.image || 'https://raiyansoft.com/wp-content/uploads/2024/05/cropped-App-Icon-1.png'}
                 className="w-full h-full object-contain relative z-10"
                 alt={translateMessage('Raiyansoft Logo')}

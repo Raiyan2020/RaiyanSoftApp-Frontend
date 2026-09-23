@@ -1,8 +1,13 @@
 'use client';
 import { useRef, useState } from 'react';
 import { useSectionReveal } from './use-section-reveal';
+import SectionHeader from './SectionHeader';
 import { useLandingContent } from '@/features/landing/hooks/use-landing-content';
+import Input from '@/components/ui/input';
+import Textarea from '@/components/ui/textarea';
 import PhoneInput from '@/components/ui/phone-input';
+import { FieldError } from '@/components/ui/field';
+import { getPhoneError } from '@/lib/phone';
 import { useSubmitLandingAboutUsForm, type LandingPageContent } from '@/features/landing-page';
 import PageHtmlContent from '@/features/pages/components/page-html-content';
 
@@ -13,18 +18,22 @@ type ContactProps = {
 export default function Contact({ homeData }: ContactProps) {
   const ref = useRef<HTMLDivElement>(null);
   useSectionReveal(ref);
-  const { content, contactMethods, textAlign } = useLandingContent();
+  const { content, contactMethods } = useLandingContent();
   const { contact } = content;
   const banner = homeData?.banners?.project;
 
   const [form, setForm] = useState({ name: '', email: '', message: '' });
   const [phone, setPhone] = useState('');
+  const [phoneError, setPhoneError] = useState<string | undefined>();
   const [submitted, setSubmitted] = useState(false);
   const submitForm = useSubmitLandingAboutUsForm();
   const loading = submitForm.isPending;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    const nextPhoneError = getPhoneError(phone);
+    setPhoneError(nextPhoneError);
+    if (nextPhoneError) return;
     try {
       await submitForm.mutateAsync({
         full_name: form.name,
@@ -38,8 +47,6 @@ export default function Contact({ homeData }: ContactProps) {
     }
   };
 
-  const inputClass =
-    'w-full rounded-2xl border border-cyan-950/10 bg-slate-50 px-4 py-3.5 text-slate-950 placeholder-slate-400 transition-all duration-200 focus:border-primary focus:bg-white focus:outline-none focus:ring-4 focus:ring-primary/10 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-slate-500 dark:focus:bg-white/10';
 
   return (
     <section id="contact" className="relative overflow-hidden bg-slate-50 py-12 dark:bg-navy-900 sm:py-16 lg:py-20">
@@ -48,14 +55,10 @@ export default function Contact({ homeData }: ContactProps) {
       <div className="pointer-events-none absolute bottom-10 start-10 h-64 w-64 rounded-full bg-emerald-300/10 blur-3xl" />
 
       <div ref={ref} className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className={`reveal mb-10 text-start lg:mb-12 ${textAlign}`}>
-          <h2 className="text-2xl font-bold leading-[1.34] text-slate-950 dark:text-white sm:text-3xl lg:text-[2.35rem]">
-            {contact.title} <span className="gradient-text">{contact.titleHighlight}</span>
-          </h2>
-          <p className="mt-5 max-w-3xl text-lg leading-relaxed text-slate-600 dark:text-slate-300">
-            {contact.description}
-          </p>
-        </div>
+        <SectionHeader
+          title={<>{contact.title} <span className="gradient-text">{contact.titleHighlight}</span></>}
+          description={contact.description}
+        />
 
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
           <aside className="reveal space-y-5 lg:col-span-2">
@@ -118,28 +121,26 @@ export default function Contact({ homeData }: ContactProps) {
                       <label htmlFor="contact-name" className="text-sm font-bold text-slate-700 dark:text-slate-200">
                         {contact.form.name}
                       </label>
-                      <input
+                      <Input
                         id="contact-name"
                         type="text"
                         required
                         value={form.name}
                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                         placeholder={contact.form.name}
-                        className={inputClass}
                       />
                     </div>
                     <div className="space-y-2">
                       <label htmlFor="contact-email" className="text-sm font-bold text-slate-700 dark:text-slate-200">
                         {contact.form.email}
                       </label>
-                      <input
+                      <Input
                         id="contact-email"
                         type="email"
                         required
                         value={form.email}
                         onChange={(e) => setForm({ ...form, email: e.target.value })}
                         placeholder={contact.form.email}
-                        className={inputClass}
                         dir="ltr"
                       />
                     </div>
@@ -149,21 +150,30 @@ export default function Contact({ homeData }: ContactProps) {
                     <label htmlFor="contact-phone" className="text-sm font-bold text-slate-700 dark:text-slate-200">
                       {contact.form.phone}
                     </label>
-                    <PhoneInput value={phone} onChange={(value) => setPhone(value || '')} placeholder={contact.form.phone} required />
+                    <PhoneInput
+                      id="contact-phone"
+                      value={phone}
+                      onChange={(value) => {
+                        setPhone(value || '');
+                        setPhoneError(undefined);
+                      }}
+                      placeholder={contact.form.phone}
+                      required
+                    />
+                    <FieldError errors={[phoneError]} />
                   </div>
 
                   <div className="space-y-2">
                     <label htmlFor="contact-message" className="text-sm font-bold text-slate-700 dark:text-slate-200">
                       {contact.form.message}
                     </label>
-                    <textarea
+                    <Textarea
                       id="contact-message"
                       required
                       rows={5}
                       value={form.message}
                       onChange={(e) => setForm({ ...form, message: e.target.value })}
                       placeholder={contact.form.message}
-                      className={`${inputClass} resize-none`}
                     />
                   </div>
 

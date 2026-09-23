@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Edit2, Trash2, ExternalLink } from 'lucide-react';
-import SafeImage from '@/components/ui/safe-image';
+import FallbackImage from '@/components/ui/fallback-image';
 import { Project } from '@/lib/projectStore';
 import { translateMessage } from '@/lib/i18n-utils';
 
@@ -22,7 +22,7 @@ export default function AdminProjectCard({ project, onOpenModal, onDeleteProject
     >
       <div className="flex items-start justify-between mb-3">
         <div className="w-14 h-14 bg-[var(--surface-3)] rounded-xl overflow-hidden border border-[var(--border)] shrink-0">
-          <SafeImage src={project.logoUrl} alt={project.name} className="w-full h-full object-cover" />
+          <FallbackImage src={project.logoUrl} alt={project.name} className="w-full h-full object-cover" />
         </div>
         <div className="flex gap-2">
           <button

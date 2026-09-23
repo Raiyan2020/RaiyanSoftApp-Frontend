@@ -1,4 +1,4 @@
-import { apiService, type ApiResponse } from '@/lib/api-service';
+import { apiService, readPagination, type ApiResponse, type PaginationMeta } from '@/lib/api-service';
 import { translateMessage } from '@/lib/i18n-utils';
 
 export type ApiNotificationType =
@@ -14,6 +14,7 @@ export type ApiNotificationType =
 export interface ApiNotificationPayload {
   title?: string;
   message?: string;
+  description?: string;
   type?: string;
   ad_id?: number;
   project_id?: number | string;
@@ -30,16 +31,12 @@ export interface ApiNotification {
   created_at_diff?: string;
 }
 
-export interface NotificationPagination {
-  currentPage: number;
-  lastPage: number;
-  perPage: number;
-  total: number;
-}
+/** @deprecated use PaginationMeta from '@/lib/api-service' */
+export type NotificationPagination = PaginationMeta;
 
 export interface NotificationsListResponse {
   data: ApiNotification[];
-  pagination: NotificationPagination | null;
+  pagination: PaginationMeta | null;
 }
 
 export interface NotificationQueryParams {
@@ -78,7 +75,7 @@ export async function fetchNotifications(params?: NotificationQueryParams): Prom
 
   return {
     data: data.data ?? [],
-    pagination: (data as ApiResponse<ApiNotification[]> & { pagination?: NotificationPagination }).pagination ?? null,
+    pagination: readPagination(data),
   };
 }
 

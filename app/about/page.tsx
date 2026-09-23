@@ -9,7 +9,9 @@ import { createAboutPageJsonLd } from '@/lib/site';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
 
-export const metadata: Metadata = getPageMetadata('about');
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('about', await getServerLanguage());
+}
 
 export default async function AboutPage() {
   const language = await getServerLanguage();

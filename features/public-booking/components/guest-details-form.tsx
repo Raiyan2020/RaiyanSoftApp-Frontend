@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { guestDetailsSchema, GuestDetailsValues } from '../schemas/guest-details.schema';
 import { Field, FieldLabel, FieldError } from '@/components/ui/field';
 import { translateMessage } from '@/lib/i18n-utils';
+import { getIntlLocale, readStoredLanguage } from '@/lib/language';
 
 interface GuestDetailsFormProps {
   selectedDate: Date | null;
@@ -39,7 +40,7 @@ export default function GuestDetailsForm({
       <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center justify-between">
         <div>
           <p className="text-primary font-bold text-sm">
-            {selectedDate?.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}
+            {selectedDate?.toLocaleDateString(getIntlLocale(readStoredLanguage()), { weekday: 'short', day: 'numeric', month: 'short' })}
           </p>
           <p className="text-[var(--text)] text-lg font-bold">{selectedTime}</p>
         </div>

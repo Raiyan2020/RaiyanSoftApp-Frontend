@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, Timer, BarChart2, MessageCircle, MousePointerClick, Edit3, CheckCircle2, Info } from 'lucide-react';
+import { Timer, BarChart2, MessageCircle, MousePointerClick, Edit3, CheckCircle2, Info } from 'lucide-react';
 
 interface WizardIntroProps {
   t: (key: string) => string;
@@ -10,10 +10,6 @@ export default function WizardIntro({ t, onStart }: WizardIntroProps) {
   return (
     <div className="flex flex-col h-full overflow-y-auto no-scrollbar pb-24">
       <div className="flex flex-col items-center text-center p-6 gap-6">
-        <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center border border-primary/20 animate-pulse shrink-0">
-          <Zap size={40} className="text-primary" />
-        </div>
-
         <div>
           <h2 className="text-2xl font-bold text-[var(--text)] mb-2 leading-tight">{t('wizard.start_title')}</h2>
           <p className="text-[var(--text-muted)] text-sm leading-relaxed max-w-xs mx-auto">
@@ -37,28 +33,23 @@ export default function WizardIntro({ t, onStart }: WizardIntroProps) {
             </div>
           </div>
 
-          <div className="flex items-center justify-between w-full px-8 relative">
-            <div className="absolute top-1/2 start-8 end-8 h-0.5 bg-[var(--surface-3)] -z-10" />
-
-            <div className="flex flex-col items-center gap-2 bg-[var(--bg)] px-2">
-              <div className="w-8 h-8 rounded-full bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
-                <MousePointerClick size={14} />
-              </div>
-              <span className="text-[11px] text-[var(--text-muted)] font-medium">{t('wizard.step_1_label')}</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 bg-[var(--bg)] px-2">
-              <div className="w-8 h-8 rounded-full bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
-                <Edit3 size={14} />
-              </div>
-              <span className="text-[11px] text-[var(--text-muted)] font-medium">{t('wizard.step_2_label')}</span>
-            </div>
-            <div className="flex flex-col items-center gap-2 bg-[var(--bg)] px-2">
-              <div className="w-8 h-8 rounded-full bg-[var(--surface-3)] border border-[var(--border)] flex items-center justify-center text-[var(--text-muted)]">
-                <CheckCircle2 size={14} />
-              </div>
-              <span className="text-[11px] text-[var(--text-muted)] font-medium">{t('wizard.step_3_label')}</span>
-            </div>
-          </div>
+          <ol className="flex items-start w-full mt-3 px-2">
+            {[
+              { Icon: MousePointerClick, label: t('wizard.step_1_label') },
+              { Icon: Edit3, label: t('wizard.step_2_label') },
+              { Icon: CheckCircle2, label: t('wizard.step_3_label') },
+            ].map(({ Icon, label }, i) => (
+              <React.Fragment key={i}>
+                {i > 0 && <li aria-hidden className="flex-1 h-px mt-[18px] mx-1 bg-[var(--border)]" />}
+                <li className="flex flex-col items-center gap-1.5 w-20 shrink-0">
+                  <div className="w-9 h-9 rounded-full bg-[var(--surface-2)] border border-[var(--border)] flex items-center justify-center text-primary">
+                    <Icon size={16} />
+                  </div>
+                  <span className="text-[11px] text-[var(--text-muted)] font-medium leading-tight">{label}</span>
+                </li>
+              </React.Fragment>
+            ))}
+          </ol>
         </div>
 
         <div className="bg-[color-mix(in_srgb,var(--warning)_12%,transparent)] border border-[color-mix(in_srgb,var(--warning)_30%,transparent)] p-3 rounded-xl w-full text-start flex items-start gap-3">
@@ -73,7 +64,7 @@ export default function WizardIntro({ t, onStart }: WizardIntroProps) {
           <button
             type="button"
             onClick={onStart}
-            className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl shadow-[0_0_20px_rgb(var(--primary-glow-rgb) / 0.3)] hover:shadow-[0_0_25px_rgb(var(--primary-glow-rgb) / 0.5)] transition-all"
+            className="w-full bg-primary text-on-primary font-bold py-4 rounded-xl shadow-[0_0_20px_rgb(var(--primary-glow-rgb)/0.3)] hover:shadow-[0_0_25px_rgb(var(--primary-glow-rgb)/0.5)] transition-all"
           >
             {t('wizard.start_btn')}
           </button>

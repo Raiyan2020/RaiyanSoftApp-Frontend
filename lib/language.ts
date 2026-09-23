@@ -52,3 +52,29 @@ export function readStoredLanguage(): AppLanguage {
 
   return readLanguageCookie() ?? DEFAULT_LANGUAGE;
 }
+
+/**
+ * Intl locale for the app language. Arabic keeps Latin digits so formatted
+ * dates match the counts, prices, and phone numbers rendered elsewhere.
+ */
+export function getIntlLocale(language: AppLanguage): string {
+  return language === 'ar' ? 'ar-KW-u-nu-latn' : 'en-GB';
+}
+
+/**
+ * Formats a date for display in the current language. Accepts timestamps,
+ * ISO strings, backend `Y-m-d H:i:s` strings and `j M Y` strings; returns the
+ * raw value unchanged when it cannot be parsed.
+ */
+export function formatLocalizedDate(
+  value: string | number | Date | null | undefined,
+  language: AppLanguage,
+  options: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'short', year: 'numeric' },
+): string {
+  if (value === null || value === undefined || value === '') return '';
+  const date =
+    typeof value === 'string'
+      ? new Date(/^\d{4}-\d{2}-\d{2} \d/.test(value) ? value.replace(' ', 'T') : value)
+      : new Date(value);
+  return Number.isNaN(date.getTime()) ? String(value) : new Intl.DateTimeFormat(getIntlLocale(language), options).format(date);
+}

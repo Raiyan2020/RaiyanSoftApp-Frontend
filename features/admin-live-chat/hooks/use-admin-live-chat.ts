@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react';
 import { globalToast } from '@/lib/toast-context';
 import { adminChatStore, useAdminChatNotifications } from '@/lib/adminChatStore';
+import { getIntlLocale, readStoredLanguage } from '@/lib/language';
 
 export interface Conversation {
   id: string;
@@ -64,9 +65,9 @@ export function useAdminLiveChat() {
     const date = new Date(ts);
     const now = new Date();
     if (date.toDateString() === now.toDateString()) {
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return date.toLocaleTimeString(getIntlLocale(readStoredLanguage()), { hour: '2-digit', minute: '2-digit' });
     }
-    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    return date.toLocaleDateString(getIntlLocale(readStoredLanguage()), { month: 'short', day: 'numeric' });
   };
 
   const selectedConversation = conversations.find((conversation) => conversation.id === selectedId);

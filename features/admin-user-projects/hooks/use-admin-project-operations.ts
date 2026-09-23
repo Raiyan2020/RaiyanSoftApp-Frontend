@@ -35,6 +35,7 @@ import {
   generateAdminReport,
   updateAdminStage,
 } from '../services/admin-projects-api';
+import { getIntlLocale, readStoredLanguage } from '@/lib/language';
 
 export type ProjectDetailTab = 'overview' | 'plan' | 'progress' | 'reports' | 'files' | 'final';
 
@@ -191,6 +192,7 @@ const mapApiProjectToUserProject = (
   version: enumValue(project.project_status || project.status) || 'Backend',
   iconBg: '#1DB7F0',
   brandColor: '#1DB7F0',
+  image: project.image || project.logo || null,
   industry: enumValue(project.type) || '',
   stages,
   progressUpdates,
@@ -287,7 +289,7 @@ const parseDateInput = (value: string, endOfDay = false) => {
 };
 
 const formatReportDate = (value: number) =>
-  new Date(value).toLocaleDateString('en-UK', {
+  new Date(value).toLocaleDateString(getIntlLocale(readStoredLanguage()), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -383,7 +385,7 @@ export function useAdminProjectOperations(ownerId?: string, projectId?: string) 
         fetchAdminProject(projectId),
         fetchAdminStages({ project_id: projectId, per_page: 100 }),
         optionalList(() => fetchAdminStageProgress({ project_id: projectId, per_page: 100 })),
-        optionalList(() => fetchAdminReports({ project_id: projectId })),
+        optionalList(() => fetchAdminReports({ project_id: projectId, per_page: 100 })),
         optionalList(() => fetchAdminStageAttachments({ project_id: projectId, per_page: 100 })),
       ]);
       const normalizedStages = apiStages

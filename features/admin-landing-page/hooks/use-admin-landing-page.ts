@@ -115,8 +115,11 @@ export function useUpdateAdminHero() {
 // ---------------------------------------------------------------------------
 // Services
 // ---------------------------------------------------------------------------
-export function useAdminServices() {
-  return useQuery({ queryKey: adminLandingKeys.services, queryFn: fetchAdminServices });
+export function useAdminServices(page = 1, perPage = 15) {
+  return useQuery({
+    queryKey: [...adminLandingKeys.services, page, perPage],
+    queryFn: () => fetchAdminServices({ page, per_page: perPage }),
+  });
 }
 export function useAdminServicesHeader() {
   return useQuery({ queryKey: adminLandingKeys.servicesHeader, queryFn: fetchAdminServicesHeader });
@@ -154,8 +157,11 @@ export function useDeleteAdminService() {
 // ---------------------------------------------------------------------------
 // Capabilities
 // ---------------------------------------------------------------------------
-export function useAdminCapabilities() {
-  return useQuery({ queryKey: adminLandingKeys.capabilities, queryFn: fetchAdminCapabilities });
+export function useAdminCapabilities(page = 1, perPage = 15) {
+  return useQuery({
+    queryKey: [...adminLandingKeys.capabilities, page, perPage],
+    queryFn: () => fetchAdminCapabilities({ page, per_page: perPage }),
+  });
 }
 export function useAdminCapabilitiesHeader() {
   return useQuery({ queryKey: adminLandingKeys.capabilitiesHeader, queryFn: fetchAdminCapabilitiesHeader });
@@ -193,8 +199,11 @@ export function useDeleteAdminCapability() {
 // ---------------------------------------------------------------------------
 // Offers
 // ---------------------------------------------------------------------------
-export function useAdminOffers() {
-  return useQuery({ queryKey: adminLandingKeys.offers, queryFn: fetchAdminOffers });
+export function useAdminOffers(page = 1, perPage = 15) {
+  return useQuery({
+    queryKey: [...adminLandingKeys.offers, page, perPage],
+    queryFn: () => fetchAdminOffers({ page, per_page: perPage }),
+  });
 }
 export function useAdminOffersHeader() {
   return useQuery({ queryKey: adminLandingKeys.offersHeader, queryFn: fetchAdminOffersHeader });
@@ -232,8 +241,11 @@ export function useDeleteAdminOffer() {
 // ---------------------------------------------------------------------------
 // Testimonials
 // ---------------------------------------------------------------------------
-export function useAdminTestimonials() {
-  return useQuery({ queryKey: adminLandingKeys.testimonials, queryFn: fetchAdminTestimonials });
+export function useAdminTestimonials(page = 1, perPage = 15) {
+  return useQuery({
+    queryKey: [...adminLandingKeys.testimonials, page, perPage],
+    queryFn: () => fetchAdminTestimonials({ page, per_page: perPage }),
+  });
 }
 export function useAdminTestimonialsHeader() {
   return useQuery({ queryKey: adminLandingKeys.testimonialsHeader, queryFn: fetchAdminTestimonialsHeader });
@@ -271,8 +283,11 @@ export function useDeleteAdminTestimonial() {
 // ---------------------------------------------------------------------------
 // FAQs
 // ---------------------------------------------------------------------------
-export function useAdminFaqs() {
-  return useQuery({ queryKey: adminLandingKeys.faqs, queryFn: fetchAdminFaqs });
+export function useAdminFaqs(page = 1, perPage = 15) {
+  return useQuery({
+    queryKey: [...adminLandingKeys.faqs, page, perPage],
+    queryFn: () => fetchAdminFaqs({ page, per_page: perPage }),
+  });
 }
 export function useAdminFaqsHeader() {
   return useQuery({ queryKey: adminLandingKeys.faqsHeader, queryFn: fetchAdminFaqsHeader });
@@ -312,8 +327,11 @@ export function useDeleteAdminFaq() {
 export function useAdminAboutUsHeader() {
   return useQuery({ queryKey: adminLandingKeys.aboutUsHeader, queryFn: fetchAdminAboutUsHeader });
 }
-export function useAdminAboutUsCards() {
-  return useQuery({ queryKey: adminLandingKeys.aboutUsCards, queryFn: fetchAdminAboutUsCards });
+export function useAdminAboutUsCards(page = 1, perPage = 15) {
+  return useQuery({
+    queryKey: [...adminLandingKeys.aboutUsCards, page, perPage],
+    queryFn: () => fetchAdminAboutUsCards({ page, per_page: perPage }),
+  });
 }
 export function useUpdateAdminAboutUsHeader() {
   const qc = useQueryClient();

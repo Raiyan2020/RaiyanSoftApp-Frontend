@@ -4,15 +4,10 @@ import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import NavbarDesktop from './NavbarDesktop';
 import { useNavbar } from './use-navbar';
+import { QuickBookingDialog, QuickLeadDialog } from './lazy-quick-dialogs';
 
 const NavbarMobile = dynamic(() => import('./NavbarMobile'));
 const AuthDialog = dynamic(() => import('@/features/auth/components/auth-dialog'));
-const QuickBookingDialog = dynamic(() =>
-  import('@/features/quick-actions/components/quick-action-dialogs').then((module) => module.QuickBookingDialog)
-);
-const QuickLeadDialog = dynamic(() =>
-  import('@/features/quick-actions/components/quick-action-dialogs').then((module) => module.QuickLeadDialog)
-);
 
 export default function Navbar({ dark, onToggleDark }: { dark: boolean; onToggleDark: () => void }) {
   const [authOpen, setAuthOpen] = useState(false);
@@ -29,9 +24,12 @@ export default function Navbar({ dark, onToggleDark }: { dark: boolean; onToggle
     scrollTo,
   } = useNavbar();
 
+  // Opacity modifiers must stay on Tailwind v3's default scale (0,5,10..95,100):
+  // `/92` or `/12` silently generate no CSS, which left the scrolled bar fully
+  // transparent over dark sections. 95% keeps nav text AA over any backdrop.
   const glassBarClass = scrolled
-    ? 'border-slate-200/80 bg-white/92 shadow-lg shadow-slate-900/10 ring-slate-200/70 dark:border-white/12 dark:bg-slate-950/92 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_20px_50px_rgba(8,20,36,0.28)] dark:ring-cyan-300/10'
-    : 'border-slate-200/70 bg-white/85 shadow-xl shadow-slate-900/10 ring-slate-200/60 dark:border-white/10 dark:bg-slate-950/85 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_18px_60px_rgba(8,20,36,0.22)] dark:ring-cyan-300/10';
+    ? 'border-slate-200/80 bg-white/95 shadow-lg shadow-slate-900/10 ring-slate-200/70 dark:border-white/15 dark:bg-slate-950/95 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_20px_50px_rgba(8,20,36,0.28)] dark:ring-cyan-300/10'
+    : 'border-slate-200/70 bg-white/95 shadow-xl shadow-slate-900/10 ring-slate-200/60 dark:border-white/10 dark:bg-slate-950/95 dark:shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_18px_60px_rgba(8,20,36,0.22)] dark:ring-cyan-300/10';
 
   return (
     <header className="fixed top-0 start-0 end-0 z-50 px-4 pt-3 transition-all duration-300 sm:px-6 lg:px-8">

@@ -12,9 +12,10 @@ import {
 import SectionHeaderForm from './section-header-form';
 import BilingualFieldInputs from './bilingual-field-inputs';
 import CrudItemList from '@/components/ui/crud-item-list';
+import TablePagination from '@/components/ui/table-pagination';
 import AdminFormModal from '@/components/ui/admin-form-modal';
 import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
-import SafeImage from '@/components/ui/safe-image';
+import FallbackImage from '@/components/ui/fallback-image';
 import type { AdminTestimonial, AdminTestimonialPayload, BilingualField, AdminSectionHeaderPayload } from '@/features/landing-page';
 import { translateMessage } from '@/lib/i18n-utils';
 import {
@@ -36,7 +37,14 @@ function testimonialToForm(t: AdminTestimonial): AdminTestimonialPayload {
 }
 
 export default function AdminTestimonialsTab() {
-  const { data: testimonials = [], isLoading } = useAdminTestimonials();
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useAdminTestimonials(page);
+  const testimonials = data?.items ?? [];
+  const pagination = data?.pagination ?? null;
+  // Step back a page if a delete emptied the current page.
+  if (pagination && page > pagination.last_page && pagination.last_page >= 1) {
+    setPage(pagination.last_page);
+  }
   const { data: header, isLoading: headerLoading } = useAdminTestimonialsHeader();
   const updateHeaderMutation = useUpdateAdminTestimonialsHeader();
   const createMutation = useCreateAdminTestimonial();
@@ -116,11 +124,7 @@ export default function AdminTestimonialsTab() {
           const displayTitle = t.title.en || t.title.ar;
           return (
             <div className="flex items-start gap-3">
-              {t.image ? (
-                <SafeImage src={t.image} alt={displayTitle} className="h-10 w-10 shrink-0 rounded-full" />
-              ) : (
-                <SafeImage src="/logo.webp" alt={displayTitle} className="h-10 w-10 shrink-0 rounded-full" />
-              )}
+              <FallbackImage src={t.image} alt={displayTitle} className="h-10 w-10 shrink-0 rounded-full" />
               <div className="min-w-0">
                 <p className="font-semibold text-[var(--text)]">{displayTitle}</p>
                 <p className="text-xs text-[var(--text-muted)]">{t.caption.en || t.caption.ar}</p>
@@ -130,6 +134,7 @@ export default function AdminTestimonialsTab() {
           );
         }}
       />
+      <TablePagination pagination={pagination} onPageChange={setPage} loading={isLoading} />
 
       <AdminFormModal
         open={showForm}

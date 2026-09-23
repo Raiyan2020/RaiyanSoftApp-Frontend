@@ -1,4 +1,5 @@
 // projects — public API
+export { useMyProjects } from './hooks/use-my-projects';
 export { default as ProjectDetailsPage } from './components/project-details-page';
 export { default as ProjectsListPage } from './components/projects-list-page';
 export { default as ProjectListItem } from './components/project-list-item';

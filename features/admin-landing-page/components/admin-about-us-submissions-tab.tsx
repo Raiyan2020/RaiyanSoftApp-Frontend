@@ -5,7 +5,9 @@ import { Loader2, Mail, MessageSquareText, Phone, Trash2, UserRound } from 'luci
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ErrorAlert from '@/components/ui/error-alert';
+import TablePagination from '@/components/ui/table-pagination';
 import { translateMessage } from '@/lib/i18n-utils';
+import { formatLocalizedDate, readStoredLanguage } from '@/lib/language';
 import {
   useAdminAboutUsSubmission,
   useAdminAboutUsSubmissions,
@@ -14,7 +16,7 @@ import {
 import type { AdminAboutUsSubmission } from '@/features/landing-page';
 
 function formatDate(value: string) {
-  return value || translateMessage('Not set');
+  return value ? formatLocalizedDate(value, readStoredLanguage()) : translateMessage('Not set');
 }
 
 function SubmissionCard({
@@ -148,29 +150,7 @@ export default function AdminAboutUsSubmissionsTab() {
             </div>
           )}
 
-          {pagination && pagination.last_page > 1 ? (
-            <div className="mt-5 flex items-center justify-between gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setPage((current) => Math.max(1, current - 1))}
-                disabled={page <= 1}
-              >
-                {translateMessage('Previous')}
-              </Button>
-              <p className="text-sm text-[var(--text-muted)]">
-                {translateMessage('Page')} {pagination.current_page} {translateMessage('of')} {pagination.last_page}
-              </p>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setPage((current) => Math.min(pagination.last_page, current + 1))}
-                disabled={page >= pagination.last_page}
-              >
-                {translateMessage('Next')}
-              </Button>
-            </div>
-          ) : null}
+          <TablePagination pagination={pagination} onPageChange={setPage} loading={listQuery.isFetching} className="mt-5" />
         </section>
 
         <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
@@ -184,7 +164,7 @@ export default function AdminAboutUsSubmissionsTab() {
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <h3 className="text-2xl font-black text-[var(--text)]">{selectedSubmission.full_name}</h3>
-                  <p className="mt-1 text-sm text-[var(--text-muted)]">{translateMessage('admin.submissions_submitted_on')} {selectedSubmission.created_at}</p>
+                  <p className="mt-1 text-sm text-[var(--text-muted)]">{translateMessage('admin.submissions_submitted_on')} {formatDate(selectedSubmission.created_at)}</p>
                 </div>
                 <Button
                   type="button"

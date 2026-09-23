@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Box } from 'lucide-react';
+import FallbackImage from '@/components/ui/fallback-image';
 import { useTranslation } from '@/lib/i18nContext';
 
 interface AppCardProps {
@@ -10,6 +10,7 @@ interface AppCardProps {
   description?: string;
   iconBg?: string;
   brandColor?: string;
+  image?: string | null;
   onOpen: () => void;
 }
 
@@ -17,10 +18,9 @@ export default function AppCard({
   name,
   version,
   description,
-  brandColor,
+  image,
   onOpen,
 }: AppCardProps) {
-  const finalColor = brandColor || '#1DB7F0';
   const { t } = useTranslation();
 
   return (
@@ -31,16 +31,11 @@ export default function AppCard({
       onClick={onOpen}
     >
       <div className="flex items-start gap-3 overflow-hidden">
-        <div
-          className="w-12 h-12 rounded-xl flex items-center justify-center shadow-inner shrink-0 transition-colors duration-300"
-          style={{
-            backgroundColor: finalColor,
-            border: `1px solid ${finalColor}40`,
-            boxShadow: `0 0 12px ${finalColor}30`,
-          }}
-        >
-          <Box className="text-[var(--text)] opacity-90" size={20} />
-        </div>
+        <FallbackImage
+          src={image}
+          alt={name}
+          className="h-12 w-12 shrink-0 rounded-xl border border-[var(--border)] shadow-inner"
+        />
         <div className="min-w-0">
           <h2 className="text-[var(--text)] font-semibold text-base truncate pe-2 rtl:pe-0 rtl:ps-2">{name}</h2>
           <p className="text-[var(--text-muted)] text-sm line-clamp-2">{description || version}</p>

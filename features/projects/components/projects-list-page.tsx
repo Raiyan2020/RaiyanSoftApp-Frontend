@@ -22,7 +22,7 @@ export default function ProjectsListPage() {
         <div>
           <button
             type="button"
-            onClick={() => router.push('/home')}
+            onClick={() => router.push('/profile?tab=project')}
             className="-ms-2 mb-4 flex min-h-11 items-center gap-1 rounded-lg px-2 text-[var(--text-muted)] transition-colors hover:text-[var(--text)]"
           >
             {dir === 'rtl' ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}

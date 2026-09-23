@@ -2,6 +2,8 @@
 
 import React from 'react';
 import type { BilingualField } from '@/features/landing-page';
+import Input from '@/components/ui/input';
+import Textarea from '@/components/ui/textarea';
 import { translateMessage } from '@/lib/i18n-utils';
 
 interface Props {
@@ -18,45 +20,30 @@ export default function BilingualFieldInputs({ label, value, onChange, multiline
     <div className="space-y-2">
       <p className="text-sm font-semibold text-[var(--text)]">{label}</p>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        {(['ar', 'en'] as const).map((lang) => (
-          <div key={lang}>
-            <label className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-[var(--text-muted)]">
-              {lang === 'ar' ? translateMessage('Arabic (عربي)') : translateMessage('English')}
-            </label>
-            {multiline ? (
-              <textarea
-                rows={3}
-                value={value[lang]}
-                onChange={(e) => onChange({ ...value, [lang]: e.target.value })}
-                dir={lang === 'ar' ? 'rtl' : 'ltr'}
-                required={required}
-                aria-invalid={Boolean(errors?.[lang])}
-                className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 ${
-                  errors?.[lang]
-                    ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger focus:ring-[color-mix(in_srgb,var(--danger)_15%,transparent)]'
-                    : 'border-[var(--border)] focus:border-primary focus:ring-primary/20'
-                }`}
-              />
-            ) : (
-              <input
-                type="text"
-                value={value[lang]}
-                onChange={(e) => onChange({ ...value, [lang]: e.target.value })}
-                dir={lang === 'ar' ? 'rtl' : 'ltr'}
-                required={required}
-                aria-invalid={Boolean(errors?.[lang])}
-                className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:ring-2 ${
-                  errors?.[lang]
-                    ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger focus:ring-[color-mix(in_srgb,var(--danger)_15%,transparent)]'
-                    : 'border-[var(--border)] focus:border-primary focus:ring-primary/20'
-                }`}
-              />
-            )}
-            {errors?.[lang] ? (
-              <p className="mt-1 text-xs font-medium text-danger">{errors[lang]}</p>
-            ) : null}
-          </div>
-        ))}
+        {(['ar', 'en'] as const).map((lang) => {
+          const fieldProps = {
+            label: lang === 'ar' ? translateMessage('Arabic') : translateMessage('English'),
+            value: value[lang],
+            dir: lang === 'ar' ? 'rtl' : 'ltr',
+            required,
+            error: errors?.[lang],
+          };
+          return multiline ? (
+            <Textarea
+              key={lang}
+              rows={3}
+              {...fieldProps}
+              onChange={(e) => onChange({ ...value, [lang]: e.target.value })}
+            />
+          ) : (
+            <Input
+              key={lang}
+              type="text"
+              {...fieldProps}
+              onChange={(e) => onChange({ ...value, [lang]: e.target.value })}
+            />
+          );
+        })}
       </div>
     </div>
   );

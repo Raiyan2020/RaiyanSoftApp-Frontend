@@ -4,6 +4,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Loader2, MapPin, Video } from 'lucide-react';
 import { translateMessage } from '@/lib/i18n-utils';
+import { getIntlLocale, readStoredLanguage } from '@/lib/language';
 
 interface MeetingDetailsFormProps {
   selectedDate: Date | null;
@@ -47,7 +48,7 @@ export default function MeetingDetailsForm({
       <div className="bg-primary/10 border border-primary/20 rounded-xl p-4 flex items-center justify-between">
         <div>
           <p className="text-primary font-bold text-sm">
-            {selectedDate?.toLocaleDateString('en-US', { weekday: 'short', day: 'numeric', month: 'short' })}
+            {selectedDate?.toLocaleDateString(getIntlLocale(readStoredLanguage()), { weekday: 'short', day: 'numeric', month: 'short' })}
           </p>
           <p className="text-[var(--text)] text-lg font-bold">{selectedTime}</p>
         </div>

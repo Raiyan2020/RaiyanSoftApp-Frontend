@@ -22,12 +22,12 @@ export default async function CtaBlock({
   const language = await getServerLanguage();
   return (
     <section className="bg-[var(--navy)] py-14 text-white sm:py-16">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+      <div className="mx-auto flex max-w-7xl flex-col items-center gap-6 px-4 text-center sm:px-6 lg:px-8">
         <div className="max-w-2xl">
           <h2 className="text-2xl font-black sm:text-3xl">{translateMessage(title, language)}</h2>
-          <p className="mt-3 text-sm leading-7 text-slate-200 sm:text-base">{translateMessage(description, language)}</p>
+          <p className="mx-auto mt-3 max-w-2xl text-sm leading-7 text-slate-200 sm:text-base">{translateMessage(description, language)}</p>
         </div>
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap justify-center gap-3">
           <TrackedLink
             href={primaryHref}
             eventName="cta_click"

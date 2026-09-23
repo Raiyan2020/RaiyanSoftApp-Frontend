@@ -8,6 +8,9 @@ export type LeadProjectWizardDraft = {
   brandColor: string;
   showCustomColor: boolean;
   answersByQuestionId: Record<number, number | string>;
+  // Question-id signature of the form the client last completed (reached
+  // review with); null if never completed.
+  reviewedQuestionsKey: string | null;
 };
 
 const emptyDraft: LeadProjectWizardDraft = {
@@ -16,6 +19,7 @@ const emptyDraft: LeadProjectWizardDraft = {
   brandColor: '',
   showCustomColor: false,
   answersByQuestionId: {},
+  reviewedQuestionsKey: null,
 };
 
 function canUseStorage() {
@@ -39,6 +43,8 @@ export function loadLeadProjectDraft(): LeadProjectWizardDraft {
         parsed.answersByQuestionId && typeof parsed.answersByQuestionId === 'object'
           ? parsed.answersByQuestionId
           : {},
+      reviewedQuestionsKey:
+        typeof parsed.reviewedQuestionsKey === 'string' ? parsed.reviewedQuestionsKey : null,
     };
   } catch {
     return emptyDraft;

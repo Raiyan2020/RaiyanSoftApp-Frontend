@@ -41,7 +41,9 @@ export async function updateUserProfile(payload: UpdateUserProfilePayload) {
   formData.append('full_name', payload.full_name);
   formData.append('email', payload.email);
 
-  const response = await apiService.post<User | { user?: User }>('user/profile', formData);
+  const response = await apiService.post<User | { user?: User }>('user/profile', formData, {
+    skipSuccessToast: true, // caller toasts after closing the dialog
+  });
 
   if (!response.status) {
     throw new Error(getApiErrorMessage(response));

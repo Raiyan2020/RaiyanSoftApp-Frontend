@@ -1,7 +1,9 @@
 import React, { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, X, CheckCircle, Send } from 'lucide-react';
+import { Search, X, CheckCircle, Send, Loader2 } from 'lucide-react';
 import Avatar from '@/components/ui/avatar';
+import Input from '@/components/ui/input';
+import Textarea from '@/components/ui/textarea';
 import { AdminUser as User } from '@/features/admin-users/types/admin-user.types';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -20,6 +22,8 @@ interface NotificationComposerProps {
   setShowUserDropdown: (val: boolean) => void;
   dropdownRef: React.RefObject<HTMLDivElement | null>;
   filteredUsers: User[];
+  isSearchingUsers: boolean;
+  userSearchFailed: boolean;
   handleUserSelect: (user: User) => void;
   formData: NotificationValues;
   setFormData: React.Dispatch<React.SetStateAction<NotificationValues>>;
@@ -39,6 +43,8 @@ export default function NotificationComposer({
   setShowUserDropdown,
   dropdownRef,
   filteredUsers,
+  isSearchingUsers,
+  userSearchFailed,
   handleUserSelect,
   formData,
   setFormData,
@@ -69,13 +75,13 @@ export default function NotificationComposer({
         <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
           <div className="space-y-3">
             <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider">{translateMessage('Recipients')}</label>
-            <div className="flex bg-[var(--surface-2)] p-1 rounded-xl border border-[var(--border)] w-full sm:w-fit">
+            <div className="flex bg-[var(--surface-3)] p-1 rounded-xl border border-[var(--border)] w-full sm:w-fit">
               <button
                 type="button"
                 onClick={() => setTargetType('all')}
                 className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-medium transition-all ${
                   targetType === 'all'
-                    ? 'bg-[var(--surface-3)] text-[var(--text)] shadow-sm ring-1 ring-[var(--border)]'
+                    ? 'bg-primary text-on-primary shadow-lg'
                     : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
               >
@@ -86,7 +92,7 @@ export default function NotificationComposer({
                 onClick={() => setTargetType('single')}
                 className={`flex-1 sm:flex-none px-6 py-2 rounded-lg text-sm font-medium transition-all ${
                   targetType === 'single'
-                    ? 'bg-[var(--surface-3)] text-[var(--text)] shadow-sm ring-1 ring-[var(--border)]'
+                    ? 'bg-primary text-on-primary shadow-lg'
                     : 'text-[var(--text-muted)] hover:text-[var(--text)]'
                 }`}
               >
@@ -104,9 +110,9 @@ export default function NotificationComposer({
                 >
                   {!selectedUser ? (
                     <div className="relative" ref={dropdownRef}>
-                      <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-                      <input
+                      <Input
                         type="text"
+                        icon={<Search size={18} />}
                         value={searchQuery}
                         onChange={(e) => {
                           setSearchQuery(e.target.value);
@@ -114,18 +120,24 @@ export default function NotificationComposer({
                         }}
                         onFocus={() => setShowUserDropdown(true)}
                         placeholder={translateMessage('Search user by name, email, or phone...')}
-                        className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-3 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
                       />
 
                       <AnimatePresence>
-                        {showUserDropdown && searchQuery ? (
+                        {showUserDropdown && searchQuery.trim() ? (
                           <motion.div
                             initial={false}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
                             className="absolute top-full start-0 end-0 mt-2 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl shadow-2xl z-50 overflow-hidden"
                           >
-                            {filteredUsers.length > 0 ? (
+                            {isSearchingUsers ? (
+                              <div role="status" className="p-4 flex items-center justify-center gap-2 text-[var(--text-muted)] text-sm">
+                                <Loader2 className="animate-spin" size={16} />
+                                {translateMessage('Loading...')}
+                              </div>
+                            ) : userSearchFailed ? (
+                              <div className="p-4 text-center text-danger text-sm">{translateMessage('Failed to load users.')}</div>
+                            ) : filteredUsers.length > 0 ? (
                               filteredUsers.map((user) => (
                                 <button
                                   key={user.id}
@@ -194,13 +206,11 @@ export default function NotificationComposer({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel className="font-bold uppercase tracking-wider">{translateMessage('Title')}</FieldLabel>
-                  <input
+                  <Input
                     {...field}
                     type="text"
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
-                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                    }`}
+                    className={fieldState.invalid ? 'border-danger' : ''}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -215,13 +225,11 @@ export default function NotificationComposer({
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel className="font-bold uppercase tracking-wider">{translateMessage('Message')}</FieldLabel>
-                  <textarea
+                  <Textarea
                     {...field}
                     rows={4}
                     aria-invalid={fieldState.invalid}
-                    className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors resize-none ${
-                      fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                    }`}
+                    className={`resize-none ${fieldState.invalid ? 'border-danger' : ''}`}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -236,14 +244,12 @@ export default function NotificationComposer({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel className="font-bold uppercase tracking-wider">Image URL (Optional)</FieldLabel>
-                    <input
+                    <FieldLabel className="font-bold uppercase tracking-wider">{translateMessage('Image URL (Optional)')}</FieldLabel>
+                    <Input
                       {...field}
                       type="url"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
-                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                      }`}
+                      className={fieldState.invalid ? 'border-danger' : ''}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -257,14 +263,12 @@ export default function NotificationComposer({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel className="font-bold uppercase tracking-wider">Deep Link (Optional)</FieldLabel>
-                    <input
+                    <FieldLabel className="font-bold uppercase tracking-wider">{translateMessage('Deep Link (Optional)')}</FieldLabel>
+                    <Input
                       {...field}
                       type="text"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
-                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                      }`}
+                      className={fieldState.invalid ? 'border-danger' : ''}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -299,14 +303,12 @@ export default function NotificationComposer({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field data-invalid={fieldState.invalid}>
-                    <FieldLabel className="font-bold uppercase tracking-wider">Schedule Date & Time</FieldLabel>
-                    <input
+                    <FieldLabel className="font-bold uppercase tracking-wider">{translateMessage('Schedule Date & Time')}</FieldLabel>
+                    <Input
                       {...field}
                       type="datetime-local"
                       aria-invalid={fieldState.invalid}
-                      className={`w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-4 py-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors ${
-                        fieldState.invalid ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : ''
-                      }`}
+                      className={fieldState.invalid ? 'border-danger' : ''}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />

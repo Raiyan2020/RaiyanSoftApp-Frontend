@@ -1,6 +1,8 @@
 import React from 'react';
 import { Phone, MessageCircle, Eye, Loader2 } from 'lucide-react';
 import { useTranslation } from '@/lib/i18nContext';
+import { formatLocalizedDate } from '@/lib/language';
+import { toWhatsAppUrl } from '@/lib/utils';
 import Avatar from '@/components/ui/avatar';
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from '@/components/ui/select';
@@ -11,7 +13,6 @@ import { LEAD_APPROVAL_WHATSAPP_MESSAGE } from '../utils/whatsapp-template';
 interface LeadsTableRowProps {
   lead: AdminLeadListItem;
   onSelectLead: (lead: AdminLeadListItem) => void;
-  toWhatsAppDigits: (phone: string) => string | null;
   isUpdatingStatus: boolean;
   onChangeStatus: (lead: AdminLeadListItem, nextStatus: LeadStatusCode) => void;
 }
@@ -19,17 +20,11 @@ interface LeadsTableRowProps {
 export default function LeadsTableRow({
   lead,
   onSelectLead,
-  toWhatsAppDigits,
   isUpdatingStatus,
   onChangeStatus,
 }: LeadsTableRowProps) {
   const { t, language } = useTranslation();
-  const waDigits = toWhatsAppDigits(lead.user.full_phone);
-  const encodedWaMessage = encodeURIComponent(LEAD_APPROVAL_WHATSAPP_MESSAGE);
-
-  const waUrl = waDigits
-    ? `https://web.whatsapp.com/send/?phone=${waDigits}&text=${encodedWaMessage}&type=phone_number&app_absent=0`
-    : null;
+  const waUrl = toWhatsAppUrl(lead.user.full_phone, LEAD_APPROVAL_WHATSAPP_MESSAGE);
 
   const statusTone = getLeadStatusTone(lead.status);
   const statusCode = getLeadStatusCode(lead.status);
@@ -92,9 +87,17 @@ export default function LeadsTableRow({
           </div>
         </div>
       </TableCell>
-      <TableCell className="p-5 text-start text-[var(--text-muted)] text-xs">{lead.date}</TableCell>
-      <TableCell className="p-5 text-end">
-        <div className="flex items-center justify-end gap-2">
+      <TableCell className="p-5 text-start text-[var(--text-muted)] text-xs">{formatLocalizedDate(lead.date, language)}</TableCell>
+      <TableCell className="p-5 text-start">
+        <div className="flex items-center justify-start gap-2">
+          <button
+            type="button"
+            onClick={() => onSelectLead(lead)}
+            className="p-2 bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] hover:text-[var(--text)] rounded-lg transition-colors"
+          >
+            <Eye size={16} />
+          </button>
+
           <a
             href={waUrl || undefined}
             target="_blank"
@@ -111,14 +114,6 @@ export default function LeadsTableRow({
           >
             <MessageCircle size={16} />
           </a>
-
-          <button
-            type="button"
-            onClick={() => onSelectLead(lead)}
-            className="p-2 bg-[var(--surface-3)] hover:bg-[var(--surface-3)] text-[var(--text)] hover:text-[var(--text)] rounded-lg transition-colors"
-          >
-            <Eye size={16} />
-          </button>
         </div>
       </TableCell>
     </TableRow>

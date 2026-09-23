@@ -12,9 +12,10 @@ import {
 import SectionHeaderForm from './section-header-form';
 import BilingualFieldInputs from './bilingual-field-inputs';
 import CrudItemList from '@/components/ui/crud-item-list';
+import TablePagination from '@/components/ui/table-pagination';
 import AdminFormModal from '@/components/ui/admin-form-modal';
 import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
-import SafeImage from '@/components/ui/safe-image';
+import FallbackImage from '@/components/ui/fallback-image';
 import TagRepeater from '@/components/ui/tag-repeater';
 import type { AdminService, AdminServicePayload, BilingualField, AdminSectionHeaderPayload } from '@/features/landing-page';
 import { translateMessage } from '@/lib/i18n-utils';
@@ -47,7 +48,14 @@ function serviceToForm(s: AdminService): AdminServicePayload {
 }
 
 export default function AdminServicesTab() {
-  const { data: services = [], isLoading } = useAdminServices();
+  const [page, setPage] = useState(1);
+  const { data, isLoading } = useAdminServices(page);
+  const services = data?.items ?? [];
+  const pagination = data?.pagination ?? null;
+  // Step back a page if a delete emptied the current page.
+  if (pagination && page > pagination.last_page && pagination.last_page >= 1) {
+    setPage(pagination.last_page);
+  }
   const { data: header, isLoading: headerLoading } = useAdminServicesHeader();
   const updateHeaderMutation = useUpdateAdminServicesHeader();
   const createMutation = useCreateAdminService();
@@ -129,11 +137,7 @@ export default function AdminServicesTab() {
           const displayTitle = service.title.en || service.title.ar;
           return (
             <div className="flex items-start gap-3">
-              {service.image ? (
-                <SafeImage src={service.image} alt={displayTitle} className="h-12 w-12 rounded-lg shrink-0" />
-              ) : (
-                <SafeImage src="/logo.webp" alt={displayTitle} className="h-12 w-12 rounded-lg shrink-0" />
-              )}
+              <FallbackImage src={service.image} alt={displayTitle} className="h-12 w-12 rounded-lg shrink-0" />
               <div className="min-w-0">
                 <p className="font-semibold text-[var(--text)]">{displayTitle}</p>
                 <p className="mt-0.5 text-sm text-[var(--text-muted)] line-clamp-2">{service.description.en || service.description.ar}</p>
@@ -149,6 +153,7 @@ export default function AdminServicesTab() {
           );
         }}
       />
+      <TablePagination pagination={pagination} onPageChange={setPage} loading={isLoading} />
 
       {/* Create / Edit modal */}
       <AdminFormModal

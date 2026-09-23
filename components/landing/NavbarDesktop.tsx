@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
   ChevronDown, 
-  CheckCircle2,
   Eye,
   FileText, 
   Sun, 
@@ -22,8 +21,12 @@ import { guestStore } from '@/lib/guestStore';
 import { logoutUser } from '@/features/auth/services/user-auth-api';
 import { sectionLinks, pageLinks, headerPageLinks } from './NavbarLinks';
 import Avatar from '@/components/ui/avatar';
-import { profileRecords } from '@/components/profile/profile-records-data';
 import { getUserDisplayName } from '@/lib/user-display';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNotificationBadgeCount } from '@/features/notifications/hooks/use-notifications';
+import { markNotificationRead } from '@/features/notifications/services/notifications-api';
+import { mapApiNotification } from '@/features/notifications/types/notification.types';
+import { notificationKeys } from '@/features/notifications/query-keys';
 
 interface NavbarDesktopProps {
   dark: boolean;
@@ -53,19 +56,10 @@ export default function NavbarDesktop({
   const { t, dir, language, setLanguage } = useTranslation();
   const router = useRouter();
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
-  const [completedNotifications, setCompletedNotifications] = useState<string[]>([]);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const notificationsRef = useRef<HTMLDivElement>(null);
-  const headerNotifications = profileRecords
-    .filter((record) => record.type === 'notification')
-    .slice(0, 4);
-  const unreadNotificationCount = headerNotifications.filter(
-    (record) => !completedNotifications.includes(record.id) && record.status !== 'completed'
-  ).length;
   const userDisplayName = getUserDisplayName(user, t('home.guest'));
   const profileLinks = [
-    { href: '/profile?tab=info', label: t('profile.title'), icon: UserIcon },
+    { href: '/profile', label: t('profile.title'), icon: UserIcon },
     { href: '/profile?tab=project', label: t('landing.nav.projects_tab'), icon: FolderKanban },
     { href: '/profile?tab=booking', label: t('landing.nav.meetings_tab'), icon: Calendar },
     { href: '/profile?tab=notification', label: t('notif.title'), icon: Bell },
@@ -75,9 +69,6 @@ export default function NavbarDesktop({
     function handleClickOutside(event: MouseEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
-      }
-      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
-        setNotificationsOpen(false);
       }
     }
     document.addEventListener('mousedown', handleClickOutside);
@@ -99,15 +90,9 @@ export default function NavbarDesktop({
     }
   };
 
-  const markNotificationComplete = (recordId: string) => {
-    setCompletedNotifications((current) =>
-      current.includes(recordId) ? current : [...current, recordId]
-    );
-  };
-
   const navLinkClass =
-    'rounded-full px-3 py-2 text-sm font-bold text-slate-900 transition-colors duration-200 hover:bg-slate-900/[0.06] hover:text-primary dark:text-slate-100 dark:hover:bg-white/10';
-  const navLinkActiveClass = 'bg-primary/12 text-primary shadow-sm ring-1 ring-primary/25 dark:bg-primary/18 dark:ring-primary/15';
+    'rounded-full px-3 py-2 text-sm font-bold text-slate-900 transition-colors duration-200 hover:bg-slate-900/[0.06] hover:text-primary-dark dark:text-slate-100 dark:hover:bg-white/10';
+  const navLinkActiveClass = 'bg-primary/10 text-primary shadow-sm ring-1 ring-primary/25 dark:bg-primary/20 dark:ring-primary/15';
   const iconButtonClass =
     'grid h-10 w-10 place-items-center rounded-2xl bg-white text-slate-800 shadow-sm ring-1 ring-slate-200/80 transition-all duration-200 hover:bg-slate-50 hover:text-primary dark:bg-white/10 dark:text-slate-200 dark:shadow-none dark:ring-white/10 dark:hover:bg-white/15';
 
@@ -158,7 +143,7 @@ export default function NavbarDesktop({
           {pagesOpen ? (
             <div
               id="landing-pages-menu"
-              className="absolute start-0 top-full mt-3 grid w-[34rem] grid-cols-2 gap-2 rounded-3xl border border-cyan-950/10 bg-white p-4 text-start shadow-2xl shadow-cyan-950/12 dark:border-white/10 dark:bg-navy-950"
+              className="absolute start-0 top-full mt-3 grid w-[34rem] grid-cols-2 gap-2 rounded-3xl border border-cyan-950/10 bg-white p-4 text-start shadow-2xl shadow-cyan-950/10 dark:border-white/10 dark:bg-navy-950"
             >
               {pageLinks.map((link) => (
                 <Link
@@ -223,80 +208,7 @@ export default function NavbarDesktop({
           {dark ? <Sun size={19} /> : <Moon size={19} />}
         </button>
 
-        <div className="relative" ref={notificationsRef}>
-          <button
-            type="button"
-            onClick={() => setNotificationsOpen((open) => !open)}
-            className={`relative ${iconButtonClass}`}
-            aria-label={t('notif.title')}
-          >
-            <Bell size={18} />
-            {unreadNotificationCount > 0 ? (
-              <span className="absolute -end-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] font-black text-on-primary ring-2 ring-[var(--surface)]">
-                {unreadNotificationCount}
-              </span>
-            ) : null}
-          </button>
-
-          {notificationsOpen ? (
-            <div
-              className="absolute end-0 mt-3 w-80 rounded-3xl border border-cyan-950/10 bg-white p-3 shadow-2xl dark:border-white/10 dark:bg-navy-950 z-50"
-              dir={dir}
-            >
-              <div className={`mb-2 flex items-center justify-between gap-3 px-2 ${dir === 'rtl' ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                <div>
-                  <p className="text-sm font-black text-[var(--text)]">{t('notif.title')}</p>
-                  <p className="text-xs text-[var(--text-muted)]">
-                    {t('landing.nav.notifications_hint')}
-                  </p>
-                </div>
-                <Bell size={18} className="text-primary" />
-              </div>
-
-              <div className="space-y-2">
-                {headerNotifications.map((record) => {
-                  const isComplete = completedNotifications.includes(record.id) || record.status === 'completed';
-
-                  return (
-                    <div
-                      key={record.id}
-                      className={`rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-2 ${isComplete ? 'opacity-65' : ''}`}
-                    >
-                      <div className={`flex items-start gap-2 ${dir === 'rtl' ? 'flex-row-reverse text-right' : 'text-left'}`}>
-                        <Link
-                          href={`/profile?tab=notification&record=${record.id}`}
-                          onClick={() => setNotificationsOpen(false)}
-                          className="min-w-0 flex-1 rounded-xl px-2 py-1 transition-colors hover:bg-primary/10"
-                        >
-                          <p className="truncate text-sm font-bold text-[var(--text)]">{record.title}</p>
-                          <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--text-muted)]">{record.description}</p>
-                        </Link>
-                        <button
-                          type="button"
-                          onClick={() => markNotificationComplete(record.id)}
-                          disabled={isComplete}
-                          className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition-colors hover:text-success disabled:opacity-40"
-                          aria-label={t('landing.nav.mark_complete')}
-                          title={t('landing.nav.mark_complete')}
-                        >
-                          {isComplete ? <CheckCircle2 size={16} /> : <Eye size={16} />}
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <Link
-                href="/profile?tab=notification"
-                onClick={() => setNotificationsOpen(false)}
-                className="mt-3 flex items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2.5 text-xs font-bold text-[var(--text)] transition-colors hover:text-primary"
-              >
-                {t('landing.nav.view_all_notifications')}
-              </Link>
-            </div>
-          ) : null}
-        </div>
+        {user ? <NotificationsBell buttonClass={iconButtonClass} /> : null}
 
         {user ? (
           <div className="relative" ref={dropdownRef}>
@@ -363,6 +275,110 @@ export default function NavbarDesktop({
           <FileText size={18} />
         </Link>
       </div>
+    </div>
+  );
+}
+
+// Rendered only for a logged-in user, so guests never see a badge or trigger a request.
+function NotificationsBell({ buttonClass }: { buttonClass: string }) {
+  const { t, dir, language } = useTranslation();
+  const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const { unreadCount, unreadNotifications, isUnreadError, isLoadingUnreadCount } = useNotificationBadgeCount();
+  const notifications = unreadNotifications.slice(0, 4).map((item) => mapApiNotification(item, language));
+  const markRead = useMutation({
+    mutationFn: (id: string) => markNotificationRead(id, language),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: notificationKeys.all }),
+  });
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((value) => !value)}
+        className={`relative ${buttonClass}`}
+        aria-label={t('notif.title')}
+      >
+        <Bell size={18} />
+        {unreadCount > 0 ? (
+          <span className="absolute -end-1 -top-1 grid h-5 min-w-5 place-items-center rounded-full bg-primary px-1 text-[11px] font-black text-on-primary ring-2 ring-[var(--surface)]">
+            {unreadCount}
+          </span>
+        ) : null}
+      </button>
+
+      {open ? (
+        <div
+          className="absolute end-0 mt-3 w-80 rounded-3xl border border-cyan-950/10 bg-white p-3 shadow-2xl dark:border-white/10 dark:bg-navy-950 z-50"
+          dir={dir}
+        >
+          <div className={`mb-2 flex items-center justify-between gap-3 px-2 ${dir === 'rtl' ? 'flex-row-reverse text-right' : 'text-left'}`}>
+            <div>
+              <p className="text-sm font-black text-[var(--text)]">{t('notif.title')}</p>
+              <p className="text-xs text-[var(--text-muted)]">{t('landing.nav.notifications_hint')}</p>
+            </div>
+            <Bell size={18} className="text-primary" />
+          </div>
+
+          {isLoadingUnreadCount ? (
+            <p className="px-2 py-4 text-center text-xs text-[var(--text-muted)]">{t('Loading...')}</p>
+          ) : isUnreadError ? (
+            <p className="px-2 py-4 text-center text-xs text-danger">{t('Unable to load notifications.')}</p>
+          ) : notifications.length === 0 ? (
+            <p className="px-2 py-4 text-center text-xs text-[var(--text-muted)]">{t('notif.empty')}</p>
+          ) : (
+            <div className="space-y-2">
+              {notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  className="rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] p-2"
+                >
+                  <div className={`flex items-start gap-2 ${dir === 'rtl' ? 'flex-row-reverse text-right' : 'text-left'}`}>
+                    <Link
+                      href="/profile?tab=notification"
+                      onClick={() => {
+                        markRead.mutate(notification.id);
+                        setOpen(false);
+                      }}
+                      className="min-w-0 flex-1 rounded-xl px-2 py-1 transition-colors hover:bg-primary/10"
+                    >
+                      <p className="truncate text-sm font-bold text-[var(--text)]">{notification.title}</p>
+                      <p className="mt-1 line-clamp-2 text-xs leading-5 text-[var(--text-muted)]">{notification.message}</p>
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() => markRead.mutate(notification.id)}
+                      disabled={markRead.isPending}
+                      className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] bg-[var(--surface)] text-[var(--text-muted)] transition-colors hover:text-success disabled:opacity-40"
+                      aria-label={t('Mark as read')}
+                      title={t('Mark as read')}
+                    >
+                      <Eye size={16} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <Link
+            href="/profile?tab=notification"
+            onClick={() => setOpen(false)}
+            className="mt-3 flex items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--surface-2)] px-4 py-2.5 text-xs font-bold text-[var(--text)] transition-colors hover:text-primary"
+          >
+            {t('landing.nav.view_all_notifications')}
+          </Link>
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -19,7 +19,7 @@ export default function RolePermissionList({
         <div key={group.label} className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
           <div className="flex items-center gap-2 mb-3">
             <Shield size={14} className="text-primary" />
-            <h3 className="text-sm font-bold text-[var(--text)]">{group.label}</h3>
+            <h3 className="text-sm font-bold text-[var(--text)]">{translateMessage(group.label)}</h3>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             {group.permissions.map(([value, label]) => {
@@ -35,7 +35,7 @@ export default function RolePermissionList({
                       : 'bg-[var(--surface)] border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--border)]'
                   }`}
                 >
-                  <span className="text-sm">{label}</span>
+                  <span className="text-sm">{translateMessage(label)}</span>
                   {isSelected ? <Check size={16} className="text-primary shrink-0" /> : null}
                 </button>
               );

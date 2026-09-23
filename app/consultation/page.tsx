@@ -7,7 +7,9 @@ import { getPageMetadata, pageSeo } from '@/lib/page-seo';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
 
-export const metadata: Metadata = getPageMetadata('consultation');
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('consultation', await getServerLanguage());
+}
 
 export default async function ConsultationPage() {
   const language = await getServerLanguage();

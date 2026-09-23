@@ -7,6 +7,7 @@ import BilingualFieldInputs from './bilingual-field-inputs';
 import TagRepeater from '@/components/ui/tag-repeater';
 import ErrorAlert from '@/components/ui/error-alert';
 import SuccessToast from '@/components/ui/success-toast';
+import Input from '@/components/ui/input';
 import type { AdminHeroPayload, BilingualField } from '@/features/landing-page';
 import { formatLandingButtonUrlForForm } from '@/features/landing-page';
 import { translateMessage } from '@/lib/i18n-utils';
@@ -136,58 +137,52 @@ export default function AdminHeroTab() {
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Primary Button Text')}</label>
           <div className="grid grid-cols-2 gap-2">
-            <input dir="rtl" type="text" value={form.f_button_text.ar} onChange={(e) => setForm((p) => ({ ...p, f_button_text: { ...p.f_button_text, ar: e.target.value } }))} placeholder="عربي" className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
-            <input type="text" value={form.f_button_text.en} onChange={(e) => setForm((p) => ({ ...p, f_button_text: { ...p.f_button_text, en: e.target.value } }))} placeholder={translateMessage('Type in English')} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
+            <Input dir="rtl" type="text" value={form.f_button_text.ar} onChange={(e) => setForm((p) => ({ ...p, f_button_text: { ...p.f_button_text, ar: e.target.value } }))} placeholder={translateMessage('Arabic')} />
+            <Input type="text" value={form.f_button_text.en} onChange={(e) => setForm((p) => ({ ...p, f_button_text: { ...p.f_button_text, en: e.target.value } }))} placeholder={translateMessage('Type in English')} />
           </div>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Primary Button URL')}</label>
-          <input
+          <Input
+            label={translateMessage('Primary Button URL')}
             type="text"
             value={form.f_button_url}
             onChange={(e) => setForm((p) => ({ ...p, f_button_url: e.target.value }))}
             placeholder="#contact"
             aria-invalid={Boolean(fieldErrors.f_button_url)}
-            className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:outline-none ${
-              fieldErrors.f_button_url ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
-            }`}
+            className={fieldErrors.f_button_url ? 'border-danger' : ''}
           />
           {fieldErrors.f_button_url ? <p className="mt-1 text-xs font-medium text-danger">{fieldErrors.f_button_url}</p> : null}
         </div>
         <div>
           <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Secondary Button Text')}</label>
           <div className="grid grid-cols-2 gap-2">
-            <input dir="rtl" type="text" value={form.l_button_text.ar} onChange={(e) => setForm((p) => ({ ...p, l_button_text: { ...p.l_button_text, ar: e.target.value } }))} placeholder="عربي" className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
-            <input type="text" value={form.l_button_text.en} onChange={(e) => setForm((p) => ({ ...p, l_button_text: { ...p.l_button_text, en: e.target.value } }))} placeholder={translateMessage('Type in English')} className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:border-primary focus:outline-none" />
+            <Input dir="rtl" type="text" value={form.l_button_text.ar} onChange={(e) => setForm((p) => ({ ...p, l_button_text: { ...p.l_button_text, ar: e.target.value } }))} placeholder={translateMessage('Arabic')} />
+            <Input type="text" value={form.l_button_text.en} onChange={(e) => setForm((p) => ({ ...p, l_button_text: { ...p.l_button_text, en: e.target.value } }))} placeholder={translateMessage('Type in English')} />
           </div>
         </div>
         <div>
-          <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Secondary Button URL')}</label>
-          <input
+          <Input
+            label={translateMessage('Secondary Button URL')}
             type="text"
             value={form.l_button_url}
             onChange={(e) => setForm((p) => ({ ...p, l_button_url: e.target.value }))}
             placeholder="#works"
             aria-invalid={Boolean(fieldErrors.l_button_url)}
-            className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:outline-none ${
-              fieldErrors.l_button_url ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
-            }`}
+            className={fieldErrors.l_button_url ? 'border-danger' : ''}
           />
           {fieldErrors.l_button_url ? <p className="mt-1 text-xs font-medium text-danger">{fieldErrors.l_button_url}</p> : null}
         </div>
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-semibold text-[var(--text)]">{translateMessage('Video URL (YouTube)')}</label>
-        <input
+        <Input
+          label={translateMessage('Video URL (YouTube)')}
           type="url"
           value={form.vedio_url}
           onChange={(e) => setForm((p) => ({ ...p, vedio_url: e.target.value }))}
           placeholder="https://www.youtube.com/watch?v=..."
           aria-invalid={Boolean(fieldErrors.vedio_url)}
-          className={`w-full rounded-xl border bg-[var(--surface-2)] px-3 py-2.5 text-sm text-[var(--text)] focus:outline-none ${
-            fieldErrors.vedio_url ? 'border-[color-mix(in_srgb,var(--danger)_50%,transparent)] focus:border-danger' : 'border-[var(--border)] focus:border-primary'
-          }`}
+          className={fieldErrors.vedio_url ? 'border-danger' : ''}
         />
         {fieldErrors.vedio_url ? <p className="mt-1 text-xs font-medium text-danger">{fieldErrors.vedio_url}</p> : null}
       </div>

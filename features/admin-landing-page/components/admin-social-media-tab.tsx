@@ -5,7 +5,9 @@ import { Edit2, Loader2, Plus, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ErrorAlert from '@/components/ui/error-alert';
+import FallbackImage from '@/components/ui/fallback-image';
 import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
+import Input from '@/components/ui/input';
 import { translateMessage } from '@/lib/i18n-utils';
 import { useAdminSocialMedia, useCreateAdminSocialMedia, useDeleteAdminSocialMedia, useUpdateAdminSocialMedia } from '../hooks/use-admin-landing-page';
 import type { AdminSocialMediaItem } from '@/features/landing-page';
@@ -107,7 +109,7 @@ export default function AdminSocialMediaTab() {
           {(query.data ?? []).map((item) => (
             <div key={item.id} className={`rounded-2xl border p-4 ${selected?.id === item.id ? 'border-primary/50 bg-primary/5' : 'border-[var(--border)] bg-[var(--surface)]'}`}>
               <div className="flex items-center gap-3">
-                {item.image ? <img src={item.image} alt={item.platform} className="h-12 w-12 rounded-xl object-cover" /> : null}
+                <FallbackImage src={item.image} alt={item.platform} className="h-12 w-12 shrink-0 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-black text-[var(--text)]">{item.platform}</p>
                   <p className="truncate text-xs text-[var(--text-muted)]">{item.link}</p>
@@ -131,16 +133,10 @@ export default function AdminSocialMediaTab() {
       <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
         <h3 className="text-lg font-black text-[var(--text)]">{translateMessage(selected ? 'Edit Social Link' : 'Create Social Link')}</h3>
         <div className="mt-5 space-y-4">
-          <label className="space-y-2">
-            <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Platform')}</span>
-            <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={platform} onChange={(e) => setPlatform(e.target.value)} />
-          </label>
-          <label className="space-y-2">
-            <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Link')}</span>
-            <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={link} onChange={(e) => setLink(e.target.value)} />
-          </label>
+          <Input label={translateMessage('Platform')} value={platform} onChange={(e) => setPlatform(e.target.value)} />
+          <Input label={translateMessage('Link')} value={link} onChange={(e) => setLink(e.target.value)} />
           <ImageUpload label={translateMessage('Image')} value={image} onChange={setImage} aspectRatio={1} />
-          {selected?.image && !image ? <img src={selected.image} alt={selected.platform} className="max-h-48 w-full rounded-2xl object-cover" /> : null}
+          {selected?.image && !image ? <FallbackImage src={selected.image} alt={selected.platform} className="max-h-48 w-full rounded-2xl object-cover" /> : null}
           {error ? <ErrorAlert message={error} /> : null}
           <div className="flex flex-wrap gap-3">
             <Button type="button" onClick={save} isLoading={createMutation.isPending || updateMutation.isPending}>

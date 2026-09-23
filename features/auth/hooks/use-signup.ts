@@ -53,7 +53,7 @@ export function useSignup() {
       const { user, token } = response.data;
       authService.setUserSession(user, token);
 
-      router.push('/home');
+      router.push('/profile');
     } catch (err: any) {
       console.error("Signup Error:", err);
       setError({ message: err.message || translateMessage('Signup failed. Please try again.') });

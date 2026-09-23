@@ -1,5 +1,5 @@
 import type React from 'react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authService } from '@/lib/auth-service';
 import { globalConfirm } from '@/lib/confirm-dialog';
@@ -35,7 +35,10 @@ export function useNotificationBadgeCount() {
   });
 
   return {
+    // ponytail: /notifications/unread is paginated (10/page), so this caps at 10.
     unreadCount: query.data?.length ?? 0,
+    unreadNotifications: query.data ?? [],
+    isUnreadError: query.isError,
     isLoadingUnreadCount: query.isLoading,
     refetchUnreadCount: query.refetch,
   };
@@ -46,18 +49,34 @@ export function useNotifications() {
   const queryClient = useQueryClient();
   const [activeFilter, setActiveFilter] = useState<NotificationFilterType>('all');
   const [selectedNotification, setSelectedNotification] = useState<Notification | null>(null);
+  const [page, setPage] = useState(1);
+
+  const handleSetActiveFilter = (filter: NotificationFilterType) => {
+    setActiveFilter(filter);
+    setPage(1);
+  };
 
   const notificationsQuery = useQuery({
-    queryKey: notificationKeys.list({ language }),
-    queryFn: () => fetchNotifications({ language }),
+    queryKey: notificationKeys.list({ language, page }),
+    queryFn: () => fetchNotifications({ language, page }),
     enabled: typeof window !== 'undefined' && Boolean(getUserToken()),
     meta: { skipGlobalErrorToast: true },
   });
+
+  const pagination = notificationsQuery.data?.pagination ?? null;
 
   const notifications = useMemo(
     () => (notificationsQuery.data?.data ?? []).map((notification) => mapApiNotification(notification, language)),
     [notificationsQuery.data?.data, language],
   );
+
+  // A delete emptied the current page (e.g. deleting the last item on page
+  // 2): step back a page rather than showing a dead-end empty page.
+  useEffect(() => {
+    if (!notificationsQuery.isFetching && page > 1 && notifications.length === 0) {
+      setPage(page - 1);
+    }
+  }, [notificationsQuery.isFetching, page, notifications.length]);
 
   const invalidateNotifications = async () => {
     await Promise.all([
@@ -135,7 +154,10 @@ export function useNotifications() {
     notifications,
     filteredNotifications,
     activeFilter,
-    setActiveFilter,
+    setActiveFilter: handleSetActiveFilter,
+    pagination,
+    page,
+    setPage,
     selectedNotification,
     setSelectedNotification,
     handleOpen,

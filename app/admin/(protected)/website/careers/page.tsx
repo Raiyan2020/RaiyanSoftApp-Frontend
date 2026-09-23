@@ -1,7 +1,7 @@
-import AdminWebsiteSectionPage from '@/features/admin-website/components/admin-website-section-page';
+import AdminCareersPage from '@/features/admin-website/components/admin-careers-page';
 
 export const dynamic = 'force-dynamic';
 
 export default function CareersAdminPage() {
-  return <AdminWebsiteSectionPage section="careers" />;
+  return <AdminCareersPage />;
 }

@@ -39,7 +39,7 @@ export function useLogin() {
 
       const { user, token } = response.data;
       authService.setUserSession(user, token);
-      router.push('/home');
+      router.push('/profile');
     } catch (err: any) {
       console.error("Login Error", err);
       setError({ message: err.message || t('auth.invalid_cred') });

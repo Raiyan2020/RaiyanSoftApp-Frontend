@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { ShieldCheck, Edit2, Trash2 } from 'lucide-react';
 import { Role } from '@/lib/roleStore';
 import { translateMessage } from '@/lib/i18n-utils';
+import { formatRoleLabel } from '@/features/admin-employees/utils/employee-helpers';
 
 interface RoleCardProps {
   role: Role;
@@ -41,8 +42,8 @@ export default function RoleCard({ role, onOpenModal, onDeleteRole }: RoleCardPr
         </div>
       </div>
 
-      <h2 className="text-[var(--text)] font-bold text-lg mb-1">{role.name}</h2>
-      <p className="text-[var(--text-muted)] text-sm mb-4 h-10 line-clamp-2">{role.description}</p>
+      <h2 className="text-[var(--text)] font-bold text-lg mb-1">{translateMessage(formatRoleLabel(role.name))}</h2>
+      <p className="text-[var(--text-muted)] text-sm mb-4 h-10 line-clamp-2">{role.description ? translateMessage(role.description) : null}</p>
 
       <div className="mt-auto">
         <h3 className="text-[11px] uppercase text-[var(--text-muted)] font-bold mb-2">{translateMessage('Permissions')}</h3>

@@ -4,6 +4,8 @@ import { Loader2, Plus, Search } from 'lucide-react';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import { useAdminEmployees } from '../hooks/use-admin-employees';
 import ErrorAlert from '@/components/ui/error-alert';
+import Input from '@/components/ui/input';
+import TablePagination from '@/components/ui/table-pagination';
 import { translateMessage } from '@/lib/i18n-utils';
 import EmployeesTable from './employees-table';
 import EmployeeFormModal from './employee-form-modal';
@@ -31,6 +33,8 @@ export default function AdminEmployeesPage() {
     listLoading,
     listError,
     filteredEmployees,
+    pagination,
+    goToPage,
     handleOpenModal,
     generatePassword,
     handleSubmit,
@@ -58,14 +62,13 @@ export default function AdminEmployeesPage() {
       </div>
 
       <div className="bg-[var(--surface)] p-4 rounded-2xl border border-[var(--border)] shadow-lg">
-        <div className="relative w-full md:max-w-md">
-          <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={18} />
-          <input
+        <div className="w-full md:max-w-md">
+          <Input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder={translateMessage('Search by name or email...')}
-            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary transition-colors"
+            icon={<Search size={18} />}
           />
         </div>
       </div>
@@ -84,6 +87,8 @@ export default function AdminEmployeesPage() {
           onDeleteEmployee={setDeleteId}
         />
       )}
+
+      <TablePagination pagination={pagination} onPageChange={goToPage} loading={listLoading} />
 
       <AnimatePresence>
         {isModalOpen ? (

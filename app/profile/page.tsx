@@ -2,41 +2,60 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { BadgePercent, Bell, Calendar, Eye, FileText, FolderKanban, Info, Loader2, LogOut, MessageCircle, Pencil } from 'lucide-react';
+import { Bell, Calendar, Eye, FolderKanban, Loader2, LogOut, Mail, MessageCircle, Pencil, Phone, User } from 'lucide-react';
 import Navbar from '@/components/landing/Navbar';
 import Footer from '@/components/landing/Footer';
 import { authService } from '@/lib/auth-service';
 import Loader from '@/components/ui/loader';
 import { useTranslation } from '@/lib/i18nContext';
-import ProfileTable from '@/components/profile/profile-table';
 import ProfileBookingsPanel from '@/components/profile/profile-bookings-panel';
 import ProfileChatPanel from '@/components/profile/profile-chat-panel';
-import { ProfileRecordType } from '@/components/profile/profile-records-data';
-import { useUserStoredProjects } from '@/features/lead-project/hooks/use-user-stored-projects';
+import NotificationsPage from '@/features/notifications/components/notifications-page';
+import { useMyProjects } from '@/features/projects/hooks/use-my-projects';
 import { UserProjectView } from '@/features/lead-project/utils/map-stored-project';
-import { QuickBookingDialog, QuickLeadDialog } from '@/features/quick-actions/components/quick-action-dialogs';
 import Button from '@/components/ui/button';
+import TablePagination from '@/components/ui/table-pagination';
+import type { PaginationMeta } from '@/lib/api-service';
 import ConfirmModal from '@/components/ui/confirm-modal';
 import ProfileEditDialog from '@/features/profile/components/profile-edit-dialog';
-import { useUserProfile } from '@/features/profile/hooks/use-user-profile';
+import { getUserProfilePhoneValue, useUserProfile } from '@/features/profile/hooks/use-user-profile';
 import ErrorAlert from '@/components/ui/error-alert';
 import { logoutUser } from '@/features/auth/services/user-auth-api';
 import { guestStore } from '@/lib/guestStore';
 import { translateMessage } from '@/lib/i18n-utils';
+import { globalToast } from '@/lib/toast-context';
 import { persistTheme, readStoredTheme } from '@/lib/theme';
 
-type ProfileTab = 'all' | ProfileRecordType | 'chat';
+type ProfileTab = 'booking' | 'chat' | 'project' | 'notification';
+
+const DEFAULT_TAB: ProfileTab = 'booking';
+// Chat is hidden until the support chat is production-ready; flip to true to show it again.
+const CHAT_TAB_ENABLED = false;
+const TAB_ALIASES: Record<string, ProfileTab> = { projects: 'project', meetings: 'booking', notifications: 'notification' };
+
+function resolveProfileTab(param: string | null): ProfileTab {
+  const tab = (param && TAB_ALIASES[param]) || param;
+  if (tab === 'booking' || tab === 'project' || tab === 'notification') return tab;
+  if (tab === 'chat' && CHAT_TAB_ENABLED) return tab;
+  return DEFAULT_TAB;
+}
 
 function ProfileProjectsPanel({
   projects,
   loading,
   error,
   onOpenProjectDetails,
+  pagination,
+  onPageChange,
+  isFetching,
 }: {
   projects: UserProjectView[];
   loading: boolean;
   error: string | null;
   onOpenProjectDetails: (projectId: string) => void;
+  pagination: PaginationMeta | null;
+  onPageChange: (page: number) => void;
+  isFetching: boolean;
 }) {
   const { t, dir } = useTranslation();
 
@@ -69,6 +88,7 @@ function ProfileProjectsPanel({
 
   return (
     <div className="space-y-4">
+      <TablePagination pagination={pagination} onPageChange={onPageChange} loading={isFetching} />
       {projects.map((project) => (
         <div key={project.id} className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 shadow-sm">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
@@ -113,7 +133,7 @@ export default function ProfilePage() {
     updateProfile,
     isUpdating,
     updateError,
-    updateSuccess,
+    resetUpdate,
   } = useUserProfile();
   // No placeholder fallback. This page used to substitute a hardcoded user when
   // the profile query returned nothing, so a signed-out visitor was shown a
@@ -122,17 +142,17 @@ export default function ProfilePage() {
   // this render guard covers the gap before that redirect lands.
   const currentUser = profileUser;
   const [dark, setDark] = useState(false);
-  const [activeTab, setActiveTab] = useState<ProfileTab>('all');
-  const [bookingDialogOpen, setBookingDialogOpen] = useState(false);
-  const [leadDialogOpen, setLeadDialogOpen] = useState(false);
   const [profileDialogOpen, setProfileDialogOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const {
     projects: storedProjects,
     loading: projectsLoading,
+    isFetching: projectsFetching,
     error: projectsError,
-  } = useUserStoredProjects(Boolean(authService.getUserToken()));
+    pagination: projectsPagination,
+    setPage: setProjectsPage,
+  } = useMyProjects(Boolean(authService.getUserToken()));
 
   // Initialize theme. Genuine mount-time sync: the persisted theme lives in
   // localStorage, which isn't available on the server, so it can only be
@@ -151,36 +171,15 @@ export default function ProfilePage() {
     persistTheme(next ? 'dark' : 'light');
   };
 
-  // Route detection from query params. Auth is intentionally bypassed for now.
-  // Adjusted during render (comparing against the previous `tab` param)
-  // instead of in an effect, so navigating with a new `?tab=` value updates
-  // `activeTab` in the same render pass rather than one render late.
-  const tabParam = searchParams.get('tab');
-  const [prevTabParam, setPrevTabParam] = useState(tabParam);
-  if (tabParam !== prevTabParam) {
-    setPrevTabParam(tabParam);
-    const normalizedTab = tabParam === 'projects'
-      ? 'project'
-      : tabParam === 'meetings'
-        ? 'booking'
-        : tabParam === 'notifications'
-          ? 'notification'
-          : tabParam === 'profile'
-            ? 'info'
-            : tabParam;
+  // Unknown or removed `?tab=` values (e.g. the old `info` tab) fall back to the default tab.
+  const activeTab = resolveProfileTab(searchParams.get('tab'));
 
-    if (normalizedTab && ['booking', 'project', 'notification', 'info', 'chat'].includes(normalizedTab)) {
-      setActiveTab(normalizedTab as ProfileTab);
-    }
-  }
-
-  const tabs = [
+  const tabs = ([
     { id: 'booking', label: dir === 'rtl' ? 'الحجوزات' : 'Bookings', icon: Calendar },
     { id: 'chat', label: dir === 'rtl' ? 'المحادثة' : 'Chat', icon: MessageCircle },
     { id: 'project', label: dir === 'rtl' ? 'المشاريع' : 'Projects', icon: FolderKanban },
     { id: 'notification', label: dir === 'rtl' ? 'الإشعارات' : 'Notifications', icon: Bell },
-    { id: 'info', label: dir === 'rtl' ? 'معلومات أكثر' : 'More Info', icon: Info },
-  ] as const;
+  ] as const).filter((tab) => tab.id !== 'chat' || CHAT_TAB_ENABLED);
 
   const handleSignOut = async () => {
     setIsLoggingOut(true);
@@ -213,6 +212,11 @@ export default function ProfilePage() {
     );
   }
 
+  // The profile API returns `full_name` only; first/last are legacy cached fields.
+  const displayName =
+    currentUser.full_name || currentUser.name || [currentUser.first_name, currentUser.last_name].filter(Boolean).join(' ');
+  const phoneValue = getUserProfilePhoneValue(currentUser);
+
   return (
     <div className="min-h-screen bg-[var(--bg)] text-[var(--text)] flex flex-col" dir={dir}>
       <Navbar dark={dark} onToggleDark={toggleDark} />
@@ -226,7 +230,8 @@ export default function ProfilePage() {
                 {t('profile.title')}
               </h1>
               <p className="mt-2 break-words text-sm text-[var(--text-muted)]">
-                {currentUser.first_name} {currentUser.last_name} &bull; {currentUser.email}
+                {displayName}
+                {currentUser.email ? <> &bull; <span dir="ltr">{currentUser.email}</span></> : null}
               </p>
               {errorMessage ? (
                 <p className="mt-2 text-xs font-bold text-warning">
@@ -251,20 +256,26 @@ export default function ProfilePage() {
           <div className="grid gap-6 lg:grid-cols-[17rem_minmax(0,1fr)] lg:gap-8">
             <aside className="min-w-0 lg:sticky lg:top-28 lg:h-fit" dir={dir}>
               <div className="mb-3 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-3 sm:p-4">
-                <div className="flex items-center gap-3 text-start">
-                  <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary">
-                    <FileText size={18} />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-xs font-bold text-[var(--text-muted)]">
-                      {dir === 'rtl' ? 'لوحة العميل' : 'Client panel'}
-                    </p>
-                    <p className="truncate text-sm font-black text-[var(--text)]">
-                      {currentUser.first_name} {currentUser.last_name}
-                    </p>
-                    <p className="truncate text-xs text-[var(--text-muted)]" dir="ltr">
-                      {[currentUser.country_code, currentUser.phone].filter(Boolean).join(' ')}
-                    </p>
+                <div className="flex items-start gap-3 text-start">
+                  <div className="min-w-0 flex-1 space-y-1.5">
+                    {displayName ? (
+                      <p className="flex items-center gap-2 text-sm font-black text-[var(--text)]">
+                        <User size={14} className="shrink-0 text-primary" aria-hidden />
+                        <span className="truncate" title={displayName}>{displayName}</span>
+                      </p>
+                    ) : null}
+                    {currentUser.email ? (
+                      <p className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                        <Mail size={14} className="shrink-0 text-primary" aria-hidden />
+                        <span dir="ltr" className="truncate" title={currentUser.email}>{currentUser.email}</span>
+                      </p>
+                    ) : null}
+                    {phoneValue ? (
+                      <p className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                        <Phone size={14} className="shrink-0 text-primary" aria-hidden />
+                        <span dir="ltr" className="truncate">{phoneValue}</span>
+                      </p>
+                    ) : null}
                   </div>
                   <button
                     type="button"
@@ -288,10 +299,7 @@ export default function ProfilePage() {
                   return (
                     <button
                       key={tab.id}
-                      onClick={() => {
-                        setActiveTab(tab.id);
-                        router.replace(`/profile?tab=${tab.id}`, { scroll: false });
-                      }}
+                      onClick={() => router.replace(`/profile?tab=${tab.id}`, { scroll: false })}
                       className={`flex shrink-0 items-center justify-start gap-2 px-3 py-2.5 text-start text-sm font-bold rounded-xl transition-all whitespace-nowrap sm:gap-3 sm:px-4 sm:py-3 lg:w-full ${
                         isActive
                           ? 'bg-primary text-on-primary shadow-lg shadow-primary/25'
@@ -329,16 +337,14 @@ export default function ProfilePage() {
                   loading={projectsLoading}
                   error={projectsError}
                   onOpenProjectDetails={(projectId) => router.push(`/profile/projects/${projectId}`)}
+                  pagination={projectsPagination}
+                  onPageChange={setProjectsPage}
+                  isFetching={projectsFetching}
                 />
               ) : activeTab === 'chat' ? (
                 <ProfileChatPanel />
               ) : (
-                <ProfileTable
-                  scope={activeTab}
-                  selectedRecordId={searchParams.get('record')}
-                  onOpenBookingDialog={() => setBookingDialogOpen(true)}
-                  onOpenLeadDialog={() => setLeadDialogOpen(true)}
-                />
+                <NotificationsPage embedded />
               )}
             </div>
           </div>
@@ -347,25 +353,24 @@ export default function ProfilePage() {
       </main>
 
       <Footer />
-      <QuickBookingDialog
-        isOpen={bookingDialogOpen}
-        onClose={() => setBookingDialogOpen(false)}
-        user={currentUser}
-      />
-      <QuickLeadDialog
-        isOpen={leadDialogOpen}
-        onClose={() => setLeadDialogOpen(false)}
-        user={currentUser}
-      />
       <ProfileEditDialog
         isOpen={profileDialogOpen}
         user={currentUser}
         isSaving={isUpdating}
         error={updateError}
-        success={updateSuccess}
-        onClose={() => setProfileDialogOpen(false)}
+        onClose={() => {
+          setProfileDialogOpen(false);
+          resetUpdate();
+        }}
         onSubmit={async (values) => {
-          await updateProfile(values);
+          try {
+            await updateProfile(values);
+          } catch {
+            return; // stay open; the dialog shows updateError
+          }
+          globalToast.success(translateMessage('Profile updated successfully.'));
+          setProfileDialogOpen(false);
+          resetUpdate();
         }}
       />
       <ConfirmModal

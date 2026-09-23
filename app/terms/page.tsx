@@ -9,7 +9,9 @@ import { createLegalPageJsonLd } from '@/lib/site';
 import { translateMessage } from '@/lib/i18n-utils';
 import { getServerLanguage } from '@/lib/language.server';
 
-export const metadata: Metadata = getPageMetadata('terms');
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata('terms', await getServerLanguage());
+}
 
 export default async function TermsPage() {
   const language = await getServerLanguage();

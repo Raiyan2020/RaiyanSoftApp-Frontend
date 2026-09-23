@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { globalToast } from '@/lib/toast-context';
 import { translateMessage } from '@/lib/i18n-utils';
 import { UserProject } from '@/lib/userProjectsStore';
@@ -6,42 +6,72 @@ import { fetchAdminUsers, toggleAdminUserBlock } from '../services/admin-users-a
 import { fetchAdminProjects } from '@/features/admin-user-projects';
 import { AdminUser } from '../types/admin-user.types';
 import { mapAdminApiUser } from '../utils/admin-user-mappers';
+import { getIntlLocale, readStoredLanguage } from '@/lib/language';
+import type { PaginationMeta } from '@/lib/api-service';
 
 export function useAdminUsers() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<'All' | 'Active' | 'Disabled'>('All');
   const [users, setUsers] = useState<AdminUser[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState<PaginationMeta | null>(null);
+  const [page, setPage] = useState(1);
+  // Starts true so the first render (before the debounced fetch) shows the
+  // loader, not the "no users" empty state.
+  const [loading, setLoading] = useState(true);
+  const latestRequestRef = useRef(0);
   const [error, setError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<AdminUser | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+
+  // Reset to page 1 whenever the search term changes. Adjusted during render
+  // (comparing against the previous value) instead of in an effect, so the
+  // search change and the page reset land in the same render pass.
+  const [prevSearchTerm, setPrevSearchTerm] = useState(searchTerm);
+  if (searchTerm !== prevSearchTerm) {
+    setPrevSearchTerm(searchTerm);
+    setPage(1);
+  }
 
   const [activeTab, setActiveTab] = useState<'profile' | 'projects'>('profile');
   const [userProjects, setUserProjects] = useState<UserProject[]>([]);
   const [loadingProjects, setLoadingProjects] = useState(false);
 
   const loadUsers = useCallback(async () => {
+    const requestId = ++latestRequestRef.current;
     setLoading(true);
     setError(null);
 
     try {
       const query = searchTerm.trim();
-      const data = await fetchAdminUsers({ search: query });
-      const mappedUsers = data.map(mapAdminApiUser);
+      const { items, pagination: meta } = await fetchAdminUsers({ search: query, page });
+      // A newer search superseded this one; drop the stale response.
+      if (requestId !== latestRequestRef.current) return;
+      const mappedUsers = items.map(mapAdminApiUser);
       setUsers(mappedUsers);
+      setPagination(meta);
       setSelectedUser((current) =>
         current ? mappedUsers.find((user) => user.id === current.id) || current : null
       );
     } catch (err: any) {
+      if (requestId !== latestRequestRef.current) return;
       setError(err.message || translateMessage('Failed to load users.'));
       setUsers([]);
+      setPagination(null);
     } finally {
-      setLoading(false);
+      if (requestId === latestRequestRef.current) setLoading(false);
     }
-  }, [searchTerm]);
+  }, [searchTerm, page]);
+
+  const goToPage = (nextPage: number) => {
+    if (!pagination) return;
+    setPage(Math.min(Math.max(1, nextPage), pagination.last_page));
+  };
 
   useEffect(() => {
+    // Show the loader during the debounce window too, so a stale/empty list
+    // for the previous query never flashes as "no users found".
+    setLoading(true);
     const timer = setTimeout(() => {
       loadUsers();
     }, 300);
@@ -53,7 +83,7 @@ export function useAdminUsers() {
     setLoadingProjects(true);
 
     try {
-      const apiProjects = await fetchAdminProjects();
+      const { projects: apiProjects } = await fetchAdminProjects({ userId: uid, perPage: 100 });
       const results: UserProject[] = apiProjects
         .filter((project) => String(project.user?.id || '') === String(uid))
         .map((project) => ({
@@ -111,26 +141,21 @@ export function useAdminUsers() {
     }
   }
 
-  const filteredUsers = useMemo(() => users.filter((user) => {
-    const matchesSearch =
-      user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.phone.includes(searchTerm);
-
-    const matchesFilter = filterStatus === 'All' || user.status === filterStatus;
-
-    return matchesSearch && matchesFilter;
-  }), [filterStatus, searchTerm, users]);
+  // Search is applied server-side (full name, email, phone); re-filtering here
+  // on split first/last name dropped full-name matches like "Ahmed Hassan".
+  const filteredUsers = useMemo(
+    () => users.filter((user) => filterStatus === 'All' || user.status === filterStatus),
+    [filterStatus, users]
+  );
 
   const formatDate = (ts: number) => {
     if (!ts) return translateMessage('N/A');
-    return new Date(ts).toLocaleDateString('en-UK', { day: 'numeric', month: 'short', year: 'numeric' });
+    return new Date(ts).toLocaleDateString(getIntlLocale(readStoredLanguage()), { day: 'numeric', month: 'short', year: 'numeric' });
   };
 
   const formatDateTime = (ts: number) => {
     if (!ts) return translateMessage('N/A');
-    return new Date(ts).toLocaleString('en-UK', {
+    return new Date(ts).toLocaleString(getIntlLocale(readStoredLanguage()), {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
@@ -188,6 +213,8 @@ export function useAdminUsers() {
 
   return {
     users,
+    pagination,
+    goToPage,
     loading,
     error,
     actionError,

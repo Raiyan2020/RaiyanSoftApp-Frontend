@@ -75,10 +75,12 @@ export async function fetchAdminLead(id: number | string, language: string) {
 
 export async function changeAdminLeadStatus(
   id: number | string,
-  action: LeadStatusAction
+  action: LeadStatusAction,
+  reason?: string
 ) {
   const formData = new FormData();
   formData.append('action', action);
+  if (reason) formData.append('reason', reason);
 
   const response = await apiService.post<AdminLeadDetail>(`admin/leads/${id}/status`, formData, {
     skipGlobalToast: true,

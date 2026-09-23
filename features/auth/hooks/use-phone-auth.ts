@@ -233,7 +233,7 @@ export function usePhoneAuth(options?: UsePhoneAuthOptions) {
 
       const intendedPath = guestStore.intendedPath;
       guestStore.setIntendedPath(null);
-      router.push(intendedPath || '/home');
+      router.push(intendedPath || '/profile');
     } catch (err) {
       setError(err instanceof Error ? err.message : translateMessage('Invalid verification code.'));
     } finally {

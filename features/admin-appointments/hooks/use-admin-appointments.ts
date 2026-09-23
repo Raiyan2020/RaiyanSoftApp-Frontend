@@ -72,6 +72,12 @@ export function useAdminAppointments() {
     reload: reloadMeetings,
   } = useAdminMeetingsList(filters);
 
+  // A status action can empty the last page (e.g. approving the only pending
+  // row on it); step back to the new last page instead of showing nothing.
+  if (pagination && page > Math.max(1, pagination.last_page)) {
+    setPage(Math.max(1, pagination.last_page));
+  }
+
   const { approveMeeting, loading: approveLoading, error: approveError } = useApproveMeeting();
   const { rejectMeeting, loading: rejectLoading, error: rejectError } = useRejectMeeting();
 
@@ -94,15 +100,12 @@ export function useAdminAppointments() {
     }
   };
 
+  // Throws on failure (toasted via rejectError) so the reason dialog stays open.
   const handleRejectBooking = async (id: number, reason: string) => {
-    try {
-      await rejectMeeting(id, reason);
-      setActionMessage(translateMessage('Meeting rejected successfully.'));
-      await reloadMeetings();
-      setSelectedBooking((current) => (current?.id === id ? { ...current, status: MEETING_STATUS.REJECTED } : current));
-    } catch {
-      // surfaced via rejectError
-    }
+    await rejectMeeting(id, reason);
+    setActionMessage(translateMessage('Meeting rejected successfully.'));
+    await reloadMeetings();
+    setSelectedBooking((current) => (current?.id === id ? { ...current, status: MEETING_STATUS.REJECTED } : current));
   };
 
   const goToPage = (nextPage: number) => {
@@ -118,7 +121,9 @@ export function useAdminAppointments() {
     setActiveTab,
     meetings,
     pagination,
-    listLoading,
+    // Typed-but-not-yet-debounced search counts as loading, so the previous
+    // query's (possibly empty) results never read as "no bookings".
+    listLoading: listLoading || bookingSearch.trim() !== debouncedSearch,
     listError,
     filteredBookings: meetings,
     bookingStatusFilter,

@@ -6,6 +6,7 @@ import PageHero from '@/components/public/page-hero';
 import SectionShell from '@/components/public/section-shell';
 import CtaBlock from '@/components/public/cta-block';
 import JsonLd from '@/components/public/json-ld';
+import PageHtmlContent from '@/features/pages/components/page-html-content';
 import { createArticleJsonLd, createBreadcrumbJsonLd, createPublicMetadata, getCanonicalUrl } from '@/lib/site';
 import { fetchPublicBlog, fetchPublicBlogs } from '@/features/blog/services/blog-api';
 import { translateMessage } from '@/lib/i18n-utils';
@@ -14,7 +15,7 @@ import { getServerLanguage } from '@/lib/language.server';
 type PageProps = { params: Promise<{ slug: string }> };
 
 export async function generateStaticParams() {
-  const posts = await fetchPublicBlogs();
+  const { items: posts } = await fetchPublicBlogs(undefined, { per_page: 1000 });
   return posts.map((post) => ({ slug: post.slug }));
 }
 
@@ -25,6 +26,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   if (!post) {
     return createPublicMetadata({
+    language,
       title: translateMessage('Article Not Found', language),
       description: translateMessage('We could not find this article on the Raiyan Soft blog.', language),
       path: '/blogs',
@@ -33,6 +35,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   return createPublicMetadata({
+    language,
     title: post.title,
     description: post.excerpt,
     path: `/blogs/${post.slug}`,
@@ -50,7 +53,9 @@ export default async function BlogPostPage({ params }: PageProps) {
   const relatedPosts = [
     ...(post.related_blogs || []),
   ].slice(0, 3);
-  const paragraphs = post.content ? post.content.split('\n').map((line) => line.trim()).filter(Boolean) : [post.excerpt];
+  // Rich-text posts are HTML; older seeded posts are plain text split on newlines.
+  const isHtml = Boolean(post.content?.includes('<'));
+  const paragraphs = post.content ?post.content.split('\n').map((line) => line.trim()).filter(Boolean) : [post.excerpt];
   const categoryHref = post.category ? `/blogs/categories/${post.category.slug}` : '/blogs';
   const articlePost = { ...post, category: post.category?.title };
 
@@ -86,11 +91,15 @@ export default async function BlogPostPage({ params }: PageProps) {
                 {post.category.title}
               </Link>
             ) : null}
-            <div className="prose prose-slate max-w-none dark:prose-invert prose-p:leading-9 prose-p:text-[var(--text)] dark:prose-p:text-[var(--text)]">
-              {paragraphs.map((paragraph) => (
-                <p key={paragraph}>{paragraph}</p>
-              ))}
-            </div>
+            {isHtml ? (
+              <PageHtmlContent html={post.content} className="mt-4 text-base leading-8 text-[var(--text)]" />
+            ) : (
+              <div className="prose prose-slate max-w-none dark:prose-invert prose-p:leading-9 prose-p:text-[var(--text)] dark:prose-p:text-[var(--text)]">
+                {paragraphs.map((paragraph) => (
+                  <p key={paragraph}>{paragraph}</p>
+                ))}
+              </div>
+            )}
           </article>
 
           <aside className="rounded-xl border border-[var(--border)] bg-[var(--surface-2)] p-5">

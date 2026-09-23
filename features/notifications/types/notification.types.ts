@@ -24,7 +24,8 @@ export function mapApiNotification(notification: ApiNotification, language?: 'en
     type: mapNotificationType(String(rawType)),
     rawType: String(rawType),
     title: notification.data?.title || translateMessage('Notification', language),
-    message: notification.data?.message || '',
+    // Backend GeneralNotification stores the body as `description`.
+    message: notification.data?.message || notification.data?.description || '',
     timestamp: notification.created_at ? new Date(notification.created_at).getTime() : Date.now(),
     read: Boolean(notification.read_at),
     createdAt: notification.created_at,

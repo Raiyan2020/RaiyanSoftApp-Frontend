@@ -1,11 +1,16 @@
 import React from 'react';
-import { Calendar, CheckCircle, ChevronLeft, ChevronRight, Clock, Loader2, MessageCircle, Search, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle, Clock, Loader2, MessageCircle, Search, XCircle } from 'lucide-react';
 import Button from '@/components/ui/button';
 import ErrorAlert from '@/components/ui/error-alert';
-import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
+import Input from '@/components/ui/input';
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import SuccessToast from '@/components/ui/success-toast';
+import ReasonDialog from '@/components/ui/reason-dialog';
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from '@/components/ui/table';
+import TablePagination from '@/components/ui/table-pagination';
 import { translateMessage } from '@/lib/i18n-utils';
+import { toWhatsAppUrl } from '@/lib/utils';
 import {
   AdminMeeting,
   MEETING_STATUS,
@@ -14,6 +19,7 @@ import {
 } from '@/features/meetings';
 import { getMeetingStatusTone, parseMeetingDateTime } from '@/features/meetings';
 import { AdminMeetingStatusFilter, AdminMeetingTypeFilter } from '../hooks/use-admin-appointments';
+import { formatLocalizedDate, readStoredLanguage } from '@/lib/language';
 
 interface AdminBookingsTabProps {
   bookings: AdminMeeting[];
@@ -37,9 +43,11 @@ interface AdminBookingsTabProps {
   onOpenBooking: (booking: AdminMeeting) => void;
   onCloseBooking: () => void;
   onApproveBooking: (id: number) => void;
-  onRejectBooking: (id: number, reason: string) => void;
+  onRejectBooking: (id: number, reason: string) => Promise<void>;
   onPageChange: (page: number) => void;
 }
+
+const TYPE_FILTER_ALL = '__all__';
 
 const STATUS_OPTIONS: { value: AdminMeetingStatusFilter; label: string }[] = [
   { value: 'all', label: 'All' },
@@ -61,20 +69,8 @@ function canApprove(status: number) {
   return status === MEETING_STATUS.PENDING || status === MEETING_STATUS.REJECTED;
 }
 
-// Same digit-normalization rule as admin-leads' toWhatsAppDigits (Kuwait 8-digit numbers get the 965 prefix).
-function toWhatsAppDigits(phone: string): string | null {
-  if (!phone) return null;
-  const digits = phone.replace(/\D/g, '');
-  if (digits.length === 8) return `965${digits}`;
-  if (digits.length < 8) return null;
-  return digits;
-}
-
 function MeetingWhatsAppButton({ phone }: { phone?: string | null }) {
-  const waDigits = phone ? toWhatsAppDigits(phone) : null;
-  const waUrl = waDigits
-    ? `https://web.whatsapp.com/send/?phone=${waDigits}&type=phone_number&app_absent=0`
-    : null;
+  const waUrl = toWhatsAppUrl(phone);
 
   return (
     <a
@@ -122,27 +118,21 @@ export default function AdminBookingsTab({
   onPageChange,
 }: AdminBookingsTabProps) {
   const formatDateTime = (value: string) =>
-    parseMeetingDateTime(value).toLocaleString([], { dateStyle: 'medium', timeStyle: 'short' });
+    formatLocalizedDate(parseMeetingDateTime(value), readStoredLanguage(), { day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' });
 
   // Backend requires a rejection reason (RejectMeetingRequest: reason|required).
-  // ponytail: native window.prompt keeps this a one-line fix with no new
-  // component; swap for an in-sheet textarea if the UX needs to improve.
-  const promptAndReject = (id: number) => {
-    const reason = window.prompt(translateMessage('Enter a rejection reason:'));
-    if (!reason || !reason.trim()) return;
-    onRejectBooking(id, reason.trim());
-  };
+  const [rejectingId, setRejectingId] = React.useState<number | null>(null);
+  const promptAndReject = (id: number) => setRejectingId(id);
 
   return (
     <>
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-3">
         <div className="relative flex-1 max-w-md">
-          <Search className="absolute start-3 top-1/2 -translate-y-1/2 text-[var(--text-muted)]" size={17} />
-          <input
+          <Input
             value={searchQuery}
             onChange={(event) => onSearchQueryChange(event.target.value)}
             placeholder={translateMessage('Search by name, subject, email, or phone...')}
-            className="w-full bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 ps-10 pe-4 text-[var(--text)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-primary"
+            icon={<Search size={17} />}
           />
         </div>
         <div className="flex flex-wrap gap-2">
@@ -166,28 +156,35 @@ export default function AdminBookingsTab({
       <div className="flex flex-wrap gap-2 mb-5">
         <input
           type="date"
+          lang={readStoredLanguage()}
           value={dateFrom}
           onChange={(event) => onDateFromChange(event.target.value)}
           aria-label={translateMessage('From date')}
-          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
+          className="app-input rounded-xl min-h-11 px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
         />
         <input
           type="date"
+          lang={readStoredLanguage()}
           value={dateTo}
           onChange={(event) => onDateToChange(event.target.value)}
           aria-label={translateMessage('To date')}
-          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
+          className="app-input rounded-xl min-h-11 px-4 py-2.5 text-sm focus:outline-none focus:border-primary transition-colors"
         />
-        <select
-          value={typeFilter}
-          onChange={(event) => onTypeFilterChange(event.target.value ? (Number(event.target.value) as typeof MEETING_TYPE.ONLINE | typeof MEETING_TYPE.OFFLINE) : '')}
-          aria-label={translateMessage('Meeting Type')}
-          className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl py-2.5 px-3 text-[var(--text)] focus:outline-none focus:border-primary transition-colors"
+        <Select
+          value={typeFilter ? String(typeFilter) : TYPE_FILTER_ALL}
+          onValueChange={(value) =>
+            onTypeFilterChange(value === TYPE_FILTER_ALL ? '' : (Number(value) as typeof MEETING_TYPE.ONLINE | typeof MEETING_TYPE.OFFLINE))
+          }
         >
-          <option value="">{translateMessage('All Types')}</option>
-          <option value={MEETING_TYPE.ONLINE}>{translateMessage('Online')}</option>
-          <option value={MEETING_TYPE.OFFLINE}>{translateMessage('In Person')}</option>
-        </select>
+          <SelectTrigger className="min-h-11" aria-label={translateMessage('Meeting Type')}>
+            <SelectValue placeholder={translateMessage('All Types')} />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value={TYPE_FILTER_ALL}>{translateMessage('All Types')}</SelectItem>
+            <SelectItem value={String(MEETING_TYPE.ONLINE)}>{translateMessage('Online')}</SelectItem>
+            <SelectItem value={String(MEETING_TYPE.OFFLINE)}>{translateMessage('In Person')}</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {error ? (
@@ -249,7 +246,7 @@ export default function AdminBookingsTab({
                 <TableHead className="pb-3 text-start">{translateMessage('Subject')}</TableHead>
                 <TableHead className="pb-3 text-start">{translateMessage('Type')}</TableHead>
                 <TableHead className="pb-3 text-start">{translateMessage('Status')}</TableHead>
-                <TableHead className="pb-3 text-end">{translateMessage('Actions')}</TableHead>
+                <TableHead className="pb-3 text-start">{translateMessage('Actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody className="divide-y divide-[var(--border)] text-sm">
@@ -257,7 +254,7 @@ export default function AdminBookingsTab({
                 <TableRow key={meeting.id} className="group hover:bg-white/5">
                   <TableCell className="py-4 ps-2 text-start text-[var(--text)]">
                     <div className="font-medium">{formatDateTime(meeting.date_time)}</div>
-                    <div className="text-xs text-[var(--text-muted)]">{meeting.created_at}</div>
+                    <div className="text-xs text-[var(--text-muted)]">{formatDateTime(meeting.created_at)}</div>
                   </TableCell>
                   <TableCell className="py-4 text-start text-[var(--text)]">
                     <div className="font-medium truncate max-w-[180px]">{meeting.user?.full_name || '-'}</div>
@@ -273,8 +270,8 @@ export default function AdminBookingsTab({
                   <TableCell className="py-4 text-start">
                     <StatusPill label={meeting.status_label} status={meeting.status} />
                   </TableCell>
-                  <TableCell className="py-4 text-end">
-                    <div className="flex justify-end gap-2">
+                  <TableCell className="py-4 text-start">
+                    <div className="flex items-center justify-start gap-2">
                       <Button type="button" variant="outline" size="sm" onClick={() => onOpenBooking(meeting)}>
                         {translateMessage('Details')}
                       </Button>
@@ -310,53 +307,29 @@ export default function AdminBookingsTab({
         </>
       )}
 
-      {pagination && pagination.last_page > 1 ? (
-        <div className="mt-4 flex items-center justify-between text-sm text-[var(--text-muted)]">
-          <span>
-            {translateMessage('Page')} {pagination.current_page} {translateMessage('of')} {pagination.last_page} ({pagination.total} {translateMessage('total')})
-          </span>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              disabled={pagination.current_page <= 1 || loading}
-              onClick={() => onPageChange(pagination.current_page - 1)}
-              className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--border)] disabled:opacity-40"
-            >
-              <ChevronLeft size={16} />
-            </button>
-            <button
-              type="button"
-              disabled={pagination.current_page >= pagination.last_page || loading}
-              onClick={() => onPageChange(pagination.current_page + 1)}
-              className="grid h-9 w-9 place-items-center rounded-lg border border-[var(--border)] disabled:opacity-40"
-            >
-              <ChevronRight size={16} />
-            </button>
-          </div>
-        </div>
-      ) : null}
+      <TablePagination pagination={pagination} onPageChange={onPageChange} loading={loading} className="mt-4" />
 
-      <Sheet open={Boolean(selectedBooking)} onOpenChange={(open) => {
+      <Dialog open={Boolean(selectedBooking)} onOpenChange={(open) => {
         if (!open) {
           onCloseBooking();
         }
       }}>
         {selectedBooking ? (
-          <SheetContent side="right" dir="rtl" className="w-full max-w-2xl p-0">
-            <div className="flex h-full flex-col">
-              <div className="border-b border-[var(--border)] p-6 text-start">
+          <DialogContent className="max-h-[90dvh] max-w-2xl overflow-hidden p-0">
+            <div className="flex min-h-0 flex-1 flex-col">
+              <div className="border-b border-[var(--border)] p-6 pe-12 text-start">
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <SheetTitle className="text-xl font-bold">{translateMessage('Meeting Details')}</SheetTitle>
+                    <DialogTitle className="text-xl font-bold">{translateMessage('Meeting Details')}</DialogTitle>
                     <StatusPill label={selectedBooking.status_label} status={selectedBooking.status} />
                   </div>
-                  <SheetDescription className="text-sm">
+                  <DialogDescription className="text-sm">
                     {selectedBooking.subject || translateMessage('No subject')}
-                  </SheetDescription>
+                  </DialogDescription>
                 </div>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-6 space-y-6">
                 <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4 flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs text-[var(--text-muted)] mb-1">{translateMessage('Client')}</p>
@@ -401,22 +374,34 @@ export default function AdminBookingsTab({
                   </div>
                 ) : null}
 
-                <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4">
-                  <h3 className="font-bold text-[var(--text)] mb-2 flex items-center gap-2">
-                    <Clock size={16} /> {translateMessage('Created')}
-                  </h3>
-                  <p className="text-sm text-[var(--text-muted)]">{selectedBooking.created_at}</p>
-                  {selectedBooking.cancel_by_name ? (
-                    <p className="text-sm text-[var(--text-muted)] mt-2">
-                      {translateMessage('Canceled by')}: {selectedBooking.cancel_by_name}
-                    </p>
-                  ) : null}
+                <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl p-4 flex items-start gap-2">
+                  <Clock size={16} className="mt-1 shrink-0 text-[var(--text)]" />
+                  <div className="min-w-0 text-start">
+                    <h3 className="font-bold text-[var(--text)] mb-2">{translateMessage('Created')}</h3>
+                    <p className="text-sm text-[var(--text-muted)]">{formatDateTime(selectedBooking.created_at)}</p>
+                    {selectedBooking.cancel_by_name ? (
+                      <p className="text-sm text-[var(--text-muted)] mt-2">
+                        {translateMessage('Canceled by')}: {selectedBooking.cancel_by_name}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
               </div>
             </div>
-          </SheetContent>
+          </DialogContent>
         ) : null}
-      </Sheet>
+      </Dialog>
+
+      <ReasonDialog
+        open={rejectingId !== null}
+        title={translateMessage('Reject')}
+        onClose={() => setRejectingId(null)}
+        onSubmit={async (reason) => {
+          if (rejectingId === null) return;
+          await onRejectBooking(rejectingId, reason);
+          setRejectingId(null);
+        }}
+      />
     </>
   );
 }

@@ -1,211 +1,225 @@
 'use client';
 
 import { useState } from 'react';
-import { Edit2, Loader2, Plus, Trash2 } from 'lucide-react';
-import Button from '@/components/ui/button';
-import ConfirmModal from '@/components/ui/confirm-modal';
-import ErrorAlert from '@/components/ui/error-alert';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import AdminFormModal from '@/components/ui/admin-form-modal';
+import CrudItemList from '@/components/ui/crud-item-list';
 import ImageUpload, { type ImageUploadValue } from '@/components/ui/image-upload';
+import Input from '@/components/ui/input';
 import BilingualFieldInputs from '@/features/admin-landing-page/components/bilingual-field-inputs';
+import { validateRequiredBilingual } from '@/features/admin-landing-page/components/landing-form-validation';
+import { bilingualErrors, getFieldErrors, type FieldErrors } from '@/lib/admin-api-error';
 import { translateMessage } from '@/lib/i18n-utils';
-import type { BlogCategoryPayload, BlogCategoryWithCount } from '@/features/blog/types/blog.types';
+import { useTranslation } from '@/lib/i18nContext';
+import type { AdminBlogCategory, BlogCategoryPayload } from '@/features/blog/types/blog.types';
 import {
   createAdminBlogCategory,
   deleteAdminBlogCategory,
   fetchAdminBlogCategories,
   updateAdminBlogCategory,
 } from '@/features/blog/services/blog-api';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-const EMPTY_BI = { ar: '', en: '' };
+const categoryKeys = { all: ['admin-blog-categories'] as const };
+
+type Bilingual = { ar: string; en: string };
+const EMPTY_BI: Bilingual = { ar: '', en: '' };
+
+const EMPTY_FORM: BlogCategoryPayload = {
+  title: EMPTY_BI,
+  slug: '',
+  description: EMPTY_BI,
+  image: null,
+  is_active: true,
+  sort_order: 0,
+  meta_title: EMPTY_BI,
+  meta_description: EMPTY_BI,
+  og_title: EMPTY_BI,
+  og_description: EMPTY_BI,
+  og_image: null,
+};
+
+const bi = (value?: Partial<Bilingual>): Bilingual => ({ ar: value?.ar ?? '', en: value?.en ?? '' });
+
+function slugify(value: string): string {
+  return value
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+function categoryToForm(category: AdminBlogCategory): BlogCategoryPayload {
+  return {
+    title: bi(category.title),
+    slug: category.slug,
+    description: bi(category.description),
+    image: null,
+    is_active: category.is_active,
+    sort_order: category.sort_order,
+    meta_title: bi(category.meta_title),
+    meta_description: bi(category.meta_description),
+    og_title: bi(category.og_title),
+    og_description: bi(category.og_description),
+    og_image: null,
+  };
+}
 
 export default function AdminBlogCategoriesPage() {
+  const { language } = useTranslation();
   const qc = useQueryClient();
-  const query = useQuery({ queryKey: ['admin-blog-categories'], queryFn: () => fetchAdminBlogCategories({ all: true }) });
-  const createMutation = useMutation({
-    mutationFn: (payload: BlogCategoryPayload) => createAdminBlogCategory(payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-blog-categories'] }),
-  });
+  const query = useQuery({ queryKey: categoryKeys.all, queryFn: () => fetchAdminBlogCategories({ all: true }) });
+  const invalidate = () => qc.invalidateQueries({ queryKey: categoryKeys.all });
+  const createMutation = useMutation({ mutationFn: createAdminBlogCategory, onSuccess: invalidate });
   const updateMutation = useMutation({
     mutationFn: ({ id, payload }: { id: number; payload: BlogCategoryPayload }) => updateAdminBlogCategory(id, payload),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-blog-categories'] }),
+    onSuccess: invalidate,
   });
-  const deleteMutation = useMutation({
-    mutationFn: (id: number) => deleteAdminBlogCategory(id),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['admin-blog-categories'] }),
-  });
+  const deleteMutation = useMutation({ mutationFn: deleteAdminBlogCategory, onSuccess: invalidate });
 
-  const [selected, setSelected] = useState<BlogCategoryWithCount | null>(null);
-  const [title, setTitle] = useState(EMPTY_BI);
-  const [description, setDescription] = useState(EMPTY_BI);
-  const [slug, setSlug] = useState('');
-  const [isActive, setIsActive] = useState(true);
-  const [sortOrder, setSortOrder] = useState(0);
-  const [metaTitle, setMetaTitle] = useState(EMPTY_BI);
-  const [metaDescription, setMetaDescription] = useState(EMPTY_BI);
-  const [ogTitle, setOgTitle] = useState(EMPTY_BI);
-  const [ogDescription, setOgDescription] = useState(EMPTY_BI);
-  const [image, setImage] = useState<ImageUploadValue | null>(null);
-  const [ogImage, setOgImage] = useState<ImageUploadValue | null>(null);
-  const [error, setError] = useState('');
-  const [pendingDelete, setPendingDelete] = useState<BlogCategoryWithCount | null>(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [form, setForm] = useState<BlogCategoryPayload>(EMPTY_FORM);
+  const [slugTouched, setSlugTouched] = useState(false);
+  const [imageValue, setImageValue] = useState<ImageUploadValue | null>(null);
+  const [ogImageValue, setOgImageValue] = useState<ImageUploadValue | null>(null);
+  const [formError, setFormError] = useState('');
+  const [errors, setErrors] = useState<FieldErrors>({});
 
-  // Initialize the form from the first loaded category, adjusted during
-  // render instead of in an effect (guarded by `selected` so it only runs
-  // once, until `reset()` clears the selection again).
-  if (!selected && query.data?.[0]) {
-    const item = query.data[0];
-    setSelected(item);
-    setTitle({ ar: item.title, en: item.title });
-    setDescription({ ar: item.description || '', en: item.description || '' });
-    setSlug(item.slug);
-    setIsActive(item.is_active ?? true);
-    setSortOrder(item.sort_order || 0);
+  const localized = (value?: Partial<Bilingual>) => value?.[language] || value?.en || value?.ar || '';
+  const update = (patch: Partial<BlogCategoryPayload>) => setForm((prev) => ({ ...prev, ...patch }));
+
+  function open(category: AdminBlogCategory | null) {
+    setEditingId(category?.id ?? null);
+    setForm(category ? categoryToForm(category) : EMPTY_FORM);
+    setSlugTouched(Boolean(category));
+    setImageValue(null);
+    setOgImageValue(null);
+    setFormError('');
+    setErrors({});
+    setShowForm(true);
   }
 
-  const reset = () => {
-    setSelected(null);
-    setTitle(EMPTY_BI);
-    setDescription(EMPTY_BI);
-    setSlug('');
-    setIsActive(true);
-    setSortOrder(0);
-    setMetaTitle(EMPTY_BI);
-    setMetaDescription(EMPTY_BI);
-    setOgTitle(EMPTY_BI);
-    setOgDescription(EMPTY_BI);
-    setImage(null);
-    setOgImage(null);
-    setError('');
-  };
+  async function handleSave() {
+    setFormError('');
+    const titleErrors = validateRequiredBilingual(form.title);
+    const nextErrors: FieldErrors = {};
+    if (titleErrors.ar) nextErrors['title.ar'] = titleErrors.ar;
+    if (titleErrors.en) nextErrors['title.en'] = titleErrors.en;
+    if (!form.slug.trim()) nextErrors.slug = translateMessage('This field is required');
+    setErrors(nextErrors);
+    if (Object.keys(nextErrors).length > 0) return;
 
-  const edit = (item: BlogCategoryWithCount) => {
-    setSelected(item);
-    setTitle({ ar: item.title, en: item.title });
-    setDescription({ ar: item.description || '', en: item.description || '' });
-    setSlug(item.slug);
-    setIsActive(item.is_active ?? true);
-    setSortOrder(item.sort_order || 0);
-    setMetaTitle({ ar: item.seo?.meta_title || '', en: item.seo?.meta_title || '' });
-    setMetaDescription({ ar: item.seo?.meta_description || '', en: item.seo?.meta_description || '' });
-    setOgTitle({ ar: item.seo?.og_title || '', en: item.seo?.og_title || '' });
-    setOgDescription({ ar: item.seo?.og_description || '', en: item.seo?.og_description || '' });
-    setImage(null);
-    setOgImage(null);
-    setError('');
-  };
-
-  const payload = (): BlogCategoryPayload => ({
-    title,
-    slug,
-    description,
-    image: image?.file,
-    is_active: isActive,
-    sort_order: sortOrder,
-    meta_title: metaTitle,
-    meta_description: metaDescription,
-    og_title: ogTitle,
-    og_description: ogDescription,
-    og_image: ogImage?.file,
-  });
-
-  const save = async () => {
-    if (!title.ar.trim() || !title.en.trim() || !slug.trim()) {
-      setError(translateMessage('Title and slug are required.'));
-      return;
+    try {
+      if (editingId) await updateMutation.mutateAsync({ id: editingId, payload: form });
+      else await createMutation.mutateAsync(form);
+      setShowForm(false);
+    } catch (err) {
+      setErrors(getFieldErrors(err));
+      setFormError(err instanceof Error ? err.message : translateMessage('Failed to save blog category.'));
     }
-    setError('');
-    if (selected) await updateMutation.mutateAsync({ id: selected.id, payload: payload() });
-    else await createMutation.mutateAsync(payload());
-    reset();
-  };
-
-  const remove = async () => {
-    if (!pendingDelete) return;
-    await deleteMutation.mutateAsync(pendingDelete.id);
-    setPendingDelete(null);
-    reset();
-  };
-
-  const items = query.data ?? [];
+  }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[360px_minmax(0,1fr)]">
-      <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
-        <div className="mb-4 flex items-center justify-between">
-          <div>
-            <h2 className="text-lg font-black text-[var(--text)]">{translateMessage('Blog Categories')}</h2>
-            <p className="text-sm text-[var(--text-muted)]">{translateMessage('Manage categories used to organize public blogs.')}</p>
-          </div>
-          <Button type="button" variant="outline" size="sm" onClick={reset}>
-            <Plus size={14} className="me-2" />
-            {translateMessage('New')}
-          </Button>
-        </div>
-        {query.isLoading ? (
-          <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]"><Loader2 className="animate-spin" size={16} />{translateMessage('Loading...')}</div>
-        ) : (
-          <div className="space-y-3">
-            {items.map((item) => (
-              <div key={item.id} className={`rounded-2xl border p-4 ${selected?.id === item.id ? 'border-primary/50 bg-primary/5' : 'border-[var(--border)] bg-[var(--surface)]'}`}>
-                <div className="flex items-start gap-3">
-                  {item.image ? <img src={item.image} alt={item.title} className="h-16 w-16 rounded-xl object-cover" /> : null}
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-black text-[var(--text)]">{item.title}</p>
-                    <p className="truncate text-xs text-[var(--text-muted)]">{item.slug}</p>
-                  </div>
-                </div>
-                <div className="mt-3 flex gap-2">
-                  <Button type="button" variant="ghost" size="sm" onClick={() => edit(item)}>
-                    <Edit2 size={14} className="me-2" />{translateMessage('Edit')}
-                  </Button>
-                  <Button type="button" variant="destructive" size="sm" onClick={() => setPendingDelete(item)}>
-                    <Trash2 size={14} className="me-2" />{translateMessage('Delete')}
-                  </Button>
-                </div>
-              </div>
-            ))}
+    <div className="space-y-6">
+      <CrudItemList
+        title={translateMessage('Blog Categories')}
+        items={query.data ?? []}
+        isLoading={query.isLoading}
+        emptyLabel={translateMessage('No blog categories yet.')}
+        addLabel={translateMessage('Add Category')}
+        deleteConfirmLabel={translateMessage('Delete this category?')}
+        onAdd={() => open(null)}
+        onEdit={(category: AdminBlogCategory) => open(category)}
+        onDelete={(id) => deleteMutation.mutateAsync(id).catch(() => undefined)}
+        isDeleting={deleteMutation.isPending}
+        renderItem={(category) => (
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-[var(--text)]">{localized(category.title)}</p>
+            <p className="truncate text-xs text-[var(--text-muted)]">
+              /{category.slug}
+              {category.is_active ? '' : ` · ${translateMessage('Inactive')}`}
+            </p>
           </div>
         )}
-      </section>
-
-      <section className="rounded-3xl border border-[var(--border)] bg-[var(--surface-2)] p-5">
-        <h2 className="text-lg font-black text-[var(--text)]">{translateMessage(selected ? 'Edit Category' : 'Create Category')}</h2>
-        <div className="mt-5 grid gap-5">
-          <BilingualFieldInputs label={translateMessage('Title')} value={title} onChange={setTitle} required />
-          <label className="space-y-2">
-            <span className="text-sm font-bold text-[var(--text)]">{translateMessage('Slug')}</span>
-            <input className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={slug} onChange={(e) => setSlug(e.target.value)} />
-          </label>
-          <BilingualFieldInputs label={translateMessage('Description')} value={description} onChange={setDescription} multiline />
-          <div className="grid gap-4 md:grid-cols-2">
-            <label className="space-y-2"><span className="text-sm font-bold text-[var(--text)]">{translateMessage('Order')}</span><input type="number" className="w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] px-4 py-3 text-sm text-[var(--text)] outline-none focus:border-primary/60" value={sortOrder} onChange={(e) => setSortOrder(Number(e.target.value))} /></label>
-            <label className="flex items-center gap-2 pt-8 text-sm font-bold text-[var(--text)]"><input type="checkbox" checked={isActive} onChange={(e) => setIsActive(e.target.checked)} />{translateMessage('Active')}</label>
-          </div>
-          <ImageUpload label={translateMessage('Image')} value={image} onChange={setImage} aspectRatio={1} />
-          <BilingualFieldInputs label={translateMessage('Meta Title')} value={metaTitle} onChange={setMetaTitle} />
-          <BilingualFieldInputs label={translateMessage('Meta Description')} value={metaDescription} onChange={setMetaDescription} multiline />
-          <BilingualFieldInputs label={translateMessage('OG Title')} value={ogTitle} onChange={setOgTitle} />
-          <BilingualFieldInputs label={translateMessage('OG Description')} value={ogDescription} onChange={setOgDescription} multiline />
-          <ImageUpload label={translateMessage('OG Image')} value={ogImage} onChange={setOgImage} aspectRatio={1.91} />
-          {error ? <ErrorAlert message={error} /> : null}
-          <div className="flex flex-wrap gap-3">
-            <Button type="button" onClick={save} isLoading={createMutation.isPending || updateMutation.isPending}>{translateMessage('Save')}</Button>
-            <Button type="button" variant="outline" onClick={reset}>{translateMessage('Reset')}</Button>
-          </div>
-        </div>
-      </section>
-
-      <ConfirmModal
-        isOpen={Boolean(pendingDelete)}
-        title={translateMessage('Delete')}
-        message={translateMessage('Are you sure you want to delete this item?')}
-        confirmText={translateMessage('Delete')}
-        isDestructive
-        isConfirming={deleteMutation.isPending}
-        onConfirm={remove}
-        onCancel={() => setPendingDelete(null)}
       />
+
+      <AdminFormModal
+        open={showForm}
+        title={translateMessage(editingId ? 'Edit Category' : 'Add Category')}
+        onClose={() => setShowForm(false)}
+        onSubmit={handleSave}
+        isSubmitting={createMutation.isPending || updateMutation.isPending}
+        error={formError}
+        maxWidth="max-w-3xl"
+      >
+        <BilingualFieldInputs
+          label={translateMessage('Title')}
+          value={form.title}
+          onChange={(title) => update(slugTouched ? { title } : { title, slug: slugify(title.en) })}
+          errors={bilingualErrors(errors, 'title')}
+          required
+        />
+        <Input
+          label={translateMessage('Slug')}
+          dir="ltr"
+          value={form.slug}
+          onChange={(event) => {
+            setSlugTouched(true);
+            update({ slug: event.target.value });
+          }}
+          error={errors.slug}
+        />
+        <BilingualFieldInputs
+          label={translateMessage('Description')}
+          value={form.description}
+          onChange={(description) => update({ description })}
+          errors={bilingualErrors(errors, 'description')}
+          multiline
+        />
+        <ImageUpload
+          label={translateMessage('Image')}
+          value={imageValue}
+          onChange={(next) => {
+            setImageValue(next);
+            update({ image: next?.file ?? null });
+          }}
+          aspectRatio={16 / 9}
+        />
+        {errors.image ? <p className="text-xs font-medium text-danger">{errors.image}</p> : null}
+        <div className="grid gap-4 md:grid-cols-2">
+          <Input
+            type="number"
+            label={translateMessage('Order')}
+            value={form.sort_order}
+            onChange={(event) => update({ sort_order: Number(event.target.value) || 0 })}
+            error={errors.sort_order}
+          />
+          <label className="flex items-center gap-2 self-end pb-3 text-sm font-bold text-[var(--text)]">
+            <input type="checkbox" checked={form.is_active} onChange={(event) => update({ is_active: event.target.checked })} />
+            {translateMessage('Active')}
+          </label>
+        </div>
+
+        <details className="rounded-xl border border-[var(--border)] p-4">
+          <summary className="cursor-pointer text-sm font-bold text-[var(--text)]">{translateMessage('SEO')}</summary>
+          <div className="mt-4 space-y-4">
+            <BilingualFieldInputs label={translateMessage('Meta Title')} value={bi(form.meta_title)} onChange={(meta_title) => update({ meta_title })} errors={bilingualErrors(errors, 'meta_title')} />
+            <BilingualFieldInputs label={translateMessage('Meta Description')} value={bi(form.meta_description)} onChange={(meta_description) => update({ meta_description })} errors={bilingualErrors(errors, 'meta_description')} multiline />
+            <BilingualFieldInputs label={translateMessage('OG Title')} value={bi(form.og_title)} onChange={(og_title) => update({ og_title })} errors={bilingualErrors(errors, 'og_title')} />
+            <BilingualFieldInputs label={translateMessage('OG Description')} value={bi(form.og_description)} onChange={(og_description) => update({ og_description })} errors={bilingualErrors(errors, 'og_description')} multiline />
+            <ImageUpload
+              label={translateMessage('OG Image')}
+              value={ogImageValue}
+              onChange={(next) => {
+                setOgImageValue(next);
+                update({ og_image: next?.file ?? null });
+              }}
+              aspectRatio={1.91}
+            />
+            {errors.og_image ? <p className="text-xs font-medium text-danger">{errors.og_image}</p> : null}
+          </div>
+        </details>
+      </AdminFormModal>
     </div>
   );
 }

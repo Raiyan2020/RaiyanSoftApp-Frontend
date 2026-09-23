@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { translateMessage } from '@/lib/i18n-utils';
 import { fetchAdminEmployee } from '../services/admin-employees-api';
 import { AdminEmployee } from '../types/admin-employee.types';
@@ -9,11 +9,16 @@ export function useAdminEmployee(id: number | null, enabled = true) {
   const [employee, setEmployee] = useState<AdminEmployee | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Bumped on every reload so a slow response for a closed/previous id can't
+  // write back and reopen the details modal.
+  const requestRef = useRef(0);
 
   const reload = useCallback(async () => {
+    const request = ++requestRef.current;
     if (!id || !enabled) {
       setEmployee(null);
       setError(null);
+      setLoading(false);
       return;
     }
 
@@ -22,12 +27,14 @@ export function useAdminEmployee(id: number | null, enabled = true) {
 
     try {
       const data = await fetchAdminEmployee(id);
+      if (request !== requestRef.current) return;
       setEmployee(data);
     } catch (err: any) {
+      if (request !== requestRef.current) return;
       setError(err.message || translateMessage('Failed to load employee.'));
       setEmployee(null);
     } finally {
-      setLoading(false);
+      if (request === requestRef.current) setLoading(false);
     }
   }, [enabled, id]);
 

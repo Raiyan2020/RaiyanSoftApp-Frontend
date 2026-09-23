@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Calendar, Clock, ArrowRight, ArrowLeft } from 'lucide-react';
 import { type Notification } from '../types/notification.types';
 import { useTranslation } from '@/lib/i18nContext';
+import { getIntlLocale } from '@/lib/language';
 
 interface NotificationSheetProps {
   notification: Notification | null;
@@ -13,13 +14,13 @@ export default function NotificationSheet({ notification, onClose }: Notificatio
   const { t, dir } = useTranslation();
   if (!notification) return null;
 
-  const dateStr = new Date(notification.timestamp).toLocaleDateString([], {
+  const dateStr = new Date(notification.timestamp).toLocaleDateString(getIntlLocale(dir === 'rtl' ? 'ar' : 'en'), {
     weekday: 'long',
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
-  const timeStr = new Date(notification.timestamp).toLocaleTimeString([], {
+  const timeStr = new Date(notification.timestamp).toLocaleTimeString(getIntlLocale(dir === 'rtl' ? 'ar' : 'en'), {
     hour: '2-digit',
     minute: '2-digit',
   });
